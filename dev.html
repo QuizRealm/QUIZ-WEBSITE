@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- BASIC SEO -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="QuizRealm — Fast, clean and fun trivia. TV shows, movies, riddles, logic, geography and more. Play now." />
+<meta name="author" content="QuizRealm" />
+<meta name="theme-color" content="#0f172a" />
+
+<!-- SEARCH ENGINE PREFS -->
+<meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow" />
+
+<!-- OPEN GRAPH (Facebook, WhatsApp, Reddit) -->
+<meta property="og:title" content="QuizRealm — Play Trivia Anytime" />
+<meta property="og:description" content="Fast-paced trivia with TV, movies, world facts, daily challenges and minigames." />
+<meta property="og:image" content="https://yourdomain.com/assets/qr-og.jpg" />
+<meta property="og:url" content="https://yourdomain.com/" />
+<meta property="og:type" content="website" />
+
+<!-- TWITTER CARD -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="QuizRealm — Play Trivia" />
+<meta name="twitter:description" content="Challenge yourself with daily quizzes, categories and brain games." />
+<meta name="twitter:image" content="https://yourdomain.com/assets/qr-og.jpg" />
+
+<!-- FAVICON -->
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+
+<!-- CANONICAL URL -->
+<link rel="canonical" href="https://yourdomain.com/" />
+
+  <link rel="stylesheet" href="style.css">
+  <script src="data.js"></script>
+  <style>
+    .dev-wrapper {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 20px 12px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    th, td {
+      border-bottom: 1px solid rgba(55,65,81,0.8);
+      padding: 6px 4px;
+      text-align: left;
+    }
+    th {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+    .dev-tag-missing {
+      color: #f97316;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="logo">Quiz<span>Realm</span></div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="categories.html">Categories</a>
+      <a href="minigames.html">Mini-games</a>
+    </nav>
+  </header>
+
+  <main class="card dev-wrapper">
+    <div class="card-header">
+      <h1 class="card-title">Dev: Question overview</h1>
+      <p class="card-subtitle">
+        Internal view of categories, difficulty counts and missing banks. Not shown to players.
+      </p>
+    </div>
+
+    <div id="devTableWrapper"></div>
+  </main>
+</div>
+
+<script>
+(function renderDevTable() {
+  if (typeof QUESTION_META === "undefined") return;
+
+  const meta = QUESTION_META;
+  const container = document.getElementById("devTableWrapper");
+  const categories = Object.keys(meta).sort();
+
+  let html = '<table><thead><tr>';
+  html += '<th>Key</th><th>Label</th><th>Easy</th><th>Medium</th><th>Hard</th><th>Total</th><th>Notes</th>';
+  html += '</tr></thead><tbody>';
+
+  categories.forEach(key => {
+    const m = meta[key];
+    const easy = m.easy || 0;
+    const med  = m.medium || 0;
+    const hard = m.hard || 0;
+    const total = easy + med + hard;
+
+    const cfg  = (typeof CATEGORY_CONFIG !== "undefined" && CATEGORY_CONFIG[key]) ? CATEGORY_CONFIG[key] : null;
+    const label = cfg ? cfg.label : key;
+
+    const missing = [];
+    if (!easy) missing.push("easy");
+    if (!med)  missing.push("medium");
+    if (!hard) missing.push("hard");
+
+    html += '<tr>';
+    html += `<td>${key}</td>`;
+    html += `<td>${label}</td>`;
+    html += `<td>${easy}</td>`;
+    html += `<td>${med}</td>`;
+    html += `<td>${hard}</td>`;
+    html += `<td>${total}</td>`;
+    html += `<td>${missing.length ? '<span class="dev-tag-missing">Missing: ' + missing.join(", ") + '</span>' : ''}</td>`;
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+})();
+</script>
+
+<footer class="qr-footer">
+  <div class="qr-footer-inner">
+
+    <div class="qr-footer-section">
+      <div class="qr-footer-logo">Quiz<span>Realm</span></div>
+      <div class="qr-footer-tag">Fast, clean, and fun trivia for everyone.</div>
+    </div>
+
+    <div class="qr-footer-section">
+      <div class="qr-footer-title">Info</div>
+      <a href="faq.html" class="qr-footer-link">FAQ</a>
+      <a href="terms.html" class="qr-footer-link">Terms & Conditions</a>
+      <a href="privacy.html" class="qr-footer-link">Privacy Policy</a>
+      <a href="cookies.html" class="qr-footer-link">Cookies</a>
+    </div>
+
+    <div class="qr-footer-section">
+      <div class="qr-footer-title">More</div>
+      <a href="categories.html" class="qr-footer-link">Categories</a>
+      <a href="minigames.html" class="qr-footer-link">Minigames</a>
+      <a href="achievements.html" class="qr-footer-link">Achievements</a>
+      <a href="profile.html" class="qr-footer-link">My Profile</a>
+    </div>
+
+  </div>
+
+  <div class="qr-footer-bottom">
+    © <span id="qrYear"></span> QuizRealm — All rights reserved.
+  </div>
+</footer>
+
+<script>
+  document.getElementById("qrYear").textContent = new Date().getFullYear();
+</script>
+
+
+</body>
+</html>

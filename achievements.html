@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <title>QuizRealm • Achievements</title>
+    <meta name="theme-color" content="#0A0F1E">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <script src="components.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        bgDark: '#0A0F1E',
+                        bgDarker: '#050810',
+                        accentBlue: '#3b82f6',
+                        accentCyan: '#06b6d4',
+                        accentGold: '#eab308',
+                        accentPurple: '#a855f7',
+                        accentPink: '#f43f5e',
+                        accentGreen: '#10b981',
+                        glass: 'rgba(30, 41, 59, 0.4)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: var(--bgDarker); 
+            background-image: radial-gradient(circle at 50% 0%, #172554, #050810 80%);
+            min-height: 100vh; color: #e2e8f0; overflow-x: hidden;
+        }
+        .glass-panel { 
+            background: var(--glass); backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Achievement Rarity Styles - Clean & Modern */
+        .card-common { border-left: 3px solid #94a3b8; }
+        .card-rare { border-left: 3px solid #3b82f6; background: linear-gradient(90deg, rgba(59,130,246,0.05), transparent); }
+        .card-epic { border-left: 3px solid #a855f7; background: linear-gradient(90deg, rgba(168,85,247,0.05), transparent); }
+        .card-legendary { border-left: 3px solid #eab308; background: linear-gradient(90deg, rgba(234,179,8,0.1), transparent); border-color: rgba(234,179,8,0.3); }
+
+        .ach-icon { transition: all 0.3s ease; }
+        .group:hover .ach-icon { transform: scale(1.1) rotate(5deg); }
+        
+        .locked-state { opacity: 0.6; filter: grayscale(1); }
+        .active-filter { background: rgba(59, 130, 246, 0.2) !important; color: white !important; border-color: #3b82f6 !important; }
+
+        /* Toast animation */
+        @keyframes toast-slide {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow p-4 md:py-8 max-w-[1400px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <aside class="lg:col-span-3 space-y-6">
+            
+            <div class="glass-panel rounded-xl p-6 relative overflow-hidden">
+                <div class="flex justify-between items-end mb-2">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Collection Status</h2>
+                    <span class="text-accentCyan font-mono font-bold text-lg" id="completionPercent">0%</span>
+                </div>
+                
+                <div class="relative w-full bg-black/40 h-3 rounded-full overflow-hidden mb-4 border border-white/5">
+                    <div id="globalProgressBar" class="absolute top-0 left-0 h-full bg-gradient-to-r from-accentBlue to-accentCyan w-0 transition-all duration-1000"></div>
+                </div>
+
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-slate-400">Unlocked</span>
+                    <div class="font-mono">
+                        <span class="text-white font-bold" id="unlockedCount">0</span>
+                        <span class="text-slate-600">/</span>
+                        <span class="text-slate-500" id="totalCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-1 overflow-hidden">
+                <div class="px-4 py-3 border-b border-white/5">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Categories</h3>
+                </div>
+                <nav class="p-2 space-y-1" id="filterContainer">
+                </nav>
+            </div>
+
+            <div class="text-center">
+                <button onclick="resetProgress()" class="text-[10px] text-slate-600 hover:text-red-400 transition underline">Reset All Progress</button>
+            </div>
+
+        </aside>
+
+        <div class="lg:col-span-9 space-y-8">
+
+            <div id="featuredAchievement" class="hidden glass-panel rounded-xl p-6 md:p-8 border border-accentGold/30 relative overflow-hidden group">
+                <div class="absolute right-0 top-0 w-64 h-64 bg-accentGold/10 rounded-full blur-3xl -z-10 group-hover:bg-accentGold/20 transition duration-700"></div>
+                
+                <div class="flex flex-col md:flex-row gap-6 items-start">
+                    <div class="w-20 h-20 rounded-xl bg-gradient-to-br from-yellow-500/20 to-transparent border border-accentGold/30 flex items-center justify-center flex-shrink-0 shadow-[0_0_20px_rgba(234,179,8,0.15)]">
+                        <i class="fas fa-crown text-3xl text-accentGold"></i>
+                    </div>
+                    
+                    <div class="flex-grow">
+                        <div class="flex flex-wrap items-center gap-3 mb-2">
+                            <span class="text-[10px] font-bold bg-accentGold/20 text-accentGold px-2 py-0.5 rounded border border-accentGold/30 uppercase tracking-wider">
+                                Rarest Unlock
+                            </span>
+                            <span class="text-[10px] text-slate-500 font-mono" id="featDate">Unlocked: Just now</span>
+                        </div>
+                        
+                        <h2 class="text-2xl font-bold text-white mb-2" id="featTitle">Title Here</h2>
+                        <p class="text-slate-300 text-sm leading-relaxed max-w-2xl" id="featDesc">Description text.</p>
+                    </div>
+
+                    <div class="hidden md:block text-right">
+                        <div class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Rarity</div>
+                        <div class="text-accentGold font-bold font-mono">LEGENDARY</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-end border-b border-white/5 pb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2" id="gridTitle">
+                    All Achievements
+                </h3>
+                <div class="flex gap-4 text-[10px] uppercase font-bold tracking-wider">
+                    <span class="flex items-center gap-1.5 text-slate-500"><div class="w-2 h-2 rounded-full bg-slate-700"></div> Locked</span>
+                    <span class="flex items-center gap-1.5 text-accentBlue"><div class="w-2 h-2 rounded-full bg-accentBlue shadow-[0_0_8px_#3b82f6]"></div> Unlocked</span>
+                </div>
+            </div>
+
+            <div id="achGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
+            
+            <div id="emptyState" class="hidden py-12 text-center border border-dashed border-white/10 rounded-xl">
+                <i class="fas fa-search text-3xl text-slate-700 mb-3"></i>
+                <p class="text-slate-500 text-sm">No achievements found in this category.</p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <!-- Toast container -->
+    <div id="achievementToast" class="fixed bottom-4 right-4 z-50 hidden">
+        <div class="glass-panel rounded-xl px-4 py-3 flex items-center gap-3 border border-emerald-400/40 shadow-lg animate-[toast-slide_0.25s_ease-out]">
+            <div class="w-9 h-9 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-400/40">
+                <i class="fas fa-trophy text-emerald-300"></i>
+            </div>
+            <div class="min-w-[200px] max-w-xs">
+                <p class="text-[10px] uppercase tracking-widest text-emerald-300 font-bold">Achievement Unlocked</p>
+                <p class="text-sm font-semibold text-white" id="toastTitle"></p>
+                <p class="text-[11px] text-slate-300" id="toastDesc"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. ACHIEVEMENT DATA (100+ TOTAL)
+        // ==========================================
+        const ACHIEVEMENTS = [
+            // --- General / Starter (existing + new) ---
+            { id: "new_recruit", title: "New Recruit", desc: "Complete your first quiz session.", rarity: "common", group: "general" },
+            { id: "perfect_score", title: "Flawless Victory", desc: "Achieve a 100% score on any quiz.", rarity: "rare", group: "general" },
+            { id: "streak_3", title: "Consistency", desc: "Maintain a 3-day login streak.", rarity: "common", group: "streaks" },
+            { id: "streak_7", title: "Dedicated Agent", desc: "Maintain a 7-day login streak.", rarity: "epic", group: "streaks" },
+
+            { id: "first_steps", title: "First Steps", desc: "Finish 1 full quiz from start to finish.", rarity: "common", group: "general" },
+            { id: "rookie_runner", title: "Rookie Runner", desc: "Play 5 quizzes in total.", rarity: "common", group: "general" },
+            { id: "quiz_enthusiast", title: "Quiz Enthusiast", desc: "Play 20 quizzes in total.", rarity: "rare", group: "general" },
+            { id: "quiz_addict", title: "Quiz Addict", desc: "Play 50 quizzes in total.", rarity: "epic", group: "general" },
+            { id: "night_owl", title: "Night Owl", desc: "Finish a quiz after midnight.", rarity: "rare", group: "general" },
+            { id: "early_bird", title: "Early Bird", desc: "Finish a quiz before 8 AM.", rarity: "rare", group: "general" },
+            { id: "daily_visit", title: "Daily Visitor", desc: "Visit QuizRealm on 3 different days.", rarity: "common", group: "streaks" },
+            { id: "loyal_agent", title: "Loyal Agent", desc: "Visit QuizRealm on 30 different days.", rarity: "epic", group: "streaks" },
+            { id: "marathon_session", title: "Marathon Session", desc: "Play QuizRealm for 1 hour in a single session.", rarity: "epic", group: "general" },
+            { id: "multitasker", title: "Multitasker", desc: "Play quizzes from 3 different categories in one session.", rarity: "rare", group: "general" },
+            { id: "mode_explorer", title: "Mode Explorer", desc: "Try at least 3 different game modes.", rarity: "rare", group: "general" },
+
+            // --- Score & Accuracy ---
+            { id: "score_1000", title: "Point Collector", desc: "Earn a total of 1,000 points across all quizzes.", rarity: "common", group: "score" },
+            { id: "score_5000", title: "Point Hoarder", desc: "Earn a total of 5,000 points across all quizzes.", rarity: "rare", group: "score" },
+            { id: "score_20000", title: "Point Tycoon", desc: "Earn a total of 20,000 points across all quizzes.", rarity: "epic", group: "score" },
+            { id: "score_50000", title: "Point Empire", desc: "Earn a total of 50,000 points across all quizzes.", rarity: "legendary", group: "score" },
+            { id: "accuracy_70", title: "Solid Mind", desc: "Maintain at least 70% correct answers over 50 questions.", rarity: "common", group: "accuracy" },
+            { id: "accuracy_80", title: "Sharp Thinker", desc: "Maintain at least 80% correct answers over 100 questions.", rarity: "rare", group: "accuracy" },
+            { id: "accuracy_90", title: "Laser Focus", desc: "Maintain at least 90% correct answers over 200 questions.", rarity: "epic", group: "accuracy" },
+            { id: "comeback_hero", title: "Comeback Hero", desc: "Start a quiz badly but finish with 80%+ score.", rarity: "epic", group: "accuracy" },
+            { id: "near_perfect", title: "So Close", desc: "Finish a quiz with exactly one wrong answer.", rarity: "rare", group: "accuracy" },
+
+            // --- Streaks (more) ---
+            { id: "streak_14", title: "Two-Week Warrior", desc: "Maintain a 14-day login streak.", rarity: "epic", group: "streaks" },
+            { id: "streak_30", title: "Realm Devotee", desc: "Maintain a 30-day login streak.", rarity: "legendary", group: "streaks" },
+            { id: "no_fail_quiz", title: "Unshaken", desc: "Finish a quiz without dropping below 50% at any point.", rarity: "rare", group: "streaks" },
+
+            // --- Existing mastery / meta ---
+            { id: "know_it_all", title: "Polymath", desc: "Complete a quiz in every single category.", rarity: "epic", group: "general" },
+            { id: "legendary_status", title: "The Oracle", desc: "Reach Level 50 profile status.", rarity: "legendary", group: "general" },
+
+            // --- Speed (existing + new) ---
+            { id: "quick_thinker", title: "Quick Thinker", desc: "Answer 5 questions in under 10 seconds each.", rarity: "rare", group: "speed" },
+            { id: "lightning_reflexes", title: "Lightning Reflexes", desc: "Complete a Rapid Fire round with >80% accuracy.", rarity: "epic", group: "speed" },
+            { id: "speed_runner", title: "Speed Runner", desc: "Finish any quiz in under 60 seconds.", rarity: "rare", group: "speed" },
+            { id: "reaction_master", title: "Reaction Master", desc: "Answer a question in under 1 second.", rarity: "epic", group: "speed" },
+            { id: "time_bender", title: "Time Bender", desc: "Beat the timer with less than 1 second remaining.", rarity: "epic", group: "speed" },
+            { id: "perfect_speed_run", title: "Perfect Speed Run", desc: "Get 100% on a timed quiz.", rarity: "legendary", group: "speed" },
+
+            // --- Minigames (existing + new) ---
+            { id: "hangman_survivor", title: "Escape Artist", desc: "Win a game of Hangman with only 1 life left.", rarity: "epic", group: "minigames" },
+            { id: "timeline_master", title: "Chronologist", desc: "Sort a 10-event timeline without a single error.", rarity: "legendary", group: "minigames" },
+            { id: "artist_eye", title: "Art Critic", desc: "Correctly guess 5 Pictionary drawings in a row.", rarity: "rare", group: "minigames" },
+            { id: "hangman_flawless", title: "Hangman Prodigy", desc: "Win a game of Hangman without a single wrong guess.", rarity: "epic", group: "minigames" },
+            { id: "timeline_speed", title: "Time Slicer", desc: "Complete a timeline round in record time.", rarity: "rare", group: "minigames" },
+            { id: "pictionary_party", title: "Pictionary Party", desc: "Play 10 Pictionary rounds.", rarity: "common", group: "minigames" },
+            { id: "minigame_sampler", title: "Mini-Game Sampler", desc: "Play each mini-game at least once.", rarity: "rare", group: "minigames" },
+            { id: "minigame_grinder", title: "Mini-Game Grinder", desc: "Play 50 mini-game rounds.", rarity: "epic", group: "minigames" },
+
+            // --- Science ---
+            { id: "science_whiz", title: "Lab Coat", desc: "Answer 50 Science questions correctly.", rarity: "rare", group: "science" },
+            { id: "science_intern", title: "Science Intern", desc: "Answer 10 Science questions correctly.", rarity: "common", group: "science" },
+            { id: "science_professor", title: "Science Professor", desc: "Answer 200 Science questions correctly.", rarity: "epic", group: "science" },
+            { id: "biology_brain", title: "Biology Brain", desc: "Finish a full Biology quiz with 80%+ score.", rarity: "rare", group: "science" },
+            { id: "chemistry_catalyst", title: "Chemistry Catalyst", desc: "Finish a Chemistry quiz without dropping below 60%.", rarity: "rare", group: "science" },
+            { id: "physics_phantom", title: "Physics Phantom", desc: "Beat a hard Physics quiz.", rarity: "epic", group: "science" },
+
+            // --- History ---
+            { id: "history_buff", title: "Time Traveler", desc: "Answer 50 History questions correctly.", rarity: "rare", group: "history" },
+            { id: "history_student", title: "History Student", desc: "Answer 10 History questions correctly.", rarity: "common", group: "history" },
+            { id: "history_professor", title: "History Professor", desc: "Answer 200 History questions correctly.", rarity: "epic", group: "history" },
+            { id: "event_architect", title: "Event Architect", desc: "Place all events correctly in a History timeline.", rarity: "epic", group: "history" },
+            { id: "era_hopper", title: "Era Hopper", desc: "Play quizzes from 3 different historical eras.", rarity: "rare", group: "history" },
+
+            // --- Tech ---
+            { id: "tech_guru", title: "Silicon Mind", desc: "Answer 50 Tech questions correctly.", rarity: "rare", group: "tech" },
+            { id: "debugger", title: "Bug Squasher", desc: "Get 10 Tech questions right in a row.", rarity: "rare", group: "tech" },
+            { id: "binary_brain", title: "Binary Brain", desc: "Finish a programming quiz with 90%+ score.", rarity: "epic", group: "tech" },
+            { id: "future_ready", title: "Future Ready", desc: "Play any Future Tech or AI quiz.", rarity: "common", group: "tech" },
+            { id: "stack_master", title: "Stack Master", desc: "Beat a hard Tech quiz.", rarity: "epic", group: "tech" },
+
+            // --- Geography ---
+            { id: "geo_master", title: "World Traveler", desc: "Answer 50 Geography questions correctly.", rarity: "rare", group: "geography" },
+            { id: "flag_fan", title: "Flag Fanatic", desc: "Finish a flags quiz with 80%+ score.", rarity: "rare", group: "geography" },
+            { id: "capital_keeper", title: "Capital Keeper", desc: "Get 15 capital city questions correct in a row.", rarity: "epic", group: "geography" },
+            { id: "continent_hopper", title: "Continent Hopper", desc: "Play a geography quiz for 4 different continents.", rarity: "rare", group: "geography" },
+            { id: "atlas_spirit", title: "Atlas Spirit", desc: "Answer 200 Geography questions correctly.", rarity: "epic", group: "geography" },
+
+            // --- Space ---
+            { id: "space_cadet", title: "Space Cadet", desc: "Play your first Space quiz.", rarity: "common", group: "space" },
+            { id: "orbit_mind", title: "Orbit Mind", desc: "Finish 5 different Space quizzes.", rarity: "rare", group: "space" },
+            { id: "cosmic_scholar", title: "Cosmic Scholar", desc: "Get 50 Space questions correct.", rarity: "epic", group: "space" },
+            { id: "black_hole_brain", title: "Black Hole Brain", desc: "Beat a hard Space quiz with 80%+ score.", rarity: "legendary", group: "space" },
+
+            // --- TV / Friends / Sitcoms ---
+            { id: "tv_newbie", title: "Channel Surfer", desc: "Play your first TV or Sitcom quiz.", rarity: "common", group: "tv" },
+            { id: "friends_fan", title: "Central Perk Regular", desc: "Finish a Friends quiz.", rarity: "common", group: "tv" },
+            { id: "friends_pro", title: "How You Doin'?", desc: "Get 20 Friends questions correct.", rarity: "rare", group: "tv" },
+            { id: "tbbt_fan", title: "Bazinga!", desc: "Finish a TBBT quiz.", rarity: "common", group: "tv" },
+            { id: "tbbt_pro", title: "Roommate Agreement", desc: "Get 20 TBBT questions correct.", rarity: "rare", group: "tv" },
+            { id: "sitcom_scholar", title: "Sitcom Scholar", desc: "Finish quizzes from 3 different sitcoms.", rarity: "epic", group: "tv" },
+
+            // --- Movies ---
+            { id: "movie_buff", title: "Movie Buff", desc: "Play 5 movie quizzes.", rarity: "common", group: "movies" },
+            { id: "cinephile", title: "Cinephile", desc: "Finish 20 movie quizzes.", rarity: "rare", group: "movies" },
+            { id: "quote_master", title: "Quote Master", desc: "Ace a movie quotes quiz.", rarity: "epic", group: "movies" },
+            { id: "franchise_fan", title: "Franchise Fan", desc: "Play quizzes from 3 different movie franchises.", rarity: "rare", group: "movies" },
+            { id: "cinema_brain", title: "Cinema Brain", desc: "Get 100 movie questions correct.", rarity: "epic", group: "movies" },
+
+            // --- Riddles & Puzzles ---
+            { id: "riddle_rookie", title: "Riddle Rookie", desc: "Solve your first riddle quiz.", rarity: "common", group: "puzzle" },
+            { id: "riddle_master", title: "Riddle Master", desc: "Solve 20 riddle questions correctly.", rarity: "rare", group: "puzzle" },
+            { id: "logic_lord", title: "Logic Lord", desc: "Beat a hard logic puzzle quiz.", rarity: "epic", group: "puzzle" },
+
+            // --- Daily / Missions ---
+            { id: "daily_1", title: "Daily Dabbler", desc: "Complete your first Daily Mission quiz.", rarity: "common", group: "daily" },
+            { id: "daily_7", title: "Weekly Warrior", desc: "Complete 7 Daily Missions.", rarity: "rare", group: "daily" },
+            { id: "daily_30", title: "Daily Devotion", desc: "Complete 30 Daily Missions.", rarity: "epic", group: "daily" },
+
+            // --- Social / Sharing (future use) ---
+            { id: "share_once", title: "Signal Booster", desc: "Share QuizRealm once with a friend.", rarity: "rare", group: "social" },
+            { id: "share_five", title: "Broadcasting Station", desc: "Share QuizRealm five times.", rarity: "epic", group: "social" },
+
+            // --- Hidden / Fun / Meta ---
+            { id: "secret_404", title: "Lost in the Realm", desc: "Encounter a hidden or broken link page.", rarity: "rare", group: "meta" },
+            { id: "secret_easter_egg", title: "Easter Egg Hunter", desc: "Discover a hidden message or easter egg.", rarity: "epic", group: "meta" },
+            { id: "night_session", title: "After Hours", desc: "Play quizzes between 2 AM and 4 AM.", rarity: "epic", group: "meta" },
+            { id: "category_hopper", title: "Category Hopper", desc: "Play 10 different categories in one day.", rarity: "epic", group: "general" },
+            { id: "all_rounder", title: "All-Rounder", desc: "Have at least one quiz completed in 10 different categories.", rarity: "legendary", group: "general" },
+            { id: "precision_player", title: "Precision Player", desc: "Answer exactly 50% of questions right in a quiz.", rarity: "rare", group: "meta" },
+            { id: "rage_quit", title: "Rage Quitter", desc: "Leave a quiz before answering any question.", rarity: "rare", group: "meta" },
+            { id: "returning_champion", title: "Returning Champion", desc: "Come back to QuizRealm after a 7 day break.", rarity: "rare", group: "meta" }
+        ];
+
+        // ==========================================
+        // 2. LOGIC & RENDERING
+        // ==========================================
+        const STORAGE_KEY = 'quizAchievements'; 
+        let currentFilter = 'all';
+
+        // Helper: Get Icon based on group
+        function getGroupIcon(group) {
+            const icons = {
+                general: 'fa-medal',
+                speed: 'fa-bolt',
+                science: 'fa-atom',
+                history: 'fa-landmark',
+                tech: 'fa-microchip',
+                geography: 'fa-globe-americas',
+                minigames: 'fa-gamepad',
+                score: 'fa-coins',
+                accuracy: 'fa-bullseye',
+                streaks: 'fa-fire',
+                space: 'fa-moon',
+                tv: 'fa-tv',
+                movies: 'fa-film',
+                puzzle: 'fa-puzzle-piece',
+                daily: 'fa-calendar-day',
+                social: 'fa-share-nodes',
+                meta: 'fa-star-half-alt'
+            };
+            return icons[group] || 'fa-star';
+        }
+
+        // Helper: Get Rarity Colors
+        function getRarityColor(rarity) {
+            const colors = {
+                common: 'text-slate-400',
+                rare: 'text-accentBlue',
+                epic: 'text-accentPurple',
+                legendary: 'text-accentGold'
+            };
+            return colors[rarity] || 'text-slate-400';
+        }
+
+        function saveUserProgress() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+            } catch (e) {
+                console.error("Could not save achievements", e);
+            }
+        }
+
+        // 1. Fetch User Data
+        function getUserProgress() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return {};
+            try {
+                const data = JSON.parse(raw);
+                if (Array.isArray(data)) {
+                    const obj = {};
+                    data.forEach(id => obj[id] = { unlocked: true, date: 'Unknown' });
+                    return obj;
+                }
+                return data;
+            } catch (e) {
+                console.error("Data Load Error", e);
+                return {};
+            }
+        }
+
+        let userProgress = getUserProgress();
+
+        // Global helpers so other pages can unlock achievements
+        window.unlockAchievement = function(id) {
+            const achievement = ACHIEVEMENTS.find(a => a.id === id);
+            if (!achievement) {
+                console.warn("Unknown achievement id:", id);
+                return;
+            }
+
+            const already = userProgress[id]?.unlocked;
+            if (already) return;
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+
+            userProgress[id] = {
+                unlocked: true,
+                date: dateStr
+            };
+
+            saveUserProgress();
+            renderStats();
+            filterGrid(currentFilter);
+            checkFeatured();
+            showAchievementToast(achievement);
+        };
+
+        window.hasAchievement = function(id) {
+            return !!(userProgress[id] && userProgress[id].unlocked);
+        };
+
+        // 2. Render Filters Sidebar
+        function renderFilters() {
+            const groups = {};
+            ACHIEVEMENTS.forEach(a => groups[a.group] = (groups[a.group] || 0) + 1);
+            
+            const container = document.getElementById('filterContainer');
+            container.innerHTML = `
+                <button onclick="filterGrid('all')" id="btn-all" class="w-full text-left px-3 py-2 rounded-lg text-sm transition flex justify-between items-center group active-filter mb-1">
+                    <span class="font-medium"><i class="fas fa-layer-group w-5 opacity-70"></i> All</span>
+                    <span class="text-[10px] bg-white/10 px-2 rounded-full">${ACHIEVEMENTS.length}</span>
+                </button>
+            `;
+
+            Object.keys(groups).forEach(g => {
+                const label = g.charAt(0).toUpperCase() + g.slice(1);
+                container.innerHTML += `
+                    <button onclick="filterGrid('${g}')" id="btn-${g}" class="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/5 transition flex justify-between items-center group mb-1 border border-transparent">
+                        <span class="font-medium"><i class="fas ${getGroupIcon(g)} w-5 opacity-70"></i> ${label}</span>
+                        <span class="text-[10px] bg-white/5 px-2 rounded-full">${groups[g]}</span>
+                    </button>
+                `;
+            });
+        }
+
+        // 3. Render Stats
+        function renderStats() {
+            const total = ACHIEVEMENTS.length;
+            const unlocked = Object.values(userProgress).filter(v => v.unlocked).length;
+            const pct = total > 0 ? Math.round((unlocked / total) * 100) : 0;
+
+            document.getElementById('totalCount').innerText = total;
+            document.getElementById('unlockedCount').innerText = unlocked;
+            document.getElementById('completionPercent').innerText = `${pct}%`;
+            document.getElementById('globalProgressBar').style.width = `${pct}%`;
+        }
+
+        // 4. Render Grid
+        window.filterGrid = function(group) {
+            currentFilter = group;
+
+            // Update Buttons
+            document.querySelectorAll('#filterContainer button').forEach(b => {
+                b.classList.remove('active-filter');
+                b.classList.add('text-slate-400');
+            });
+            const activeBtn = document.getElementById(`btn-${group}`);
+            if(activeBtn) {
+                activeBtn.classList.add('active-filter');
+                activeBtn.classList.remove('text-slate-400');
+            }
+
+            // Filter Data
+            const list = ACHIEVEMENTS.filter(a => group === 'all' || a.group === group);
+            const grid = document.getElementById('achGrid');
+            grid.innerHTML = '';
+
+            if(list.length === 0) {
+                document.getElementById('emptyState').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('emptyState').classList.add('hidden');
+
+            // Update Title
+            const titleLabel = group === 'all' ? 'All Achievements' : group.charAt(0).toUpperCase() + group.slice(1);
+            document.getElementById('gridTitle').innerHTML = `<i class="fas ${getGroupIcon(group)} text-accentBlue"></i> ${titleLabel}`;
+
+            // Create Cards
+            list.forEach((ach, i) => {
+                const isUnlocked = userProgress[ach.id]?.unlocked;
+                const unlockDate = userProgress[ach.id]?.date || '';
+                const delay = i * 50; 
+
+                const cardHtml = `
+                <div class="glass-panel rounded-xl p-4 flex gap-4 items-start group transition-all hover:-translate-y-1 duration-300 ${isUnlocked ? `card-${ach.rarity}` : 'border border-white/5 locked-state'}"
+                     style="animation: fadeIn 0.5s ease-out ${delay}ms forwards; opacity: 0">
+                    
+                    <div class="w-12 h-12 rounded-lg bg-black/40 border border-white/5 flex items-center justify-center flex-shrink-0">
+                        <i class="fas ${getGroupIcon(ach.group)} text-lg ${isUnlocked ? getRarityColor(ach.rarity) : 'text-slate-600'} ach-icon"></i>
+                    </div>
+
+                    <div class="flex-grow min-w-0">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-sm ${isUnlocked ? 'text-white' : 'text-slate-500'} truncate pr-2">${ach.title}</h4>
+                            ${isUnlocked ? 
+                                `<span class="text-[9px] font-bold uppercase ${getRarityColor(ach.rarity)} bg-white/5 px-1.5 py-0.5 rounded border border-white/5">${ach.rarity}</span>` : 
+                                '<i class="fas fa-lock text-slate-700 text-xs"></i>'}
+                        </div>
+                        
+                        <p class="text-xs text-slate-400 mt-1 mb-2 leading-relaxed line-clamp-2">${ach.desc}</p>
+                        
+                        <div class="flex justify-between items-center pt-2 border-t border-white/5">
+                            <span class="text-[10px] font-mono ${isUnlocked ? 'text-emerald-400' : 'text-slate-600'}">
+                                ${isUnlocked ? '<i class="fas fa-check"></i> UNLOCKED' : 'LOCKED'}
+                            </span>
+                            ${unlockDate ? `<span class="text-[9px] text-slate-500">${unlockDate}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                `;
+                grid.innerHTML += cardHtml;
+            });
+        }
+
+        // 5. Featured Logic (Find Rarest Unlocked)
+        function checkFeatured() {
+            const unlockedItems = ACHIEVEMENTS.filter(a => userProgress[a.id]?.unlocked);
+            
+            if(unlockedItems.length > 0) {
+                const priority = { legendary: 4, epic: 3, rare: 2, common: 1 };
+                unlockedItems.sort((a,b) => priority[b.rarity] - priority[a.rarity]);
+                
+                const feat = unlockedItems[0];
+                const section = document.getElementById('featuredAchievement');
+                section.classList.remove('hidden');
+                
+                document.getElementById('featTitle').innerText = feat.title;
+                document.getElementById('featDesc').innerText = feat.desc;
+                const d = userProgress[feat.id].date;
+                document.getElementById('featDate').innerText = d ? `Unlocked: ${d}` : 'Unlocked: Recent';
+            }
+        }
+
+        // Toast logic
+        function showAchievementToast(ach) {
+            const toast = document.getElementById('achievementToast');
+            if (!toast) return;
+
+            document.getElementById('toastTitle').innerText = ach.title;
+            document.getElementById('toastDesc').innerText = ach.desc;
+
+            toast.classList.remove('hidden');
+
+            clearTimeout(showAchievementToast._timeout);
+            showAchievementToast._timeout = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        // Debugging Tool
+        function resetProgress() {
+            if(confirm("Reset all achievements? This cannot be undone.")) {
+                localStorage.removeItem(STORAGE_KEY);
+                userProgress = {};
+                renderStats();
+                filterGrid('all');
+                document.getElementById('featuredAchievement').classList.add('hidden');
+            }
+        }
+
+        // Add CSS Animation manually for grid items
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        `;
+        document.head.appendChild(style);
+
+        // Init
+        renderFilters();
+        renderStats();
+        filterGrid('all');
+        checkFeatured();
+
+    </script>
+</body>
+</html>

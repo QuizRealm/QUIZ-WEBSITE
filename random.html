@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuizRealm • Random Picker</title>
+    <meta name="theme-color" content="#4f46e5">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="hangman.html" defer></script>
+    <script src="data.js" onerror="console.warn('data.js missing - using internal backup')"></script>
+    <script src="components.js" defer></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            dark: '#0f172a',
+                            primary: '#4f46e5', // Indigo 600
+                            accent: '#8b5cf6',  // Violet 500
+                            surface: 'rgba(30, 41, 59, 0.7)'
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 40px rgba(79, 70, 229, 0.4)',
+                        'card': '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)'
+                    }
+                }
+            }
+        }
+
+        
+    </script>
+
+    <style>
+        body {
+            background-color: #020617;
+            background-image: 
+                radial-gradient(circle at 0% 0%, #312e81 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, #4c1d95 0%, transparent 50%);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* --- THE SLOT MACHINE WINDOW --- */
+        .slot-window {
+            height: 120px; /* Exact height of one item */
+            overflow: hidden;
+            position: relative;
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Shadows to create depth/curve effect */
+        .slot-window::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30px;
+            background: linear-gradient(to bottom, #0f172a 0%, transparent 100%);
+            z-index: 2; pointer-events: none;
+        }
+        .slot-window::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 30px;
+            background: linear-gradient(to top, #0f172a 0%, transparent 100%);
+            z-index: 2; pointer-events: none;
+        }
+
+        /* The moving strip */
+        .slot-strip {
+            display: flex;
+            flex-direction: column;
+            transition: transform 3s cubic-bezier(0.15, 0.9, 0.3, 1); /* The "Ease Out" spin effect */
+        }
+
+        /* Individual Items */
+        .slot-item {
+            height: 120px; /* Must match window height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            flex-shrink: 0;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        
+        /* The Winner */
+        .slot-item.active {
+            opacity: 1;
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        /* --- BUTTONS --- */
+        .btn-modern {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-modern:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
+            filter: brightness(1.1);
+        }
+        .btn-modern:disabled {
+            filter: grayscale(1);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* --- NAVIGATION --- */
+        .nav-link {
+            padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; color: #94a3b8; transition: 0.2s;
+        }
+        .nav-link:hover, .nav-link.active { color: white; background: rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+    <nav class="sticky top-0 z-50 backdrop-blur-xl bg-slate-900/80 border-b border-white/5">
+        
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                    <i class="fas fa-bolt text-sm"></i>
+                </div>
+                <span>Quiz<span class="text-indigo-400">Realm</span></span>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-2">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="categories.html" class="nav-link">Categories</a>
+                <a href="random.html" class="nav-link active">Random</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center p-6 relative">
+        
+        <div class="absolute top-20 left-10 w-64 h-64 bg-indigo-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-20 right-10 w-64 h-64 bg-purple-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="max-w-md w-full relative z-10">
+            
+            <div class="text-center mb-8">
+                <span class="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-3">
+                    <i class="fas fa-shuffle mr-1"></i> Randomizer
+                </span>
+                <h1 class="text-4xl font-extrabold text-white mb-2 leading-tight">Pick a Category</h1>
+                <p class="text-slate-400">Can't decide? Let the algorithm choose for you.</p>
+            </div>
+
+            <div class="bg-brand-surface backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/10 shadow-glow">
+                
+                <div class="flex justify-between text-indigo-400 text-xl mb-[-10px] relative z-20 px-4">
+                    <i class="fas fa-caret-down"></i>
+                    <i class="fas fa-caret-down"></i>
+                </div>
+
+                <div class="slot-window mb-8" id="slotWindow">
+                    <div class="slot-strip" id="slotStrip">
+                        </div>
+                </div>
+
+                <button id="spinBtn" class="btn-modern w-full flex items-center justify-center gap-3 text-lg mb-4">
+                    <i class="fas fa-dice-five"></i> SPIN THE WHEEL
+                </button>
+
+                <div id="resultAction" class="hidden animate-fade-in-up">
+                    <button id="playBtn" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
+                        <i class="fas fa-play"></i> START QUIZ
+                    </button>
+                    <p class="text-center text-xs text-slate-500 mt-3">Selection locked.</p>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // --- CONFIGURATION ---
+        const ITEM_HEIGHT = 120; // Must match CSS .slot-item height
+        const SPINS_MULTIPLIER = 5; // How many full loops before stopping
+
+        // --- DATA PREPARATION ---
+        let categories = [];
+        
+        // 1. Load Data with Fallback
+        (function initData() {
+            if (typeof CATEGORY_CONFIG === "undefined") {
+                // Default fallback if data.js fails
+                const defaults = ["science", "history", "movies", "tech", "geography", "music", "literature", "sports"];
+                categories = defaults.map(key => ({
+                    key: key,
+                    label: key.charAt(0).toUpperCase() + key.slice(1),
+                    icon: "🎲",
+                    color: "text-indigo-400"
+                }));
+            } else {
+                // Use data.js
+                categories = Object.entries(CATEGORY_CONFIG).map(([key, val]) => ({
+                    key: key,
+                    label: val.label,
+                    icon: val.icon || "❓",
+                    color: "text-white"
+                }));
+            }
+        })();
+
+        // --- DOM ELEMENTS ---
+        const strip = document.getElementById('slotStrip');
+        const spinBtn = document.getElementById('spinBtn');
+        const resultAction = document.getElementById('resultAction');
+        const playBtn = document.getElementById('playBtn');
+
+        // --- RENDER STRIP ---
+        // We create a visual strip that repeats the list multiple times to simulate infinite scrolling
+        // Sequence: [List] [List] [List] ... [Target List]
+        // We spin to a specific index in the middle of this massive list.
+        
+        let visualList = [];
+        const REPEATS = 20; // Make strip very long
+
+        function renderStrip() {
+            let html = '';
+            for(let i=0; i < REPEATS; i++) {
+                categories.forEach(cat => {
+                    html += `
+                    <div class="slot-item">
+                        <div class="text-4xl mb-1">${cat.icon}</div>
+                        <div class="font-bold text-xl ${cat.color}">${cat.label}</div>
+                    </div>`;
+                    visualList.push(cat);
+                });
+            }
+            strip.innerHTML = html;
+        }
+
+        renderStrip();
+
+        // --- SPIN LOGIC ---
+        let isSpinning = false;
+        let currentTarget = null;
+
+        spinBtn.addEventListener('click', () => {
+            if(isSpinning) return;
+            isSpinning = true;
+
+            // Reset UI
+            resultAction.classList.add('hidden');
+            spinBtn.disabled = true;
+            spinBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> SPINNING...';
+            
+            // Remove previous active highlights
+            document.querySelectorAll('.slot-item').forEach(el => el.classList.remove('active'));
+
+            // 1. Pick a Winner
+            const randomIndex = Math.floor(Math.random() * categories.length);
+            currentTarget = categories[randomIndex];
+
+            // 2. Calculate Position
+            // We want to land on the item somewhere deep in the list (e.g., the 15th repetition)
+            // so the animation has plenty of time to run.
+            const targetSet = 15; // Land in the 15th set of items
+            const finalIndex = (targetSet * categories.length) + randomIndex;
+            
+            // 3. Pixel Math
+            const pixelOffset = finalIndex * ITEM_HEIGHT;
+            
+            // 4. Apply CSS Transform
+            strip.style.transition = "transform 3.5s cubic-bezier(0.15, 0.9, 0.3, 1)";
+            strip.style.transform = `translateY(-${pixelOffset}px)`;
+
+            // 5. Cleanup after animation
+            setTimeout(() => {
+                finishSpin(finalIndex);
+            }, 3500); // Match CSS transition time
+        });
+
+        function finishSpin(finalIndex) {
+            isSpinning = false;
+            
+            // Highlight the winner visually
+            const allItems = document.querySelectorAll('.slot-item');
+            if(allItems[finalIndex]) {
+                allItems[finalIndex].classList.add('active');
+            }
+
+            // Update Buttons
+            spinBtn.disabled = false;
+            spinBtn.innerHTML = '<i class="fas fa-rotate-right"></i> SPIN AGAIN';
+            spinBtn.classList.remove('btn-modern'); // Downgrade spin button visual priority
+            spinBtn.classList.add('btn-secondary', 'text-sm', 'py-2');
+
+            // Show Play Button
+            resultAction.classList.remove('hidden');
+            resultAction.classList.add('flex', 'flex-col');
+            
+            // Add Confetti (Simple version)
+            triggerConfetti();
+        }
+
+        playBtn.addEventListener('click', () => {
+            if(!currentTarget) return;
+            playBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> LOADING...';
+            setTimeout(() => {
+                window.location.href = `mode.html?category=${currentTarget.key}`;
+            }, 500);
+        });
+
+        // --- UTILS ---
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        function triggerConfetti() {
+            // A simple CSS animation effect could be added here, 
+            // but for simplicity we'll just flash the border
+            const card = document.querySelector('.bg-brand-surface');
+            card.style.borderColor = '#10b981'; // Green flash
+            setTimeout(() => {
+                card.style.borderColor = 'rgba(255,255,255,0.1)';
+            }, 500);
+        }
+
+    </script>
+</body>
+</html>

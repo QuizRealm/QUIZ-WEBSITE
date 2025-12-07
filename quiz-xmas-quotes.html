@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impossible Christmas Movie Quotes Quiz | QuizRealm</title>
+    <meta name="description" content="Can you identify the movie from a single line? Test your knowledge on quotes from Elf, Home Alone, Die Hard, and A Christmas Story.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="components.js" defer></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'], arcade: ['Bungee', 'cursive'], mono: ['Share Tech Mono', 'monospace'] },
+                    colors: { xmasRed: '#7f1d1d', bgDark: '#0A0F1E' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #020617; background-image: radial-gradient(circle at 50% 0%, #450a0a, #020617 80%); min-height: 100vh; color: #e2e8f0; }
+        .quote-card { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    </style>
+</head>
+<body class="flex flex-col antialiased">
+    <quiz-header></quiz-header>
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-8">
+        
+        <div class="max-w-2xl mx-auto mb-24">
+            <div class="mb-6">
+                <div class="flex justify-between text-xs text-red-300 mb-1 uppercase tracking-widest font-bold">
+                    <span>Mission Progress</span>
+                    <span id="progressText">1 / 10</span>
+                </div>
+                <div class="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                    <div id="progressBar" class="h-full bg-red-500 transition-all duration-300" style="width: 10%"></div>
+                </div>
+            </div>
+            <div id="quizCard" class="quote-card rounded-2xl p-6 md:p-10 shadow-2xl shadow-red-900/20 relative overflow-hidden">
+                <div class="absolute -top-6 -right-6 text-9xl text-white/5 rotate-12"><i class="fas fa-quote-right"></i></div>
+                <div class="relative z-10 text-center mb-8">
+                    <span class="inline-block bg-red-900/50 text-red-300 border border-red-500/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4">Identify The Movie</span>
+                    <h2 class="font-serif italic text-2xl md:text-3xl text-white leading-relaxed" id="questionText">"Loading question..."</h2>
+                </div>
+                <div class="grid grid-cols-1 gap-3 relative z-10" id="optionsGrid"></div>
+                <div id="feedback" class="hidden mt-4 text-center font-bold text-lg animate-bounce"></div>
+                <button id="nextBtn" onclick="nextQuestion()" class="hidden w-full mt-6 bg-white text-red-900 font-bold py-3 rounded-xl hover:bg-slate-200 transition-colors shadow-lg">NEXT QUOTE <i class="fas fa-arrow-right ml-2"></i></button>
+            </div>
+            <div id="resultsCard" class="hidden quote-card rounded-2xl p-8 text-center">
+                <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center text-3xl text-white mx-auto mb-4 shadow-lg shadow-red-500/50"><i class="fas fa-trophy"></i></div>
+                <h2 class="font-arcade text-3xl text-white mb-2">Mission Complete</h2>
+                <p class="text-slate-400 mb-6">You scored <span id="finalScore" class="text-red-400 font-bold text-xl">0</span> out of 10</p>
+                <div class="flex flex-col gap-3">
+                    <button onclick="location.reload()" class="w-full py-3 rounded-xl border border-white/20 text-white hover:bg-white/5 transition">Try Again</button>
+                    <a href="christmas-hub.html" class="w-full py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-500 transition shadow-lg shadow-red-900/40">Return to Holiday Hub</a>
+                </div>
+            </div>
+        </div>
+
+        <article class="max-w-3xl mx-auto border-t border-white/10 pt-16">
+            <header class="mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">The Art of the Holiday One-Liner: Why We Can't Stop Quoting Christmas Movies</h1>
+                <p class="text-slate-400 text-lg leading-relaxed">
+                    From the heartfelt monologues of <em>It's a Wonderful Life</em> to the slapstick screaming of <em>Home Alone</em>, Christmas movies have contributed more to our cultural vocabulary than almost any other genre. But why do these specific lines stick with us decades later?
+                </p>
+            </header>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white/5 p-6 rounded-xl border border-white/5">
+                    <h3 class="text-red-400 font-bold uppercase tracking-widest text-xs mb-3">Nostalgia Trigger</h3>
+                    <p class="text-slate-300 text-sm">
+                        Psychologists suggest that holiday quotes act as "verbal anchors." Hearing "You'll shoot your eye out" instantly transports the brain back to childhood living rooms, triggering a dopamine release associated with safety and tradition.
+                    </p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-xl border border-white/5">
+                    <h3 class="text-red-400 font-bold uppercase tracking-widest text-xs mb-3">Shared Language</h3>
+                    <p class="text-slate-300 text-sm">
+                        Quoting <em>Elf</em> ("Cotton headed ninny muggins") or <em>Christmas Vacation</em> ("Shitter was full") acts as a social glue. It proves you are part of the "in-group" that understands the cultural reference, bonding families together.
+                    </p>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold text-white mb-6">The Most Misquoted Holiday Lines</h2>
+            <div class="space-y-4 mb-12">
+                <div class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded bg-red-900/30 flex items-center justify-center text-red-500 font-bold">1</div>
+                    <div>
+                        <h4 class="text-white font-bold">"Merry Christmas, ya filthy animal"</h4>
+                        <p class="text-slate-400 text-sm">Often attributed to an old gangster movie, this line was actually written specifically for <em>Home Alone</em>. The movie "Angels with Filthy Souls" doesn't exist outside of the Macaulay Culkin classic.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded bg-red-900/30 flex items-center justify-center text-red-500 font-bold">2</div>
+                    <div>
+                        <h4 class="text-white font-bold">"Teacher says, every time a bell rings..."</h4>
+                        <p class="text-slate-400 text-sm">From <em>It's a Wonderful Life</em>. While widely quoted, many forget it was spoken by Zuzu Bailey, symbolizing the climax of George Bailey's redemption arc.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/50 p-8 rounded-2xl border border-white/5">
+                <h2 class="text-xl font-bold text-white mb-4">Frequently Asked Questions</h2>
+                <div class="space-y-4">
+                    <details class="group">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-slate-300 hover:text-white">
+                            <span>What is the most quoted Christmas movie of all time?</span>
+                            <span class="transition group-open:rotate-180"><i class="fas fa-chevron-down"></i></span>
+                        </summary>
+                        <p class="text-slate-400 text-sm mt-3 group-open:animate-fadeIn">
+                            According to polls, <strong>National Lampoon's Christmas Vacation</strong> and <strong>Elf</strong> are virtually tied for the top spot, thanks to their highly memorable, humorous scripts.
+                        </p>
+                    </details>
+                    <details class="group border-t border-white/5 pt-4">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-slate-300 hover:text-white">
+                            <span>Is Die Hard actually a Christmas movie?</span>
+                            <span class="transition group-open:rotate-180"><i class="fas fa-chevron-down"></i></span>
+                        </summary>
+                        <p class="text-slate-400 text-sm mt-3 group-open:animate-fadeIn">
+                            Yes. The director John McTiernan confirmed it. The plot relies entirely on the office Christmas party, it features 4 holiday songs, and explores themes of family reconciliation.
+                        </p>
+                    </details>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <p class="text-slate-500 text-sm mb-4">Want to test more skills?</p>
+                <a href="christmas-hub.html" class="inline-flex items-center gap-2 text-red-400 hover:text-red-300 font-bold tracking-wide transition">
+                    <i class="fas fa-arrow-left"></i> RETURN TO THE ARCHIVES
+                </a>
+            </div>
+        </article>
+    </main>
+    <script>
+    // === THE DATA ===
+    // Master pool of quotes (10 original + 50 new = 60)
+    const allQuestions = [
+        // --- ORIGINAL 10 ---
+        {
+            q: "You'll shoot your eye out!",
+            options: ["Elf", "A Christmas Story", "Home Alone", "The Santa Clause"],
+            a: 1
+        },
+        {
+            q: "Merry Christmas, ya filthy animal.",
+            options: ["Home Alone", "Home Alone 2: Lost in New York", "Bad Santa", "Scrooged"],
+            a: 1 // Iconic to HA2
+        },
+        {
+            q: "Seeing is believing, but sometimes the most real things in the world are the things we can't see.",
+            options: ["The Polar Express", "Miracle on 34th Street", "Klaus", "Arthur Christmas"],
+            a: 0
+        },
+        {
+            q: "It's a beaut, Clark! It's a beaut!",
+            options: ["Christmas with the Kranks", "Deck the Halls", "National Lampoon's Christmas Vacation", "Jingle All The Way"],
+            a: 2
+        },
+        {
+            q: "The best way to spread Christmas cheer is singing loud for all to hear.",
+            options: ["Fred Claus", "Elf", "Noelle", "Rudolph"],
+            a: 1
+        },
+        {
+            q: "Every time a bell rings, an angel gets his wings.",
+            options: ["White Christmas", "It's a Wonderful Life", "A Christmas Carol", "Holiday Inn"],
+            a: 1
+        },
+        {
+            q: "Put that cookie down! NOW!",
+            options: ["The Santa Clause", "Jingle All The Way", "Elf", "Bad Santa"],
+            a: 1
+        },
+        {
+            q: "We're your worst nightmare... Elves with attitude.",
+            options: ["The Santa Clause", "Fred Claus", "The Christmas Chronicles", "Elf"],
+            a: 0
+        },
+        {
+            q: "Just because I cannot see it, doesn't mean I can't believe it!",
+            options: ["The Nightmare Before Christmas", "Miracle on 34th Street", "Jack Frost", "How the Grinch Stole Christmas"],
+            a: 0
+        },
+        {
+            q: "Blast this Christmas music. It’s joyful and triumphant.",
+            options: ["Scrooged", "How the Grinch Stole Christmas (2000)", "Bad Santa", "Violent Night"],
+            a: 1
+        },
+
+        // --- 50 NEW QUESTIONS ---
+        {
+            q: "Now I have a machine gun. Ho-ho-ho.",
+            options: ["Die Hard", "Lethal Weapon", "Die Hard 2", "Batman Returns"],
+            a: 0
+        },
+        {
+            q: "Welcome to the party, pal.",
+            options: ["Die Hard", "Die Hard 2", "The Long Kiss Goodnight", "Gremlins"],
+            a: 0
+        },
+        {
+            q: "Yippee-ki-yay, mother—",
+            options: ["Die Hard", "Lethal Weapon", "Die Hard with a Vengeance", "The Last Boy Scout"],
+            a: 0
+        },
+        {
+            q: "Isn't that what Christmas is all about, Charlie Brown?",
+            options: ["A Charlie Brown Christmas", "Frosty the Snowman", "Rudolph the Red-Nosed Reindeer", "The Grinch"],
+            a: 0
+        },
+        {
+            q: "I never thought it was such a bad little tree.",
+            options: ["A Charlie Brown Christmas", "How the Grinch Stole Christmas", "The Polar Express", "Arthur Christmas"],
+            a: 0
+        },
+        {
+            q: "God bless us, everyone!",
+            options: ["A Christmas Carol", "It's a Wonderful Life", "The Muppet Christmas Carol", "Scrooged"],
+            a: 0
+        },
+        {
+            q: "Seeing is believing, and believing is seeing, kids.",
+            options: ["The Santa Clause", "Miracle on 34th Street", "The Polar Express", "Klaus"],
+            a: 0
+        },
+        {
+            q: "Christmas isn't just a day, it's a frame of mind.",
+            options: ["Miracle on 34th Street", "The Holiday", "White Christmas", "Holiday Inn"],
+            a: 0
+        },
+        {
+            q: "Just remember, the true spirit of Christmas lies in your heart.",
+            options: ["The Polar Express", "Klaus", "Arthur Christmas", "The Santa Clause"],
+            a: 0
+        },
+        {
+            q: "The thing about trains... it doesn't matter where they're going.",
+            options: ["The Polar Express", "Snowpiercer", "Arthur Christmas", "Frozen"],
+            a: 0
+        },
+        {
+            q: "Look, Daddy. Teacher says, every time a bell rings—",
+            options: ["It's a Wonderful Life", "A Christmas Carol", "White Christmas", "Holiday Inn"],
+            a: 0
+        },
+        {
+            q: "Keep the change, ya filthy animal.",
+            options: ["Home Alone", "Home Alone 2: Lost in New York", "Bad Santa", "Gremlins"],
+            a: 0
+        },
+        {
+            q: "Guys, I'm eating junk and watching rubbish! You better come out and stop me!",
+            options: ["Home Alone", "Home Alone 2: Lost in New York", "The Santa Clause", "Deck the Halls"],
+            a: 0
+        },
+        {
+            q: "I made my family disappear.",
+            options: ["Home Alone", "Home Alone 2: Lost in New York", "The Grinch", "Fred Claus"],
+            a: 0
+        },
+        {
+            q: "Buzz, your girlfriend. Woof!",
+            options: ["Home Alone", "Home Alone 2: Lost in New York", "Jingle All the Way", "Christmas with the Kranks"],
+            a: 0
+        },
+        {
+            q: "The building is on fire, and it's not my fault.",
+            options: ["The Santa Clause", "Jingle All the Way", "Deck the Halls", "Christmas Vacation"],
+            a: 0
+        },
+        {
+            q: "Son of a nutcracker!",
+            options: ["Elf", "Fred Claus", "The Santa Clause", "The Grinch"],
+            a: 0
+        },
+        {
+            q: "I just like to smile. Smiling's my favorite.",
+            options: ["Elf", "The Grinch", "Arthur Christmas", "Klaus"],
+            a: 0
+        },
+        {
+            q: "You sit on a throne of lies.",
+            options: ["Elf", "Bad Santa", "The Night Before", "The Santa Clause"],
+            a: 0
+        },
+        {
+            q: "Cotton-headed ninny muggins.",
+            options: ["Elf", "The Grinch", "Fred Claus", "Arthur Christmas"],
+            a: 0
+        },
+        {
+            q: "Seeing isn't believing, believing is seeing.",
+            options: ["The Santa Clause", "Miracle on 34th Street", "The Polar Express", "Klaus"],
+            a: 0
+        },
+        {
+            q: "Love actually is all around.",
+            options: ["Love Actually", "The Holiday", "Bridget Jones's Diary", "Four Christmases"],
+            a: 0
+        },
+        {
+            q: "To me, you are perfect.",
+            options: ["Love Actually", "The Holiday", "Last Christmas", "Serendipity"],
+            a: 0
+        },
+        {
+            q: "At Christmas, you tell the truth.",
+            options: ["Love Actually", "The Holiday", "The Family Stone", "The Best Man Holiday"],
+            a: 0
+        },
+        {
+            q: "Christmas was on its way. Lovely, glorious, beautiful Christmas.",
+            options: ["A Christmas Story", "The Polar Express", "White Christmas", "Klaus"],
+            a: 0
+        },
+        {
+            q: "Maybe Christmas doesn't come from a store.",
+            options: ["How the Grinch Stole Christmas", "Klaus", "Arthur Christmas", "The Santa Clause"],
+            a: 0
+        },
+        {
+            q: "Maybe Christmas… perhaps… means a little bit more.",
+            options: ["How the Grinch Stole Christmas", "Klaus", "Arthur Christmas", "The Santa Clause"],
+            a: 0
+        },
+        {
+            q: "Am I just eating because I'm bored?",
+            options: ["How the Grinch Stole Christmas (2000)", "Elf", "The Santa Clause", "Bad Santa"],
+            a: 0
+        },
+        {
+            q: "Nobody's walking out on this fun, old-fashioned family Christmas.",
+            options: ["National Lampoon's Christmas Vacation", "Christmas with the Kranks", "Deck the Halls", "Four Christmases"],
+            a: 0
+        },
+        {
+            q: "Where do you think you're going? Nobody's leaving.",
+            options: ["National Lampoon's Christmas Vacation", "Christmas with the Kranks", "Deck the Halls", "Fred Claus"],
+            a: 0
+        },
+        {
+            q: "Can I refill your eggnog for you?",
+            options: ["National Lampoon's Christmas Vacation", "The Santa Clause", "Deck the Halls", "Four Christmases"],
+            a: 0
+        },
+        {
+            q: "Clark, stop. I don't want to spend the holidays dead.",
+            options: ["National Lampoon's Christmas Vacation", "Christmas with the Kranks", "Deck the Halls", "Scrooged"],
+            a: 0
+        },
+        {
+            q: "Every time Catherine revved up the microwave, I'd piss my pants.",
+            options: ["National Lampoon's Christmas Vacation", "Christmas with the Kranks", "Bad Santa", "Scrooged"],
+            a: 0
+        },
+        {
+            q: "Grace? She died thirty years ago.",
+            options: ["National Lampoon's Christmas Vacation", "Scrooged", "The Muppet Christmas Carol", "A Christmas Story"],
+            a: 1
+        },
+        {
+            q: "Hey! If any of you are in the market for a cassette player...",
+            options: ["National Lampoon's Christmas Vacation", "Jingle All the Way", "Deck the Halls", "Bad Santa"],
+            a: 0
+        },
+        {
+            q: "The best present is just being with you.",
+            options: ["The Holiday", "Love Actually", "The Family Stone", "Last Christmas"],
+            a: 0
+        },
+        {
+            q: "There's children throwing snowballs instead of throwing heads.",
+            options: ["The Nightmare Before Christmas", "Gremlins", "Klaus", "Arthur Christmas"],
+            a: 0
+        },
+        {
+            q: "There's frost on every window. Oh, I can't believe my eyes.",
+            options: ["The Nightmare Before Christmas", "Klaus", "Arthur Christmas", "The Polar Express"],
+            a: 0
+        },
+        {
+            q: "There's a certain magic that comes with the first snow.",
+            options: ["Frosty the Snowman", "Frozen", "Arthur Christmas", "The Polar Express"],
+            a: 0
+        },
+        {
+            q: "First we'll make snow angels for two hours.",
+            options: ["Elf", "Frozen", "Arthur Christmas", "The Polar Express"],
+            a: 0
+        },
+        {
+            q: "Then we'll go ice skating.",
+            options: ["Elf", "Frozen", "The Holiday", "The Santa Clause"],
+            a: 0
+        },
+        {
+            q: "We'll eat a whole roll of Toll House cookie dough.",
+            options: ["Elf", "The Santa Clause", "Jingle All the Way", "Christmas with the Kranks"],
+            a: 0
+        },
+        {
+            q: "And then we'll snuggle.",
+            options: ["Elf", "The Holiday", "Love Actually", "Last Christmas"],
+            a: 0
+        },
+        {
+            q: "What's this? What's this? There's color everywhere.",
+            options: ["The Nightmare Before Christmas", "Klaus", "Arthur Christmas", "Frozen"],
+            a: 0
+        },
+        {
+            q: "They say Christmas is a time for miracles.",
+            options: ["Miracle on 34th Street", "The Ref", "Klaus", "Last Christmas"],
+            a: 0
+        },
+        {
+            q: "Faith is believing in things when common sense tells you not to.",
+            options: ["Miracle on 34th Street", "The Santa Clause", "The Polar Express", "Klaus"],
+            a: 0
+        },
+        {
+            q: "Christmas isn't a toy or a gadget; it's a feeling.",
+            options: ["The Santa Clause", "Arthur Christmas", "Klaus", "The Polar Express"],
+            a: 0
+        },
+        {
+            q: "Some people are worth melting for.",
+            options: ["Frozen", "The Polar Express", "Klaus", "Arthur Christmas"],
+            a: 0
+        },
+        {
+            q: "Do you want to build a snowman?",
+            options: ["Frozen", "The Polar Express", "Klaus", "Arthur Christmas"],
+            a: 0
+        },
+        {
+            q: "This is Christmas. The season of perpetual hope.",
+            options: ["Home Alone", "Home Alone 2: Lost in New York", "The Santa Clause", "Elf"],
+            a: 0
+        }
+    ];
+
+    const TOTAL_QUESTIONS = 10; // always play 10, picked randomly from the pool
+
+    let currentIdx = 0;
+    let score = 0;
+    let isLocked = false;
+    let quizQuestions = [];
+
+    const ui = {
+        card: document.getElementById('quizCard'),
+        results: document.getElementById('resultsCard'),
+        question: document.getElementById('questionText'),
+        options: document.getElementById('optionsGrid'),
+        progressText: document.getElementById('progressText'),
+        progressBar: document.getElementById('progressBar'),
+        nextBtn: document.getElementById('nextBtn'),
+        feedback: document.getElementById('feedback')
+    };
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function startQuiz() {
+        const pool = [...allQuestions];
+        shuffle(pool);
+        quizQuestions = pool.slice(0, TOTAL_QUESTIONS); // random 10
+        currentIdx = 0;
+        score = 0;
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        isLocked = false;
+        const data = quizQuestions[currentIdx];
+
+        // Update UI
+        ui.question.textContent = `"${data.q}"`;
+        ui.progressText.textContent = `${currentIdx + 1} / ${TOTAL_QUESTIONS}`;
+        ui.progressBar.style.width = `${((currentIdx + 1) / TOTAL_QUESTIONS) * 100}%`;
+
+        // Reset state
+        ui.options.innerHTML = '';
+        ui.nextBtn.classList.add('hidden');
+        ui.feedback.classList.add('hidden');
+        ui.feedback.className = 'hidden mt-4 text-center font-bold text-lg animate-bounce';
+
+        // Create buttons
+        data.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = "w-full text-left p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-slate-200 font-medium";
+            btn.textContent = opt;
+            btn.onclick = () => checkAnswer(btn, index, data.a);
+            ui.options.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(btn, selectedIdx, correctIdx) {
+        if (isLocked) return;
+        isLocked = true;
+
+        const buttons = ui.options.querySelectorAll('button');
+
+        if (selectedIdx === correctIdx) {
+            btn.className = "w-full text-left p-4 rounded-xl border border-green-500 bg-green-500/20 text-white font-bold shadow-[0_0_15px_rgba(34,197,94,0.4)]";
+            ui.feedback.textContent = "Correct! 🎬";
+            ui.feedback.classList.add('text-green-400');
+            score++;
+        } else {
+            btn.className = "w-full text-left p-4 rounded-xl border border-red-500 bg-red-500/20 text-white font-bold";
+            ui.card.classList.add('shake');
+            setTimeout(() => ui.card.classList.remove('shake'), 500);
+
+            buttons[correctIdx].className = "w-full text-left p-4 rounded-xl border border-green-500 bg-green-500/20 text-white opacity-70";
+
+            ui.feedback.textContent = "Wrong! It was " + quizQuestions[currentIdx].options[correctIdx];
+            ui.feedback.classList.add('text-red-400');
+        }
+
+        ui.feedback.classList.remove('hidden');
+        ui.nextBtn.classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+        currentIdx++;
+        if (currentIdx < TOTAL_QUESTIONS) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        ui.card.classList.add('hidden');
+        ui.results.classList.remove('hidden');
+        document.getElementById('finalScore').textContent = score;
+    }
+
+    // Start the randomised quiz
+    startQuiz();
+</script>

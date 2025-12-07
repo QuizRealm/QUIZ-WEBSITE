@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <title>QuizRealm • Free Online Trivia, Quiz Games & Fun Categories</title>
+    <meta name="description" content="Play free online trivia on QuizRealm. Test yourself with daily quizzes, TV & movie questions, science, history, geography, minigames and more.">
+    <meta name="theme-color" content="#0A0F1E">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+    <script src="data.js"></script>
+    <script src="facts.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'], arcade: ['Bungee', 'cursive'], mono: ['Share Tech Mono', 'monospace'] },
+                    colors: { bgDark: '#0A0F1E', bgDarker: '#050810', accentBlue: '#3b82f6', accentCyan: '#06b6d4', accentGreen: '#10b981', accentOrange: '#f97316', accentPurple: '#a855f7', accentPink: '#f43f5e', accentGold: '#fbbf24', accentRed: '#ef4444', glass: 'rgba(30, 41, 59, 0.6)' },
+                    animation: { 'marquee': 'marquee 25s linear infinite', 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
+                    keyframes: { marquee: { '0%': { transform: 'translateX(100%)' }, '100%': { transform: 'translateX(-100%)' } } }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: var(--bgDarker); background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #050810 80%); min-height: 100vh; color: #e2e8f0; overflow-x: hidden; }
+        .glass-panel { background: var(--glass); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); }
+        .cat-card-mini { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 2/3; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease; background-size: cover; background-position: center; }
+        .cat-card-mini:hover { transform: translateY(-4px) scale(1.05); border-color: #3b82f6; z-index: 10; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3); }
+        .cat-mini-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; }
+        .ops-card-small { position: relative; overflow: hidden; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); height: 160px; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.3); }
+        .ops-card-small:hover { border-color: var(--accent-color); background: linear-gradient(145deg, rgba(255,255,255,0.05), transparent); transform: translateY(-2px); }
+        .ops-icon-bg { position: absolute; top: 10px; right: 10px; font-size: 5rem; opacity: 0.15; transition: transform 0.5s ease-out; }
+        .ops-card-small:hover .ops-icon-bg { transform: scale(1.1) rotate(5deg); }
+        .qf-btn { text-align: left; padding: 10px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; transition: all 0.2s; font-size: 12px; color: #cbd5e1; width: 100%; }
+        .qf-btn:hover:not(:disabled) { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: white; transform: translateX(2px); }
+        .qf-btn.correct { background: rgba(16, 185, 129, 0.2) !important; border-color: #10b981 !important; color: #10b981 !important; }
+        .qf-btn.wrong { background: rgba(239, 68, 68, 0.2) !important; border-color: #ef4444 !important; color: #ef4444 !important; opacity: 0.5; }
+    </style>
+</head>
+<body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
+
+    <quiz-home-header></quiz-home-header>
+
+    <main class="flex-grow px-4 md:py-6 max-w-[1400px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
+
+        <div class="lg:col-span-9 space-y-8">
+
+            <section class="mt-3 mb-6">
+                <div class="relative w-full h-[380px] sm:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 group isolate">
+                    
+                    <div class="absolute inset-0 z-0">
+                    <img src="assets/Main.webp" alt="QuizRealm" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[4000ms] ease-out group-hover:scale-110">
+                    </div>
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10"></div>
+
+                    <div class="absolute inset-0 z-20 flex flex-col justify-end gap-4 px-4 py-5 sm:px-6 md:px-10 pb-8 sm:pb-10">
+                    
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#22c55e]"></span>
+                        <span class="text-green-300 text-[10px] font-bold tracking-widest uppercase">Play instantly • No signup</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight tracking-tight drop-shadow-xl">Free Online Trivia, Quiz Games &amp; Fun Categories</h1>
+                        <p class="mt-2 text-xs sm:text-sm text-slate-200 max-w-xl">Jump into quick quizzes across TV &amp; movies, science, history, geography and more — built to feel fast and smooth on your phone.</p>
+                    </div>
+
+                    <div class="mt-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 max-w-md">
+                        <a href="categories.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-8 py-3.5 sm:px-10 sm:py-5 rounded-2xl bg-gradient-to-r from-blue-400 to-cyan-300 text-black font-black text-sm sm:text-base tracking-wide shadow-[0_0_30px_rgba(56,189,248,0.6)] hover:shadow-[0_0_40px_rgba(56,189,248,0.8)] hover:translate-y-[1px] active:translate-y-0 transition-all">
+                        <i class="fas fa-layer-group text-sm"></i>
+                        <span>Browse Categories <span class="block text-[15px] font-semibold text-black/70 leading-tight">Start here</span></span>
+                        </a>
+                        <a href="quiz.html?mode=daily" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/25 text-white font-semibold text-xs sm:text-sm hover:bg-white/20 hover:border-white/40 transition"><i class="fas fa-play text-xs"></i> Daily Quiz</a>
+                        <a href="random.html" class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/10 border border-white/25 text-slate-200 hover:bg-white/20 hover:text-white transition" title="Random quiz"><i class="fas fa-dice text-base"></i></a>
+                    </div>
+
+                    </div>
+                </div>
+                
+                <div class="mt-3 flex justify-center">
+                    <div class="flex flex-col items-center text-[10px] text-slate-400 animate-bounce">
+                    <span class="uppercase tracking-[0.18em] mb-1">Scroll for games</span>
+                    <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+                </section>
+
+            <section>
+                <div class="flex items-center justify-between mb-4 border-b border-white/5 pb-2"><h2 class="text-sm font-bold text-white flex items-center gap-2"><i class="fas fa-gamepad text-accentRed"></i> Popular Games</h2></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <a href="rapid.html" class="ops-card-small group relative overflow-hidden rounded-xl border border-white/10 hover:border-accentRed transition-all duration-300" style="--accent-color: #ef4444">
+                        <div class="absolute inset-0 bg-red-900/40 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition duration-700"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                        <div class="relative z-10 flex flex-col justify-between h-full"><div><div class="text-accentRed text-[10px] font-bold uppercase tracking-widest mb-1 shadow-black drop-shadow-md">Fast paced</div><h3 class="font-arcade text-lg text-white leading-none drop-shadow-lg">RAPID<br>FIRE MODE</h3></div><div class="flex justify-between items-end"><span class="text-[9px] bg-accentRed text-white px-2 py-1 rounded font-bold">60 SECONDS</span><i class="fas fa-stopwatch ops-icon-bg text-accentRed/50 group-hover:text-accentRed transition drop-shadow-md"></i></div></div>
+                    </a>
+                    <a href="timeline-history.html" class="ops-card-small group relative overflow-hidden rounded-xl border border-white/10 hover:border-accentGold transition-all duration-300" style="--accent-color: #fbbf24">
+                        <div class="absolute inset-0 bg-[url('assets/chronos_bg.WEBP')] bg-cover bg-center opacity-50 group-hover:opacity-70 group-hover:scale-110 transition duration-700"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                        <div class="relative z-10 flex flex-col justify-between h-full"><div><div class="text-accentGold text-[10px] font-bold uppercase tracking-widest mb-1 shadow-black drop-shadow-md">Logic puzzle</div><h3 class="font-arcade text-lg text-white leading-none drop-shadow-lg">HISTORY<br>TIMELINE</h3></div><div class="flex justify-between items-end"><span class="text-[9px] bg-accentGold text-black px-2 py-1 rounded font-bold">PLAY NOW</span><i class="fas fa-hourglass-half ops-icon-bg text-accentGold/50 group-hover:text-accentGold transition drop-shadow-md"></i></div></div>
+                    </a>
+                    <a href="minigames.html" class="ops-card-small group relative overflow-hidden rounded-xl border border-white/10 hover:border-accentPink transition-all duration-300" style="--accent-color: #f43f5e">
+                        <div class="relative z-10"><div class="text-accentPink text-[10px] font-bold uppercase tracking-widest mb-1">Multiplayer</div><h3 class="font-arcade text-lg text-white leading-none">Pictionary<br>Drawing Game</h3></div><div class="relative z-10"><span class="text-[9px] bg-accentPink text-white px-2 py-1 rounded font-bold">PLAY NOW</span></div><i class="fas fa-pencil-alt ops-icon-bg text-accentPink"></i>
+                    </a>
+                    <a href="hangman.html" class="ops-card-small group relative overflow-hidden rounded-xl border border-white/10 hover:border-accentPink transition-all duration-300" style="--accent-color: #22c55e">
+                        <div class="relative z-10"><div class="text-green-400 text-[10px] font-bold uppercase tracking-widest mb-1">Classic</div><h3 class="font-arcade text-lg text-white leading-none">Hangman<br>Guess the Word</h3></div><div class="relative z-10"><span class="text-[9px] bg-green-600 text-white px-2 py-1 rounded font-bold">PLAY NOW</span></div><i class="fas fa-font ops-icon-bg text-green-400"></i>
+                    </a>
+                </div>
+            </section>
+
+
+<section class="mb-8">
+    <div class="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
+        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fas fa-fingerprint text-purple-400"></i> Identity Lab 
+            <span class="ml-2 text-[9px] bg-purple-500/10 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded font-mono">PSYCH-EVAL</span>
+        </h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        <a href="friendsperson.html" class="group relative h-40 overflow-hidden rounded-xl border border-white/10 hover:border-yellow-500 transition-all duration-300 bg-[#0b0b0e]">
+            <div class="absolute inset-0 bg-yellow-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            <div class="relative z-10 h-full p-5 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-1 drop-shadow-md">Personality Match</div>
+                        <h3 class="font-arcade text-xl text-white leading-none drop-shadow-lg group-hover:text-yellow-200 transition-colors">
+                            FRIENDS<br>PERSONA
+                        </h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-yellow-500 group-hover:scale-110 group-hover:bg-yellow-500 group-hover:text-black transition-all duration-300">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mt-auto">
+                    <span class="text-[16px] text-slate-400 group-hover:text-white transition-colors">20 Questions • Deep Analysis</span>
+                    <span class="text-[10px] bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded font-bold group-hover:bg-yellow-500 group-hover:text-black transition-colors">START</span>
+                </div>
+            </div>
+            
+            <i class="fas fa-couch absolute -bottom-4 -right-4 text-8xl text-yellow-500/5 rotate-12 group-hover:rotate-0 group-hover:scale-110 transition-transform duration-500"></i>
+        </a>
+
+        <a href="TBBTPERSON.html" class="group relative h-40 overflow-hidden rounded-xl border border-white/10 hover:border-blue-500 transition-all duration-300 bg-[#0b0b0e]">
+            <div class="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            <div class="relative z-10 h-full p-5 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-1 drop-shadow-md">The Theory of You</div>
+                        <h3 class="font-arcade text-xl text-white leading-none drop-shadow-lg group-hover:text-blue-200 transition-colors">
+                            THE BIG BANG<br>ARCHETYPE
+                        </h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-blue-400 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-black transition-all duration-300">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mt-auto">
+                    <span class="text-[16px] text-slate-400 group-hover:text-white transition-colors">Sheldon or Penny?</span>
+                    <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-1 rounded font-bold group-hover:bg-blue-500 group-hover:text-black transition-colors">START</span>
+                </div>
+            </div>
+
+            <i class="fas fa-microscope absolute -bottom-4 -right-4 text-8xl text-blue-500/5 rotate-12 group-hover:rotate-0 group-hover:scale-110 transition-transform duration-500"></i>
+        </a>
+
+    </div>
+</section>
+
+
+            <section>
+                <div class="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
+                    <h2 class="text-sm font-bold text-white flex items-center gap-2"><i class="fas fa-layer-group text-accentPurple"></i> Browse Categories</h2>
+                    <a href="categories.html" class="text-[10px] font-bold text-slate-500 hover:text-white transition">VIEW ALL</a>
+                </div>
+                <div id="featuredCategories" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3"></div>
+            </section>
+
+            <section class="relative w-full rounded-3xl overflow-hidden border border-accentGreen/30 bg-[#050810] shadow-[0_0_40px_rgba(16,185,129,0.1)] group">
+                <div class="grid grid-cols-1 lg:grid-cols-2 min-h-[380px] md:min-h-[430px]">
+                    <div class="relative h-52 sm:h-64 md:h-full overflow-hidden border-b lg:border-b-0 lg:border-r border-accentGreen/20 group-hover:border-accentGreen/50 transition-colors">
+                        <img id="intelImg" src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070" class="w-full h-full object-cover opacity-80 transition duration-1000 group-hover:scale-110 group-hover:opacity-100 filter contrast-125">
+                        <div class="absolute inset-0 bg-accentGreen/10 mix-blend-overlay"></div>
+                        <div class="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%] pointer-events-none"></div>
+                        <div class="absolute bottom-4 left-4 z-20">
+                            <div class="bg-black/80 backdrop-blur-md border border-accentGreen/40 px-3 py-1.5 rounded flex items-center gap-3 shadow-lg"><span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span><span class="text-[10px] font-sans font-bold text-accentGreen tracking-widest uppercase">Featured Fact</span></div>
+                        </div>
+                    </div>
+                    <div class="relative p-6 md:p-8 lg:p-12 flex flex-col justify-center bg-[#0a0f1e]">
+                        <div class="relative z-10 flex justify-between items-start mb-4 md:mb-6">
+                            <div><h4 class="text-xs font-bold text-accentGreen uppercase tracking-[0.2em] mb-1">Topic of the Day</h4><div class="h-0.5 w-12 bg-accentGreen"></div></div>
+                            <div class="border border-accentGreen/30 px-2 py-1 rounded text-[10px] text-slate-400 font-mono"><span id="intelDate">2025.12.01</span></div>
+                        </div>
+                        <div class="relative z-10 mb-6 md:mb-8">
+                            <h3 class="font-sans font-extrabold text-2xl md:text-3xl text-white mb-3 md:mb-4 leading-tight drop-shadow-lg" id="intelTitle">DAILY<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-accentGreen to-emerald-200">INSIGHT</span></h3>
+                            <p class="text-slate-400 text-sm md:text-base leading-relaxed border-l-4 border-accentGreen/20 pl-4 md:pl-6" id="intelBody">Loading today's featured knowledge. Stand by...</p>
+                        </div>
+                        <div class="relative z-10 mt-auto flex items-center gap-4">
+                            <button onclick="renderLiveIntel()" class="group/btn relative overflow-hidden bg-accentGreen hover:bg-emerald-400 text-black font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] w-full md:w-auto">
+                                <span class="relative z-10 flex items-center gap-2">NEXT FACT <i class="fas fa-arrow-right group-hover/btn:translate-x-1 transition-transform"></i></span>
+                                <div class="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-500 bg-white/30 skew-x-12"></div>
+                            </button>
+                        </div>
+                        <div class="absolute top-1/2 right-4 -translate-y-1/2 text-7xl md:text-9xl font-black text-white/5 pointer-events-none rotate-90 lg:rotate-0">TRIVIA</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="glass-panel rounded-xl p-4 flex items-center justify-between border border-accentGold/10">
+                <div class="flex items-center gap-3">
+                    <div id="achIcon" class="w-10 h-10 rounded bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/30 transition-all duration-500"><i class="fas fa-trophy"></i></div>
+                    <div><div class="text-xs font-bold text-white uppercase">Your Achievements</div><div id="achStatus" class="text-[10px] text-slate-500">Checking data...</div></div>
+                </div>
+                <a href="achievements.html" class="text-[10px] bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded transition text-slate-300">VIEW ALL</a>
+            </div>
+        </div>
+
+        <aside class="lg:col-span-3 space-y-6 mt-2 lg:mt-0">
+
+            <div class="relative group w-full rounded-2xl bg-[#0a0505] border-2 border-red-600/50 overflow-hidden shadow-[0_0_40px_rgba(220,38,38,0.25)] hover:shadow-[0_0_60px_rgba(220,38,38,0.5)] hover:border-red-500 transition-all duration-500">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-red-600/20 blur-[60px] rounded-full animate-pulse-slow"></div>
+                <div class="absolute top-0 left-0 w-full bg-gradient-to-r from-red-600 to-red-800 text-white text-[10px] font-bold uppercase tracking-[0.2em] py-1 text-center shadow-lg z-20">
+                    <i class="fas fa-satellite-dish animate-pulse mr-1"></i> Live Global Event
+                </div>
+                <div class="relative z-10 p-6 pt-10 flex flex-col items-center text-center">
+                    <div class="mb-4 relative">
+                        <div class="absolute inset-0 bg-red-500 blur-xl opacity-30 animate-pulse"></div>
+                        <i class="fas fa-gift text-5xl text-white drop-shadow-[0_0_10px_rgba(255,0,0,0.8)] transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300"></i>
+                    </div>
+                    <h3 class="font-arcade text-3xl text-white leading-none mb-1 drop-shadow-md">HOLIDAY <span class="text-red-500">HAVOC</span></h3>
+                    <p class="text-[10px] text-red-300 font-bold uppercase tracking-widest mb-4">The Ultimate Trivia Gauntlet</p>
+                    <div class="w-full bg-white/5 rounded-lg p-3 mb-5 border border-white/10 text-left space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-slate-300"><i class="fas fa-lock text-red-500"></i><span>Psychological Profile <span class="text-[9px] bg-red-900/50 text-red-300 px-1 rounded ml-1">LOCKED</span></span></div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300"><i class="fas fa-skull text-red-500"></i><span>The Impossible Quiz <span class="text-[9px] bg-red-900/50 text-red-300 px-1 rounded ml-1">HARD</span></span></div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300"><i class="fas fa-stopwatch text-yellow-500"></i><span>Speed Visual Challenge</span></div>
+                    </div>
+                    <a href="christmas-hub.html" class="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-sm uppercase tracking-wider py-4 hover:from-red-500 hover:to-red-600 transition-all shadow-lg hover:shadow-red-500/40 group-hover:translate-y-[-2px]">
+                        <span class="relative z-10 flex items-center justify-center gap-2">FREE ACCESS <i class="fas fa-chevron-right text-xs group-hover:translate-x-1 transition-transform"></i></span>
+                        <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"></div>
+                    </a>
+                    <p class="mt-3 text-[13px] text-slate-500">*Limited time rewards active</p>
+                </div>
+            </div>
+<!-- WRAPPER: 25% reduction only -->
+<div class="scale-[0.75] origin-top-left">
+
+
+</div>
+
+            <div class="glass-panel rounded-xl flex flex-col border border-accentOrange/30 overflow-hidden">
+                <div class="bg-accentOrange/10 p-3 border-b border-accentOrange/20 flex justify-between items-center">
+                    <h3 class="text-[10px] font-bold text-accentOrange uppercase tracking-widest flex items-center gap-2"><i class="fas fa-bolt"></i> Quick Question</h3>
+                    <span class="text-[9px] text-slate-400 bg-black/40 px-1.5 py-0.5 rounded font-mono" id="qfCounter">1/3</span>
+                </div>
+                <div class="p-4" id="qfContainer">
+                    <p class="text-white font-bold text-xs mb-3 leading-tight min-h-[30px]" id="qfQuestion">Loading...</p>
+                    <div class="space-y-2" id="qfOptions"><div class="h-8 bg-white/5 rounded w-full animate-pulse"></div><div class="h-8 bg-white/5 rounded w-full animate-pulse"></div></div>
+                    <div id="qfFeedback" class="hidden mt-2 text-center text-xs font-bold"></div>
+                </div>
+                <div id="qfEndScreen" class="hidden p-4 flex-col justify-center items-center text-center">
+                    <div class="text-accentGreen text-2xl mb-2"><i class="fas fa-check-circle"></i></div>
+                    <p class="text-[10px] text-slate-400 mb-3">Good job!</p>
+                    <button onclick="location.reload()" class="text-[9px] bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1 rounded text-white transition">PLAY AGAIN</button>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-xl overflow-hidden border border-white/5">
+                <div class="bg-black/40 p-3 border-b border-white/5"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Recent Activity</h3></div>
+                <div class="p-3 space-y-3" id="liveFeed"></div>
+            </div>
+
+            <div class="glass-panel rounded-xl overflow-hidden border border-white/10">
+                <div class="bg-white/5 p-3 border-b border-white/10 flex justify-between items-center">
+                    <h3 class="text-[10px] font-bold text-white uppercase tracking-widest"><i class="fas fa-globe text-accentBlue mr-1"></i> Leaderboard</h3>
+                </div>
+                <div class="p-2 space-y-1">
+                    <div class="flex items-center gap-3 p-2 bg-gradient-to-r from-yellow-500/10 to-transparent rounded border border-yellow-500/20">
+                        <div class="text-accentGold font-bold text-xs">01</div>
+                        <div class="w-6 h-6 rounded-full bg-black overflow-hidden"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=Cipher" class="w-full h-full" alt=""></div>
+                        <div class="flex-grow"><div class="text-[10px] font-bold text-white">Cipher_X</div><div class="text-[8px] text-accentGold">LVL 99</div></div>
+                    </div>
+                    <div class="flex items-center gap-3 p-2 bg-white/5 rounded border border-white/5">
+                        <div class="text-slate-300 font-bold text-xs">02</div>
+                        <div class="w-6 h-6 rounded-full bg-black overflow-hidden"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=Viper" class="w-full h-full" alt=""></div>
+                        <div class="flex-grow"><div class="text-[10px] font-bold text-slate-200">Viper</div><div class="text-[8px] text-slate-500">LVL 84</div></div>
+                    </div>
+                    <div class="flex items-center gap-3 p-2 bg-white/5 rounded border border-white/5">
+                        <div class="text-slate-500 font-bold text-xs">03</div>
+                        <div class="w-6 h-6 rounded-full bg-black overflow-hidden"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=Neon" class="w-full h-full" alt=""></div>
+                        <div class="flex-grow"><div class="text-[10px] font-bold text-slate-200">Neon</div><div class="text-[8px] text-slate-500">LVL 82</div></div>
+                    </div>
+                </div>
+                <div class="p-2 border-t border-white/5 text-center"><a href="#" class="text-[9px] text-accentBlue hover:text-white transition uppercase font-bold">View Full List</a></div>
+            </div>
+
+        </aside>
+    </main>
+
+    <main class="w-full max-w-[1200px] mx-auto px-4 md:px-6 mt-8 mb-10"><quiz-seo-content></quiz-seo-content></main>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // --- DATA BACKUP ---
+        const BACKUP_CATS = { science: { label: "Science", icon: "🧬", pill: "STEM", group: "science", img: "https://images.unsplash.com/photo-1532094349884-543bc11b234d" }, history: { label: "History", icon: "📜", pill: "Past", group: "general", img: "https://images.unsplash.com/photo-1461360370896-922624d12aa1" }, tech: { label: "Tech", icon: "💻", pill: "Future", group: "tech", img: "https://images.unsplash.com/photo-1518770660439-4636190af475" }, movies: { label: "Cinema", icon: "🎬", pill: "Film", group: "movies", img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1" }, geo: { label: "World", icon: "🌍", pill: "Geo", group: "general", img: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1" }, lit: { label: "Books", icon: "📚", pill: "Art", group: "general", img: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d" } };
+        const BACKUP_QUESTIONS = [{ question: "Capital of France?", options: ["Paris", "London", "Berlin"], correctIndex: 0 }];
+        let activeConfig = (typeof CATEGORY_CONFIG !== 'undefined') ? CATEGORY_CONFIG : BACKUP_CATS;
+        let activeQuestions = [];
+        if (typeof QUESTION_BANKS !== 'undefined') { Object.values(QUESTION_BANKS).forEach(b => { if (b.easy) activeQuestions = activeQuestions.concat(b.easy); else if(Array.isArray(b)) activeQuestions = activeQuestions.concat(b); }); }
+        if(activeQuestions.length === 0) activeQuestions = BACKUP_QUESTIONS;
+
+        // --- 1. RENDER SMALL CATEGORIES ---
+        function renderFeatured() { const container = document.getElementById('featuredCategories'); const keys = Object.keys(activeConfig).sort(() => 0.5 - Math.random()).slice(0, 6); container.innerHTML = ''; keys.forEach(key => { const cat = activeConfig[key]; const img = cat.img || "https://via.placeholder.com/300x450"; container.innerHTML += `<a href="mode.html?category=${key}" class="cat-card-mini group" style="background-image: url('${img}')"><div class="cat-mini-overlay"><div class="text-[9px] text-accentBlue font-bold uppercase mb-0.5 opacity-80">${cat.pill}</div><h3 class="text-white font-bold text-xs leading-tight group-hover:text-accentCyan transition-colors">${cat.label}</h3></div></a>`; }); }
+        window.onload = renderFeatured; 
+
+        // --- 2. LIVE INTEL WIDGET ---
+        function renderLiveIntel() { if (typeof quizFacts === 'undefined') { document.getElementById('intelBody').textContent = "Offline."; return; } let all = []; Object.keys(quizFacts).forEach(k => all = all.concat(quizFacts[k])); const fact = all[Math.floor(Math.random() * all.length)]; if(!fact) return; const img = document.getElementById('intelImg'); const title = document.getElementById('intelTitle'); const body = document.getElementById('intelBody'); const date = document.getElementById('intelDate'); img.style.opacity = '0'; title.style.opacity = '0'; body.style.opacity = '0'; setTimeout(() => { title.textContent = fact.title; body.textContent = fact.body; img.src = fact.image || "https://via.placeholder.com/600x400"; date.textContent = new Date().toISOString().split('T')[0].replace(/-/g, '.'); img.style.opacity = '0.8'; title.style.opacity = '1'; body.style.opacity = '1'; }, 300); }
+        renderLiveIntel(); setInterval(renderLiveIntel, 15000); 
+
+        // --- 3. QUICK FIRE ---
+        let qfIndex = 0; const qfMax = 3;
+        function initQuickFire() { const q = activeQuestions[Math.floor(Math.random() * activeQuestions.length)]; document.getElementById('qfQuestion').textContent = q.question; const opts = document.getElementById('qfOptions'); opts.innerHTML = ''; const feedback = document.getElementById('qfFeedback'); feedback.classList.add('hidden'); q.options.forEach((opt, i) => { const btn = document.createElement('button'); btn.className = "qf-btn"; btn.textContent = opt; btn.onclick = () => { Array.from(opts.children).forEach(b => b.disabled = true); if(i === q.correctIndex) { btn.classList.add('correct'); feedback.textContent = "+50 Points"; feedback.className = "mt-2 text-center text-xs font-bold text-accentGreen"; } else { btn.classList.add('wrong'); feedback.textContent = "Incorrect"; feedback.className = "mt-2 text-center text-xs font-bold text-accentRed"; } feedback.classList.remove('hidden'); setTimeout(() => { qfIndex++; if(qfIndex < qfMax) { document.getElementById('qfCounter').textContent = `${qfIndex + 1}/${qfMax}`; initQuickFire(); } else { document.getElementById('qfContainer').classList.add('hidden'); document.getElementById('qfEndScreen').classList.remove('hidden'); document.getElementById('qfEndScreen').classList.add('flex'); } }, 1000); }; opts.appendChild(btn); }); }
+        initQuickFire();
+
+        // --- 4. LIVE FEED ---
+        const ACTIONS = [{ user: "Agent_K", action: "Completed Science", xp: "+200", icon: "fa-atom", color: "text-accentPurple" }, { user: "NeonRider", action: "Daily Challenge", xp: "+500", icon: "fa-star", color: "text-accentGold" }, { user: "Guest_99", action: "Joined", xp: "", icon: "fa-wifi", color: "text-accentBlue" }];
+        document.getElementById('liveFeed').innerHTML = ACTIONS.map(item => `<div class="flex items-center gap-3 pb-2 border-b border-white/5 last:border-0"><div class="w-6 h-6 rounded bg-white/5 flex items-center justify-center ${item.color} text-[10px]"><i class="fas ${item.icon}"></i></div><div><div class="font-bold text-slate-300 text-[10px]">${item.user}</div><div class="text-[9px] text-slate-500">${item.action} <span class="${item.color}">${item.xp}</span></div></div></div>`).join('');
+
+        // --- 5. ACHIEVEMENT LOGIC ---
+        function initAchievementLog() { const allAchievements = (typeof ACHIEVEMENTS !== 'undefined') ? ACHIEVEMENTS : [{ id: 'placeholder', title: 'System Online', icon: 'fa-power-off' }]; const raw = localStorage.getItem('quizAchievements'); let unlockedIDs = []; if (raw) { try { const parsed = JSON.parse(raw); if (Array.isArray(parsed)) unlockedIDs = parsed; else unlockedIDs = Object.keys(parsed).filter(k => parsed[k]?.unlocked); } catch(e) { unlockedIDs = []; } } const statusEl = document.getElementById('achStatus'); const iconEl = document.getElementById('achIcon'); if (unlockedIDs.length === 0) { statusEl.innerHTML = `<span class="text-slate-500">0/${allAchievements.length} unlocked yet. Start a quiz to earn your first badge.</span>`; } else { const count = unlockedIDs.length; const total = allAchievements.length; const lastID = unlockedIDs[unlockedIDs.length - 1]; const lastAch = allAchievements.find(a => a.id === lastID) || allAchievements[0]; statusEl.innerHTML = `<span class="text-accentGold font-bold">${count}/${total} unlocked</span><span class="text-slate-600 mx-1">|</span><span class="text-slate-400">Latest: ${lastAch.title}</span>`; iconEl.innerHTML = `<i class="fas ${lastAch.icon || 'fa-trophy'}"></i>`; iconEl.classList.add('shadow-[0_0_15px_rgba(251,191,36,0.4)]'); } }
+        initAchievementLog();
+    </script>
+</body>
+</html>

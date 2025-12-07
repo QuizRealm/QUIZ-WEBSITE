@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naughty or Nice: The Christmas Song Tier List | QuizRealm</title>
+        <link rel="manifest" href="assets/site.webmanifest">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <meta name="description" content="Rate these 10 controversial Christmas hits. Are you Team Mariah or Team Sinatra? Discover your holiday music personality.">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        neon: ['Monoton', 'cursive'], // Retro font
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        neonPink: '#d946ef',
+                        neonBlue: '#3b82f6',
+                        vinylBlack: '#111111',
+                    },
+                    animation: {
+                        'spin-slow': 'spin 4s linear infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            /* Retro Grid Background */
+            background-image: 
+                linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)),
+                linear-gradient(to right, rgba(217, 70, 239, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            min-height: 100vh; 
+            color: #e2e8f0;
+        }
+
+        /* Vinyl Record Animation */
+        .record {
+            transition: transform 0.5s ease;
+        }
+        .playing .record {
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Rating Stars */
+        .star-btn:hover { color: #fbbf24; transform: scale(1.2); }
+        .star-btn.active { color: #fbbf24; }
+        
+        .glass-player {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(217, 70, 239, 0.2);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased">
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-xl mx-auto px-4 py-8 flex flex-col justify-center min-h-[85vh]">
+
+        <div class="text-center mb-8">
+            <h1 class="font-neon text-4xl text-transparent bg-clip-text bg-gradient-to-r from-neonPink to-neonBlue tracking-widest drop-shadow-lg">
+                JUKEBOX JUDGE
+            </h1>
+            <p class="text-slate-400 text-sm mt-2">Rate the hits. Find your vibe.</p>
+        </div>
+
+        <div id="playerCard" class="glass-player rounded-3xl p-6 md:p-8 relative overflow-hidden">
+            
+            <div class="absolute top-4 right-4 bg-black/50 px-3 py-1 rounded-full text-xs font-mono text-neonPink border border-neonPink/30">
+                TRACK <span id="trackNum">01</span>/10
+            </div>
+
+            <div class="flex justify-center mb-8 mt-4 relative">
+                <div class="w-48 h-48 bg-slate-800 rounded shadow-2xl absolute -left-4 top-0 rotate-[-5deg] z-0 border border-white/10"></div>
+                
+                <div id="vinylRecord" class="record w-48 h-48 rounded-full bg-vinylBlack border-4 border-slate-800 flex items-center justify-center relative z-10 shadow-xl playing">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-neonPink to-neonBlue flex items-center justify-center">
+                        <div class="w-2 h-2 bg-black rounded-full"></div>
+                    </div>
+                    <div class="absolute inset-0 rounded-full border border-white/5 w-40 h-40 m-auto"></div>
+                    <div class="absolute inset-0 rounded-full border border-white/5 w-32 h-32 m-auto"></div>
+                </div>
+            </div>
+
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-white mb-1" id="songTitle">Loading Track...</h2>
+                <p class="text-neonBlue text-sm uppercase tracking-widest" id="artistName">Artist</p>
+                <div class="mt-4 bg-black/30 p-3 rounded-lg text-xs italic text-slate-400" id="lyricSnippet">
+                    "Lyrics go here..."
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="text-center text-[10px] text-slate-500 uppercase tracking-widest">Rate this Track</div>
+                <div class="flex justify-center gap-4 text-3xl text-slate-700" id="starContainer">
+                    <button class="star-btn transition-all" onclick="rate(1)"><i class="fas fa-star"></i></button>
+                    <button class="star-btn transition-all" onclick="rate(2)"><i class="fas fa-star"></i></button>
+                    <button class="star-btn transition-all" onclick="rate(3)"><i class="fas fa-star"></i></button>
+                    <button class="star-btn transition-all" onclick="rate(4)"><i class="fas fa-star"></i></button>
+                    <button class="star-btn transition-all" onclick="rate(5)"><i class="fas fa-star"></i></button>
+                </div>
+                <div class="flex justify-between px-8 text-[10px] text-slate-600 font-bold mt-1">
+                    <span>NAUGHTY</span>
+                    <span>NICE</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="resultsCard" class="hidden glass-player rounded-3xl p-8 text-center animate-fade-in">
+            <div class="w-24 h-24 mx-auto bg-gradient-to-br from-neonPink to-neonBlue rounded-full flex items-center justify-center text-4xl text-white mb-6 shadow-lg shadow-neonPink/40">
+                <i class="fas fa-headphones-alt"></i>
+            </div>
+            
+            <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Your Music Persona</p>
+            <h2 class="font-neon text-3xl text-white mb-4 leading-tight" id="resultTitle">...</h2>
+            
+            <p class="text-slate-300 text-sm leading-relaxed mb-8" id="resultDesc">
+                ...
+            </p>
+
+            <div class="space-y-3">
+                <button onclick="location.reload()" class="w-full py-3 rounded-xl border border-white/20 text-white hover:bg-white/5 transition">
+                    Rate Again
+                </button>
+                <a href="christmas-hub.html" class="block w-full py-3 rounded-xl bg-neonPink text-white font-bold hover:bg-fuchsia-600 transition shadow-lg shadow-neonPink/30">
+                    Back to Hub
+                </a>
+            </div>
+        </div>
+<article class="mt-20 border-t border-white/10 pt-12 max-w-3xl mx-auto">
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-md">
+        <h2 class="font-neon text-2xl text-white mb-6">The Science of the Earworm</h2>
+        
+        <div class="space-y-6 text-slate-300 text-sm leading-relaxed">
+            <p>
+                Why does <strong>"All I Want for Christmas is You"</strong> return to #1 on the charts every single year? Musicologists point to the "Wall of Sound" production technique and a specific chord progression (shifting from major to minor) that mimics the structure of 1960s Motown hits. It feels nostalgic even the first time you hear it.
+            </p>
+            
+            <div class="grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
+                <div>
+                    <h4 class="text-neonPink font-bold uppercase text-xs mb-1">Most Streamed</h4>
+                    <p>Mariah Carey earns an estimated <strong>$2.5 million per year</strong> from royalties on that single song alone.</p>
+                </div>
+                <div>
+                    <h4 class="text-neonBlue font-bold uppercase text-xs mb-1">Oldest Hit</h4>
+                    <p>"Jingle Bells" (1857) was originally written for <strong>Thanksgiving</strong>, not Christmas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+    </main>
+<script>
+    // Bigger song pool (20 tracks), still only 10 per game
+    const songs = [
+        // Original 10
+        { t: "All I Want for Christmas is You", a: "Mariah Carey", l: "I don't care about the presents underneath the Christmas tree...", type: "pop" },
+        { t: "Last Christmas", a: "Wham!", l: "The very next day, you gave it away...", type: "pop" },
+        { t: "White Christmas", a: "Bing Crosby", l: "Just like the ones I used to know...", type: "vintage" },
+        { t: "Jingle Bell Rock", a: "Bobby Helms", l: "What a bright time, it's the right time...", type: "classic" },
+        { t: "Santa Tell Me", a: "Ariana Grande", l: "Don't make me fall in love again if he won't be here...", type: "pop" },
+        { t: "It's Beginning to Look a Lot Like Christmas", a: "Michael Bublé", l: "Toys in every store, but the prettiest sight to see...", type: "classic" },
+        { t: "Wonderful Christmastime", a: "Paul McCartney", l: "Simply having a wonderful Christmastime...", type: "polarizing" },
+        { t: "Rockin' Around the Christmas Tree", a: "Brenda Lee", l: "Later we'll have some pumpkin pie...", type: "classic" },
+        { t: "Baby, It's Cold Outside", a: "Dean Martin", l: "I really can't stay...", type: "vintage" },
+        { t: "Feliz Navidad", a: "José Feliciano", l: "I wanna wish you a Merry Christmas from the bottom of my heart...", type: "classic" },
+
+        // New songs
+        { t: "Do They Know It's Christmas?", a: "Band Aid", l: "But say a prayer, pray for the other ones...", type: "polarizing" },
+        { t: "Fairytale of New York", a: "The Pogues & Kirsty MacColl", l: "The boys of the NYPD choir were singing 'Galway Bay'...", type: "polarizing" },
+        { t: "Underneath the Tree", a: "Kelly Clarkson", l: "You're here, where you should be, snow is falling as the carolers sing...", type: "pop" },
+        { t: "Happy Xmas (War Is Over)", a: "John Lennon & Yoko Ono", l: "So this is Christmas, and what have you done...", type: "vintage" },
+        { t: "Blue Christmas", a: "Elvis Presley", l: "I'll have a blue Christmas without you...", type: "vintage" },
+        { t: "A Holly Jolly Christmas", a: "Burl Ives", l: "Oh ho, the mistletoe, hung where you can see...", type: "classic" },
+        { t: "Rudolph the Red-Nosed Reindeer", a: "Gene Autry", l: "Then one foggy Christmas Eve, Santa came to say...", type: "classic" },
+        { t: "Mistletoe", a: "Justin Bieber", l: "Kissing you under the mistletoe...", type: "pop" },
+        { t: "Christmas (Baby Please Come Home)", a: "Darlene Love", l: "They're singing 'Deck the Halls', but it's not like Christmas at all...", type: "vintage" },
+        { t: "Carol of the Bells", a: "Traditional", l: "Hark how the bells, sweet silver bells, all seem to say, throw cares away...", type: "classic" }
+    ];
+
+    const TRACKS_PER_GAME = 10; // still show 10 tracks per run
+
+    let currentIdx = 0;
+    let playlist = [];
+    let scores = { pop: 0, vintage: 0, classic: 0, polarizing: 0 };
+    let totalStars = 0;
+    let ratedCount = 0;
+
+    const ui = {
+        card: document.getElementById('playerCard'),
+        title: document.getElementById('songTitle'),
+        artist: document.getElementById('artistName'),
+        lyrics: document.getElementById('lyricSnippet'),
+        track: document.getElementById('trackNum'),
+        stars: document.querySelectorAll('.star-btn'),
+        vinyl: document.getElementById('vinylRecord'),
+        resCard: document.getElementById('resultsCard'),
+        resTitle: document.getElementById('resultTitle'),
+        resDesc: document.getElementById('resultDesc')
+    };
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initGame() {
+        // Random 10-track playlist from full pool
+        const pool = shuffle([...songs]);
+        playlist = pool.slice(0, TRACKS_PER_GAME);
+
+        currentIdx = 0;
+        scores = { pop: 0, vintage: 0, classic: 0, polarizing: 0 };
+        totalStars = 0;
+        ratedCount = 0;
+
+        loadSong();
+    }
+
+    function loadSong() {
+        const data = playlist[currentIdx];
+
+        // Vinyl spin reset
+        ui.vinyl.classList.remove('playing');
+        void ui.vinyl.offsetWidth; // reflow
+        ui.vinyl.classList.add('playing');
+
+        ui.title.textContent = data.t;
+        ui.artist.textContent = data.a;
+        ui.lyrics.textContent = `"${data.l}"`;
+        ui.track.textContent = (currentIdx + 1).toString().padStart(2, '0'); // TRACK 01/10
+
+        // Reset stars
+        ui.stars.forEach(s => s.classList.remove('active'));
+    }
+
+    function rate(stars) {
+        // Highlight stars visually
+        ui.stars.forEach((s, i) => {
+            if (i < stars) s.classList.add('active');
+        });
+
+        const data = playlist[currentIdx];
+        totalStars += stars;
+        ratedCount++;
+
+        // Genre bias scoring (high ratings push that "personality")
+        if (stars >= 4) {
+            if (data.type === 'pop') scores.pop += 2;
+            if (data.type === 'vintage') scores.vintage += 2;
+            if (data.type === 'classic') scores.classic += 2;
+            if (data.type === 'polarizing') scores.polarizing += 3; // extra for chaos taste
+        } else if (stars <= 2) {
+            // Low ratings on a type slightly push you away from it
+            if (data.type === 'pop') scores.pop -= 1;
+            if (data.type === 'vintage') scores.vintage -= 1;
+            if (data.type === 'classic') scores.classic -= 1;
+            if (data.type === 'polarizing') scores.polarizing -= 1;
+        }
+
+        setTimeout(nextSong, 400);
+    }
+
+    function nextSong() {
+        currentIdx++;
+        if (currentIdx < playlist.length) {
+            loadSong();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        ui.card.classList.add('hidden');
+        ui.resCard.classList.remove('hidden');
+
+        const avgStars = ratedCount > 0 ? totalStars / ratedCount : 0;
+
+        let profile = "";
+        let desc = "";
+
+        // More personalities based on taste + mood
+        if (avgStars <= 2.2) {
+            profile = "THE GRINCH DJ";
+            desc = "You’re not here for cheesy sleigh bells. You'd happily skip the playlist and go straight to the food. You survive December, you don’t celebrate it.";
+        } else if (scores.polarizing >= 4) {
+            profile = "THE CHAOS CAROLER";
+            desc = "You thrive on the messy, controversial, love-it-or-hate-it tracks. Band Aid, Pogues, weird synth bells – if it starts arguments at the dinner table, it’s on your playlist.";
+        } else {
+            // Determine main vibe
+            const mainType = Object.entries(scores).sort((a, b) => b[1] - a[1])[0]?.[0] || "classic";
+
+            if (mainType === "pop") {
+                if (avgStars >= 4) {
+                    profile = "THE POP PRINCESS";
+                    desc = "You live for big hooks and high notes. Mariah, Ariana, Kelly – if it sounds like December on TikTok, it’s on repeat in your world.";
+                } else {
+                    profile = "THE STREAMING SUPERFAN";
+                    desc = "You’re always on the latest holiday playlists. You mix classics with fresh drops and probably own more than one ugly Christmas sweater.";
+                }
+            } else if (mainType === "vintage") {
+                profile = "THE VINTAGE SOUL";
+                desc = "Sinatra, Bing, Elvis – you want your Christmas in mono with crackling vinyl. You’d fit perfectly in a black-and-white holiday movie with snow outside and hot cocoa inside.";
+            } else if (mainType === "classic") {
+                profile = "THE HOLIDAY TRADITIONALIST";
+                desc = "You love the songs everyone can sing along to. Tree decorating, family chaos, background playlist on loop – you’re the cozy heart of Christmas.";
+            } else {
+                profile = "THE MIXTAPE CURATOR";
+                desc = "You’re balanced, selective, and low-key a DJ. You pick the right track for the right moment and secretly judge other people’s playlists.";
+            }
+        }
+
+        ui.resTitle.textContent = profile;
+        ui.resDesc.textContent = desc;
+    }
+
+    // Start game
+    initGame();
+</script>

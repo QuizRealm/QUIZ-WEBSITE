@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QuizRealm • TBBT Theme Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --qr-bg: #020617;
+      --qr-text-main: #e5e7eb;
+      --qr-text-muted: #94a3b8;
+      --qr-radius-lg: 24px;
+      --qr-radius-pill: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Poppins", sans-serif;
+      background: radial-gradient(circle at top, #111827, #020617);
+      color: var(--qr-text-main);
+      display: flex;
+      justify-content: center;
+      padding: 24px 12px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 960px;
+    }
+
+    /* ============================
+       CATEGORY + DIFFICULTY AREA
+       (this is what changes per category)
+       ============================ */
+
+    .category-difficulty-shell {
+      border-radius: 24px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 16px;
+      border: 1px solid rgba(148,163,184,0.45);
+      background: radial-gradient(circle at top, #020617, #020617);
+    }
+
+    @media (max-width: 720px) {
+      .category-difficulty-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* ======= TBBT THEME WRAPPER ======= */
+    .theme-tbbt .category-difficulty-shell {
+      background:
+        radial-gradient(circle at top left, rgba(251,191,36,0.35), transparent 60%),
+        radial-gradient(circle at bottom right, rgba(239,68,68,0.32), transparent 70%),
+        radial-gradient(circle at top, #020617, #020617);
+      border-color: rgba(251,191,36,0.7);
+      box-shadow: 0 26px 70px rgba(0,0,0,0.9);
+    }
+
+    /* Big faint poster behind header text */
+    .tbbt-hero-poster {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.18;
+      filter: blur(3px) saturate(1.15);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* LEFT: text + difficulty buttons */
+    .category-info {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .category-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--qr-radius-pill);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      background: rgba(15,23,42,0.92);
+      border: 1px solid rgba(248,250,252,0.2);
+    }
+
+    .category-tag-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #facc15, #f97316);
+      box-shadow: 0 0 10px rgba(250,204,21,0.9);
+    }
+
+    .category-title {
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-shadow: 0 0 18px rgba(0,0,0,0.9);
+    }
+
+    .category-title-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(248,250,252,0.6);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #facc15, #b91c1c);
+      box-shadow: 0 0 20px rgba(248,250,252,0.4);
+      font-size: 18px;
+    }
+
+    .category-subtitle {
+      font-size: 13px;
+      color: var(--qr-text-muted);
+      max-width: 420px;
+    }
+
+    .difficulty-row-label {
+      font-size: 12px;
+      color: #e5e7eb;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .difficulty-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .difficulty-btn {
+      border: none;
+      border-radius: var(--qr-radius-pill);
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15,23,42,0.96);
+      color: var(--qr-text-main);
+      border: 1px solid rgba(148,163,184,0.6);
+      transition:
+        transform 0.12s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    /* TBBT flavored difficulty buttons */
+    .theme-tbbt .difficulty-btn {
+      background: radial-gradient(circle at top, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border-color: rgba(252,211,77,0.75);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.7);
+    }
+
+    .theme-tbbt .difficulty-btn span.badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(248,250,252,0.25);
+      opacity: 0.9;
+    }
+
+    .theme-tbbt .difficulty-btn.easy span.badge {
+      border-color: rgba(52,211,153,0.9);
+      color: #6ee7b7;
+    }
+
+    .theme-tbbt .difficulty-btn.medium span.badge {
+      border-color: rgba(251,191,36,0.9);
+      color: #facc15;
+    }
+
+    .theme-tbbt .difficulty-btn.hard span.badge {
+      border-color: rgba(248,113,113,0.9);
+      color: #fecaca;
+    }
+
+    .theme-tbbt .difficulty-btn:hover {
+      transform: translateY(-1px) scale(1.03);
+      background: radial-gradient(circle at top, rgba(248,250,252,0.08), rgba(15,23,42,1));
+      box-shadow: 0 14px 32px rgba(0,0,0,0.9);
+      border-color: rgba(248,250,252,0.9);
+    }
+
+    .theme-tbbt .difficulty-btn:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.85);
+    }
+
+    /* SMALL meta row under buttons (just for flavor) */
+    .tbbt-meta-row {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--qr-text-muted);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tbbt-meta-pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.5);
+    }
+
+    /* RIGHT: floating small poster card */
+    .tbbt-poster-card {
+      position: relative;
+      z-index: 1;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(248,250,252,0.6);
+      box-shadow:
+        0 22px 60px rgba(0,0,0,0.98),
+        0 0 30px rgba(251,191,36,0.55);
+      transform: rotate(-2deg);
+      background: #020617;
+      max-height: 220px;
+    }
+
+    .tbbt-poster-card::before {
+      /* subtle glass reflection */
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        130deg,
+        rgba(255,255,255,0.16),
+        transparent 40%,
+        transparent 60%,
+        rgba(255,255,255,0.06)
+      );
+      opacity: 0.45;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .tbbt-poster-img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    @media (max-width: 720px) {
+      .tbbt-poster-card {
+        max-height: 180px;
+        transform: rotate(-1deg);
+      }
+    }
+
+    /* ============================
+       QUESTIONS AREA (UNCHANGED)
+       ============================ */
+
+    .questions-shell {
+      margin-top: 18px;
+      border-radius: 18px;
+      padding: 16px 18px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: radial-gradient(circle at top, #020617, #020617);
+      color: var(--qr-text-main);
+    }
+
+    .questions-shell h2 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .questions-placeholder {
+      font-size: 13px;
+      color: var(--qr-text-muted);
+    }
+  </style>
+</head>
+
+<!-- Add class "theme-tbbt" when category = tbbt -->
+<body class="theme-tbbt">
+  <div class="app-shell">
+
+    <!-- CATEGORY + DIFFICULTY AREA (TBBT themed) -->
+    <div class="category-difficulty-shell">
+
+      <!-- BIG BACK POSTER (70x50) -->
+      <!-- TODO: SET your big poster image here -->
+      <div class="tbbt-hero-poster"
+           style="background-image: url('"C:\Users\musta\Desktop\QUIZ-WEBSITE\images\YOUR_BIG_POSTER_70x50_URL_HERE.jpg.png');">
+      </div>
+
+      <!-- LEFT SIDE: title + difficulty -->
+      <div class="category-info">
+        <div class="category-tag">
+          <span class="category-tag-dot"></span>
+          <span>TV SHOW QUIZ</span>
+          <span>•</span>
+          <span>The Big Bang Theory</span>
+        </div>
+
+        <div class="category-title">
+          <div class="category-title-icon">⚛</div>
+          <span>The Big Bang Theory Quiz</span>
+        </div>
+
+        <p class="category-subtitle">
+          Test your knowledge of Sheldon, Leonard, Penny and the gang. From soft kitty to string theory,
+          every question bumps up the nerd factor.
+        </p>
+
+        <div class="difficulty-row-label">
+          Choose your difficulty:
+        </div>
+
+        <div class="difficulty-buttons">
+          <button class="difficulty-btn easy">
+            Easy
+            <span class="badge">Warm-up</span>
+          </button>
+          <button class="difficulty-btn medium">
+            Medium
+            <span class="badge">True fan</span>
+          </button>
+          <button class="difficulty-btn hard">
+            Hard
+            <span class="badge">Bazinga mode</span>
+          </button>
+        </div>
+
+        <div class="tbbt-meta-row">
+          <div class="tbbt-meta-pill">💡 10 questions per run</div>
+          <div class="tbbt-meta-pill">⏱ Timer & streaks active</div>
+          <div class="tbbt-meta-pill">🏆 XP + achievements</div>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE: SMALL FLOATING POSTER (50x30) -->
+      <div class="tbbt-poster-card">
+        <!-- TODO: SET your smaller poster image here -->
+        <img class="tbbt-poster-img"
+             src=""C:\Users\musta\Desktop\QUIZ-WEBSITE\images\YOUR_SMALL_POSTER_50x30_URL_HERE.png""
+             alt="The Big Bang Theory poster">
+      </div>
+    </div>
+
+    <!-- QUESTIONS AREA (this stays your existing design) -->
+    <div class="questions-shell">
+      <h2>Questions area</h2>
+      <p class="questions-placeholder">
+        In your real quiz page, this block would be replaced by your existing question text,
+        options, timer, power-ups, etc. The TBBT theme should not change this part –
+        only the category + difficulty header above.
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    // Example of how you'd enable this theme on your real quiz page:
+    // const params = new URLSearchParams(window.location.search);
+    // const category = params.get('category');
+    // if (category === 'tbbt') {
+    //   document.body.classList.add('theme-tbbt');
+    // }
+  </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+
+
+    <title>Christmas Movie Screenshot Challenge | QuizRealm</title>
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <meta name="description" content="Can you name the holiday movie from just a single screenshot? A fast-paced visual quiz for movie buffs.">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        xmasGold: '#fbbf24',
+                        bgDark: '#000000',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { 
+            background-color: #000; 
+            /* Cinema curtain gradient */
+            background-image: linear-gradient(to bottom, #2a0a0a, #000000 80%);
+            min-height: 100vh; 
+            color: #e2e8f0;
+        }
+
+        /* The Cinema Screen Effect */
+        .cinema-screen {
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+            border: 8px solid #111;
+            background: #000;
+            position: relative;
+        }
+        
+        /* Loading grain effect */
+        .grain {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Timer Bar Animation */
+        .timer-bar {
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased">
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-6 flex flex-col items-center">
+
+        <div class="w-full flex justify-between items-end mb-4 border-b border-white/10 pb-2">
+            <div>
+                <div class="text-[10px] text-slate-500 uppercase tracking-widest">Current Scene</div>
+                <div class="text-xl font-arcade text-white" id="progressText">1 / 10</div>
+            </div>
+            <div class="text-right">
+                <div class="text-[10px] text-slate-500 uppercase tracking-widest">Score</div>
+                <div class="text-2xl font-mono text-xmasGold" id="scoreDisplay">000</div>
+            </div>
+        </div>
+
+        <div id="quizArea" class="w-full max-w-2xl relative">
+            
+            <div class="w-full h-2 bg-slate-800 mb-4 rounded-full overflow-hidden">
+                <div id="timerBar" class="h-full bg-xmasGold timer-bar" style="width: 100%"></div>
+            </div>
+
+            <div class="cinema-screen rounded-lg overflow-hidden aspect-video mb-6 group relative">
+                <div class="grain"></div>
+                
+                <img id="movieImage" src="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Guess the movie">
+                
+                <div id="overlay" class="absolute inset-0 bg-black/80 flex items-center justify-center hidden z-20">
+                    <h2 class="font-arcade text-3xl text-red-500">TIME'S UP!</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="optionsGrid">
+                </div>
+
+        </div>
+
+        <div id="resultsArea" class="hidden text-center max-w-md mx-auto pt-10">
+            <div class="mb-6 relative inline-block">
+                <i class="fas fa-film text-6xl text-slate-700"></i>
+                <i class="fas fa-star text-4xl text-xmasGold absolute -top-2 -right-2 animate-bounce"></i>
+            </div>
+            
+            <h1 class="font-arcade text-4xl text-white mb-2">That's a Wrap!</h1>
+            <p class="text-slate-400 mb-8">You recognized <span id="finalCount" class="text-white font-bold">0</span> movies.</p>
+            
+            <div class="bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
+                <div class="text-xs text-slate-500 uppercase tracking-widest mb-1">Total Score</div>
+                <div class="text-5xl font-mono text-xmasGold font-bold" id="finalScore">0</div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="location.reload()" class="w-full py-3 rounded-lg border border-white/20 text-white hover:bg-white/5 transition">
+                    Replay Scene
+                </button>
+                <a href="christmas-hub.html" class="w-full block py-3 rounded-lg bg-red-700 text-white font-bold hover:bg-red-600 transition">
+                    Back to Hub
+                </a>
+            </div>
+        </div>
+
+
+
+        <article class="mt-20 border-t border-white/10 pt-12 max-w-4xl mx-auto text-center md:text-left">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div>
+            <span class="text-xmasGold font-bold tracking-widest uppercase text-xs">Cinematography Analysis</span>
+            <h2 class="text-3xl font-bold text-white mt-2 mb-4">Why Do Christmas Movies Look Like That?</h2>
+            <p class="text-slate-400 leading-relaxed mb-4">
+                You recognized these movies instantly, but why? It's all about <strong>Color Grading</strong>. Christmas movies utilize a specific "Warm/Cool" contrast.
+            </p>
+            <p class="text-slate-400 leading-relaxed">
+                Directors often bathe indoor scenes in "Tungsten" (Orange/Gold) light to simulate fire and candlelight, while outdoor scenes are pushed towards "Cyan" (Blue) to simulate winter moonlight. This contrast creates an immediate subconscious feeling of "Hygge" or coziness.
+            </p>
+        </div>
+        <div class="bg-black/40 p-6 rounded-xl border border-white/10">
+             <h3 class="text-white font-bold mb-4">Visual Palettes Deconstructed</h3>
+             <ul class="space-y-3 text-sm text-slate-300">
+                 <li class="flex items-center gap-3"><span class="w-4 h-4 rounded bg-green-700"></span> <strong>Elf:</strong> Hyper-saturated Emerald Green (Fantasy)</li>
+                 <li class="flex items-center gap-3"><span class="w-4 h-4 rounded bg-red-600"></span> <strong>Home Alone:</strong> Festive Red & Brick (Reality)</li>
+                 <li class="flex items-center gap-3"><span class="w-4 h-4 rounded bg-blue-900"></span> <strong>Polar Express:</strong> Midnight Blue & Ice (Dreamlike)</li>
+             </ul>
+        </div>
+    </div>
+</article>
+    </main>
+
+    <script>
+        // ==========================================
+        // 🎞️ MOVIE DATA (PLACEHOLDERS)
+        // You must replace the 'img' URLs with real screenshots later!
+        // ==========================================
+        const scenes = [
+            {
+                // Home Alone: Kevin screaming
+                img: "https://placehold.co/800x450/1e293b/fbbf24?text=Scene:+Kid+Screaming+in+Mirror",
+                options: ["Home Alone", "Elf", "A Christmas Story", "Richie Rich"],
+                a: 0
+            },
+            {
+                // Elf: Buddy eating spaghetti
+                img: "https://placehold.co/800x450/064e3b/ffffff?text=Scene:+Elf+Eating+Spaghetti",
+                options: ["Fred Claus", "Elf", "The Santa Clause", "Bad Santa"],
+                a: 1
+            },
+            {
+                // Die Hard: Vent crawl
+                img: "https://placehold.co/800x450/7f1d1d/ffffff?text=Scene:+Man+Crawling+in+Vent",
+                options: ["Lethal Weapon", "Speed", "Die Hard", "Mission Impossible"],
+                a: 2
+            },
+            {
+                // Grinch: Holding Max the dog
+                img: "https://placehold.co/800x450/4d7c0f/ffffff?text=Scene:+Green+Monster+Holding+Dog",
+                options: ["Shrek", "Gremlins", "The Grinch", "Monsters Inc"],
+                a: 2
+            },
+            {
+                // Christmas Vacation: House lights
+                img: "https://placehold.co/800x450/1e1b4b/fbbf24?text=Scene:+House+with+1000+Lights",
+                options: ["Deck the Halls", "Christmas Vacation", "Jingle All The Way", "Four Christmases"],
+                a: 1
+            },
+            {
+                // Polar Express: The train on ice
+                img: "https://placehold.co/800x450/1e3a8a/ffffff?text=Scene:+Train+on+Frozen+Lake",
+                options: ["Harry Potter", "The Polar Express", "A Christmas Carol", "Narnia"],
+                a: 1
+            },
+            {
+                // A Christmas Story: Leg Lamp
+                img: "https://placehold.co/800x450/7c2d12/fbbf24?text=Scene:+Lamp+Shaped+Like+Leg",
+                options: ["A Christmas Story", "Elf", "Scrooged", "It's a Wonderful Life"],
+                a: 0
+            },
+            {
+                // Love Actually: Cue cards
+                img: "https://placehold.co/800x450/334155/ffffff?text=Scene:+Man+Holding+Cue+Cards",
+                options: ["The Holiday", "Last Christmas", "Love Actually", "Notting Hill"],
+                a: 2
+            },
+            {
+                // Nightmare Before Christmas: Jack on hill
+                img: "https://placehold.co/800x450/3f3f46/ffffff?text=Scene:+Skeleton+on+Curled+Hill",
+                options: ["Corpse Bride", "Frankenweenie", "Nightmare Before Christmas", "Coco"],
+                a: 2
+            },
+            {
+                // Santa Clause: Tim Allen putting on suit
+                img: "https://placehold.co/800x450/991b1b/ffffff?text=Scene:+Man+Putting+on+Red+Suit",
+                options: ["Christmas with the Kranks", "The Santa Clause", "Jingle All The Way", "Santa Paws"],
+                a: 1
+            }
+        ];
+
+        // Game State
+        let currentIdx = 0;
+        let score = 0;
+        let correctCount = 0;
+        let timeLeft = 10;
+        let timerInterval;
+        let isLocked = false;
+
+        const ui = {
+            img: document.getElementById('movieImage'),
+            opts: document.getElementById('optionsGrid'),
+            timer: document.getElementById('timerBar'),
+            score: document.getElementById('scoreDisplay'),
+            prog: document.getElementById('progressText'),
+            quiz: document.getElementById('quizArea'),
+            res: document.getElementById('resultsArea'),
+            finalScore: document.getElementById('finalScore'),
+            finalCount: document.getElementById('finalCount'),
+            overlay: document.getElementById('overlay')
+        };
+
+        function startRound() {
+            // Reset logic
+            clearInterval(timerInterval);
+            isLocked = false;
+            timeLeft = 10;
+            ui.overlay.classList.add('hidden');
+            ui.timer.style.width = '100%';
+            ui.timer.classList.remove('bg-red-500');
+            ui.timer.classList.add('bg-xmasGold');
+
+            const data = scenes[currentIdx];
+            
+            // Update UI
+            ui.img.src = data.img;
+            ui.prog.textContent = `${currentIdx + 1} / ${scenes.length}`;
+            ui.opts.innerHTML = '';
+
+            // Generate buttons
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full py-4 px-6 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-200 font-bold text-lg transition-all active:scale-95";
+                btn.textContent = opt;
+                btn.onclick = () => handleAnswer(index, data.a, btn);
+                ui.opts.appendChild(btn);
+            });
+
+            // Start Timer
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                ui.timer.style.width = `${(timeLeft / 10) * 100}%`;
+                
+                if(timeLeft <= 3) {
+                    ui.timer.classList.remove('bg-xmasGold');
+                    ui.timer.classList.add('bg-red-500');
+                }
+
+                if(timeLeft <= 0) {
+                    handleTimeOut();
+                }
+            }, 100);
+        }
+
+        function handleAnswer(selected, correct, btn) {
+            if(isLocked) return;
+            isLocked = true;
+            clearInterval(timerInterval);
+
+            const buttons = ui.opts.querySelectorAll('button');
+
+            if(selected === correct) {
+                // Correct
+                btn.classList.remove('bg-slate-800', 'border-slate-700');
+                btn.classList.add('bg-green-600', 'border-green-500', 'text-white', 'shadow-[0_0_20px_rgba(34,197,94,0.5)]');
+                
+                // Score calculation: 1000 base + (time left * 100)
+                const points = 1000 + Math.floor(timeLeft * 100);
+                score += points;
+                correctCount++;
+                animateScore(points);
+            } else {
+                // Wrong
+                btn.classList.remove('bg-slate-800', 'border-slate-700');
+                btn.classList.add('bg-red-600', 'border-red-500', 'text-white');
+                
+                // Show correct
+                buttons[correct].classList.add('bg-green-600/50', 'border-green-500/50');
+            }
+
+            ui.score.textContent = score.toString().padStart(3, '0');
+
+            // Wait then next
+            setTimeout(nextRound, 1500);
+        }
+
+        function handleTimeOut() {
+            isLocked = true;
+            clearInterval(timerInterval);
+            ui.overlay.classList.remove('hidden');
+            setTimeout(nextRound, 2000);
+        }
+
+        function nextRound() {
+            currentIdx++;
+            if(currentIdx < scenes.length) {
+                startRound();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            ui.quiz.classList.add('hidden');
+            ui.res.classList.remove('hidden');
+            
+            // Count up animation for final score
+            let currentDisplay = 0;
+            const step = Math.ceil(score / 50);
+            const anim = setInterval(() => {
+                currentDisplay += step;
+                if(currentDisplay >= score) {
+                    currentDisplay = score;
+                    clearInterval(anim);
+                }
+                ui.finalScore.textContent = currentDisplay;
+            }, 20);
+
+            ui.finalCount.textContent = correctCount;
+        }
+
+        function animateScore(points) {
+            // Little floating +1000 animation could go here
+            ui.score.classList.add('scale-125', 'text-green-400');
+            setTimeout(() => ui.score.classList.remove('scale-125', 'text-green-400'), 200);
+        }
+
+        // Start
+        startRound();
+
+    </script>
+
+
+
+</body>
+</html>

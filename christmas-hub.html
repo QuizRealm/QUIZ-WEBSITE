@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <title>The Ultimate Christmas Trivia Hub | QuizRealm</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+    <meta name="description" content="The central hub for holiday trivia. Test your knowledge on Christmas movies, songs, Santa history, and discover your festive personality. Explore the origins of Yuletide.">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        xmasRed: '#7f1d1d', // Red-900
+                        xmasGreen: '#14532d', // Green-900
+                        xmasGold: '#fbbf24', // Amber-400
+                        xmasPurple: '#6b21a8', // Purple-800
+                        xmasIce: '#06b6d4', // Cyan-500
+                        bgDark: '#0A0F1E',
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'twinkle': 'twinkle 3s ease-in-out infinite',
+                        'marquee': 'marquee 25s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        twinkle: {
+                            '0%, 100%': { opacity: '0.4' },
+                            '50%': { opacity: '1' },
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            /* Christmas Gradient Background */
+            background-color: #020617; 
+            background-image: radial-gradient(circle at 50% 0%, #450a0a, #020617 70%);
+            min-height: 100vh; 
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(20, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+        }
+
+        /* Snow Animation Container */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            opacity: 0.3;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        /* Archive Card Styling */
+        .archive-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+        .archive-card:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(251, 191, 36, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Custom Scrollbar for Advent */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #7f1d1d;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #ef4444;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased selection:bg-red-500 selection:text-white">
+
+    <quiz-header></quiz-header>
+
+    <div class="bg-red-950/50 border-y border-red-500/20 py-2 overflow-hidden relative z-20 backdrop-blur-sm">
+        <div class="animate-marquee whitespace-nowrap flex gap-12 text-xs font-mono text-red-200 tracking-widest uppercase">
+            <span><i class="fas fa-snowflake mr-2"></i> Only <span id="tickerDays">00</span> Days Until Christmas</span>
+            <span><i class="fas fa-film mr-2"></i> Popular: "Impossible Movie Quotes" is the #1 Holiday Game</span>
+            <span><i class="fas fa-cookie mr-2"></i> Did you know? Santa's suit wasn't always red.</span>
+            <span><i class="fas fa-star mr-2"></i> Top Song: "Jingle Bell Rock" is currently rated 4.8/5</span>
+        </div>
+    </div>
+
+    <div class="snow-container" id="snowContainer"></div>
+
+    <main class="flex-grow w-full relative z-10">
+        
+        <section class="max-w-[1200px] mx-auto px-4 pt-10 pb-8 text-center relative">
+            
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-red-600/20 blur-[100px] rounded-full -z-10"></div>
+
+            <div class="inline-flex items-center gap-2 mb-4 px-4 py-1 rounded-full bg-red-900/30 border border-red-500/30 text-red-300 text-xs font-bold uppercase tracking-widest animate-fade-in">
+                <i class="fas fa-holly-berry text-green-400"></i> Welcome Holiday Explorer
+            </div>
+
+            <h1 class="font-arcade text-5xl md:text-7xl text-white mb-6 drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
+                The <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300">Christmas</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-xmasGold to-yellow-200">Archive</span>
+            </h1>
+
+            <p class="text-slate-300 max-w-2xl mx-auto text-lg leading-relaxed mb-10">
+                Welcome to your holiday command center. Explore our festive quizzes, test your knowledge on cinema classics, and discover the history behind your favorite traditions.
+            </p>
+
+        </section>
+<section class="max-w-[1200px] mx-auto px-4 mb-20">
+            <div class="flex items-end justify-between mb-8 border-b border-white/10 pb-4">
+                <h2 class="font-arcade text-2xl text-white flex items-center gap-3">
+                    <i class="fas fa-gamepad text-red-500"></i> Featured Holiday Quizzes
+                </h2>
+                <span class="text-xs text-slate-500 uppercase tracking-widest hidden md:inline">5 Games Available</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <a href="quiz-xmas-quotes.html" class="group relative overflow-hidden rounded-xl border border-red-500/20 bg-gradient-to-br from-red-950/40 to-black p-6 hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-quote-right text-5xl text-red-500"></i>
+                    </div>
+                    <div class="text-red-400 text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Trivia Challenge
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-red-100">Impossible Quotes</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-red-900 pl-3">"You'll shoot your eye out!" Can you identify these 10 famous lines?</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-red-400 group-hover:translate-x-2 transition-transform">
+                        START QUIZ <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <a href="quiz-xmas-persona.html" class="group relative overflow-hidden rounded-xl border border-green-500/20 bg-gradient-to-br from-green-950/40 to-black p-6 hover:border-green-500 hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-fingerprint text-5xl text-green-500"></i>
+                    </div>
+                    <div class="text-green-400 text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Personality Test
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-green-100">Your Holiday Persona</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-green-900 pl-3">Are you The Grinch, Buddy the Elf, or Kevin McCallister?</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-green-400 group-hover:translate-x-2 transition-transform">
+                        DISCOVER YOURSELF <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <a href="quiz-xmas-visual.html" class="group relative overflow-hidden rounded-xl border border-yellow-500/20 bg-gradient-to-br from-yellow-950/40 to-black p-6 hover:border-yellow-500 hover:shadow-[0_0_30px_rgba(234,179,8,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-eye text-5xl text-yellow-500"></i>
+                    </div>
+                    <div class="text-yellow-400 text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span> Speed Test
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-yellow-100">Screenshot Challenge</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-yellow-900 pl-3">We show 1 frame. You name the movie. 5 seconds per round.</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-yellow-400 group-hover:translate-x-2 transition-transform">
+                        VIEW IMAGES <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+                
+                <a href="quiz-xmas-history.html" class="group relative overflow-hidden rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-950/40 to-black p-6 hover:border-purple-500 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-scroll text-5xl text-purple-500"></i>
+                    </div>
+                    <div class="text-purple-400 text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span> Lore & History
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-purple-100">Myths & Legends</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-purple-900 pl-3">Discover the origins of Krampus and the real St. Nick.</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-purple-400 group-hover:translate-x-2 transition-transform">
+                        READ STORIES <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                 <a href="quiz-xmas-songs.html" class="group relative overflow-hidden rounded-xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/40 to-black p-6 hover:border-cyan-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-music text-5xl text-cyan-500"></i>
+                    </div>
+                    <div class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span> Opinion Poll
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-cyan-100">Naughty or Nice Songs</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-cyan-900 pl-3">Rate these 10 classic jingles and discover your music vibe.</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-cyan-400 group-hover:translate-x-2 transition-transform">
+                        START LISTENING <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <div class="w-full max-w-5xl mx-auto mb-16 relative z-20">
+            
+            <div class="flex flex-col md:flex-row justify-between items-end mb-6 px-4">
+                <div class="text-left">
+                    <span class="inline-block py-1 px-3 rounded bg-red-900/30 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest mb-2 animate-pulse">
+                        <i class="fas fa-star mr-1"></i> New Game Every Day
+                    </span>
+                    <h2 class="font-arcade text-3xl md:text-4xl text-white leading-none drop-shadow-lg">
+                        THE <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-500">ADVENT CALENDAR</span>
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-2 max-w-lg">
+                        <strong>How it works:</strong> Starting Dec 10th, a new festive trivia challenge unlocks every 24 hours. Play all 15 to collect the full set!
+                    </p>
+                </div>
+                
+                <div class="hidden md:block text-right">
+                    <div class="text-[10px] text-slate-500 font-mono uppercase tracking-wider">
+                        Next Unlock: <span class="text-green-500">Midnight</span>
+                    </div>
+                    <div class="text-[10px] text-slate-500 font-mono uppercase tracking-wider">
+                        Theme: <span class="text-white">Daily Holiday Fun</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative group">
+                
+                <div class="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none"></div>
+                
+                <div class="flex gap-4 overflow-x-auto pb-8 pt-2 px-4 snap-x snap-mandatory custom-scrollbar">
+                    
+                    <div class="snap-center shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border-2 border-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.15)] bg-gradient-to-b from-green-900/20 to-black group/card hover:scale-[1.02] transition-transform duration-300 cursor-pointer">
+                        <div class="absolute top-3 right-3 bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">DEC 10</div>
+                        
+                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
+                            <div class="w-16 h-16 rounded-full bg-green-500/10 border border-green-500 flex items-center justify-center mb-4 group-hover/card:animate-bounce">
+                                <i class="fas fa-snowflake text-2xl text-green-400"></i>
+                            </div>
+                            <h3 class="font-arcade text-xl text-white mb-2">Winter Wonderland</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                                A cozy start to the season. Test your knowledge on snow, ice, and winter facts.
+                            </p>
+                            <span class="text-[10px] font-bold text-green-400 border border-green-500/30 px-3 py-1 rounded bg-green-900/20">
+                                PLAY NOW
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="snap-center shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border border-white/10 bg-black/40 grayscale hover:grayscale-0 transition-all duration-500 group/card">
+                        <div class="absolute top-3 right-3 bg-white/10 text-slate-400 text-[10px] font-bold px-2 py-1 rounded">DEC 11</div>
+                        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1543589077-47d81606c1bf?q=80&w=400')] bg-cover bg-center opacity-20 blur-sm group-hover/card:blur-none transition-all duration-700"></div>
+                        <div class="absolute inset-0 bg-black/60"></div>
+
+                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
+                            <i class="fas fa-lock text-3xl text-slate-600 mb-4 group-hover/card:text-white transition-colors"></i>
+                            <h3 class="font-arcade text-lg text-slate-300 mb-1">Theme: <br><span class="text-white">Frosty Friends</span></h3>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-2">
+                                Secret Surprise
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="snap-center shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border border-white/10 bg-black/40 grayscale hover:grayscale-0 transition-all duration-500 group/card">
+                        <div class="absolute top-3 right-3 bg-white/10 text-slate-400 text-[10px] font-bold px-2 py-1 rounded">DEC 12</div>
+                        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1512389142860-9c449e58a543?q=80&w=400')] bg-cover bg-center opacity-20 blur-sm group-hover/card:blur-none transition-all duration-700"></div>
+                        <div class="absolute inset-0 bg-black/60"></div>
+                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
+                            <i class="fas fa-lock text-3xl text-slate-600 mb-4 group-hover/card:text-white transition-colors"></i>
+                            <h3 class="font-arcade text-lg text-slate-300 mb-1">Theme: <br><span class="text-white">Reindeer Games</span></h3>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-2">Secret Surprise</p>
+                        </div>
+                    </div>
+
+                    <div class="snap-center shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border border-white/10 bg-black/40">
+                        <div class="absolute top-3 right-3 bg-white/10 text-slate-400 text-[10px] font-bold px-2 py-1 rounded">DEC 13</div>
+                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center">
+                            <i class="fas fa-gift text-2xl text-slate-700 mb-2"></i>
+                            <span class="text-xs text-slate-600 font-bold">COMING SOON</span>
+                        </div>
+                    </div>
+
+                    <div class="snap-center shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border border-white/10 bg-black/40">
+                        <div class="absolute top-3 right-3 bg-white/10 text-slate-400 text-[10px] font-bold px-2 py-1 rounded">DEC 14</div>
+                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center">
+                            <i class="fas fa-gift text-2xl text-slate-700 mb-2"></i>
+                            <span class="text-xs text-slate-600 font-bold">COMING SOON</span>
+                        </div>
+                    </div>
+
+                    <div class="snap-center shrink-0 w-32 h-80 rounded-xl border border-dashed border-white/10 flex items-center justify-center">
+                        <span class="text-xs text-slate-700 -rotate-90 tracking-widest uppercase">Wrapping Gifts...</span>
+                    </div>
+
+                    <div class="snap-center shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border-2 border-yellow-500 shadow-[0_0_40px_rgba(234,179,8,0.2)] bg-gradient-to-b from-yellow-900/40 to-black group/gold cursor-not-allowed">
+                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"></div>
+                        <div class="absolute top-0 left-0 w-full bg-yellow-500 text-black text-[9px] font-bold text-center py-1">GRAND PRIZE</div>
+                        
+                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
+                            <div class="mb-4 relative">
+                                <div class="absolute inset-0 bg-yellow-500 blur-xl opacity-20 animate-pulse"></div>
+                                <i class="fas fa-crown text-5xl text-yellow-500 drop-shadow-lg"></i>
+                            </div>
+                            <h3 class="font-arcade text-2xl text-white mb-2">THE CHRISTMAS<br>FINALE</h3>
+                            <p class="text-xs text-yellow-200/60 leading-relaxed mb-4">
+                                Only true holiday experts can open this gift.
+                            </p>
+                            <div class="flex items-center gap-2 text-[10px] text-yellow-500 border border-yellow-500/30 px-3 py-1 rounded bg-black/50">
+                                <i class="fas fa-lock"></i> OPENS DEC 25
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none"></div>
+            
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-xs text-slate-500 animate-pulse">
+                    <i class="fas fa-info-circle mr-1"></i> Bookmark this page to catch the daily drop.
+                </p>
+            </div>
+        </div>
+
+        
+        <section class="max-w-[1200px] mx-auto px-4 mb-20">
+            <div class="bg-black/20 border border-white/5 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 border-t border-r border-white/5 rounded-tr-3xl"></div>
+                
+                <h2 class="font-arcade text-3xl text-white mb-8 flex items-center gap-4">
+                    <i class="fas fa-folder-open text-slate-500"></i> The Holiday Archives
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-xmasGold font-bold text-sm uppercase tracking-wider mb-3">Origins</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">Why December 25th?</strong> It was originally the Roman festival of 'Sol Invictus' (The Unconquered Sun). The date was chosen to coincide with winter solstice celebrations, merging pagan traditions with the new Christian holiday.
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-xmasGold font-bold text-sm uppercase tracking-wider mb-3">Cinema</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">The "Die Hard" Debate:</strong> While released in July 1988, director John McTiernan confirmed it is a Christmas movie. It features 4 distinct Christmas songs and the plot relies entirely on the office holiday party.
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-xmasGold font-bold text-sm uppercase tracking-wider mb-3">Psychology</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">Nostalgia triggers:</strong> The smell of pine and cinnamon triggers the olfactory bulb, which is directly connected to the brain's amygdala (emotion). This is why holiday memories feel more "vivid" than others.
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-xmasGold font-bold text-sm uppercase tracking-wider mb-3">Music</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">The Gold Standard:</strong> Bing Crosby's "White Christmas" remains the best-selling single of all time, with over 50 million copies sold worldwide. It was written by Irving Berlin in 1940.
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-xmasGold font-bold text-sm uppercase tracking-wider mb-3">Folklore</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">Odin's Hunt:</strong> Before Santa had reindeer, the Norse god Odin rode an eight-legged horse named Sleipnir across the midwinter sky. Children would leave carrots in boots for the horse—the origin of stockings.
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl bg-gradient-to-br from-red-950/30 to-transparent border-red-900/30">
+                        <h3 class="text-red-400 font-bold text-sm uppercase tracking-wider mb-3">Quiz Strategy</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Looking to ace the <a href="quiz-xmas-quotes.html" class="text-red-400 underline decoration-dotted">Impossible Quotes</a> quiz? Remember that many modern classics (like *Elf*) reference older movies (*It's a Wonderful Life*) in their dialogue.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-[1000px] mx-auto px-4 mb-24 flex flex-col md:flex-row items-center gap-12">
+            
+            <div class="flex-1 space-y-6 text-slate-300">
+                <h3 class="text-3xl font-bold text-white font-arcade leading-tight">
+                    Get Your Full <br><span class="text-green-500">Festive Report</span>
+                </h3>
+                <p class="text-lg">
+                    Have you taken the Personality Assessment yet? The web version only gives you a quick summary.
+                </p>
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-3"><i class="fas fa-check text-green-500"></i> <span>Get your "Movie Compatibility" list.</span></li>
+                    <li class="flex items-center gap-3"><i class="fas fa-check text-green-500"></i> <span>Discover your "Holiday Style."</span></li>
+                    <li class="flex items-center gap-3"><i class="fas fa-check text-green-500"></i> <span>Receive a printable certificate.</span></li>
+                </ul>
+            </div>
+
+            <div class="w-full md:w-1/3">
+                <div class="bg-gradient-to-b from-green-900 to-black border border-green-500/30 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 group-hover:animate-[marquee_1s_ease-in-out]"></div>
+
+                    <div class="w-20 h-20 mx-auto bg-green-600 rounded-full flex items-center justify-center text-3xl text-white mb-6 shadow-lg shadow-green-500/50">
+                        <i class="fas fa-gift animate-pulse"></i>
+                    </div>
+                    <h4 class="text-white font-bold text-xl mb-2">Claim Your Report</h4>
+                    <p class="text-xs text-green-200 mb-6">Enter your email to unlock the full details.</p>
+                    <input type="email" placeholder="name@email.com" class="w-full bg-black/50 border border-green-500/30 rounded-lg p-3 text-sm text-white mb-3 focus:outline-none focus:border-green-500 transition-colors">
+                    <button class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg">
+                        UNLOCK NOW
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // 1. Snow Animation Logic
+        function createSnow() {
+            const container = document.getElementById('snowContainer');
+            const count = 50; // Number of snowflakes
+            
+            for(let i=0; i<count; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.innerHTML = '❄';
+                flake.style.left = Math.random() * 100 + '%';
+                flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                flake.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(flake);
+            }
+        }
+
+        // 2. Accurate Countdown Logic (Fixed)
+        function updateCountdown() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            let xmas = new Date(currentYear, 11, 25, 0, 0, 0); // Dec 25th 00:00:00
+            
+            // If Christmas has passed this year, target next year
+            if (now > xmas) {
+                xmas = new Date(currentYear + 1, 11, 25, 0, 0, 0);
+            }
+
+            const diff = xmas - now;
+
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            // Update Ticker as well
+            const tickerEl = document.getElementById('tickerDays');
+            if(tickerEl) tickerEl.textContent = d;
+        }
+
+        window.onload = function() {
+            createSnow();
+            updateCountdown();
+        };
+    </script>
+</body>
+</html>

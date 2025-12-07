@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <title>QuizRealm • Neural Draw</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0A0F1E">
+    <meta name="description" content="A high-speed drawing party game. Two teams compete to sketch and guess words before the timer runs out. Earn XP and Achievements.">
+    <script src="hangman.html" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="components.js" defer></script>
+    <script src="data.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        bgDark: '#0A0F1E',
+                        bgDarker: '#050810',
+                        accentPink: '#f43f5e',
+                        accentBlue: '#3b82f6',
+                        accentCyan: '#06b6d4',
+                        accentGreen: '#10b981',
+                        accentPurple: '#8b5cf6',
+                        glass: 'rgba(30, 41, 59, 0.7)'
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: var(--bgDarker); 
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #050810 80%);
+            min-height: 100vh; 
+            color: #e2e8f0;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        
+        .glass-panel { 
+            background: var(--glass); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- STYLED DROPDOWNS (Dark Theme) --- */
+        .setup-input {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 14px 16px;
+            border-radius: 12px;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            appearance: none; /* Hides default arrow */
+            cursor: pointer;
+        }
+        .setup-input:focus {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        /* Custom Arrow Container */
+        .select-wrapper { position: relative; }
+        .select-wrapper::after {
+            content: '\f078'; /* FontAwesome Chevron Down */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+            font-size: 12px;
+        }
+
+        /* --- TEAM CARDS --- */
+        .team-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+        .team-card.active {
+            opacity: 1;
+            transform: scale(1);
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 30px -5px rgba(59, 130, 246, 0.3);
+        }
+        .team-card.team-b.active {
+            background: rgba(244, 63, 94, 0.15);
+            border-color: #f43f5e;
+            box-shadow: 0 10px 30px -5px rgba(244, 63, 94, 0.3);
+        }
+
+        /* --- GAME OVERLAYS --- */
+        .game-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 8, 16, 0.98);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Timer Ring */
+        .timer-ring {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 8px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        .timer-ring.active { border-color: #10b981; animation: pulse-border 1s infinite; }
+        .timer-ring.danger { border-color: #ef4444; animation: pulse-border 0.5s infinite; }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .nav-tab { position: relative; color: #94a3b8; }
+        .nav-tab:hover { color: #e2e8f0; }
+        .nav-tab.active { color: white; font-weight: 700; border-bottom: 2px solid #3b82f6; }
+    </style>
+</head>
+<body class="flex flex-col antialiased selection:bg-accentPink selection:text-white">
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow p-4 md:p-8 max-w-[800px] mx-auto w-full flex flex-col gap-6">
+
+        <div id="setupPanel" class="glass-panel rounded-2xl p-6 md:p-10 animate-fade-in">
+            <div class="text-center mb-8">
+                <h1 class="font-arcade text-3xl md:text-4xl text-white mb-2">GAME CONFIG</h1>
+                <p class="text-slate-400 text-sm">Initialize teams for visual data transmission protocol.</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Team Blue</label>
+                        <input id="teamAInput" type="text" value="Team One" class="setup-input text-accentBlue font-bold focus:text-accentBlue">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Team Red</label>
+                        <input id="teamBInput" type="text" value="Team Two" class="setup-input text-accentPink font-bold focus:text-accentPink">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+    <label class="text-xs font-bold text-slate-400 uppercase mb-2 block tracking-wide">
+        Category
+    </label>
+
+    <div class="select-wrapper">
+        <select id="categorySelect" class="setup-input category-select">
+            <!-- Core packs -->
+            <option value="everyday">Everyday Objects</option>
+            <option value="movies">Blockbuster Movies</option>
+            <option value="animals">Wildlife</option>
+            <option value="jobs">Professions</option>
+            <option value="tech">Future Tech</option>
+            <option value="hard">Hard Mode (Concepts)</option>
+
+            <!-- New packs -->
+            <option value="sports">Sports & Games</option>
+            <option value="food">Delicious Food</option>
+            <option value="fantasy">Fantasy & Magic</option>
+            <option value="travel">Travel & Places</option>
+            <option value="objects">Random Objects</option>
+            <option value="nature">Nature & Outdoors</option>
+            <option value="clothes">Clothes & Style</option>
+            <option value="music">Music & Instruments</option>
+            <option value="household">Household Items</option>
+            <option value="landmarks">World Landmarks</option>
+        </select>
+    </div>
+</div>
+
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Round Timer</label>
+                        <div class="select-wrapper">
+                            <select id="timerInput" class="setup-input">
+                                <option value="60">60 Seconds (Blitz)</option>
+                                <option value="90">90 Seconds (Standard)</option>
+                                <option value="120" selected>120 Seconds (Relaxed)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button onclick="initGame()" class="w-full bg-white text-black hover:bg-slate-200 font-bold py-4 rounded-xl text-lg shadow-lg transition transform hover:scale-[1.01] flex items-center justify-center gap-2">
+                        <i class="fas fa-play"></i> START SESSION
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="gamePanel" class="hidden flex-col gap-6">
+            
+            <div class="glass-panel rounded-full px-6 py-3 flex justify-between items-center bg-black/40">
+                <span class="text-xs font-bold text-slate-400" id="roundDisplay">ROUND 1 / 10</span>
+                <button onclick="abortGame()" class="text-xs font-bold text-red-400 hover:text-white transition">ABORT</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div id="cardTeamA" class="team-card glass-panel rounded-2xl p-6 text-center">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-1" id="labelTeamA">TEAM A</h3>
+                    <div class="text-4xl font-arcade text-accentBlue mb-2" id="scoreTeamA">0</div>
+                    <div class="text-[10px] text-slate-600 font-mono">POINTS</div>
+                </div>
+                <div id="cardTeamB" class="team-card team-b glass-panel rounded-2xl p-6 text-center">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-1" id="labelTeamB">TEAM B</h3>
+                    <div class="text-4xl font-arcade text-accentPink mb-2" id="scoreTeamB">0</div>
+                    <div class="text-[10px] text-slate-600 font-mono">POINTS</div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-8 flex flex-col items-center text-center relative overflow-hidden border-t-4 border-t-slate-700 min-h-[300px] justify-center">
+                
+                <div class="mb-8">
+                    <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10">
+                        <i class="fas fa-eye-slash text-3xl text-slate-500"></i>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-2" id="actionTitle">Ready to Draw?</h2>
+                    <p class="text-slate-400 text-sm max-w-xs mx-auto leading-relaxed">
+                        Pass the device to the <strong class="text-accentCyan" id="currentTeamName">Drawer</strong>. <br>
+                        Keep the screen hidden from the guessers!
+                    </p>
+                </div>
+
+                <button onclick="showSecretWord()" class="bg-accentBlue hover:bg-blue-600 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 transition flex items-center gap-3 transform hover:scale-105">
+                    <i class="fas fa-unlock"></i> REVEAL WORD
+                </button>
+
+            </div>
+
+            <div class="flex justify-between items-center text-[10px] text-slate-600 font-mono uppercase">
+                <span>CAT: <span id="footerCat" class="text-slate-400">...</span></span>
+                <span>TIME: <span id="footerTime" class="text-slate-400">...</span></span>
+            </div>
+
+        </div>
+
+        <div class="border-t border-white/5 pt-8 mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="glass-panel rounded-xl p-6">
+                <div class="flex items-center gap-2 mb-3 border-b border-white/5 pb-2">
+                    <i class="fas fa-book-reader text-slate-500"></i>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-widest">Tactical Guide</h3>
+                </div>
+                <ul class="space-y-3 text-xs text-slate-400">
+                    <li class="flex gap-2"><span class="text-accentBlue">•</span> One operative draws, others intercept (guess).</li>
+                    <li class="flex gap-2"><span class="text-accentBlue">•</span> Strict radio silence (no talking) from the drawer.</li>
+                    <li class="flex gap-2"><span class="text-accentBlue">•</span> Gestures and alphanumeric symbols are prohibited.</li>
+                    <li class="flex gap-2"><span class="text-accentBlue">•</span> Successful interception awards +1 point and +10 XP.</li>
+                </ul>
+            </div>
+
+            <div class="glass-panel rounded-xl p-6">
+                <div class="flex items-center gap-2 mb-3 border-b border-white/5 pb-2">
+                    <i class="fas fa-wifi text-slate-500"></i>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-widest">Signal Calibration</h3>
+                </div>
+                <p class="text-xs text-slate-500 font-mono leading-relaxed">
+                    > SYSTEM_CHECK: ONLINE<br>
+                    > NEURAL_LINK: STABLE<br>
+                    > UPLINK_SPEED: 100%<br><br>
+                    This module tests rapid visual communication protocols. Ensure all operatives are ready before initiating timer sequence.
+                </p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <div id="wordSecretModal" class="game-overlay hidden">
+        <div class="text-xs font-bold text-accentPink uppercase tracking-[0.3em] mb-6 animate-pulse">CONFIDENTIAL INTEL</div>
+        
+        <div class="bg-slate-900/90 border border-white/20 p-8 rounded-3xl w-full max-w-md text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-accentBlue rounded-tl-2xl opacity-50"></div>
+            <div class="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-accentBlue rounded-br-2xl opacity-50"></div>
+
+            <p class="text-slate-400 text-xs font-mono mb-4">TARGET IDENTIFIER:</p>
+            
+            <h2 id="secretWordText" class="font-arcade text-4xl text-white my-4 uppercase break-words">WORD</h2>
+            
+            <p class="text-xs text-slate-500 mt-4 leading-relaxed">
+                You are drawing this.<br>Your team must guess it.<br><strong>Do not speak!</strong>
+            </p>
+        </div>
+
+        <button onclick="startRoundTimer()" class="mt-12 bg-white text-black hover:bg-slate-200 px-10 py-4 rounded-full font-bold text-lg shadow-[0_0_30px_rgba(255,255,255,0.3)] transition transform hover:scale-105 flex items-center gap-2">
+            <i class="fas fa-play"></i> START TIMER
+        </button>
+    </div>
+
+    <div id="timerModal" class="game-overlay hidden">
+        
+        <div class="absolute top-6 left-6 text-sm font-bold text-slate-500" id="timerTeamName">TEAM NAME</div>
+        <button onclick="abortRound()" class="absolute top-6 right-6 text-slate-600 hover:text-white"><i class="fas fa-times text-2xl"></i></button>
+
+        <div class="flex flex-col items-center w-full max-w-md">
+            
+            <div class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-10 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-accentRed animate-pulse"></span> Drawing in Progress
+            </div>
+
+            <div id="timerRing" class="timer-ring mb-12 active">
+                <div class="text-8xl font-mono font-bold text-white" id="timerDisplay">60</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 w-full">
+                <button onclick="endTurn(false)" class="bg-white/10 hover:bg-white/20 text-slate-300 font-bold py-5 rounded-2xl transition flex flex-col items-center gap-1 border border-white/5">
+                    <i class="fas fa-times text-2xl mb-1"></i>
+                    <span class="text-xs uppercase tracking-widest">Skip / Fail</span>
+                </button>
+                <button onclick="endTurn(true)" class="bg-accentGreen hover:bg-green-600 text-white font-bold py-5 rounded-2xl shadow-lg shadow-green-500/30 transition flex flex-col items-center gap-1 transform hover:scale-105">
+                    <i class="fas fa-check text-2xl mb-1"></i>
+                    <span class="text-xs uppercase tracking-widest">Correct!</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="handoverModal" class="game-overlay hidden text-center">
+        <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 text-4xl animate-bounce">
+            <i class="fas fa-exchange-alt text-white"></i>
+        </div>
+        
+        <div class="mb-8">
+            <p class="text-slate-400 text-xs uppercase mb-1">Previous Word:</p>
+            <h2 class="text-2xl font-bold text-white mb-2" id="prevWordDisplay">WORD</h2>
+            <div id="turnResultBadge" class="inline-block px-3 py-1 rounded bg-accentGreen/20 text-accentGreen text-xs font-bold uppercase border border-accentGreen/30">
+                +1 POINT
+            </div>
+        </div>
+
+        <p class="text-slate-400 mb-8 text-lg">Next up: <span id="nextTeamName" class="text-accentBlue font-bold">Team B</span></p>
+        <div class="text-xs font-mono text-accentBlue">NEXT ROUND IN <span id="handoverCount" class="text-white text-lg">5</span>...</div>
+    </div>
+<quiz-footer></quiz-footer>
+    <script>
+        // --- DATA ---
+        const WORDS = {
+  everyday: [
+    "Toothbrush","Laptop","Chair","Pizza","Umbrella","Shoe","Key","Book","Bicycle","Camera",
+    "Table","Door","Window","Backpack","Spoon","Fork","Knife","Wallet","Phone","Charger",
+    "Glasses","Couch","TV","Bed","Blanket","Pillow","Cup","Mug","Bottle","Pen",
+    "Pencil","Notebook","Soap","Towel","Fridge","Oven","Microwave","Fan","Heater","Bag",
+    "Hat","Scarf","Gloves","Watch","Socks","Mirror","Brush","Comb","Remote","Lamp",
+    "Trashcan","Clock","Shampoo","Conditioner","Sink","Toilet","Shower","Bathtub","Curtain","Shelf",
+    "Stairs","Elevator","Car","Bus","Train","Ticket","Receipt","Passport","Map","Calendar",
+    "Plant","Flowerpot","Broom","Dustpan","Vacuum","Laundry","Iron","Hanger","Suitcase","Ball",
+    "Water","Juice","Snack","Sandwich","Burger","Ice cream","Cake","Cookies","Bedside lamp","Doormat"
+  ],
+
+  movies: [
+    "Titanic","Avatar","Inception","Jaws","Rocky","Star Wars","Frozen","Matrix","Shrek","Batman",
+    "Superman","Spiderman","Godzilla","King Kong","Indiana Jones","Toy Story","Up","Coco","Cars","Jurassic Park",
+    "Harry Potter","Lord of the Rings","Hobbit","Interstellar","Tenet","The Lion King","Moana","Finding Nemo","Aladdin","Mulan",
+    "WALL-E","Monsters Inc","The Avengers","Iron Man","Hulk","Black Panther","Thor","Captain America","Ant-Man","Doctor Strange",
+    "Mission Impossible","James Bond","Pirates of the Caribbean","Men in Black","Transformers","The Terminator","The Notebook","The Pursuit of Happyness","Home Alone","Elf",
+    "Scream","The Conjuring","It","A Quiet Place","Dune","Oppenheimer","Barbie","The Wolf of Wall Street","The Godfather","Goodfellas",
+    "Taxi Driver","The Dark Knight","Joker","Zootopia","Kung Fu Panda","Madagascar","Ice Age","Despicable Me","Minions","Sonic",
+    "The Flash","Aquaman","Deadpool","Logan","Django","Gladiator","Braveheart","Troy","300","Night at the Museum"
+  ],
+
+  animals: [
+    "Elephant","Cat","Dog","Lion","Shark","Kangaroo","Octopus","Panda","Sloth","Zebra",
+    "Tiger","Giraffe","Monkey","Gorilla","Bear","Wolf","Fox","Rabbit","Horse","Cow",
+    "Sheep","Goat","Pig","Chicken","Duck","Eagle","Falcon","Owl","Parrot","Penguin",
+    "Dolphin","Whale","Seal","Walrus","Turtle","Frog","Lizard","Snake","Crocodile","Alligator",
+    "Hamster","Mouse","Rat","Squirrel","Hedgehog","Bat","Bee","Ant","Butterfly","Spider",
+    "Crab","Lobster","Jellyfish","Stingray","Hawk","Vulture","Camel","Donkey","Reindeer","Moose",
+    "Buffalo","Bison","Leopard","Cheetah","Hyena","Chimpanzee","Koala","Platypus","Flamingo","Peacock",
+    "Raven","Swan","Pigeon","Seagull","Starfish","Sea horse","Duckling","Puppy","Kitten","Goldfish"
+  ],
+
+  jobs: [
+    "Doctor","Astronaut","Firefighter","Chef","Teacher","Pilot","Detective","Artist","Farmer","Coder",
+    "Engineer","Mechanic","Nurse","Dentist","Scientist","Barber","Waiter","Police Officer","Judge","Lawyer",
+    "Architect","Builder","Plumber","Electrician","Carpenter","Driver","Journalist","Photographer","Singer","Dancer",
+    "Actor","Director","Producer","Baker","Butcher","Cashier","Librarian","Pharmacist","Therapist","Soldier",
+    "Scientist","Biologist","Chemist","Physicist","Geologist","Meteorologist","Forester","Fisherman","Sailor","Captain",
+    "Paramedic","Security Guard","Athlete","Coach","Referee","Designer","Fashion Model","Painter","Sculptor","Magician",
+    "Zookeeper","Caretaker","Translator","Tour Guide","Scientist","Programmer","Game Developer","Data Analyst","Pilot","Navigator",
+    "Astronomer","Researcher","Economist","Accountant","Banker","Cashier","Receptionist","Cleaner","Tailor","Shoemaker"
+  ],
+
+  tech: [
+    "Robot","Drone","Satellite","Rocket","Microchip","Server","Wifi","Phone","VR Headset","Laser",
+    "Keyboard","Mouse","Monitor","Laptop","Tablet","Battery","Charger","USB","Router","Modem",
+    "Smartwatch","Camera","Microphone","Headphones","Speaker","Hard Drive","SSD","Motherboard","GPU","CPU",
+    "AI","Algorithm","Code","Cloud","Database","Firewall","Network","Sensor","AR Glasses","Printer",
+    "Joystick","Gamepad","Console","Electric Car","Solar Panel","Wind Turbine","Smart TV","Projector","Hologram","Keyboard Switch",
+    "LED","OLED","Drone Controller","Power Bank","Smart Home","Thermostat","Security Camera","Fingerprint Sensor","Voice Assistant","3D Printer",
+    "QR Code","Barcode","HDMI Cable","Ethernet Cable","Bluetooth","NFC","Biometrics","Keyboard Cable","RAM","AI Chip",
+    "Satellite Dish","Space Probe","Mars Rover","Exoskeleton","Cybertruck","Data Center","Touchscreen","Fiber Optics","Smart Doorbell","USB Hub"
+  ],
+
+  hard: [
+    "Philosophy","Gravity","Wifi","Electricity","Democracy","Evolution","Silence","Chaos","Dream","Time",
+    "Relativity","Quantum","Parallel Universe","Infinity","Logic","Consciousness","Memory","Entropy","Magnetism","Illusion",
+    "Turbulence","Dimension","Vacuum","Matter","Energy","Radiation","Black Hole","Galaxy","Singularity","Probability",
+    "Symmetry","Friction","Momentum","Pressure","Refraction","Reflection","Wave","Particle","Radiation","Equilibrium",
+    "Nature","Instinct","Identity","Tradition","Myth","Morality","Virtue","Dilemma","Belief","Paradox",
+    "Decision","Intelligence","Strategy","Pattern","Balance","Risk","Signal","Noise","Complexity","Accuracy",
+    "Potential","Resistance","Conductivity","Frequency","Limit","Collision","Impulse","Cycle","Threshold","Perception"
+  ],
+
+
+  sports: [
+    "Football","Tennis","Basketball","Volleyball","Golf","Baseball","Cricket","Hockey","Boxing","Karate",
+    "Judo","Running","Swimming","Cycling","Skiing","Snowboard","Surfing","Skateboard","Badminton","Ping Pong",
+    "Rugby","Wrestling","Archery","Fencing","Rowing","Kayak","Canoe","Sailing","Diving","High Jump",
+    "Long Jump","Marathon","Sprint","Curling","Bowling","Darts","Billiards","Snooker","Pole Vault","Discus",
+    "Shot Put","Javelin","Handball","Water Polo","Figure Skating","Ice Hockey","Motorsport","Go Kart","Horse Racing","Fishing",
+    "Frisbee","Dodgeball","Kite Surfing","Climbing","Rock Wall","Triathlon","Gymnastics","Trampoline","Boxing Ring","Punching Bag",
+    "Goalkeeper","Referee","Whistle","Scoreboard","Stadium","Treadmill","Dumbbell","Barbell","Yoga","Pilates",
+    "Rowing Machine","Elliptical","Chessboard","Checkers","Pool Table","Penalty","Corner Kick","Tennis Racket","Basketball Hoop","Goal Net",
+    "Helmet","Pads","Skates","Kayak Paddle","Fishing Rod","Bow","Arrow","Target","Ski Poles","Sports Car"
+  ],
+
+  food: [
+    "Pizza","Burger","Sandwich","Pasta","Spaghetti","Rice","Sushi","Noodles","Hotdog","Chicken",
+    "Steak","Fries","Salad","Soup","Taco","Burrito","Quesadilla","Doughnut","Cake","Cupcake",
+    "Ice Cream","Chocolate","Cookie","Brownie","Pancake","Waffle","Bread","Croissant","Bagel","Cheese",
+    "Milk","Egg","Butter","Jam","Honey","Yogurt","Fish","Shrimp","Omelette","Nuggets",
+    "Falafel","Hummus","Shawarma","Kebab","BBQ","Apple","Banana","Orange","Grapes","Strawberry",
+    "Watermelon","Kiwi","Mango","Pineapple","Lemon","Lime","Peach","Plum","Tomato","Cucumber",
+    "Carrot","Potato","Onion","Garlic","Pepper","Corn","Broccoli","Spinach","Mushroom","Avocado",
+    "Chips","Popcorn","Cereal","Oatmeal","Milkshake","Smoothie","Juice","Cola","Tea","Coffee",
+    "Sausage","Turkey","Meatball","Lasagna","Ramen","Dumplings","Spring Roll","Nachos","Guacamole","Salsa"
+  ],
+
+  fantasy: [
+    "Dragon","Wizard","Knight","Castle","Princess","King","Queen","Elf","Dwarf","Goblin",
+    "Troll","Giant","Fairy","Mermaid","Unicorn","Phoenix","Magic Wand","Spell Book","Crystal Ball","Potion",
+    "Sword","Shield","Crown","Throne","Dungeon","Treasure","Map","Magic Carpet","Flying Horse","Witch",
+    "Broomstick","Cauldron","Castle Tower","Bridge","Chimera","Werewolf","Vampire","Zombie","Griffin","Pegasus",
+    "Hydra","Minotaur","Magic Portal","Dark Forest","Enchanted Tree","Magic Ring","Golden Key","Secret Door","Treasure Chest","Dungeon Door",
+    "Armor","Helmet","Gauntlet","Boots","Magic Staff","Robe","Scroll","Magic Fire","Ice Spell","Lightning Spell",
+    "Crystal","Gemstone","Floating Island","Sky Ship","Magic Door","Invisible Cloak","Talking Animal","Ancient Ruins","Mystic Cave","Moon Temple"
+  ],
+
+  travel: [
+    "Airport","Airplane","Suitcase","Passport","Map","Compass","Hotel","Beach","Island","Mountain",
+    "Desert","Jungle","Forest","River","Lake","Bridge","Tunnel","Train","Bus","Taxi",
+    "Car","Motorbike","Bicycle","Scooter","Boat","Ship","Cruise","Lighthouse","Harbor","City",
+    "Village","Temple","Museum","Castle","Monument","Statue","Skyscraper","Park","Zoo","Aquarium",
+    "Market","Restaurant","Cafe","Street","Highway","Road","Path","Hiking Trail","Campfire","Tent",
+    "Sleeping Bag","Backpack","Binoculars","Camera","Ticket","Globe","Hot Air Balloon","Ski Resort","Waterfall","Cliff",
+    "Ferry","Port","Subway","Train Station","Bus Stop","Taxi Stand","Map Pin","Travel Guide","Souvenir","Sunset",
+    "Sunrise","Volcano","Cottage","Cabin","Resort","Swimming Pool","Snow","Iceberg","Polar Bear","Oasis"
+  ],
+
+  objects: [
+    "Clock","Bottle","Knife","Fork","Spoon","Cup","Mug","Plate","Bowl","Vase",
+    "Lamp","Candle","Mirror","Brush","Comb","Fan","Heater","Radio","TV","Remote",
+    "Scissors","Tape","Glue","Paper","Notebook","Envelope","Box","Bag","Wallet","Keychain",
+    "Chain","Lock","Battery","Charger","Speaker","Headphones","USB","Cable","Pen","Marker",
+    "Highlighter","Drawing Compass","Ruler","Calculator","Laptop","Tablet","Keyboard","Mouse","Mousepad","Chalk",
+    "Eraser","Sharpener","File","Folder","Trashcan","Bucket","Broom","Dustpan","Mop","Ladder",
+    "Hammer","Saw","Wrench","Screwdriver","Drill","Nail","Bolt","Screw","Tape Measure","Rope",
+    "Balloon","Flag","Poster","Picture Frame","Soap","Towel","Blanket","Pillow","Basket","Jar"
+  ],
+
+  nature: [
+    "Tree","Flower","Leaf","Grass","Bush","Vine","Mountain","Hill","Valley","River",
+    "Lake","Ocean","Sea","Beach","Desert","Cactus","Palm Tree","Pine Tree","Waterfall","Cloud",
+    "Rain","Snow","Ice","Hail","Storm","Lightning","Rainbow","Wind","Sun","Moon",
+    "Stars","Sky","Fog","Mist","Rock","Pebble","Sand","Soil","Volcano","Cave",
+    "Forest","Jungle","Swamp","Marsh","Pond","Stream","Cliff","Glacier","Geyser","Coral",
+    "Reef","Island","Lagoon","Tide","Waves","Current","Flower Petal","Seed","Acorn","Nest",
+    "Beehive","Leaf Pile","Branch","Stump","Twig","Mushroom","Fern","Shrub","Animal Tracks","Footprint",
+    "Sea Shell","Driftwood","Sunset","Sunrise","Hot Spring","Wildflower","Storm Cloud","Hurricane","Bird Nest","Sprout"
+  ],
+
+  clothes: [
+    "Shirt","T-Shirt","Pants","Shorts","Dress","Skirt","Jacket","Coat","Hoodie","Sweater",
+    "Socks","Shoes","Boots","Sandals","Slippers","Tie","Bowtie","Hat","Cap","Beanie",
+    "Scarf","Gloves","Belt","Backpack","Purse","Wallet","Sunglasses","Watch","Bracelet","Ring",
+    "Necklace","Earrings","Uniform","Suit","Tuxedo","Overalls","Raincoat","Poncho","Tracksuit","Sportswear",
+    "Swimsuit","Bikini","Bathrobe","Pajamas","Underwear","Boxers","Briefs","Bra","Jersey","Cleats",
+    "Winter Coat","Snow Boots","Ski Jacket","Ski Pants","Life Jacket","Work Boots","Apron","Chef Hat","Cowboy Hat","Helmet",
+    "Beanie Hat","Wristband","Headband","Bandana","Rain Boots","Leather Jacket","Army Boots","Cape","Cloak","Mask"
+  ],
+
+  music: [
+    "Guitar","Piano","Drums","Violin","Flute","Saxophone","Trumpet","Harp","Cello","Keyboard",
+    "Microphone","Headphones","Speaker","Amp","DJ Booth","Turntable","Record","CD","Radio","Podcast",
+    "Concert","Stage","Spotlight","Singer","Band","Choir","Opera","Ballet","Dance","Beat",
+    "Rhythm","Melody","Tune","Instrument","Case","Music Note","Sheet Music","Drumsticks","Guitar Pick","Microphone Stand",
+    "Bass Guitar","Electric Guitar","Acoustic Guitar","Ukulele","Mandolin","Clarinet","Oboe","Trombone","French Horn","Tuba",
+    "Harmonica","Xylophone","Maracas","Tambourine","Triangle","Keyboard Stand","Music Stand","Mixer","Equalizer","Headset",
+    "Jukebox","Boom Box","Speaker Tower","Earbuds","Vinyl","Concert Ticket","Orchestra","Band Uniform","Marching Band","Metronome"
+  ],
+
+  household: [
+    "Sofa","Chair","Table","Lamp","Carpet","Curtain","Window","Door","Bed","Pillow",
+    "Blanket","Closet","Drawer","Shelf","TV","Remote","Fireplace","Clock","Fridge","Oven",
+    "Microwave","Toaster","Kettle","Blender","Mixer","Dishwasher","Washing Machine","Dryer","Iron","Trashcan",
+    "Vacuum","Broom","Dustpan","Mop","Bucket","Mirror","Sink","Faucet","Shower","Bathtub",
+    "Toilet","Toilet Paper","Soap","Shampoo","Towel","Hanger","Laundry Basket","Basket","Mat","Doormat",
+    "Fan","Heater","Air Conditioner","Light Switch","Charger","Phone Stand","Laptop Stand","Puzzle","Board Game","Toy",
+    "Candle","Plant Pot","Picture Frame","Painting","Bookshelf","Rug","Stool","Cushion","Duvet","Tablecloth"
+  ],
+
+  landmarks: [
+    "Eiffel Tower","Big Ben","Colosseum","Pyramids","Statue of Liberty","Great Wall","Taj Mahal","Sydney Opera House","Burj Khalifa","Golden Gate Bridge",
+    "Tower Bridge","Leaning Tower","Niagara Falls","Mount Fuji","Christ the Redeemer","Sphinx","Petra","Angkor Wat","Stonehenge","Acropolis",
+    "Brandenburg Gate","CN Tower","Times Square","Hollywood Sign","Mount Rushmore","Empire State Building","Grand Canyon","Machu Picchu","Mount Everest","Sagrada Familia",
+    "Blue Mosque","Hagia Sophia","Louvre Museum","Arc de Triomphe","Brooklyn Bridge","Versailles Palace","Kremlin","Red Square","Space Needle","Victoria Falls",
+    "Matterhorn","Swiss Alps","Santorini","Great Barrier Reef","Banff","Yellowstone","Uluru","Opera House Steps","Berlin Wall","Old Trafford",
+    "Cologne Cathedral","Disney Castle","Tower of Pisa","London Eye","Luxor Temple","Abu Simbel","Forbidden City","Temple of Heaven","Great Buddha","Marina Bay Sands"
+  ]
+};
+
+
+        const ROUNDS_PER_TEAM = 5;
+
+        // --- STATE ---
+        let config = { teamA: "Cyber Punks", teamB: "Neon Riders", category: "everyday", time: 120 };
+        let state = { 
+            turn: 0, // 0 = A, 1 = B
+            round: 1, 
+            scoreA: 0, scoreB: 0,
+            roundsA: 0, roundsB: 0,
+            timer: 0,
+            interval: null,
+            currentWord: "",
+            xpGained: 0
+        };
+
+        // --- 1. SETUP ---
+        function initGame() {
+            // Read Inputs
+            config.teamA = document.getElementById('teamAInput').value || "Team A";
+            config.teamB = document.getElementById('teamBInput').value || "Team B";
+            config.category = document.getElementById('categorySelect').value;
+            config.time = parseInt(document.getElementById('timerInput').value);
+
+            // Setup UI
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('gamePanel').classList.remove('hidden');
+            document.getElementById('gamePanel').classList.add('flex');
+
+            document.getElementById('labelTeamA').textContent = config.teamA;
+            document.getElementById('labelTeamB').textContent = config.teamB;
+            document.getElementById('footerCat').textContent = config.category.toUpperCase();
+            document.getElementById('footerTime').textContent = config.time + "s";
+
+            updateBoard();
+        }
+
+        // --- 2. GAME LOOP UI ---
+        function updateBoard() {
+            // Highlights
+            const cardA = document.getElementById("cardTeamA");
+            const cardB = document.getElementById("cardTeamB");
+            const currentTeam = state.turn === 0 ? config.teamA : config.teamB;
+
+            if(state.turn === 0) {
+                cardA.classList.add("active");
+                cardA.classList.remove("opacity-50");
+                cardB.classList.remove("active");
+                cardB.classList.add("opacity-50");
+                document.getElementById('turnDisplay').textContent = `${config.teamA} Drawing`;
+                document.getElementById('turnDisplay').className = "text-xs font-bold text-accentBlue uppercase tracking-wider";
+            } else {
+                cardB.classList.add("active");
+                cardB.classList.remove("opacity-50");
+                cardA.classList.remove("active");
+                cardA.classList.add("opacity-50");
+                document.getElementById('turnDisplay').textContent = `${config.teamB} Drawing`;
+                document.getElementById('turnDisplay').className = "text-xs font-bold text-accentPink uppercase tracking-wider";
+            }
+
+            document.getElementById('currentTeamName').textContent = currentTeam;
+            document.getElementById('roundDisplay').textContent = `ROUND ${state.round} / ${ROUNDS_PER_TEAM * 2}`;
+            document.getElementById('scoreTeamA').textContent = state.scoreA;
+            document.getElementById('scoreTeamB').textContent = state.scoreB;
+        }
+
+        // --- 3. REVEAL WORD ---
+        function showSecretWord() {
+            const pool = WORDS[config.category] || WORDS["everyday"];
+            state.currentWord = pool[Math.floor(Math.random() * pool.length)];
+            
+            document.getElementById('secretWordText').textContent = state.currentWord;
+            
+            // Show Overlay
+            const modal = document.getElementById('wordSecretModal');
+            modal.classList.remove('hidden');
+        }
+
+        // --- 4. START TIMER ---
+        function startRoundTimer() {
+            document.getElementById('wordSecretModal').classList.add('hidden');
+            document.getElementById('timerModal').classList.remove('hidden');
+            
+            document.getElementById('timerTeamName').textContent = state.turn === 0 ? config.teamA : config.teamB;
+            
+            state.timer = config.time;
+            updateTimerDisplay();
+
+            clearInterval(state.interval);
+            state.interval = setInterval(() => {
+                state.timer--;
+                updateTimerDisplay();
+                if(state.timer <= 0) endTurn(false);
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const el = document.getElementById('timerDisplay');
+            const ring = document.getElementById('timerRing');
+            el.textContent = state.timer;
+
+            if(state.timer <= 10) {
+                ring.classList.add('danger');
+                ring.classList.remove('active');
+                el.classList.add('text-red-500');
+            } else {
+                ring.classList.add('active');
+                ring.classList.remove('danger');
+                el.classList.remove('text-red-500');
+            }
+        }
+
+        // --- 5. END TURN (WITH FIXES) ---
+        function endTurn(success) {
+            clearInterval(state.interval);
+            document.getElementById('timerModal').classList.add('hidden');
+
+            if(success) {
+                if(state.turn === 0) state.scoreA++;
+                else state.scoreB++;
+                state.xpGained += 20; // 20 XP per correct guess
+            }
+
+            // --- HANDOVER MODAL UPDATE ---
+            const badge = document.getElementById('turnResultBadge');
+            const prevWord = document.getElementById('prevWordDisplay');
+            prevWord.textContent = state.currentWord; // Show what it was
+
+            if(success) {
+                badge.textContent = "+1 POINT";
+                badge.className = "inline-block px-3 py-1 rounded bg-accentGreen/20 text-accentGreen text-xs font-bold uppercase border border-accentGreen/30";
+            } else {
+                badge.textContent = "MISSED";
+                badge.className = "inline-block px-3 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold uppercase border border-red-500/30";
+            }
+
+            // Logic for next turn
+            state.turn = state.turn === 0 ? 1 : 0;
+            state.round++;
+
+            if(state.round > (ROUNDS_PER_TEAM * 2)) {
+                endGame();
+                return;
+            }
+
+            // Show Handover Screen
+            const modal = document.getElementById('handoverModal');
+            const nextName = state.turn === 0 ? config.teamA : config.teamB;
+            document.getElementById('nextTeamName').textContent = nextName;
+            document.getElementById('nextTeamName').className = state.turn === 0 ? "text-accentBlue font-bold" : "text-accentPink font-bold";
+            
+            modal.classList.remove('hidden');
+            
+            let count = 5; // Longer time to read
+            document.getElementById('handoverCount').textContent = count;
+            
+            const handInt = setInterval(() => {
+                count--;
+                document.getElementById('handoverCount').textContent = count;
+                if(count <= 0) {
+                    clearInterval(handInt);
+                    modal.classList.add('hidden');
+                    updateBoard();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            // Save XP to Profile
+            saveXP(state.xpGained);
+
+            let msg = "";
+            let color = "text-white";
+            if(state.scoreA > state.scoreB) { msg = `${config.teamA} WINS!`; color = "text-accentBlue"; }
+            else if(state.scoreB > state.scoreA) { msg = `${config.teamB} WINS!`; color = "text-accentPink"; }
+            else msg = "IT'S A DRAW!";
+
+            // Achievement check (First game)
+            if(typeof unlockAchievement === 'function') {
+                unlockAchievement('first_blood'); // Or specific pictionary achievement
+            }
+
+            alert(`GAME OVER\n\n${msg}\nFinal Score: ${state.scoreA} - ${state.scoreB}\n\nTotal XP Earned: +${state.xpGained}`);
+            location.reload();
+        }
+
+        function saveXP(amount) {
+            try {
+                const prof = JSON.parse(localStorage.getItem('QR_PROFILE') || '{}');
+                prof.xp = (prof.xp || 0) + amount;
+                if(!prof.level) prof.level = 1;
+                
+                // Simple Level Up Logic
+                if(prof.xp >= prof.level * 100) {
+                    prof.xp -= prof.level * 100;
+                    prof.level++;
+                }
+                localStorage.setItem('QR_PROFILE', JSON.stringify(prof));
+            } catch(e) { console.log("Profile save error", e); }
+        }
+
+        function abortRound() {
+            if(confirm("Cancel current round?")) {
+                clearInterval(state.interval);
+                document.getElementById('timerModal').classList.add('hidden');
+            }
+        }
+
+        function abortGame() {
+            if(confirm("Exit game? Progress will be lost.")) {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

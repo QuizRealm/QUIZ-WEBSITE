@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizRealm • Quiz Session</title>
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <meta name="theme-color" content="#0A0F1E">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+
+    <meta name="description" content="Play a fast, focused trivia session and track your score and streak.">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="data.js"></script>
+    <script src="facts.js"></script>
+    <script src="components.js" defer></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        bgDark: '#0A0F1E',
+                        bgDarker: '#050810',
+                        accentBlue: '#3b82f6',
+                        accentCyan: '#06b6d4',
+                        accentGreen: '#10b981',
+                        accentOrange: '#f97316',
+                        accentRed: '#ef4444',
+                        accentGold: '#eab308',
+                        glass: 'rgba(30, 41, 59, 0.7)'
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.5)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: var(--bgDarker); 
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #050810 80%);
+            min-height: 100vh; 
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        .grid-bg { 
+            background-size: 60px 60px; 
+            background-image: linear-gradient(to right, rgba(59, 130, 246, 0.03) 1px, transparent 1px), 
+                             linear-gradient(to bottom, rgba(59, 130, 246, 0.03) 1px, transparent 1px); 
+            mask-image: linear-gradient(to bottom, black 20%, transparent 90%); 
+        }
+
+        .glass-panel { 
+            background: var(--glass); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Option Buttons */
+        .option-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateX(8px);
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+        .option-btn.correct {
+            background: rgba(16, 185, 129, 0.3) !important;
+            border-color: #10b981 !important;
+            color: #10b981 !important;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        .option-btn.wrong {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: #ef4444 !important;
+            color: #ef4444 !important;
+            opacity: 0.6;
+        }
+
+        .power-btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
+        .power-btn:not(:disabled):hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .timer-bar { transition: width 1s linear; }
+        .fade-enter { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
+
+    <div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
+
+    <header class="sticky top-0 z-50 glass-panel border-b border-white/5 backdrop-blur-xl">
+        <div class="max-w-[1400px] mx-auto px-4 h-14 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <i class="fas fa-ghost text-2xl text-accentBlue"></i>
+                    <div class="font-arcade text-lg tracking-widest text-white hidden md:block">QUIZ<span class="text-accentBlue">REALM</span></div>
+                </a>
+            </div>
+
+            <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-4 bg-black/40 px-6 py-1 rounded-b-xl border-b border-l border-r border-white/10 shadow-lg">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase">Time</span>
+                    <span class="text-xl font-mono font-bold text-white" id="timerDisplay">00</span>
+                </div>
+                <div class="w-px h-4 bg-white/20"></div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase">Score</span>
+                    <span class="text-xl font-mono font-bold text-accentGreen" id="scoreDisplay">0</span>
+                </div>
+            </div>
+
+            <button onclick="quitQuiz()" class="text-[10px] font-bold text-red-400 hover:text-red-300 transition flex items-center gap-2 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-500/10">
+                EXIT QUIZ
+            </button>
+        </div>
+        <div class="w-full h-1 bg-black/50">
+            <div id="timeBar" class="h-full bg-accentCyan timer-bar shadow-[0_0_10px_rgba(6,182,212,0.8)]" style="width: 100%"></div>
+        </div>
+    </header>
+
+    <main class="flex-grow p-4 md:p-6 max-w-[1400px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
+
+        <div class="lg:col-span-8 space-y-4 relative">
+            <div id="quizCard" class="glass-panel rounded-2xl p-6 md:p-10 border-t-4 border-t-accentBlue min-h-[450px] flex flex-col justify-between relative overflow-hidden fade-enter">
+                
+                <div id="streakContainer" class="absolute top-0 right-0 p-4 opacity-0 transition-opacity duration-500">
+                    <div class="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 px-3 py-1 rounded-full animate-pulse-fast">
+                        <i class="fas fa-fire text-accentOrange text-lg"></i>
+                        <span class="text-sm font-bold text-accentOrange font-mono">x<span id="streakCount">0</span></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 mb-6">
+                    <span class="bg-accentBlue/20 text-accentBlue text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Question Info</span>
+                    <span class="text-xs text-slate-500 font-mono">Q <span id="qIndex">1</span> / <span id="qTotal">10</span></span>
+                </div>
+
+                <h2 id="questionText" class="text-2xl md:text-3xl font-bold text-white leading-tight mb-8 relative z-10 min-h-[90px]">
+                    Loading question…
+                </h2>
+
+                <div id="optionsContainer" class="grid grid-cols-1 gap-3 relative z-10"></div>
+
+                <div id="feedbackOverlay" class="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-300">
+                    <div id="feedbackIcon" class="text-7xl mb-4 animate-bounce"></div>
+                    <h3 id="feedbackText" class="text-3xl font-arcade text-white mb-2"></h3>
+                    <p id="feedbackSub" class="text-sm text-slate-400 mb-8 font-mono"></p>
+                    <button id="nextBtn" class="bg-white text-black hover:bg-accentBlue hover:text-white px-10 py-3 rounded-xl font-bold text-lg shadow-xl transition flex items-center gap-2">
+                        NEXT QUESTION <i class="fas fa-forward"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-4 flex justify-center items-center gap-4">
+                <button onclick="usePowerup('fifty')" id="btn5050" class="power-btn w-full md:w-auto bg-black/40 hover:bg:white/5 border border-white/10 rounded-lg py-3 px-6 flex items-center justify-center gap-2 transition">
+                    <i class="fas fa-cut text-indigo-400"></i> <span class="text-xs font-bold text-slate-300 uppercase">50/50</span>
+                </button>
+                <button onclick="usePowerup('time')" id="btnTime" class="power-btn w-full md:w-auto bg-black/40 hover:bg-white/5 border border-white/10 rounded-lg py-3 px-6 flex items-center justify-center gap-2 transition">
+                    <i class="fas fa-clock text-green-400"></i> <span class="text-xs font-bold text-slate-300 uppercase">+15s</span>
+                </button>
+                <button onclick="usePowerup('skip')" id="btnSkip" class="power-btn w-full md:w-auto bg-black/40 hover:bg-white/5 border border-white/10 rounded-lg py-3 px-6 flex items-center justify-center gap-2 transition">
+                    <i class="fas fa-fast-forward text-orange-400"></i> <span class="text-xs font-bold text-slate-300 uppercase">Skip</span>
+                </button>
+            </div>
+        </div>
+
+        <aside class="lg:col-span-4 space-y-6">
+            <div class="glass-panel rounded-xl overflow-hidden border border-accentCyan/30 relative group">
+                <div class="bg-accentCyan/10 p-2 border-b border-accentCyan/20 flex items-center gap-2">
+                    <i class="fas fa-database text-accentCyan text-xs"></i>
+                    <span class="text-[10px] font-bold text-accentCyan uppercase tracking-widest">Extra Context</span>
+                </div>
+                <div class="relative h-40 w-full overflow-hidden">
+                    <img id="factImg1" src="" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-bgDarker via-transparent to-transparent"></div>
+                    <div class="absolute bottom-2 left-2 right-2">
+                        <h4 class="text-white font-bold text-sm leading-tight drop-shadow-md" id="factTitle1">Loading...</h4>
+                    </div>
+                </div>
+                <div class="p-3 bg-black/20">
+                    <p class="text-xs text-slate-300 leading-relaxed line-clamp-3" id="factBody1">...</p>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-4 border-l-4 border-l-accentPurple relative">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[10px] font-bold text-accentPurple uppercase">Did You Know?</span>
+                    <i class="fas fa-terminal text-slate-600 text-xs"></i>
+                </div>
+                <p class="text-xs text-slate-400 font-mono leading-relaxed" id="factBody2">Loading secondary data stream...</p>
+            </div>
+        </aside>
+    </main>
+    
+    <div class="w-full max-w-[1400px] mx-auto px-6 pt-10 pb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <div class="glass-panel rounded-xl p-5 border-l-4 border-l-accentBlue">
+                <h3 class="text-sm font-bold text-white uppercase tracking-widest mb-3">Quiz Overview</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    This is a timed quiz session. Each correct answer increases your score and experience points. Use the power-ups (50/50, +15s, Skip) to help you when you are unsure, and try to build a long streak of correct answers.
+                </p>
+                <div class="text-[10px] text-slate-500 font-mono mt-3">Difficulty: <span id="missionDifficulty">OPERATIVE</span></div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-5 border-l-4 border-l-accentGreen lg:col-span-2">
+                <h3 class="text-sm font-bold text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <i class="fas fa-book-reader text-accentGreen"></i> How This Quiz Works
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-300">
+                    <div>
+                        <span class="font-bold text-white block mb-1">Timing & Score</span>
+                        <ul class="space-y-1 list-disc list-inside ml-2">
+                            <li>Higher difficulty can mean less time.</li>
+                            <li>Your score grows with each correct answer.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="font-bold text-white block mb-1">Streaks & XP</span>
+                        <ul class="space-y-1 list-disc list-inside ml-2">
+                            <li>3+ correct answers in a row activates a visible streak.</li>
+                            <li>Any wrong answer resets your streak to 0.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="font-bold text-white block mb-1">End of Quiz</span>
+                        <ul class="space-y-1 list-disc list-inside ml-2">
+                            <li>The timer reaching 0 counts as a wrong answer.</li>
+                            <li>The session ends after all questions are answered.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-panel rounded-xl p-5 border-l-4 border-l-accentGold">
+                <h3 class="text-sm font-bold text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <i class="fas fa-gamepad text-accentGold"></i> More Games
+                </h3>
+                <div class="space-y-2">
+                    <a href="timeline-history.html" class="flex items-center gap-3 p-2 bg-black/30 rounded hover:bg-black/50 transition">
+                        <i class="fas fa-hourglass-half text-accentGold"></i>
+                        <span class="text-xs font-bold text-white">History Timeline</span>
+                    </a>
+                     <a href="rapid.html" class="flex items-center gap-3 p-2 bg-black/30 rounded hover:bg-black/50 transition">
+                        <i class="fas fa-stopwatch text-accentRed"></i>
+                        <span class="text-xs font-bold text-white">Rapid Fire Mode</span>
+                    </a>
+                    <a href="minigames.html" class="flex items-center gap-3 p-2 bg-black/30 rounded hover:bg-black/50 transition">
+                        <i class="fas fa-pencil-alt text-accentPink"></i>
+                        <span class="text-xs font-bold text-white">Pictionary</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <div id="resultsModal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl hidden flex-col items-center justify-center p-4">
+        <div class="glass-panel border-2 border-accentBlue/30 rounded-3xl p-8 max-w-md w-full text-center relative overflow-hidden animate-pop-in">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-accentBlue/20 rounded-full blur-[80px] -z-10"></div>
+            
+            <i class="fas fa-flag-checkered text-5xl text-white mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"></i>
+            <h2 class="text-4xl font-arcade text-white mb-2 uppercase tracking-wide">Quiz<br>Complete</h2>
+            <p class="text-slate-400 text-sm mb-8">Here’s your quiz summary.</p>
+            
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="bg-black/40 p-3 rounded-xl border border-white/5">
+                    <div class="text-[10px] text-slate-500 uppercase font-bold mb-1">Score</div>
+                    <div class="text-xl font-mono text-accentGreen" id="resScore">0</div>
+                </div>
+                <div class="bg-black/40 p-3 rounded-xl border border-white/5">
+                    <div class="text-[10px] text-slate-500 uppercase font-bold mb-1">Best Streak</div>
+                    <div class="text-xl font-mono text-accentOrange" id="resStreak">0</div>
+                </div>
+                <div class="bg-black/40 p-3 rounded-xl border border-white/5">
+                    <div class="text-[10px] text-slate-500 uppercase font-bold mb-1">XP</div>
+                    <div class="text-xl font-mono text-accentBlue" id="resXP">0</div>
+                </div>
+            </div>
+
+            <div id="unlockSection" class="hidden mb-8 text-left">
+                <h3 class="text-xs font-bold text-accentGold uppercase mb-2 tracking-wider flex items-center gap-2">
+                    <i class="fas fa-unlock"></i> New Achievements
+                </h3>
+                <div id="unlockContainer" class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar"></div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="location.reload()" class="w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-accentBlue hover:text-white transition shadow-lg flex items-center justify-center gap-2 group">
+                    <i class="fas fa-redo group-hover:rotate-180 transition-transform"></i> PLAY AGAIN
+                </button>
+                <button onclick="location.href='index.html'" class="w-full py-4 bg-black/40 text-slate-300 font-bold rounded-xl hover:bg-white/10 hover:text-white border border-white/10 transition">
+                    BACK TO HOME
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // --- GAME CONFIG & STATE ---
+        const TIME_LIMIT = 30; 
+        let questions = [], index = 0, score = 0, streak = 0, maxStreak = 0, timer = TIME_LIMIT;
+        let timerInterval;
+        let powerups = { fifty: true, time: true, skip: true };
+        let activeCategory = 'general';
+        let currentDifficulty = 'EASY'; 
+
+        // Extra tracking for upgraded achievements
+        let fastCorrectCount = 0;   // correct answers in <= 10s
+        let wrongCount = 0;         // total wrong answers
+        let questionResults = [];   // per-question correctness (true/false)
+
+        // --- SHARED ACHIEVEMENT META (for the modal) ---
+        const ACHIEVEMENTS_DB = [
+            { id: "new_recruit",      name: "First Quiz Completed",    icon: "fa-flag" },
+            { id: "perfect_score",    name: "Flawless Score",          icon: "fa-crown" },
+            { id: "near_perfect",     name: "Almost Perfect",          icon: "fa-star-half-alt" },
+            { id: "accuracy_70",      name: "Solid Accuracy",          icon: "fa-bullseye" },
+            { id: "accuracy_80",      name: "Sharp Accuracy",          icon: "fa-crosshairs" },
+            { id: "accuracy_90",      name: "Laser Accuracy",          icon: "fa-bullseye" },
+            { id: "quick_thinker",    name: "Quick Response",          icon: "fa-stopwatch" },
+            { id: "streak_3",         name: "3-Answer Streak",         icon: "fa-fire" },
+            { id: "streak_7",         name: "Long Streak",             icon: "fa-bolt" },
+            { id: "science_whiz",     name: "Science Fan",             icon: "fa-atom" },
+            { id: "tech_guru",        name: "Tech Fan",                icon: "fa-microchip" },
+            { id: "history_buff",     name: "History Fan",             icon: "fa-landmark" },
+            { id: "geo_master",       name: "Geography Fan",           icon: "fa-globe" },
+            { id: "space_cadet",      name: "Space Explorer",          icon: "fa-moon" },
+            { id: "friends_fan",      name: "Friends Quiz Fan",        icon: "fa-mug-hot" },
+            { id: "tbbt_fan",         name: "TBBT Quiz Fan",           icon: "fa-atom" },
+            { id: "movie_buff",       name: "Movie Quiz Fan",          icon: "fa-film" }
+        ];
+
+        // --- INIT ---
+        function init() {
+            const params = new URLSearchParams(window.location.search);
+            activeCategory = (params.get('category') || 'general').toLowerCase();
+            const difficulty = (params.get('difficulty') || 'easy').toLowerCase();
+            
+            currentDifficulty = difficulty.toUpperCase();
+            document.getElementById('missionDifficulty').textContent = currentDifficulty;
+
+            loadQuestions(activeCategory, difficulty);
+            loadSidebarContent();
+        }
+
+        // --- LOADING LOGIC ---
+        function loadQuestions(cat, diff) {
+            if (typeof QUESTION_BANKS === "undefined" || !QUESTION_BANKS[cat]) {
+                questions = [
+                    {question: "Demo: What is 2+2?", options: ["3","4","5","6"], correctIndex: 1},
+                    {question: "Demo: Sky color?", options: ["Red","Green","Blue","Yellow"], correctIndex: 2},
+                    {question: "Demo: Capital of UK?", options: ["London","Paris","Rome","Berlin"], correctIndex: 0}
+                ];
+            } else {
+                const bank = QUESTION_BANKS[cat];
+                let pool = Array.isArray(bank) ? bank : (bank[diff] || bank['easy']);
+                questions = pool.sort(() => 0.5 - Math.random()).slice(0, 10);
+            }
+            
+            if(questions.length === 0) {
+                questions = [{question: "Error loading data.", options:["Ok"], correctIndex:0}];
+            }
+
+            document.getElementById('qTotal').textContent = questions.length;
+            renderQuestion();
+        }
+
+        function loadSidebarContent() {
+            if (typeof quizFacts === 'undefined' || Object.keys(quizFacts).length === 0) {
+                document.getElementById('factBody2').textContent = `Fact database offline.`;
+                return;
+            }
+
+            let factPool = [];
+            const activeCatKey = activeCategory; 
+            
+            if (quizFacts[activeCatKey] && quizFacts[activeCatKey].length > 0) {
+                factPool = quizFacts[activeCatKey];
+            } else {
+                Object.keys(quizFacts).forEach(k => {
+                    if (Array.isArray(quizFacts[k])) factPool = factPool.concat(quizFacts[k]);
+                });
+            } 
+
+            if (factPool.length === 0) return;
+
+            const f1 = factPool[Math.floor(Math.random() * factPool.length)];
+            let f2 = f1;
+            while (factPool.length > 1 && f2 === f1) {
+                f2 = factPool[Math.floor(Math.random() * factPool.length)];
+            }
+
+            document.getElementById('factTitle1').textContent = f1.title || "Extra info";
+            document.getElementById('factBody1').textContent = f1.body || "Data stream unavailable.";
+            document.getElementById('factImg1').src = f1.image || "https://via.placeholder.com/300x200";
+            document.getElementById('factBody2').textContent = f2.body || "Additional info unavailable.";
+        }
+
+        // --- GAMEPLAY ENGINE ---
+        function renderQuestion() {
+            clearInterval(timerInterval);
+            timer = TIME_LIMIT;
+            updateTimerUI();
+            startTimer();
+
+            if (index >= questions.length) {
+                endGame();
+                return;
+            }
+
+            const q = questions[index];
+            document.getElementById('qIndex').textContent = index + 1;
+            document.getElementById('questionText').textContent = q.question;
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            const card = document.getElementById('quizCard');
+            card.classList.remove('fade-enter');
+            void card.offsetWidth; 
+            card.classList.add('fade-enter');
+
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 text-slate-200 font-medium text-sm md:text-base";
+                btn.innerHTML = `<span class="inline-block w-6 text-slate-500 font-mono">${String.fromCharCode(65+i)}.</span> ${opt}`;
+                btn.onclick = () => handleAnswer(i, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btn) {
+            clearInterval(timerInterval);
+            const q = questions[index];
+
+            const timeUsed = TIME_LIMIT - timer;
+            const isCorrect = selectedIndex === q.correctIndex;
+            const correctBtn = document.getElementById('optionsContainer').children[q.correctIndex];
+
+            Array.from(document.getElementById('optionsContainer').children).forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                if (btn) btn.classList.add('correct');
+                score++;
+                streak++;
+                if(streak > maxStreak) maxStreak = streak;
+
+                questionResults[index] = true;
+                if (timeUsed <= 10) fastCorrectCount++;
+            } else {
+                if(btn) btn.classList.add('wrong');
+                if(correctBtn) correctBtn.classList.add('correct');
+                streak = 0;
+                wrongCount++;
+                questionResults[index] = false;
+
+                const card = document.getElementById('quizCard');
+                card.classList.add('animate-shake');
+                setTimeout(()=>card.classList.remove('animate-shake'), 500);
+            }
+            updateHUD();
+            
+            setTimeout(() => {
+                showFeedback(isCorrect, q.options[q.correctIndex]);
+            }, 800);
+        }
+
+        function showFeedback(isCorrect, rightAnswer) {
+            const overlay = document.getElementById('feedbackOverlay');
+            overlay.classList.remove('hidden');
+            void overlay.offsetWidth;
+            overlay.style.opacity = '1';
+
+            const icon = document.getElementById('feedbackIcon');
+            const title = document.getElementById('feedbackText');
+            const sub = document.getElementById('feedbackSub');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (isCorrect) {
+                icon.innerHTML = '🎉';
+                title.textContent = "Correct!";
+                title.className = "text-4xl font-arcade text-accentGreen mb-2";
+                sub.textContent = `Current streak: ${streak}`;
+            } else {
+                icon.innerHTML = '💀';
+                title.textContent = "Incorrect";
+                title.className = "text-4xl font-arcade text-accentRed mb-2";
+                sub.textContent = `Correct answer: ${rightAnswer}`;
+            }
+
+            nextBtn.onclick = () => {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+                index++;
+                renderQuestion();
+            };
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreDisplay').textContent = score * 100;
+            const sCont = document.getElementById('streakContainer');
+            document.getElementById('streakCount').textContent = streak;
+            sCont.style.opacity = streak >= 3 ? '1' : '0';
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timer--;
+                updateTimerUI();
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    handleAnswer(-1, null);
+                }
+            }, 1000);
+        }
+
+        function updateTimerUI() {
+            document.getElementById('timerDisplay').textContent = timer < 10 ? `0${timer}` : timer;
+            const pct = (timer / TIME_LIMIT) * 100;
+            const bar = document.getElementById('timeBar');
+            bar.style.width = `${pct}%`;
+            if (pct < 30) { 
+                bar.classList.remove('bg-accentCyan'); 
+                bar.classList.add('bg-accentRed'); 
+            } else { 
+                bar.classList.add('bg-accentCyan'); 
+                bar.classList.remove('bg-accentRed'); 
+            }
+        }
+
+        // --- ENDGAME & ACHIEVEMENTS ---
+        function endGame() {
+            const totalQuestions = questions.length || 1;
+            const resultData = processGameResults(
+                score, 
+                maxStreak, 
+                activeCategory, 
+                totalQuestions, 
+                fastCorrectCount, 
+                wrongCount
+            );
+
+            document.getElementById('resultsModal').classList.remove('hidden');
+            document.getElementById('resultsModal').classList.add('flex');
+            
+            document.getElementById('resScore').textContent = score;
+            document.getElementById('resStreak').textContent = maxStreak;
+            document.getElementById('resXP').textContent = `+${resultData.xpGained}`;
+
+            if(resultData.newUnlocks.length > 0) {
+                const section = document.getElementById('unlockSection');
+                const container = document.getElementById('unlockContainer');
+                section.classList.remove('hidden');
+                container.innerHTML = '';
+
+                resultData.newUnlocks.forEach(ach => {
+                    const el = document.createElement('div');
+                    el.className = "bg-accentGold/10 border border-accentGold/40 rounded-lg p-3 flex items-center gap-3 animate-pop-in";
+                    el.innerHTML = `
+                        <div class="w-8 h-8 rounded bg-black/40 flex items-center justify-center text-accentGold">
+                            <i class="fas ${ach.icon}"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-[10px] text-accentGold font-bold uppercase">Unlocked</div>
+                            <div class="text-sm font-bold text-white">${ach.name}</div>
+                        </div>
+                    `;
+                    container.appendChild(el);
+                });
+            }
+        }
+
+        function processGameResults(finalScore, bestStreak, category, totalQuestions, fastCount, wrongCount) {
+            const accuracy = finalScore / totalQuestions;
+            const baseXP = finalScore * 10;
+            const streakBonus = bestStreak * 5;
+            const completionBonus = 50;
+            const totalXP = baseXP + streakBonus + completionBonus;
+
+            let profile = JSON.parse(localStorage.getItem('QR_PROFILE') || '{"xp":0, "level":1, "games":0}');
+            profile.xp += totalXP;
+            profile.games += 1;
+            profile.level = Math.floor(profile.xp / 1000) + 1;
+            localStorage.setItem('QR_PROFILE', JSON.stringify(profile));
+
+            let userAch = JSON.parse(localStorage.getItem('quizAchievements') || '{}');
+            let newUnlocks = [];
+            const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+            const unlock = (id) => {
+                if(!userAch[id] || !userAch[id].unlocked) {
+                    userAch[id] = { unlocked: true, date: today };
+                    const meta = ACHIEVEMENTS_DB.find(a => a.id === id);
+                    if(meta) newUnlocks.push(meta);
+                }
+            };
+
+            // 1. Finished any quiz
+            unlock('new_recruit');
+
+            // 2. Accuracy-based
+            if (finalScore === totalQuestions && totalQuestions > 0) {
+                unlock('perfect_score');
+            }
+            if (wrongCount === 1 && totalQuestions > 1) {
+                unlock('near_perfect');
+            }
+            if (accuracy >= 0.7) unlock('accuracy_70');
+            if (accuracy >= 0.8) unlock('accuracy_80');
+            if (accuracy >= 0.9) unlock('accuracy_90');
+
+            // 3. Streak-based
+            if (bestStreak >= 3) unlock('streak_3');
+            if (bestStreak >= 7) unlock('streak_7');
+
+            // 4. Speed-based
+            if (fastCount >= 5) unlock('quick_thinker');
+
+            // 5. Category-based
+            if (category === 'science'  && finalScore >= 5) unlock('science_whiz');
+            if (category === 'tech'     && finalScore >= 5) unlock('tech_guru');
+            if (category === 'history'  && finalScore >= 5) unlock('history_buff');
+            if (category === 'geography'&& finalScore >= 5) unlock('geo_master');
+            if (category === 'space')                     unlock('space_cadet');
+            if (category === 'friends')                   unlock('friends_fan');
+            if (category === 'tbbt' || category === 'tbbt_quiz') unlock('tbbt_fan');
+            if (category === 'movies' && finalScore >= 3) unlock('movie_buff');
+
+            localStorage.setItem('quizAchievements', JSON.stringify(userAch));
+
+            return { xpGained: totalXP, newUnlocks };
+        }
+
+        // --- POWERUPS ---
+        function usePowerup(type) {
+            if (!powerups[type]) return;
+            const btn = document.getElementById(
+                type === 'fifty' ? 'btn5050' : 
+                type === 'time'  ? 'btnTime' : 
+                                   'btnSkip'
+            );
+            btn.disabled = true;
+            powerups[type] = false;
+
+            if (type === 'fifty') {
+                const q = questions[index];
+                const opts = Array.from(document.getElementById('optionsContainer').children);
+                let removed = 0;
+                opts.forEach((b, i) => {
+                    if (removed < 2 && i !== q.correctIndex) {
+                        b.style.opacity = '0.2';
+                        b.disabled = true;
+                        removed++;
+                    }
+                });
+            } else if (type === 'time') {
+                timer += 15;
+                updateTimerUI();
+            } else if (type === 'skip') {
+                clearInterval(timerInterval);
+                index++;
+                renderQuestion();
+            }
+        }
+
+        function quitQuiz() {
+            if(confirm("Exit this quiz? Your progress in this session will be lost.")) {
+                window.location.href = 'categories.html';
+            }
+        }
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

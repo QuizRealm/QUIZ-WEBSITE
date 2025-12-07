@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <title>QuizRealm • Knowledge Base</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0A0F1E">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <meta name="description" content="Frequently asked questions about QuizRealm. Learn about scoring, XP, privacy, and game modes.">
+    <script src="hangman.html" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="components.js" defer></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        bgDark: '#0A0F1E',
+                        bgDarker: '#050810',
+                        accentBlue: '#3b82f6',
+                        accentCyan: '#06b6d4',
+                        accentGreen: '#10b981',
+                        accentOrange: '#f97316',
+                        glass: 'rgba(30, 41, 59, 0.6)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: var(--bgDarker); 
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #050810 80%);
+            min-height: 100vh; 
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        .glass-panel { 
+            background: var(--glass); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Accordion Styles */
+        .faq-item {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(15, 23, 42, 0.4);
+        }
+        .faq-item:hover {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        .faq-item.active {
+            background: rgba(30, 58, 138, 0.2);
+            border-color: #3b82f6;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 300px; /* Adjust if content is huge */
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+            color: #3b82f6;
+        }
+
+        .nav-tab:hover { color: #e2e8f0; }
+    </style>
+</head>
+<body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
+
+    <quiz-header></quiz-header>
+    <main class="flex-grow p-4 md:p-12 max-w-4xl mx-auto w-full">
+
+        <div class="text-center mb-12">
+            <h1 class="font-arcade text-3xl md:text-5xl text-white mb-4">KNOWLEDGE BASE</h1>
+            <p class="text-slate-400 text-sm md:text-base max-w-lg mx-auto">
+                Access classified data regarding gameplay mechanics, user privacy, and system protocols.
+            </p>
+        </div>
+
+        <div class="space-y-4">
+
+            <div class="faq-item rounded-xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
+                <div class="p-5 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-sm md:text-lg">How does the XP & Leveling system work?</h3>
+                    <i class="fas fa-chevron-down text-slate-500 faq-icon"></i>
+                </div>
+                <div class="faq-answer px-5 pb-0">
+                    <p class="text-slate-400 text-sm pb-5 leading-relaxed">
+                        Experience Points (XP) are awarded for every correct answer. You earn bonus XP for maintaining streaks (3+ correct in a row) and completing quizzes on harder difficulties. Leveling up unlocks new profile badges and proves your mastery over the QuizRealm sectors.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item rounded-xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
+                <div class="p-5 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-sm md:text-lg">Is my progress saved across devices?</h3>
+                    <i class="fas fa-chevron-down text-slate-500 faq-icon"></i>
+                </div>
+                <div class="faq-answer px-5 pb-0">
+                    <p class="text-slate-400 text-sm pb-5 leading-relaxed">
+                        Currently, QuizRealm utilizes a <strong>Local Neural Storage</strong> protocol (Local Storage). Your progress is saved specifically to the device and browser you are using. If you clear your cache or switch devices, your local progress will reset. Cloud Sync accounts are in development for future updates.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item rounded-xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
+                <div class="p-5 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-sm md:text-lg">What are "Daily Quests"?</h3>
+                    <i class="fas fa-chevron-down text-slate-500 faq-icon"></i>
+                </div>
+                <div class="faq-answer px-5 pb-0">
+                    <p class="text-slate-400 text-sm pb-5 leading-relaxed">
+                        Daily Quests are specialized missions that reset every 24 hours. They offer a curated mix of questions from various sectors. Completing them awards double XP and contributes to your "Daily Streak" counter. Don't miss a day, or your streak resets to zero!
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item rounded-xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
+                <div class="p-5 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-sm md:text-lg">How do Power-Ups work?</h3>
+                    <i class="fas fa-chevron-down text-slate-500 faq-icon"></i>
+                </div>
+                <div class="faq-answer px-5 pb-0">
+                    <ul class="text-slate-400 text-sm pb-5 space-y-2 list-disc pl-4">
+                        <li><strong>50/50:</strong> Removes two incorrect options, leaving you with a better chance.</li>
+                        <li><strong>Time Freeze:</strong> Adds +15 seconds to the countdown clock.</li>
+                        <li><strong>Skip:</strong> Bypasses the current question without breaking your streak (costs 0 points).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item rounded-xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
+                <div class="p-5 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-sm md:text-lg">What is "Neural Draw"?</h3>
+                    <i class="fas fa-chevron-down text-slate-500 faq-icon"></i>
+                </div>
+                <div class="faq-answer px-5 pb-0">
+                    <p class="text-slate-400 text-sm pb-5 leading-relaxed">
+                        Neural Draw is a local multiplayer party mode (similar to Pictionary). One player acts as the "Architect" (drawer) while others try to guess the secret word before the timer expires. It serves as a training module for visual recognition and rapid communication.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item rounded-xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
+                <div class="p-5 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-sm md:text-lg">How can I report a bug or bad question?</h3>
+                    <i class="fas fa-chevron-down text-slate-500 faq-icon"></i>
+                </div>
+                <div class="faq-answer px-5 pb-0">
+                    <p class="text-slate-400 text-sm pb-5 leading-relaxed">
+                        We strive for 100% data accuracy. If you encounter a glitch or an incorrect answer, please contact our support frequency immediately via the contact form linked in the footer. Screenshots are highly appreciated for rapid debugging.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-12 p-6 glass-panel rounded-xl text-center border border-white/10">
+            <h4 class="text-white font-bold mb-2">Need further assistance?</h4>
+            <p class="text-slate-400 text-sm mb-4">Our support droids are online 24/7.</p>
+            <a href="contact.html" class="inline-block bg-white/10 hover:bg-white/20 text-white font-bold py-2 px-6 rounded-lg transition text-sm border border-white/5">
+                CONTACT SUPPORT
+            </a>
+        </div>
+
+    </main>
+
+  <quiz-footer></quiz-footer>
+    <script>
+        function toggleFaq(element) {
+            // Close others
+            document.querySelectorAll('.faq-item').forEach(item => {
+                if (item !== element) {
+                    item.classList.remove('active');
+                }
+            });
+            // Toggle clicked
+            element.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

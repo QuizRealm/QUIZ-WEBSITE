@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <title>QuizRealm • Quiz Setup</title>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+
+
+    <meta name="theme-color" content="#0A0F1E">
+    <meta name="description" content="Choose a category and difficulty, see how many questions are available, and review how the quiz works before you start.">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="data.js"></script> 
+    <script src="components.js" defer></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        bgDark: '#0A0F1E',
+                        bgDarker: '#050810',
+                        accentBlue: '#3b82f6',
+                        accentCyan: '#06b6d4',
+                        accentGreen: '#10b981',
+                        accentOrange: '#f97316',
+                        accentRed: '#ef4444',
+                        glass: 'rgba(30, 41, 59, 0.6)'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: var(--bgDarker); 
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #050810 80%);
+            min-height: 100vh; 
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .grid-bg { 
+            background-size: 60px 60px; 
+            background-image: linear-gradient(
+                to right, rgba(59, 130, 246, 0.03) 1px, transparent 1px
+            ), 
+            linear-gradient(
+                to bottom, rgba(59, 130, 246, 0.03) 1px, transparent 1px
+            ); 
+            mask-image: linear-gradient(to bottom, black 20%, transparent 90%); 
+        }
+        
+        .glass-panel { 
+            background: var(--glass); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .diff-card {
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .diff-card:hover {
+            transform: translateX(8px);
+            background: rgba(255,255,255,0.05);
+        }
+        .diff-easy:hover   { border-color: #06b6d4; box-shadow: 0 0 20px rgba(6, 182, 212, 0.2); }
+        .diff-medium:hover { border-color: #f97316; box-shadow: 0 0 20px rgba(249, 115, 22, 0.2); }
+        .diff-hard:hover   { border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+    </style>
+</head>
+<body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
+
+    <div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full flex flex-col items-center justify-start p-4 md:p-8 space-y-12">
+        
+        <div class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-8">
+
+            <div class="md:col-span-5 lg:col-span-4 flex flex-col gap-6">
+                
+                <button onclick="history.back()" class="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-2 transition w-fit">
+                    <i class="fas fa-chevron-left"></i> GO BACK
+                </button>
+
+                <div class="glass-panel rounded-xl overflow-hidden border border-white/10 group sticky top-24">
+                    <div class="relative h-64 md:h-80 w-full">
+                        <img id="catImg" src="" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-bgDarker via-transparent to-transparent"></div>
+                        
+                        <div class="absolute bottom-0 left-0 w-full p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-accentBlue/20 text-accentBlue border border-accentBlue/50 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-md" id="catGroup">General</span>
+                            </div>
+                            <h1 class="font-arcade text-3xl text-white leading-none shadow-black drop-shadow-md" id="catTitle">LOADING</h1>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 border-t border-white/5">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs text-slate-400 font-mono">QUIZ STATUS</span>
+                            <span class="text-xs text-accentGreen font-bold flex items-center gap-1">
+                                <span class="w-2 h-2 bg-accentGreen rounded-full animate-pulse"></span> READY
+                            </span>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            You’re about to start a quiz on <span id="catNameText" class="text-white font-bold"></span>. Choose a difficulty level below and then start the quiz when you’re ready.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="md:col-span-7 lg:col-span-8 flex flex-col justify-center">
+                
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-white mb-1">Choose difficulty level</h2>
+                    <p class="text-xs text-slate-500 font-mono">Higher difficulty can give more XP and a bigger challenge.</p>
+                </div>
+
+                <div class="space-y-4">
+                    
+                    <div onclick="goToQuiz('easy')" class="diff-card diff-easy glass-panel p-5 rounded-xl border-l-4 border-l-accentCyan flex items-center justify-between group">
+                        <div class="flex items-center gap-5">
+                            <div class="w-12 h-12 rounded-lg bg-accentCyan/10 flex items-center justify-center text-2xl text-accentCyan border border-accentCyan/20 group-hover:scale-110 transition">😌</div>
+                            <div>
+                                <h3 class="text-white font-bold text-lg group-hover:text-accentCyan transition">Easy</h3>
+                                <p class="text-xs text-slate-400">Standard time. Friendly questions to warm up.</p>
+                            </div>
+                        </div>
+                        <div class="text-right hidden sm:block">
+                            <div class="text-xl font-mono text-white font-bold" id="countEasy">--</div>
+                            <div class="text-[10px] text-slate-500 uppercase">Questions</div>
+                        </div>
+                    </div>
+
+                    <div onclick="goToQuiz('medium')" class="diff-card diff-medium glass-panel p-5 rounded-xl border-l-4 border-l-accentOrange flex items-center justify-between group">
+                        <div class="flex items-center gap-5">
+                            <div class="w-12 h-12 rounded-lg bg-accentOrange/10 flex items-center justify-center text-2xl text-accentOrange border border-accentOrange/20 group-hover:scale-110 transition">🧠</div>
+                            <div>
+                                <h3 class="text-white font-bold text-lg group-hover:text-accentOrange transition">Medium</h3>
+                                <p class="text-xs text-slate-400">Balanced time. A mix of easy and challenging questions.</p>
+                            </div>
+                        </div>
+                        <div class="text-right hidden sm:block">
+                            <div class="text-xl font-mono text-white font-bold" id="countMedium">--</div>
+                            <div class="text-[10px] text-slate-500 uppercase">Questions</div>
+                        </div>
+                    </div>
+
+                    <div onclick="goToQuiz('hard')" class="diff-card diff-hard glass-panel p-5 rounded-xl border-l-4 border-l-accentRed flex items-center justify-between group">
+                        <div class="flex items-center gap-5">
+                            <div class="w-12 h-12 rounded-lg bg-accentRed/10 flex items-center justify-center text-2xl text-accentRed border border-accentRed/20 group-hover:scale-110 transition">🔥</div>
+                            <div>
+                                <h3 class="text-white font-bold text-lg group-hover:text-accentRed transition">Hard</h3>
+                                <p class="text-xs text-slate-400">Shorter time. Tough questions for experts.</p>
+                            </div>
+                        </div>
+                        <div class="text-right hidden sm:block">
+                            <div class="text-xl font-mono text-white font-bold" id="countHard">--</div>
+                            <div class="text-[10px] text-slate-500 uppercase">Questions</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="w-full max-w-6xl space-y-8 border-t border-white/5 pt-12">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <div id="dossierCard" class="glass-panel rounded-xl p-6 h-full border-l-4 border-l-accentCyan">
+                    <div class="flex items-center gap-2 mb-4 border-b border-white/5 pb-2">
+                        <i class="fas fa-clipboard-list text-accentCyan"></i>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">Category Details</h3>
+                    </div>
+                    <div class="text-sm text-slate-300 leading-relaxed space-y-4">
+                        <p id="longDescription">Loading description for this category...</p>
+                        <p class="text-xs text-slate-500 italic" id="shortDescription">Summary: loading category overview…</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-xl p-6 h-full border-l-4 border-l-accentBlue">
+                    <div class="flex items-center gap-2 mb-4 border-b border-white/5 pb-2">
+                        <i class="fas fa-book text-slate-500"></i>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">How scoring works</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-accentBlue mt-2"></div>
+                            <div>
+                                <span class="text-white text-sm font-bold block">Scoring</span>
+                                <span class="text-xs text-slate-400">
+                                    Points are awarded based on how many questions you get right and how fast you answer them.
+                                </span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-accentOrange mt-2"></div>
+                            <div>
+                                <span class="text-white text-sm font-bold block">Streaks</span>
+                                <span class="text-xs text-slate-400">
+                                    Consecutive correct answers can boost your XP. A wrong answer resets your streak.
+                                </span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-accentGreen mt-2"></div>
+                            <div>
+                                <span class="text-white text-sm font-bold block">Achievements</span>
+                                <span class="text-xs text-slate-400">
+                                    Outstanding runs can unlock <a href="achievements.html" class="text-accentGreen underline">new achievements</a> on your profile.
+                                </span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="w-full">
+                <div class="glass-panel rounded-xl p-6 h-full border-l-4 border-l-accentGreen">
+                    <div class="flex items-center gap-2 mb-4 border-b border-white/5 pb-2">
+                        <i class="fas fa-play-circle text-accentGreen"></i>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">Quiz rules & scoring</h3>
+                    </div>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-accentGreen mt-1.5 flex-shrink-0"></i>
+                            <div>
+                                <span class="font-bold block text-white">What you do:</span>
+                                Answer 10 randomized questions from the difficulty level you pick.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-clock text-accentOrange mt-1.5 flex-shrink-0"></i>
+                            <div>
+                                <span class="font-bold block text-white">Time limit:</span>
+                                There is a time limit for each question. Harder modes may give you less time, so think quickly.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-medal text-accentGold mt-1.5 flex-shrink-0"></i>
+                            <div>
+                                <span class="font-bold block text-white">XP rewards:</span>
+                                XP is influenced by the difficulty you choose, your streak of correct answers, and how quickly you respond.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // === CATEGORY INFO STATUS FUNCTION ===
+        function updateDossierStatus(isAvailable, desc) {
+            const card = document.getElementById('dossierCard');
+            const longDescEl = document.getElementById('longDescription');
+            const shortDescEl = document.getElementById('shortDescription');
+            const iconEl = card.querySelector('.fa-clipboard-list, .fa-exclamation-triangle'); 
+            const titleEl = card.querySelector('h3');
+            
+            iconEl.classList.remove('fa-clipboard-list', 'text-accentCyan', 'fa-exclamation-triangle', 'text-accentRed');
+            card.classList.remove('opacity-50', 'border-l-accentRed', 'grayscale');
+
+            if (isAvailable) {
+                // Normal state: descriptions available
+                longDescEl.innerHTML = desc.long;
+                shortDescEl.innerHTML = `Summary: <strong>${desc.short}</strong>`;
+                iconEl.classList.add('fa-clipboard-list', 'text-accentCyan');
+                titleEl.textContent = 'Category Details';
+            } else {
+                // Fallback when you don’t have description data
+                longDescEl.innerHTML = `<strong>Note:</strong> No detailed description is available for this category yet. You can still play the quiz normally.`;
+                shortDescEl.innerHTML = `Summary: description not available.`;
+                
+                card.classList.add('opacity-50', 'border-l-accentRed', 'grayscale');
+                iconEl.classList.add('fa-exclamation-triangle', 'text-accentRed');
+                titleEl.textContent = 'Limited Category Info';
+            }
+        }
+
+        function initMode() {
+            const params = new URLSearchParams(window.location.search);
+            const category = (params.get('category') || 'geography').toLowerCase(); 
+            
+            if (typeof CATEGORY_CONFIG === "undefined" || !CATEGORY_CONFIG[category]) {
+                document.getElementById('catTitle').textContent = "Error";
+                document.getElementById('catNameText').textContent = "Unknown category";
+                updateDossierStatus(false, {}); 
+                return;
+            }
+
+            const config = CATEGORY_CONFIG[category];
+            const descData = (typeof CATEGORY_DESCRIPTIONS !== 'undefined') ? CATEGORY_DESCRIPTIONS[category] : null;
+
+            // Visuals
+            document.getElementById('catTitle').textContent = config.label.toUpperCase();
+            document.getElementById('catNameText').textContent = config.label;
+            document.getElementById('catGroup').textContent = (config.group || "General").toUpperCase();
+            
+            const defaultImg = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80";
+            const img = (config.img && config.img.trim() !== "") ? config.img : defaultImg;
+            document.getElementById('catImg').src = img;
+
+            // Descriptions
+            if (descData && descData.long && descData.short) {
+                updateDossierStatus(true, descData);
+            } else {
+                updateDossierStatus(false, {});
+            }
+
+            // Question counts
+            let e = 0, m = 0, h = 0;
+
+            if (typeof QUESTION_BANKS !== 'undefined' && QUESTION_BANKS[category]) {
+                const bank = QUESTION_BANKS[category];
+
+                if (bank.easy || bank.medium || bank.hard) {
+                    if (Array.isArray(bank.easy))   e = bank.easy.length;
+                    if (Array.isArray(bank.medium)) m = bank.medium.length;
+                    if (Array.isArray(bank.hard))   h = bank.hard.length;
+                } 
+                else if (Array.isArray(bank)) {
+                    const total = bank.length;
+                    const hasDiffProperty = bank.some(q => q.difficulty);
+
+                    if (hasDiffProperty) {
+                        e = bank.filter(q => q.difficulty === 'easy').length;
+                        m = bank.filter(q => q.difficulty === 'medium').length;
+                        h = bank.filter(q => q.difficulty === 'hard').length;
+                    } else {
+                        e = Math.ceil(total / 3);
+                        m = Math.ceil(total / 3);
+                        h = total - e - m;
+                    }
+                }
+            } else {
+                console.error("No data bank found for key:", category);
+            }
+
+            document.getElementById('countEasy').textContent   = e > 0 ? e : "N/A";
+            document.getElementById('countMedium').textContent = m > 0 ? m : "N/A";
+            document.getElementById('countHard').textContent   = h > 0 ? h : "N/A";
+        }
+
+        function goToQuiz(difficulty) {
+            const params = new URLSearchParams(window.location.search);
+            const category = (params.get('category') || 'geography').toLowerCase();
+            
+            const countEl = difficulty === 'easy' 
+                ? 'countEasy' 
+                : difficulty === 'medium' 
+                    ? 'countMedium' 
+                    : 'countHard';
+
+            const count = document.getElementById(countEl).innerText;
+
+            if (count === "N/A" || count === "0") {
+                alert(`No ${difficulty} questions found for this category yet.`);
+                return;
+            }
+
+            window.location.href = `quiz.html?category=${category}&difficulty=${difficulty}`;
+        }
+
+        window.addEventListener('load', initMode);
+    </script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+
+
+    <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday Personality Assessment | QuizRealm</title>
+    <meta name="description" content="A deep-dive psychological assessment to determine your true Holiday Persona. Are you a Traditionalist, a Chaos Agent, or a Secret Grinch?">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="components.js" defer></script>
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Outfit', 'sans-serif'], arcade: ['Bungee', 'cursive'], mono: ['Share Tech Mono', 'monospace'] }, colors: { xmasRed: '#991b1b', xmasGreen: '#166534', xmasGold: '#f59e0b', bgDark: '#020617' }, animation: { 'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite' } } } }
+    </script>
+    <style>
+        body { background-color: #020617; background-image: radial-gradient(circle at 50% -20%, #14532d, #020617 60%); min-height: 100vh; color: #e2e8f0; }
+        .glass-card { background: rgba(10, 20, 30, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .blur-gate { filter: blur(6px); user-select: none; pointer-events: none; }
+    </style>
+</head>
+<body class="flex flex-col antialiased">
+    <quiz-header></quiz-header>
+    <main class="flex-grow w-full max-w-3xl mx-auto px-4 py-8">
+        
+        <div id="introScreen" class="text-center space-y-8 animate-fade-in mb-24 min-h-[50vh] flex flex-col justify-center">
+            <div class="inline-block p-4 rounded-full bg-green-900/30 border border-green-500/30 text-green-400 text-4xl mb-4 shadow-[0_0_30px_rgba(22,163,74,0.2)]"><i class="fas fa-fingerprint"></i></div>
+            <h1 class="font-arcade text-4xl md:text-5xl text-white leading-tight">Identify Your <br> <span class="text-green-500">Holiday Persona</span></h1>
+            <p class="text-slate-300 text-lg max-w-xl mx-auto leading-relaxed">This isn't just a quiz. It's a psychometric analysis of your holiday spirit. Are you the <strong class="text-white">Planner</strong>, the <strong class="text-white">Chaos Agent</strong>, or the <strong class="text-white">Secret Softie</strong>?</p>
+            <button onclick="startQuiz()" class="px-8 py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl text-lg shadow-lg shadow-green-900/50 transition-all transform hover:scale-105">BEGIN ASSESSMENT</button>
+            <div class="text-xs text-slate-500 uppercase tracking-widest mt-4">Takes 2 Minutes • 8 Scenarios</div>
+        </div>
+
+        <div id="quizInterface" class="hidden min-h-[50vh]">
+            <div class="flex justify-between items-end mb-4 px-2"><span class="text-xs text-green-400 font-mono">ASSESSMENT IN PROGRESS</span><span class="text-xs font-bold text-white" id="progressText">1/8</span></div>
+            <div class="h-1.5 w-full bg-slate-800 rounded-full mb-8 overflow-hidden"><div id="progressBar" class="h-full bg-gradient-to-r from-green-500 to-emerald-300 transition-all duration-500" style="width: 0%"></div></div>
+            <div class="glass-card rounded-2xl p-6 md:p-10 relative overflow-hidden"><h2 class="text-2xl md:text-3xl font-bold text-white mb-8 leading-snug" id="questionText">Loading...</h2><div class="space-y-3" id="optionsGrid"></div></div>
+        </div>
+
+        <div id="analyzingScreen" class="hidden text-center space-y-6 min-h-[50vh] flex flex-col justify-center">
+            <div class="w-24 h-24 mx-auto border-4 border-green-900 border-t-green-500 rounded-full animate-spin"></div>
+            <h2 class="font-mono text-xl text-green-400 animate-pulse-fast" id="analyzingText">CALCULATING SPIRIT LEVELS...</h2>
+            <div class="max-w-md mx-auto h-2 bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-green-500 animate-[width_3s_ease-in-out_infinite]" style="width: 50%"></div></div>
+        </div>
+
+        <div id="resultsScreen" class="hidden">
+            <div class="glass-card rounded-2xl overflow-hidden mb-6 border-t-4 border-t-green-500">
+                <div class="p-8 text-center bg-gradient-to-b from-green-900/20 to-transparent">
+                    <p class="text-sm font-bold text-green-400 uppercase tracking-widest mb-2">Analysis Complete. You are:</p>
+                    <h1 class="font-arcade text-4xl md:text-5xl text-white mb-4 drop-shadow-lg" id="resultTitle">TYPE UNKNOWN</h1>
+                    <div class="text-6xl mb-6" id="resultIcon">🎁</div>
+                    <p class="text-slate-300 text-lg leading-relaxed max-w-xl mx-auto" id="resultShortDesc">Loading description...</p>
+                </div>
+            </div>
+            <div class="relative glass-card rounded-2xl p-8 overflow-hidden">
+                <div id="lockedContent" class="blur-gate opacity-50 space-y-6">
+                    <div><h3 class="font-bold text-white text-xl mb-2"><i class="fas fa-brain text-green-500 mr-2"></i> Psychological Deep Dive</h3><p class="text-sm text-slate-400">Your need for control during the holidays stems from a desire to create perfect memories...</p></div>
+                    <div class="grid grid-cols-2 gap-4"><div class="bg-black/40 p-4 rounded-lg"><h4 class="text-xs text-slate-500 uppercase">Ideal Movie Match</h4><div class="h-4 w-3/4 bg-slate-700 rounded mt-2"></div></div><div class="bg-black/40 p-4 rounded-lg"><h4 class="text-xs text-slate-500 uppercase">Conflict Trigger</h4><div class="h-4 w-1/2 bg-slate-700 rounded mt-2"></div></div></div>
+                </div>
+                <div id="lockOverlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm p-6 text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-full flex items-center justify-center text-2xl text-white shadow-xl mb-4"><i class="fas fa-lock"></i></div>
+                    <h3 class="font-arcade text-2xl text-white mb-2">Unlock Your Full Profile</h3>
+                    <p class="text-slate-300 text-sm mb-6 max-w-md">Get your detailed <strong>Psychological Analysis</strong> and <strong>Movie Compatibility List</strong> sent to your inbox.</p>
+                    <form onsubmit="handleUnlock(event)" class="w-full max-w-sm space-y-3">
+                        <input type="email" required placeholder="Enter your email address" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:border-green-500 focus:outline-none transition-all">
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg shadow-lg shadow-green-900/50 transition-all">REVEAL MY FULL RESULTS</button>
+                    </form>
+                </div>
+                <div id="realContent" class="hidden space-y-8 animate-fade-in">
+                    <div class="bg-green-900/20 border-l-4 border-green-500 p-4 rounded-r-lg"><h3 class="font-bold text-green-400 text-lg mb-2">🧠 Why You Are Like This</h3><p class="text-slate-300 text-sm leading-relaxed" id="psychoAnalysis">TEXT</p></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="bg-black/30 p-5 rounded-xl border border-white/5"><h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Your Movie Matches</h4><ul class="space-y-2 text-sm text-white" id="movieList"></ul></div><div class="bg-black/30 p-5 rounded-xl border border-white/5"><h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Your Holiday Superpower</h4><div class="flex items-center gap-3"><i class="fas fa-bolt text-yellow-400 text-xl"></i><p class="text-sm text-white" id="superPower">TEXT</p></div></div></div>
+                    <div class="text-center pt-6 border-t border-white/10"><a href="christmas-hub.html" class="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-white transition-colors"><i class="fas fa-arrow-left"></i> Back to Christmas Hub</a></div>
+                </div>
+            </div>
+        </div>
+
+        <article class="mt-24 border-t border-white/10 pt-16 max-w-3xl mx-auto">
+            <span class="text-green-500 font-bold tracking-widest uppercase text-xs">Behind the Science</span>
+            <h2 class="text-3xl font-bold text-white mt-2 mb-6">The 5 Archetypes of Holiday Stress: Which One Are You?</h2>
+            
+            <div class="prose prose-invert prose-slate max-w-none">
+                <p class="text-slate-300 leading-relaxed mb-6">
+                    Psychologists have long noted that the holiday season acts as a "pressure cooker" for family dynamics. The removal of work routines combined with high expectations creates a unique environment where our default personality traits are exaggerated. This quiz uses the <strong>"Holiday Stressor Scale"</strong> to categorize your reaction to festive chaos.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white/5 p-6 rounded-xl border-l-2 border-green-500">
+                        <h3 class="font-bold text-white text-lg mb-2">The Planner (Type A)</h3>
+                        <p class="text-xs text-slate-400">Driven by a need for control. They believe that if they just work hard enough, they can manufacture the "perfect" memory. Prone to burnout by Dec 24th.</p>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-xl border-l-2 border-green-500">
+                        <h3 class="font-bold text-white text-lg mb-2">The Chaos Agent (Type B)</h3>
+                        <p class="text-xs text-slate-400">Driven by stimulation. They reject the "rules" of adulthood and regress to a childlike state of wonder (and messiness). High energy, low organization.</p>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-white mb-4">Why We Regression During the Holidays</h3>
+                <p class="text-slate-300 leading-relaxed mb-4">
+                    It is a common phenomenon known as "Family Systems Theory." When you walk into your childhood home, you often revert to the role you played as a child—whether that was the "responsible one," the "peacekeeper," or the "rebel."
+                </p>
+                <p class="text-slate-300 leading-relaxed">
+                    By identifying your <strong>Holiday Persona</strong>, you can actively choose to break the cycle. If you are a <em>Grinch</em>, try saying yes to one festive activity. If you are a <em>Planner</em>, intentionally leave one hour of the day unscheduled.
+                </p>
+            </div>
+        </article>
+        </main>
+    <script>
+        // ==========================================
+        // 1. COMPLEX SCENARIO DATA
+        // ==========================================
+        const questions = [
+            {
+                q: "It's December 1st. What is the state of your house?",
+                options: [
+                    { txt: "Fully decorated since Nov 1st. I have a schedule.", type: "planner" },
+                    { txt: "I found a wreath? I think I'll put it on the dog.", type: "chaos" },
+                    { txt: "I refuse to acknowledge it until Dec 24th.", type: "grinch" },
+                    { txt: "It looks exactly the same, but I'm playing Die Hard.", type: "action" },
+                    { txt: "Cozy, smelling of cinnamon, with Bing Crosby playing.", type: "trad" }
+                ]
+            },
+            {
+                q: "A child knocks over your perfectly decorated tree. You...",
+                options: [
+                    { txt: "Laugh uncontrollably and throw tinsel at them.", type: "chaos" },
+                    { txt: "Internally scream, then fix it immediately.", type: "planner" },
+                    { txt: "Say 'See? This is why we can't have nice things.'", type: "grinch" },
+                    { txt: "Secure the perimeter. Ensure no glass shards remain.", type: "action" },
+                    { txt: "Hug the child. The memories matter more than the tree.", type: "trad" }
+                ]
+            },
+            {
+                q: "Your ideal Christmas dinner looks like...",
+                options: [
+                    { txt: "A 5-course meal timed to perfection. Spreadsheets involved.", type: "planner" },
+                    { txt: "Spaghetti with maple syrup and candy corn.", type: "chaos" },
+                    { txt: "Takeout Chinese food in a quiet room.", type: "grinch" },
+                    { txt: "Turkey, mashed potatoes, grandma's recipes.", type: "trad" },
+                    { txt: "Whatever provides maximum protein for the mission ahead.", type: "action" }
+                ]
+            },
+            {
+                q: "Pick a holiday anthem.",
+                options: [
+                    { txt: "'White Christmas' (The Classics)", type: "trad" },
+                    { txt: "'Grandma Got Run Over by a Reindeer'", type: "chaos" },
+                    { txt: "'You're a Mean One, Mr. Grinch'", type: "grinch" },
+                    { txt: "'Christmas in Hollis' (Run DMC)", type: "action" },
+                    { txt: "'Carol of the Bells' (Precise & Intense)", type: "planner" }
+                ]
+            },
+            {
+                q: "The family argument starts at the dinner table. You...",
+                options: [
+                    { txt: "Meditate in the other room. Why do we do this?", type: "grinch" },
+                    { txt: "Attempt to mediate using a seating chart.", type: "planner" },
+                    { txt: "Start a food fight to break the tension.", type: "chaos" },
+                    { txt: "Tell a heartwarming story to make everyone cry.", type: "trad" },
+                    { txt: "Escape through the ventilation shaft.", type: "action" }
+                ]
+            },
+            {
+                q: "What do you honestly want for Christmas?",
+                options: [
+                    { txt: "Peace and quiet.", type: "grinch" },
+                    { txt: "For everything to go exactly as I imagined.", type: "planner" },
+                    { txt: "A Red Ryder BB Gun (or weapons).", type: "action" },
+                    { txt: "Just to be surrounded by family.", type: "trad" },
+                    { txt: "A toy that makes a lot of noise.", type: "chaos" }
+                ]
+            },
+            {
+                q: "A stranger says 'Happy Holidays' instead of 'Merry Christmas'.",
+                options: [
+                    { txt: "I don't care. Just move.", type: "grinch" },
+                    { txt: "Smile and say it back. It's the spirit that counts.", type: "trad" },
+                    { txt: "Yell 'MERRY CHRISTMAS' aggressively.", type: "planner" },
+                    { txt: "Reply 'Yippee Ki-Yay'.", type: "action" },
+                    { txt: "Ask them if they believe in Santa.", type: "chaos" }
+                ]
+            },
+            {
+                q: "The movie you watch every year without fail is...",
+                options: [
+                    { txt: "National Lampoon's Christmas Vacation", type: "planner" },
+                    { txt: "Elf or Home Alone", type: "chaos" },
+                    { txt: "It's a Wonderful Life", type: "trad" },
+                    { txt: "Die Hard", type: "action" },
+                    { txt: "Bad Santa", type: "grinch" }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // 2. PERSONALITY PROFILES
+        // ==========================================
+        const profiles = {
+            'planner': {
+                title: "The Stress Architect",
+                icon: "📋",
+                short: "You are Clark Griswold. You want the perfect family Christmas so badly that you might accidentally destroy the neighborhood to get it.",
+                psycho: "You exhibit 'Perfectionist Idealism'. You care deeply, but you express love through logistics. When things go wrong (and they will), you take it personally. Your heart is huge, but your blood pressure is higher.",
+                movies: ["Christmas Vacation", "Christmas with the Kranks", "Jingle All The Way"],
+                power: "Organization: You can wrap a gift in under 12 seconds with hospital corners."
+            },
+            'chaos': {
+                title: "The Chaos Elf",
+                icon: "🤪",
+                short: "You are Buddy the Elf mixed with Kevin McCallister. Sugar is your main food group and you likely own a dangerous amount of glitter.",
+                psycho: "You have 'Uninhibited Joy'. You reject the cynical adult world. To you, Christmas is about sensory overload. You are exhausting to be around, but impossible not to love.",
+                movies: ["Elf", "Home Alone", "Fred Claus"],
+                power: "Infinite Energy: You can function on 2 hours of sleep and 4 candy canes."
+            },
+            'grinch': {
+                title: "The Secret Softie",
+                icon: "💚",
+                short: "You claim to hate the holidays, but you're actually just over-sensitive. You hate the commercialism, not the spirit.",
+                psycho: "You are a 'Self-Protective Cynic'. You find the noise and forced socialization draining. However, when you actually find a genuine moment of connection, your heart grows three sizes.",
+                movies: ["How the Grinch Stole Christmas", "Bad Santa", "Scrooged"],
+                power: "Truth Telling: You are the only one brave enough to say the turkey is dry."
+            },
+            'trad': {
+                title: "The Nostalgia Keeper",
+                icon: "🧣",
+                short: "You are George Bailey. You believe in the magic, the traditions, and the old-fashioned way of doing things.",
+                psycho: "You value 'Continuity and Connection'. You anchor your family. You are the reason traditions survive. You might cry during commercials, but you make everyone feel safe.",
+                movies: ["It's a Wonderful Life", "Miracle on 34th Street", "White Christmas"],
+                power: "The Warm Glow: You make any room feel cozy just by being in it."
+            },
+            'action': {
+                title: "The Die Hard",
+                icon: "💥",
+                short: "Christmas is just a setting for your life's adventures. You don't do 'cozy', you do 'survival'.",
+                psycho: "You are a 'Pragmatic Protector'. You don't care about the decorations, you care about the people. You show love by checking the tire pressure on the sleigh before the trip.",
+                movies: ["Die Hard", "Lethal Weapon", "Batman Returns"],
+                power: "Crisis Management: When the oven catches fire, you're the one who puts it out."
+            }
+        };
+
+        // State
+        let currentIdx = 0;
+        let scores = { planner:0, chaos:0, grinch:0, trad:0, action:0 };
+
+        function startQuiz() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('quizInterface').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const data = questions[currentIdx];
+            
+            // Randomize options order to keep it fresh
+            const shuffledOptions = [...data.options].sort(() => Math.random() - 0.5);
+
+            document.getElementById('questionText').textContent = data.q;
+            document.getElementById('progressText').textContent = `${currentIdx + 1}/${questions.length}`;
+            document.getElementById('progressBar').style.width = `${((currentIdx) / questions.length) * 100}%`;
+            
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-4 md:p-5 rounded-xl border border-white/10 bg-white/5 hover:bg-green-900/40 hover:border-green-500/50 transition-all flex items-center justify-between group";
+                btn.innerHTML = `
+                    <span class="text-slate-200 group-hover:text-white font-medium text-sm md:text-base">${opt.txt}</span>
+                    <div class="w-5 h-5 rounded-full border border-slate-500 group-hover:border-green-400 flex items-center justify-center">
+                        <div class="w-2.5 h-2.5 rounded-full bg-green-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                `;
+                btn.onclick = () => handleAnswer(opt.type);
+                grid.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(type) {
+            scores[type]++;
+            currentIdx++;
+
+            if (currentIdx < questions.length) {
+                loadQuestion();
+            } else {
+                showAnalyzing();
+            }
+        }
+
+        function showAnalyzing() {
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('analyzingScreen').classList.remove('hidden');
+
+            const texts = [
+                "MEASURING EGGNOG TOLERANCE...",
+                "SCANNING CHILDHOOD MEMORIES...",
+                "CALCULATING TINSEL RATIO...",
+                "FINALIZING PSYCH PROFILE..."
+            ];
+
+            let step = 0;
+            const interval = setInterval(() => {
+                if(step < texts.length) {
+                    document.getElementById('analyzingText').textContent = texts[step];
+                    step++;
+                } else {
+                    clearInterval(interval);
+                    showResults();
+                }
+            }, 800);
+        }
+
+        function showResults() {
+            document.getElementById('analyzingScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            // Find winner
+            let winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            const profile = profiles[winner];
+
+            // Render Hook
+            document.getElementById('resultTitle').textContent = profile.title;
+            document.getElementById('resultIcon').textContent = profile.icon;
+            document.getElementById('resultShortDesc').textContent = profile.short;
+
+            // Prepare Hidden Content
+            document.getElementById('psychoAnalysis').textContent = profile.psycho;
+            document.getElementById('superPower').textContent = profile.power;
+            
+            const movieList = document.getElementById('movieList');
+            movieList.innerHTML = profile.movies.map(m => `<li><i class="fas fa-film text-green-500 mr-2"></i> ${m}</li>`).join('');
+        }
+
+        function handleUnlock(e) {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+            
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> UNLOCKING...';
+            btn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                document.getElementById('lockOverlay').classList.add('hidden');
+                document.getElementById('lockedContent').classList.add('hidden');
+                document.getElementById('realContent').classList.remove('hidden');
+                
+                // Add confetti effect or celebration logic here if desired
+            }, 1500);
+        }
+
+    </script>
+    
+</body>
+</html>

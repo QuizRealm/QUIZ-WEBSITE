@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>QuizRealm • History TimeLine</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+    <meta name="theme-color" content="#0A0F1E">
+    <meta name="description" content="Reconstruct the timeline. Drag and drop historical events into their correct chronological order.">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Original Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <!-- External Scripts -->
+    <script src="components.js" defer></script>
+    <script src="HistoryTimeline.js"></script> <!-- Re-added as primary data source -->
+    <script src="hangman.html" defer></script> 
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        bgDark: '#0A0F1E',
+                        bgDarker: '#050810',
+                        accentGold: '#fbbf24',
+                        accentBlue: '#3b82f6',
+                        accentCyan: '#06b6d4',
+                        glass: 'rgba(30, 41, 59, 0.7)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: var(--bgDarker); 
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #050810 80%);
+            min-height: 100vh; 
+            color: #e2e8f0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .glass-panel { 
+            background: var(--glass); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Smooth item transitions */
+        .event-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation;
+        }
+
+        .event-card.selected {
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            transform: scale(1.02);
+        }
+
+        .event-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        /* Slot Styles */
+        .timeline-slot {
+            transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+            background: rgba(0,0,0,0.3);
+        }
+        
+        .timeline-slot.drag-over {
+            background-color: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            border-style: solid;
+            transform: scale(1.02);
+        }
+
+        .timeline-slot.correct {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+
+        .timeline-slot.incorrect {
+            border-color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        /* The vertical line connecting dates */
+        .timeline-spine::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            bottom: 30px;
+            left: 38px; /* Adjusted for larger bubbles */
+            width: 4px;
+            background: linear-gradient(180deg, #3b82f6 0%, rgba(59,130,246,0.1) 100%);
+            z-index: 0;
+        }
+
+        /* Custom Scrollbar for the pool */
+        .pool-scroll::-webkit-scrollbar { width: 6px; }
+        .pool-scroll::-webkit-scrollbar-track { background: #0f172a; }
+        .pool-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .pool-scroll::-webkit-scrollbar-thumb:hover { background: #fbbf24; }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+    </style>
+</head>
+<body class="flex flex-col antialiased selection:bg-accentGold selection:text-black">
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow flex flex-col md:flex-row max-w-[1200px] mx-auto w-full p-4 md:p-8 gap-6">
+
+        <!-- LEFT COLUMN: The Timeline (Target) -->
+        <section class="flex-1 order-2 md:order-1 glass-panel rounded-xl flex flex-col overflow-hidden border border-white/10">
+            <div class="px-6 py-5 border-b border-white/10 bg-black/40 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded bg-accentBlue text-white flex items-center justify-center font-bold">1</div>
+                    <h2 class="text-white font-bold text-lg tracking-wide">Target Timeline</h2>
+                </div>
+                <div class="bg-slate-800 px-4 py-2 rounded-full border border-white/10 shadow-inner">
+                    <span id="scoreDisplay" class="text-accentGold font-mono font-bold text-base">0/6 Placed</span>
+                </div>
+            </div>
+            
+            <div class="relative p-8 flex-grow timeline-spine min-h-[500px]" id="timelineContainer">
+                <!-- Timeline slots will be injected here -->
+            </div>
+
+            <div class="px-6 py-6 border-t border-white/10 bg-black/40 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <button onclick="resetRound()" class="w-full sm:w-auto text-slate-400 font-bold uppercase hover:text-white transition flex items-center justify-center gap-2 px-4 py-2 rounded hover:bg-white/5">
+                    <i class="fas fa-undo"></i> Reset Board
+                </button>
+                <button onclick="checkAnswers()" class="w-full sm:w-auto bg-gradient-to-r from-accentGold to-yellow-500 hover:from-yellow-400 hover:to-yellow-600 text-black px-8 py-3 rounded-lg font-extrabold text-sm shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    VERIFY TIMELINE <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: The Source Material (Draggable) -->
+        <section class="w-full md:w-96 order-1 md:order-2 flex flex-col gap-6">
+            
+            <!-- Instructions Panel -->
+            <div class="bg-blue-600/10 border border-blue-500/30 rounded-xl p-5">
+                <h3 class="text-accentBlue font-bold text-sm uppercase tracking-wider mb-2"><i class="fas fa-gamepad mr-2"></i>How to Play</h3>
+                <ol class="text-blue-100/80 text-sm space-y-2 list-decimal list-inside">
+                    <li>Select a difficulty level below.</li>
+                    <li>Drag an <strong>Event</strong> from the list.</li>
+                    <li>Drop it into the matching <strong>Year</strong> slot.</li>
+                </ol>
+                <p class="text-xs text-blue-300/60 mt-2 italic">*On mobile, tap the event then tap the slot.</p>
+            </div>
+
+            <!-- Difficulty Controls -->
+            <div class="glass-panel rounded-xl p-5">
+                 <h2 class="font-bold text-white mb-3 text-sm uppercase tracking-wider text-slate-400">Select Difficulty</h2>
+                 <div class="flex bg-black/40 p-1.5 rounded-lg border border-white/10">
+                    <button onclick="setDifficulty('easy')" id="btnEasy" class="diff-btn flex-1 px-4 py-3 rounded text-xs font-bold uppercase transition bg-accentGold text-black shadow-lg">Easy</button>
+                    <button onclick="setDifficulty('medium')" id="btnMedium" class="diff-btn flex-1 px-4 py-3 rounded text-xs font-bold uppercase text-slate-400 hover:text-white transition">Medium</button>
+                    <button onclick="setDifficulty('hard')" id="btnHard" class="diff-btn flex-1 px-4 py-3 rounded text-xs font-bold uppercase text-slate-400 hover:text-white transition">Hard</button>
+                </div>
+            </div>
+
+            <!-- Event Pool -->
+            <div class="glass-panel rounded-xl flex flex-col h-full md:max-h-[calc(100vh-300px)] sticky top-4 border border-white/10">
+                <div class="p-4 border-b border-white/10 bg-black/40 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded bg-slate-700 text-white flex items-center justify-center font-bold">2</div>
+                    <h3 class="font-bold text-white text-lg">Events to Place</h3>
+                </div>
+
+                <div id="eventPool" class="p-4 flex flex-col gap-3 overflow-y-auto pool-scroll flex-grow min-h-[250px] bg-black/20">
+                    <!-- Draggable events go here -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+    
+    <!-- SEO Rich Card -->
+    <section class="max-w-[1200px] mx-auto w-full px-4 md:px-8 mb-8">
+        <div class="glass-panel rounded-xl p-8 border-t-4 border-accentGold relative overflow-hidden group">
+            <div class="absolute inset-0 bg-accentGold/5 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-4">
+                    <i class="fas fa-history text-3xl text-accentGold"></i>
+                    <h3 class="font-arcade text-2xl text-white">History TimeLine Challenge</h3>
+                </div>
+                <p class="text-slate-300 text-base leading-relaxed mb-6 max-w-3xl">
+                    Test your historical knowledge by reconstructing the timeline of human history. From ancient civilizations to the digital age, place key events in their correct chronological order. This educational puzzle game improves memory and historical context awareness.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-blue-900/30 border border-blue-500/30 px-3 py-1.5 rounded-full text-xs text-blue-300 font-bold uppercase tracking-wide">#HistoryQuiz</span>
+                    <span class="bg-blue-900/30 border border-blue-500/30 px-3 py-1.5 rounded-full text-xs text-blue-300 font-bold uppercase tracking-wide">#Chronology</span>
+                    <span class="bg-blue-900/30 border border-blue-500/30 px-3 py-1.5 rounded-full text-xs text-blue-300 font-bold uppercase tracking-wide">#BrainTraining</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Modal -->
+    <div id="resultModal" class="fixed inset-0 bg-bgDarker/95 z-[100] hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+        <div class="w-full max-w-lg text-center space-y-8 animate-float relative">
+            <!-- Glow effect -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-500/20 blur-[100px] rounded-full -z-10"></div>
+            
+            <div class="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto shadow-[0_0_50px_rgba(34,197,94,0.5)] border-4 border-white">
+                <i class="fas fa-check text-5xl text-white"></i>
+            </div>
+            
+            <div class="space-y-2">
+                <h2 class="text-4xl font-arcade text-white">SEQUENCE CORRECT!</h2>
+                <p class="text-green-400 font-mono text-sm tracking-widest uppercase">Timeline Integrity Restored</p>
+            </div>
+
+            <div class="bg-white/10 backdrop-blur-md p-6 rounded-xl max-w-md mx-auto border border-white/10">
+                <i class="fas fa-quote-left text-accentGold text-xl mb-2 block opacity-50"></i>
+                <p class="text-lg text-white font-serif italic" id="rewardText">"History is the version of past events that people have decided to agree upon."</p>
+                <p class="text-right text-slate-400 text-sm mt-2">- Napoleon Bonaparte</p>
+            </div>
+            
+            <button onclick="closeModalAndReset()" class="group relative px-8 py-4 bg-white text-black font-black text-sm uppercase tracking-widest rounded hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] hover:-translate-y-1">
+                Start Next Mission
+                <span class="absolute -right-2 -top-2 w-4 h-4 bg-accentGold rounded-full animate-ping"></span>
+            </button>
+        </div>
+    </div>
+
+    <quiz-seo-content></quiz-seo-content>
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // --- FALLBACK DATA LAYER (If HistoryTimeline.js fails) ---
+        const FALLBACK_DB = [
+            { id: 'e1', year: 1945, label: 'End of World War II' },
+            { id: 'e2', year: 1969, label: 'Apollo 11 Moon Landing' },
+            { id: 'e3', year: 1989, label: 'Fall of the Berlin Wall' },
+            { id: 'e4', year: 2001, label: 'Launch of the First iPod' },
+            { id: 'e5', year: 1776, label: 'Declaration of Independence' },
+            { id: 'e6', year: 1492, label: 'Columbus Reaches Americas' },
+            { id: 'e7', year: 1912, label: 'Sinking of the Titanic' },
+            { id: 'e8', year: 1066, label: 'Battle of Hastings' },
+            { id: 'e9', year: 1963, label: 'I Have a Dream Speech' },
+            { id: 'e10', year: 2007, label: 'First iPhone Released' },
+            { id: 'e11', year: 1928, label: 'Discovery of Penicillin' },
+            { id: 'e12', year: 1865, label: 'Lincoln Assassinated' }
+        ];
+
+        // --- APP STATE ---
+        const state = {
+            events: [],
+            placements: {}, // { slotIndex: eventId }
+            difficulty: 'easy',
+            selectedEventId: null // For "Tap to Select" mode
+        };
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+        });
+
+        function initGame() {
+            setDifficultyStyle(state.difficulty);
+            
+            // Generate content based on difficulty
+            // UPDATED: Now starts at 6 for Easy
+            let count = state.difficulty === 'easy' ? 6 : (state.difficulty === 'medium' ? 8 : 10);
+            
+            state.placements = {};
+            state.selectedEventId = null;
+            state.events = [];
+
+            // Try to use External HistoryTimeline.js first
+            if (typeof HistoryTimeline !== 'undefined' && typeof HistoryTimeline.getRandomSet === 'function') {
+                try {
+                    state.events = HistoryTimeline.getRandomSet(state.difficulty, count);
+                } catch(e) {
+                    console.error("Error loading from HistoryTimeline.js", e);
+                }
+            }
+
+            // Fallback if external failed or returned nothing
+            if (!state.events || state.events.length === 0) {
+                console.log("Using Fallback DB");
+                const shuffledDb = [...FALLBACK_DB].sort(() => 0.5 - Math.random());
+                state.events = shuffledDb.slice(0, count);
+            }
+            
+            renderTimeline();
+            renderEventPool();
+            updateStats();
+        }
+
+        // --- RENDERING ---
+
+        function renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            container.innerHTML = '';
+            
+            // Sort events by year to create the "Answer Key" structure (visualized as dates)
+            const sortedEvents = [...state.events].sort((a,b) => a.year - b.year);
+
+            sortedEvents.forEach((ev, index) => {
+                const isFilled = state.placements[index];
+                const filledEvent = isFilled ? state.events.find(e => e.id === isFilled) : null;
+
+                // Create the Row
+                const row = document.createElement('div');
+                row.className = "flex gap-6 items-stretch mb-8 relative z-10 animate-fade-in";
+                row.style.animationDelay = `${index * 50}ms`;
+
+                // 1. The Date Marker (Left side) - MUCH BIGGER NOW
+                const dateMarker = document.createElement('div');
+                dateMarker.className = "w-20 h-20 rounded-full bg-bgDark border-4 border-accentBlue text-white font-mono font-bold text-xl flex items-center justify-center shrink-0 z-20 shadow-[0_0_20px_rgba(59,130,246,0.5)] transform hover:scale-110 transition duration-300";
+                dateMarker.innerText = ev.year;
+                
+                // 2. The Drop Slot (Right side)
+                const slot = document.createElement('div');
+                slot.className = `flex-grow timeline-slot rounded-xl border-2 border-dashed ${filledEvent ? 'border-solid border-accentBlue bg-slate-800' : 'border-white/20 hover:border-accentGold/50 hover:bg-white/5'} min-h-[80px] flex items-center p-4 cursor-pointer select-none relative overflow-hidden group transition-all duration-300`;
+                
+                // Interaction Attributes
+                slot.dataset.index = index;
+                slot.onclick = () => handleSlotClick(index);
+                slot.ondragover = (e) => handleDragOver(e);
+                slot.ondragleave = (e) => handleDragLeave(e);
+                slot.ondrop = (e) => handleDrop(e, index);
+
+                // Slot Content
+                if (filledEvent) {
+                    slot.innerHTML = `
+                        <div class="flex items-center gap-4 w-full relative z-10">
+                            <div class="w-1.5 h-12 bg-accentGold rounded-full"></div>
+                            <div class="flex-grow">
+                                <span class="font-bold text-white text-lg block tracking-wide">${filledEvent.label}</span>
+                            </div>
+                            <button onclick="event.stopPropagation(); removeEvent(${index})" class="w-8 h-8 rounded-full bg-white/10 hover:bg-red-500/20 text-slate-400 hover:text-red-500 flex items-center justify-center transition">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    slot.innerHTML = `
+                        <div class="text-slate-500 font-mono w-full text-center pointer-events-none flex flex-col items-center gap-2 group-hover:text-slate-300 transition">
+                            <i class="fas ${state.selectedEventId ? 'fa-bullseye text-accentGold text-2xl animate-pulse' : 'fa-arrow-down text-xl'}"></i>
+                            <span class="text-sm font-bold uppercase tracking-widest">${state.selectedEventId ? '<span class="text-accentGold">TAP TO PLACE HERE</span>' : 'Drag Event Here'}</span>
+                        </div>
+                    `;
+                }
+
+                row.appendChild(dateMarker);
+                row.appendChild(slot);
+                container.appendChild(row);
+            });
+        }
+
+        function renderEventPool() {
+            const pool = document.getElementById('eventPool');
+            pool.innerHTML = '';
+
+            const unplacedEvents = state.events.filter(ev => !Object.values(state.placements).includes(ev.id));
+            
+            if (unplacedEvents.length === 0) {
+                pool.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center py-10 opacity-50">
+                        <i class="fas fa-check-circle text-4xl text-green-500 mb-3"></i>
+                        <span class="text-white font-bold text-sm">All events placed.</span>
+                        <span class="text-slate-400 text-xs mt-1">Click "Verify Timeline" to check.</span>
+                    </div>`;
+                return;
+            }
+
+            unplacedEvents.forEach(ev => {
+                const card = document.createElement('div');
+                // Made cards look more "clickable" and distinct
+                card.className = `event-card bg-slate-800 border-l-4 border-l-slate-600 border-y border-r border-slate-700/50 rounded-r-lg p-4 cursor-grab hover:bg-slate-700 flex items-center justify-between group ${state.selectedEventId === ev.id ? 'selected !border-l-accentGold' : ''}`;
+                card.draggable = true;
+                
+                card.innerHTML = `
+                    <span class="text-sm font-bold text-slate-100 pointer-events-none group-hover:text-white transition">${ev.label}</span>
+                    <div class="flex items-center gap-2 text-slate-600">
+                        <span class="text-[10px] uppercase font-mono hidden group-hover:inline-block text-accentCyan">Drag me</span>
+                        <i class="fas fa-grip-vertical"></i>
+                    </div>
+                `;
+
+                // Interactions
+                card.onclick = () => handleCardClick(ev.id);
+                card.ondragstart = (e) => handleDragStart(e, ev.id);
+
+                pool.appendChild(card);
+            });
+        }
+
+        // --- INTERACTION LOGIC ---
+
+        function handleCardClick(eventId) {
+            state.selectedEventId = (state.selectedEventId === eventId) ? null : eventId;
+            renderEventPool(); 
+            renderTimeline(); 
+        }
+
+        function handleSlotClick(index) {
+            if (state.selectedEventId) {
+                placeEvent(state.selectedEventId, index);
+            } 
+        }
+
+        function handleDragStart(e, eventId) {
+            e.dataTransfer.setData('text/plain', eventId);
+            e.dataTransfer.effectAllowed = 'move';
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e, index) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            const eventId = e.dataTransfer.getData('text/plain');
+            if (eventId) {
+                placeEvent(eventId, index);
+            }
+        }
+
+        // --- CORE ACTIONS ---
+
+        function placeEvent(eventId, slotIndex) {
+            const existingSlot = Object.keys(state.placements).find(key => state.placements[key] === eventId);
+            if (existingSlot) {
+                delete state.placements[existingSlot];
+            }
+            state.placements[slotIndex] = eventId;
+            state.selectedEventId = null;
+            renderTimeline();
+            renderEventPool();
+            updateStats();
+        }
+
+        function removeEvent(slotIndex) {
+            delete state.placements[slotIndex];
+            renderTimeline();
+            renderEventPool();
+            updateStats();
+        }
+
+        function updateStats() {
+            const total = state.events.length;
+            const placed = Object.keys(state.placements).length;
+            document.getElementById('scoreDisplay').innerText = `${placed}/${total} PLACED`;
+        }
+
+        function setDifficulty(level) {
+            state.difficulty = level;
+            initGame();
+        }
+
+        function setDifficultyStyle(level) {
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.className = "diff-btn flex-1 px-4 py-3 rounded text-xs font-bold uppercase text-slate-400 hover:text-white transition";
+            });
+            const activeId = `btn${level.charAt(0).toUpperCase() + level.slice(1)}`;
+            const activeBtn = document.getElementById(activeId);
+            if(activeBtn) {
+                activeBtn.className = "diff-btn flex-1 px-4 py-3 rounded text-xs font-bold uppercase transition bg-accentGold text-black shadow-lg";
+            }
+        }
+
+        function resetRound() {
+            state.placements = {};
+            state.selectedEventId = null;
+            renderTimeline();
+            renderEventPool();
+            updateStats();
+        }
+
+        function checkAnswers() {
+            const total = state.events.length;
+            const placed = Object.keys(state.placements).length;
+
+            if (placed < total) {
+                alert("Please place all events before verifying.");
+                return;
+            }
+
+            let correctCount = 0;
+            const correctOrder = [...state.events].sort((a,b) => a.year - b.year);
+
+            correctOrder.forEach((correctEvent, index) => {
+                const placedId = state.placements[index];
+                const slotEl = document.querySelector(`.timeline-slot[data-index="${index}"]`);
+                slotEl.classList.remove('correct', 'incorrect');
+                
+                if (placedId === correctEvent.id) {
+                    slotEl.classList.add('correct');
+                    correctCount++;
+                } else {
+                    slotEl.classList.add('incorrect');
+                }
+            });
+
+            if (correctCount === total) {
+                setTimeout(() => {
+                    document.getElementById('resultModal').classList.remove('hidden');
+                }, 500);
+            }
+        }
+
+        function closeModalAndReset() {
+            document.getElementById('resultModal').classList.add('hidden');
+            initGame(); 
+        }
+
+    </script>
+</body>
+</html>

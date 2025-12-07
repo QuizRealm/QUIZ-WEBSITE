@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- BASIC SEO -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="QuizRealm — Fast, clean and fun trivia. TV shows, movies, riddles, logic, geography and more. Play now." />
+  <meta name="author" content="QuizRealm" />
+  <meta name="theme-color" content="#0f172a" />
+
+  <!-- SEARCH ENGINE PREFS -->
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow" />
+
+  <!-- OPEN GRAPH (Facebook, WhatsApp, Reddit) -->
+  <meta property="og:title" content="QuizRealm — Play Trivia Anytime" />
+  <meta property="og:description" content="Fast-paced trivia with TV, movies, world facts, daily challenges and minigames." />
+  <meta property="og:image" content="https://yourdomain.com/assets/qr-og.jpg" />
+  <meta property="og:url" content="https://yourdomain.com/" />
+  <meta property="og:type" content="website" />
+
+  <!-- TWITTER CARD -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="QuizRealm — Play Trivia" />
+  <meta name="twitter:description" content="Challenge yourself with daily quizzes, categories and brain games." />
+  <meta name="twitter:image" content="https://yourdomain.com/assets/qr-og.jpg" />
+
+  <!-- FAVICON -->
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+
+  <!-- CANONICAL URL -->
+  <link rel="canonical" href="https://yourdomain.com/" />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    .pict-wrapper {
+      margin-top: 8px;
+    }
+
+    .pict-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .pict-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .pict-subtitle {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .pict-main {
+      display: grid;
+      grid-template-columns: minmax(0, 2.4fr) minmax(0, 3fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 780px) {
+      .pict-main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .pict-wrapper {
+        padding: 14px 10px;
+      }
+
+      .pict-main {
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .pict-left,
+      .pict-right {
+        width: 100%;
+      }
+
+      .pict-turn-pill {
+        font-size: 11px;
+      }
+
+      .pict-team-name {
+        font-size: 14px;
+      }
+
+      .pict-focus-inner {
+        width: 94vw;
+        max-width: 420px;
+        padding: 16px 14px 14px;
+      }
+
+      .pict-timer-main {
+        font-size: 56px;
+      }
+
+      .pict-focus-actions {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .btn-pict-good,
+      .btn-pict-bad {
+        width: 100%;
+      }
+    }
+
+    /* FULL-SCREEN WORD OVERLAY (NEARLY FULL SCREEN) */
+    .pict-word-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(15,23,42,0.98), #000);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 130;
+      padding: 16px;
+    }
+
+    .pict-word-overlay-inner {
+      width: min(620px, 96vw);
+      min-height: 70vh;
+      border-radius: 26px;
+      padding: 28px 22px 24px;
+      background: linear-gradient(135deg, #020617, #020617 40%, #020617 60%, #020617);
+      border: 1px solid rgba(56,189,248,0.6);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.95);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .pict-word-overlay-warning {
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #60a5fa;
+    }
+
+    .pict-word-overlay-word {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 18px 14px;
+      border-radius: 20px;
+      background: radial-gradient(circle at top, rgba(15,23,42,1), rgba(15,23,42,0.9));
+      border: 1px solid rgba(148,163,184,0.9);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.95);
+      color: #e5e7eb;
+    }
+
+    .pict-word-overlay-cta {
+      margin-top: 10px;
+      padding: 11px 22px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 650;
+      color: #022c22;
+      background: linear-gradient(90deg, #22c55e, #4ade80);
+      box-shadow: 0 0 26px rgba(34,197,94,0.75);
+      text-shadow: 0 0 4px rgba(255,255,255,0.35);
+      animation: pictCtaPulse 1.1s ease-in-out infinite;
+    }
+
+    .pict-word-overlay-cta:active {
+      transform: scale(0.97);
+      box-shadow: 0 0 18px rgba(34,197,94,0.85);
+    }
+
+    @keyframes pictCtaPulse {
+      0%   { transform: scale(1);   box-shadow: 0 0 18px rgba(34,197,94,0.4); }
+      50%  { transform: scale(1.03); box-shadow: 0 0 30px rgba(34,197,94,0.9); }
+      100% { transform: scale(1);   box-shadow: 0 0 18px rgba(34,197,94,0.4); }
+    }
+
+    /* CONFIG CARD (before starting game) */
+    .pict-config-card {
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.22), rgba(15,23,42,0.98));
+      border-radius: 20px;
+      border: 1px solid rgba(148,163,184,0.7);
+      padding: 14px 14px 12px;
+      box-shadow: 0 22px 60px rgba(0,0,0,0.85);
+      margin-bottom: 12px;
+    }
+
+    .pict-config-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+    .pict-config-field label {
+      display: block;
+      margin-bottom: 4px;
+      color: #9ca3af;
+      font-size: 11px;
+    }
+
+    .pict-config-field input,
+    .pict-config-field select {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.96);
+      color: #e5e7eb;
+      font-size: 12px;
+    }
+
+    .pict-config-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    /* LEFT: SCORE + TURN INFO */
+    .pict-left {
+      background: linear-gradient(135deg, rgba(15,23,42,0.98), #020617);
+      border-radius: 20px;
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 14px 14px 12px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pict-turn-pill {
+      align-self: flex-start;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top, rgba(56,189,248,0.2), rgba(15,23,42,0.98));
+      border: 1px solid rgba(56,189,248,0.8);
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pict-turn-pill span {
+      font-size: 11px;
+      color: #9ca3af;
+      font-weight: 400;
+    }
+
+    .pict-team-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    @media (min-width: 640px) {
+      .pict-team-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .pict-team-card {
+      border-radius: 16px;
+      padding: 10px 10px 8px;
+      background: rgba(15,23,42,0.98);
+      border: 1px solid rgba(55,65,81,0.9);
+      position: relative;
+    }
+
+    .pict-team-card.active {
+      border-color: rgba(234,179,8,0.9);
+      box-shadow: 0 0 25px rgba(234,179,8,0.45);
+    }
+
+    .pict-team-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .pict-team-score {
+      font-size: 13px;
+      color: #eab308;
+    }
+
+    .pict-team-meta {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .pict-info-row {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #9ca3af;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .pict-info-row span strong {
+      color: #e5e7eb;
+    }
+
+    .pict-time-remaining {
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #38bdf8;
+    }
+
+    /* RIGHT: WORD / TIMER AREA */
+    .pict-right {
+      background: linear-gradient(135deg, #020617, rgba(15,23,42,0.98));
+      border-radius: 20px;
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 16px 14px 14px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pict-drawer-warning {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(248,250,252,0.3);
+      background: radial-gradient(circle at top, rgba(248,250,252,0.07), rgba(15,23,42,0.98));
+      text-align: center;
+      color: #f97316;
+    }
+
+    .pict-word-panel {
+      margin-top: 8px;
+      border-radius: 18px;
+      padding: 12px 12px 10px;
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.24), rgba(15,23,42,0.98));
+      border: 1px solid rgba(148,163,184,0.8);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.9);
+      text-align: center;
+    }
+
+    .pict-word-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    .pict-word-display {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pict-word-text {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(248,250,252,0.36);
+      background: radial-gradient(circle at top, rgba(15,23,42,1), rgba(2,6,23,0.98));
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: 0 0 34px rgba(56,189,248,0.72);
+    }
+
+    .pict-word-text small {
+      font-size: 11px;
+      text-transform: none;
+      color: #9ca3af;
+    }
+
+    .pict-word-placeholder {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .pict-word-note {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .pict-action-row {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .pict-show-btn {
+      font-size: 15px;
+      padding: 10px 22px;
+    }
+
+    .pict-seen-btn {
+      font-size: 14px;
+      padding: 8px 20px;
+    }
+
+    .pict-status {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #9ca3af;
+      min-height: 18px;
+    }
+
+    .pict-inline-timer {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #e5e7eb;
+    }
+
+    .pict-inline-timer span {
+      font-weight: 600;
+      color: #eab308;
+    }
+
+    .pict-inline-actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* FOCUS OVERLAY (BIG CENTERED TIMER) */
+    .pict-focus-overlay {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(56,189,248,0.22) 0%, rgba(15,23,42,0.98) 60%, rgba(2,6,23,1) 100%);
+      backdrop-filter: blur(12px);
+      z-index: 120;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pict-focus-inner {
+      width: min(460px, 94vw);
+      background: radial-gradient(circle at top, rgba(15,23,42,1), rgba(3,7,18,0.98));
+      border-radius: 24px;
+      border: 1px solid rgba(148,163,184,0.9);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.98);
+      padding: 16px 16px 14px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+
+    .pict-focus-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.98);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .pict-focus-close:hover {
+      background: rgba(31,41,55,0.98);
+    }
+
+    .pict-focus-title {
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .pict-focus-team {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .pict-timer-circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 999px;
+      border: 2px solid rgba(148,163,184,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, rgba(15,23,42,1), rgba(2,6,23,1));
+      box-shadow: 0 0 60px rgba(56,189,248,0.85);
+    }
+
+    .pict-timer-main {
+      font-size: 48px;
+      font-weight: 700;
+      color: #eab308;
+      line-height: 1;
+    }
+
+    .pict-timer-label {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .pict-focus-actions {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-pict-good {
+      border-radius: 999px;
+      padding: 8px 18px;
+      border: 1px solid rgba(34,197,94,0.85);
+      background: radial-gradient(circle at top, rgba(34,197,94,0.25), rgba(5,46,22,1));
+      color: #ecfdf5;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+    }
+
+    .btn-pict-good:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(34,197,94,0.65);
+    }
+
+    .btn-pict-bad {
+      border-radius: 999px;
+      padding: 8px 18px;
+      border: 1px solid rgba(239,68,68,0.85);
+      background: radial-gradient(circle at top, rgba(239,68,68,0.24), rgba(69,10,10,1));
+      color: #fef2f2;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+    }
+
+    .btn-pict-bad:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(239,68,68,0.65);
+    }
+
+    .pict-pass-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pict-pass-headline {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .pict-pass-team {
+      font-size: 16px;
+      font-weight: 600;
+      color: #38bdf8;
+    }
+
+    .pict-pass-countdown {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .pict-timer-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="logo">Quiz<span>Realm</span></div>
+    <nav class="nav-links">
+    <!-- Main Links - Keeping style the same -->
+    <a href="index.html">Home</a>
+    <a href="categories.html">Categories</a>
+
+    <!-- Daily - Slight edit -->
+    <a href="quiz.html?mode=daily">⭐ Daily Quest</a>
+    
+    <!-- Random - Dice icon added -->
+    <a href="random.html">🎲 Randomizer</a>
+    
+    <!-- Achievements - Kept the same -->
+    <a href="achievements.html">🏆 Achievements</a>
+    
+    <!-- Minigames changed to Pictionary -->
+    <a href="minigames.html">✏️ Pictionary</a>
+    
+    <!-- Chronos - New professional badge style -->
+    <a href="timeline-history.html" class="nav-badge-chronos">
+        ⏳ Chronos Timeline
+    </a> 
+    
+    <!-- Profile - Enhanced with the same style as Chronos for hierarchy -->
+    <a href="profile.html" class="nav-badge-profile">
+        👤 My Dashboard
+    </a>
+</nav>
+  </header>
+
+  <main class="card pict-wrapper">
+    <div class="pict-header">
+      <div>
+        <div class="pict-title">Pictionary Mode</div>
+        <div class="pict-subtitle">
+          Two teams, 5 rounds each. Only the drawer sees the word — everyone else guesses.
+        </div>
+      </div>
+    </div>
+
+    <!-- SETUP CARD -->
+    <div class="pict-config-card" id="pictConfig">
+      <div style="font-size:13px; font-weight:600; margin-bottom:4px;">Game setup</div>
+      <div style="font-size:11px; color:#9ca3af;">Choose team names, category, and timer. You’ll hand the phone to each drawer.</div>
+
+      <div class="pict-config-grid">
+        <div class="pict-config-field">
+          <label for="teamAInput">Team A</label>
+          <input id="teamAInput" type="text" placeholder="Team A" />
+        </div>
+        <div class="pict-config-field">
+          <label for="teamBInput">Team B</label>
+          <input id="teamBInput" type="text" placeholder="Team B" />
+        </div>
+        <div class="pict-config-field">
+          <label for="categorySelect">Category</label>
+          <select id="categorySelect">
+            <option value="everyday">Everyday things</option>
+            <option value="movies">Movies</option>
+            <option value="animals">Animals</option>
+            <option value="jobs">Jobs</option>
+            <option value="objects">Objects</option>
+          </select>
+        </div>
+        <div class="pict-config-field">
+          <label for="timerInput">Timer (seconds)</label>
+          <input id="timerInput" type="number" min="20" max="300" value="120" />
+        </div>
+      </div>
+
+      <div class="pict-config-actions">
+        <button class="btn btn-ghost" onclick="location.href='index.html'">← Back home</button>
+        <button class="btn btn-primary" id="startPictGameBtn">Start game</button>
+      </div>
+    </div>
+
+    <!-- MAIN GAME UI -->
+    <div class="pict-main" id="pictMain" style="display:none;">
+      <!-- LEFT: SCORE / TURN -->
+      <div class="pict-left">
+        <div class="pict-turn-pill" id="turnPill">
+          Round 1 / 10
+          <span id="turnPillDetail">Team A drawing</span>
+        </div>
+
+        <div class="pict-team-grid">
+          <div class="pict-team-card" id="teamACard">
+            <div class="pict-team-name" id="teamANameLabel">Team A</div>
+            <div class="pict-team-score">
+              Score: <span id="teamAScore">0</span>
+            </div>
+            <div class="pict-team-meta">
+              Rounds: <span id="teamARounds">0</span> / 5
+            </div>
+          </div>
+          <div class="pict-team-card" id="teamBCard">
+            <div class="pict-team-name" id="teamBNameLabel">Team B</div>
+            <div class="pict-team-score">
+              Score: <span id="teamBScore">0</span>
+            </div>
+            <div class="pict-team-meta">
+              Rounds: <span id="teamBRounds">0</span> / 5
+            </div>
+          </div>
+        </div>
+
+        <div class="pict-info-row">
+          <span>Category: <strong id="infoCategory">Everyday things</strong></span>
+          <span>Timer: <strong id="infoTimer">120s</strong></span>
+          <span>Total rounds: <strong>10</strong></span>
+        </div>
+
+        <div class="pict-time-remaining" id="inlineTime">
+          Time left: <span id="inlineTimeValue">120</span>s
+        </div>
+      </div>
+
+      <!-- RIGHT: WORD / ACTIONS -->
+      <div class="pict-right">
+        <div class="pict-drawer-warning">
+          ONLY THE DRAWER CAN LOOK
+        </div>
+
+        <div class="pict-word-panel">
+          <div class="pict-word-tag">Current word</div>
+
+          <div class="pict-word-display" id="wordDisplay">
+            <div class="pict-word-placeholder" id="wordPlaceholder">
+              Tap “Show word” when the drawer is ready.
+            </div>
+          </div>
+
+          <div class="pict-word-note" id="wordNote" style="display:none;">
+            Only the drawer can see this word. Keep the screen hidden from everyone else.
+          </div>
+
+          <div class="pict-action-row" id="wordActionRow">
+            <button class="btn btn-primary pict-show-btn" id="showWordBtn">
+              👁 Show word
+            </button>
+          </div>
+
+          <div class="pict-action-row" id="seenActionRow" style="display:none;">
+            <button class="btn btn-ghost pict-seen-btn" id="wordSeenBtn">
+              ✅ I saw the word – start timer
+            </button>
+          </div>
+
+          <div class="pict-status" id="pictStatus"></div>
+
+          <div class="pict-inline-timer">
+            Live timer: <span id="inlineTimerNumber">–</span>
+          </div>
+
+          <!-- INLINE ACTIONS for when focus timer is closed -->
+          <div class="pict-inline-actions" id="inlineActions" style="display:none;">
+            <button class="btn-pict-good" id="inlineBtnGuessed">
+              ✅ Guessed correctly
+            </button>
+            <button class="btn-pict-bad" id="inlineBtnGiveUp">
+              ✖ Give up / time’s up
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- WORD OVERLAY (full-screen word reveal) -->
+<div class="pict-word-overlay" id="wordOverlay">
+  <div class="pict-word-overlay-inner">
+    <div class="pict-word-overlay-warning">
+      ONLY THE DRAWER CAN LOOK
+    </div>
+
+    <div class="pict-word-overlay-word" id="wordOverlayText">
+      Example word
+    </div>
+
+    <button class="pict-word-overlay-cta" id="wordOverlaySeenBtn">
+      ✅ I saw the word – start timer
+    </button>
+  </div>
+</div>
+
+<!-- FOCUS OVERLAY (BIG TIMER) -->
+<div class="pict-focus-overlay" id="pictFocus">
+  <div class="pict-focus-inner">
+    <button class="pict-focus-close" id="focusCloseBtn">✕</button>
+
+    <!-- TIMER VIEW -->
+    <div class="pict-timer-view" id="focusTimerView">
+      <div class="pict-focus-title">drawing in progress</div>
+      <div class="pict-focus-team" id="focusTeamLabel">Team A</div>
+
+      <div class="pict-timer-circle">
+        <div class="pict-timer-main" id="focusTimerNumber">120</div>
+        <div class="pict-timer-label">seconds remaining</div>
+      </div>
+
+      <div class="pict-focus-actions">
+        <button class="btn-pict-good" id="btnGuessed">
+          ✅ Guessed correctly
+        </button>
+        <button class="btn-pict-bad" id="btnGiveUp">
+          ✖ Give up / time’s up
+        </button>
+      </div>
+    </div>
+
+    <!-- PASS PHONE VIEW -->
+    <div class="pict-pass-view" id="focusPassView">
+      <div class="pict-pass-headline">Pass the phone to the next drawer</div>
+      <div class="pict-pass-team" id="nextTeamLabel">Team B is up next</div>
+      <div class="pict-pass-countdown">
+        Next round starts in <span id="passCountdown">5</span> seconds…
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // SIMPLE WORD BANK (placeholder – you can expand later)
+  const PICT_WORD_BANK = {
+    everyday: ["Toothbrush", "Laptop", "Chair", "Coffee", "Umbrella"],
+    movies: ["Titanic", "Avatar", "Inception", "Jaws", "Rocky"],
+    animals: ["Elephant", "Cat", "Dog", "Lion", "Penguin"],
+    jobs: ["Doctor", "Teacher", "Chef", "Pilot", "Police"],
+    objects: ["Key", "Ball", "Book", "Phone", "Bottle"]
+  };
+
+  const ROUNDS_PER_TEAM = 5;
+
+  const configEl = document.getElementById("pictConfig");
+  const mainEl   = document.getElementById("pictMain");
+
+  const teamAInput    = document.getElementById("teamAInput");
+  const teamBInput    = document.getElementById("teamBInput");
+  const categorySelect = document.getElementById("categorySelect");
+  const timerInput    = document.getElementById("timerInput");
+  const startBtn      = document.getElementById("startPictGameBtn");
+
+  const turnPill          = document.getElementById("turnPill");
+  const teamACard         = document.getElementById("teamACard");
+  const teamBCard         = document.getElementById("teamBCard");
+  const teamANameLabel    = document.getElementById("teamANameLabel");
+  const teamBNameLabel    = document.getElementById("teamBNameLabel");
+  const teamAScoreEl      = document.getElementById("teamAScore");
+  const teamBScoreEl      = document.getElementById("teamBScore");
+  const teamARoundsEl     = document.getElementById("teamARounds");
+  const teamBRoundsEl     = document.getElementById("teamBRounds");
+  const infoCategoryEl    = document.getElementById("infoCategory");
+  const infoTimerEl       = document.getElementById("infoTimer");
+  const inlineTimeEl      = document.getElementById("inlineTimeValue");
+  const inlineTimerNumber = document.getElementById("inlineTimerNumber");
+  const inlineActions     = document.getElementById("inlineActions");
+  const inlineBtnGuessed  = document.getElementById("inlineBtnGuessed");
+  const inlineBtnGiveUp   = document.getElementById("inlineBtnGiveUp");
+
+  const wordDisplay    = document.getElementById("wordDisplay");
+  const wordNote       = document.getElementById("wordNote");
+  const wordActionRow  = document.getElementById("wordActionRow");
+  const seenActionRow  = document.getElementById("seenActionRow");
+  const showWordBtn    = document.getElementById("showWordBtn");
+  const wordSeenBtn    = document.getElementById("wordSeenBtn");
+  const pictStatus     = document.getElementById("pictStatus");
+
+  const focusOverlay   = document.getElementById("pictFocus");
+  const focusCloseBtn  = document.getElementById("focusCloseBtn");
+  const focusTimerView = document.getElementById("focusTimerView");
+  const focusPassView  = document.getElementById("focusPassView");
+  const focusTeamLabel = document.getElementById("focusTeamLabel");
+  const focusTimerNumber = document.getElementById("focusTimerNumber");
+  const btnGuessed     = document.getElementById("btnGuessed");
+  const btnGiveUp      = document.getElementById("btnGiveUp");
+  const nextTeamLabel  = document.getElementById("nextTeamLabel");
+  const passCountdownEl = document.getElementById("passCountdown");
+
+  const wordOverlay        = document.getElementById("wordOverlay");
+  const wordOverlayText    = document.getElementById("wordOverlayText");
+  const wordOverlaySeenBtn = document.getElementById("wordOverlaySeenBtn");
+
+  let gameCategoryKey = "everyday";
+  let gameTimerSeconds = 120;
+
+  let teams = [
+    { name: "Team A", score: 0, rounds: 0 },
+    { name: "Team B", score: 0, rounds: 0 }
+  ];
+
+  let totalRounds = ROUNDS_PER_TEAM * 2;
+  let currentTurnIndex = 0; // 0..9
+  let activeTeamIndex = 0;
+  let currentWord = null;
+
+  let timerId = null;
+  let remaining = 0;
+
+  function updateScoreboard() {
+    const tA = teams[0];
+    const tB = teams[1];
+
+    teamANameLabel.textContent = tA.name;
+    teamBNameLabel.textContent = tB.name;
+    teamAScoreEl.textContent   = tA.score;
+    teamBScoreEl.textContent   = tB.score;
+    teamARoundsEl.textContent  = tA.rounds;
+    teamBRoundsEl.textContent  = tB.rounds;
+
+    teamACard.classList.toggle("active", activeTeamIndex === 0);
+    teamBCard.classList.toggle("active", activeTeamIndex === 1);
+
+    const roundNumber = currentTurnIndex + 1;
+    turnPill.textContent = `Round ${roundNumber} / ${totalRounds}`;
+    const span = document.createElement("span");
+    span.id = "turnPillDetail";
+    span.textContent = `${teams[activeTeamIndex].name} drawing`;
+    turnPill.appendChild(span);
+  }
+
+  function resetWordPanelForNewTurn() {
+    wordDisplay.innerHTML = "";
+    const placeholder = document.createElement("div");
+    placeholder.className = "pict-word-placeholder";
+    placeholder.textContent = "Tap “Show word” when the drawer is ready.";
+    wordDisplay.appendChild(placeholder);
+
+    wordNote.style.display = "none";
+    wordActionRow.style.display = "flex";
+    seenActionRow.style.display = "none";
+    pictStatus.textContent = "";
+    if (inlineActions) inlineActions.style.display = "none";
+  }
+
+  function chooseWord() {
+    const bank = PICT_WORD_BANK[gameCategoryKey] || PICT_WORD_BANK["everyday"];
+    if (!bank || bank.length === 0) {
+      return "Placeholder word";
+    }
+    const idx = Math.floor(Math.random() * bank.length);
+    return bank[idx];
+  }
+
+  function startTimer() {
+    clearInterval(timerId);
+    remaining = gameTimerSeconds;
+    updateTimerDisplays();
+
+    timerId = setInterval(() => {
+      remaining--;
+      if (remaining < 0) remaining = 0;
+      updateTimerDisplays();
+      if (remaining <= 0) {
+        clearInterval(timerId);
+        handleTurnEnd(false, true); // time up
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplays() {
+    inlineTimeEl.textContent      = remaining;
+    inlineTimerNumber.textContent = remaining;
+    focusTimerNumber.textContent  = remaining;
+  }
+
+  function openFocusTimer() {
+    focusTimerView.style.display = "flex";
+    focusPassView.style.display  = "none";
+    focusTeamLabel.textContent   = teams[activeTeamIndex].name;
+    focusOverlay.style.display   = "flex";
+  }
+
+  function closeFocusTimer() {
+    focusOverlay.style.display = "none";
+  }
+
+  function openPassView(nextTeamName) {
+    focusTimerView.style.display = "none";
+    focusPassView.style.display  = "flex";
+    focusOverlay.style.display   = "flex";
+    nextTeamLabel.textContent    = `${nextTeamName} is up next`;
+    let count = 5;
+    passCountdownEl.textContent = count;
+    const passInterval = setInterval(() => {
+      count--;
+      if (count <= 0) {
+        clearInterval(passInterval);
+        focusOverlay.style.display = "none";
+        beginNextTurn();
+      } else {
+        passCountdownEl.textContent = count;
+      }
+    }, 1000);
+  }
+
+  function handleTurnEnd(guessedCorrect, fromTimer) {
+    clearInterval(timerId);
+
+    if (guessedCorrect) {
+      teams[activeTeamIndex].score += 1;
+      pictStatus.textContent = "Point scored! 🎉";
+    } else if (fromTimer) {
+      pictStatus.textContent = "Time’s up. No point this round.";
+    } else {
+      pictStatus.textContent = "Round ended. No point this time.";
+    }
+
+    teams[activeTeamIndex].rounds += 1;
+    updateScoreboard();
+
+    if (inlineActions) inlineActions.style.display = "none";
+
+    const nextTeamIndex = activeTeamIndex === 0 ? 1 : 0;
+    currentTurnIndex++;
+
+    if (currentTurnIndex >= totalRounds) {
+      focusOverlay.style.display = "none";
+      pictStatus.textContent += "  Game over! 🎨";
+      showWordBtn.disabled = true;
+      wordSeenBtn.disabled = true;
+
+      if (typeof recordPictioAnalytics === "function") {
+        recordPictioAnalytics({
+          categoryKey:  gameCategoryKey,
+          timerSeconds: gameTimerSeconds,
+          totalRounds:  totalRounds,
+          teamA: { name: teams[0].name, score: teams[0].score },
+          teamB: { name: teams[1].name, score: teams[1].score }
+        });
+      }
+      return;
+    }
+
+    openPassView(teams[nextTeamIndex].name);
+  }
+
+  function beginNextTurn() {
+    activeTeamIndex = currentTurnIndex % 2;
+    updateScoreboard();
+    resetWordPanelForNewTurn();
+    inlineTimeEl.textContent      = gameTimerSeconds;
+    inlineTimerNumber.textContent = "–";
+  }
+
+  // ==== EVENT HANDLERS ====
+  startBtn.onclick = () => {
+    const tAName = (teamAInput.value || "Team A").trim();
+    const tBName = (teamBInput.value || "Team B").trim();
+    gameCategoryKey = categorySelect.value || "everyday";
+    const tVal = parseInt(timerInput.value, 10);
+    gameTimerSeconds = (!isNaN(tVal) && tVal > 0) ? tVal : 120;
+
+    teams = [
+      { name: tAName || "Team A", score: 0, rounds: 0 },
+      { name: tBName || "Team B", score: 0, rounds: 0 }
+    ];
+    totalRounds = ROUNDS_PER_TEAM * 2;
+    currentTurnIndex = 0;
+    activeTeamIndex = 0;
+
+    infoCategoryEl.textContent = categorySelect.options[categorySelect.selectedIndex].textContent;
+    infoTimerEl.textContent    = `${gameTimerSeconds}s`;
+
+    configEl.style.display = "none";
+    mainEl.style.display   = "block";
+
+    beginNextTurn();
+  };
+
+  showWordBtn.onclick = () => {
+    currentWord = chooseWord();
+
+    // Inline fallback
+    wordDisplay.innerHTML = "";
+    const span = document.createElement("div");
+    span.className = "pict-word-text";
+    span.innerHTML = `<span>${currentWord}</span><small>ONLY the drawer can look</small>`;
+    wordDisplay.appendChild(span);
+
+    wordNote.style.display = "block";
+    wordActionRow.style.display = "none";
+    seenActionRow.style.display = "flex";
+    pictStatus.textContent = "";
+
+    // Full-screen overlay
+    if (wordOverlay && wordOverlayText) {
+      wordOverlayText.textContent = currentWord;
+      wordOverlay.style.display = "flex";
+    }
+  };
+
+  // Inline button (if overlay is skipped / doesn't show)
+  wordSeenBtn.onclick = () => {
+    wordOverlay.style.display = "none";
+
+    wordDisplay.innerHTML = "";
+    const placeholder = document.createElement("div");
+    placeholder.className = "pict-word-placeholder";
+    placeholder.textContent = "Timer is running. Only drawing & guessing now.";
+    wordDisplay.appendChild(placeholder);
+
+    wordNote.style.display = "none";
+    seenActionRow.style.display = "none";
+
+    if (inlineActions) inlineActions.style.display = "flex";
+
+    startTimer();
+    openFocusTimer();
+  };
+
+  // Overlay CTA
+  if (wordOverlaySeenBtn) {
+    wordOverlaySeenBtn.onclick = () => {
+      wordOverlay.style.display = "none";
+
+      wordDisplay.innerHTML = "";
+      const placeholder = document.createElement("div");
+      placeholder.className = "pict-word-placeholder";
+      placeholder.textContent = "Timer is running. Only drawing & guessing now.";
+      wordDisplay.appendChild(placeholder);
+
+      wordNote.style.display = "none";
+      seenActionRow.style.display = "none";
+
+      if (inlineActions) inlineActions.style.display = "flex";
+
+      startTimer();
+      openFocusTimer();
+    };
+  }
+
+  focusCloseBtn.onclick = () => {
+    // close focus, but keep timer + inline buttons running
+    closeFocusTimer();
+    if (inlineActions && remaining > 0) {
+      inlineActions.style.display = "flex";
+    }
+  };
+
+  btnGuessed.onclick = () => {
+    handleTurnEnd(true, false);
+  };
+
+  btnGiveUp.onclick = () => {
+    handleTurnEnd(false, false);
+  };
+
+  if (inlineBtnGuessed) {
+    inlineBtnGuessed.onclick = () => {
+      handleTurnEnd(true, false);
+      closeFocusTimer();
+    };
+  }
+
+  if (inlineBtnGiveUp) {
+    inlineBtnGiveUp.onclick = () => {
+      handleTurnEnd(false, false);
+      closeFocusTimer();
+    };
+  }
+</script>
+
+<footer class="qr-footer">
+  <div class="qr-footer-inner">
+
+    <div class="qr-footer-section">
+      <div class="qr-footer-logo">Quiz<span>Realm</span></div>
+      <div class="qr-footer-tag">Fast, clean, and fun trivia for everyone.</div>
+    </div>
+
+    <div class="qr-footer-section">
+      <div class="qr-footer-title">Info</div>
+      <a href="faq.html" class="qr-footer-link">FAQ</a>
+      <a href="terms.html" class="qr-footer-link">Terms & Conditions</a>
+      <a href="privacy.html" class="qr-footer-link">Privacy Policy</a>
+      <a href="cookies.html" class="qr-footer-link">Cookies</a>
+    </div>
+
+    <div class="qr-footer-section">
+      <div class="qr-footer-title">More</div>
+      <a href="categories.html" class="qr-footer-link">Categories</a>
+      <a href="minigames.html" class="qr-footer-link">Minigames</a>
+      <a href="achievements.html" class="qr-footer-link">Achievements</a>
+      <a href="profile.html" class="qr-footer-link">My Profile</a>
+    </div>
+
+  </div>
+
+  <div class="qr-footer-bottom">
+    © <span id="qrYear"></span> QuizRealm — All rights reserved.
+  </div>
+</footer>
+
+<script>
+  document.getElementById("qrYear").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

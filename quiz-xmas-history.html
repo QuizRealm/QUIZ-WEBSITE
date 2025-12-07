@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santa: Myths, Legends & Dark Folklore | QuizRealm</title>
+        <link rel="manifest" href="assets/site.webmanifest">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURCODEHERE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YOURCODEHERE');
+</script>
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <meta name="description" content="Discover the true origins of Santa Claus, Krampus, and Christmas traditions in this historical trivia challenge.">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+<link rel="manifest" href="assets/site.webmanifest">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Merriweather:ital,wght@0,300;0,700;1,300&family=Outfit:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        serif: ['Merriweather', 'serif'],
+                        title: ['Cinzel', 'serif'], // The "Ancient" font
+                    },
+                    colors: {
+                        parchment: '#e2d5c3',
+                        ink: '#1c1917',
+                        crimson: '#7f1d1d',
+                        gold: '#b45309',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { 
+            background-color: #0c0a09; 
+            background-image: url("https://www.transparenttextures.com/patterns/dark-leather.png");
+            min-height: 100vh; 
+            color: #e2d5c3;
+        }
+
+        /* The "Old Book" Card Style */
+        .book-card {
+            background-color: #1c1917;
+            background-image: linear-gradient(to bottom right, #292524, #1c1917);
+            border: 1px solid #44403c;
+            box-shadow: 
+                0 0 0 4px #0c0a09, /* Inner gap */
+                0 0 0 5px #78350f, /* Leather border */
+                0 20px 50px -10px rgba(0,0,0,0.8);
+        }
+
+        .decorative-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #b45309;
+        }
+        .decorative-divider::before, .decorative-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #78350f;
+        }
+        .decorative-divider::not(:empty)::before { margin-right: .5em; }
+        .decorative-divider::not(:empty)::after { margin-left: .5em; }
+
+        /* The "Did You Know" Slide Up */
+        .fact-panel {
+            background: #e7e5e4; /* Light parchment */
+            color: #1c1917;
+            border-top: 4px solid #b45309;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased">
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-2xl mx-auto px-4 py-8 flex flex-col justify-center min-h-[85vh]">
+
+        <div class="text-center mb-8">
+            <div class="decorative-divider mb-4"><i class="fas fa-scroll text-2xl"></i></div>
+            <h1 class="font-title text-3xl md:text-5xl text-parchment mb-2 tracking-widest text-shadow">
+                Myths & Legends
+            </h1>
+            <p class="font-serif italic text-stone-500 text-sm">
+                Uncover the true origins of Christmas folklore.
+            </p>
+        </div>
+
+        <div id="quizCard" class="book-card rounded-lg p-8 md:p-12 relative overflow-hidden">
+            
+            <div class="absolute top-2 left-2 w-8 h-8 border-t-2 border-l-2 border-gold opacity-50"></div>
+            <div class="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-gold opacity-50"></div>
+            <div class="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-gold opacity-50"></div>
+            <div class="absolute bottom-2 right-2 w-8 h-8 border-b-2 border-r-2 border-gold opacity-50"></div>
+
+            <div class="text-center mb-6">
+                <span class="text-gold font-title text-xs tracking-[0.3em]">CHAPTER <span id="qNum">I</span></span>
+            </div>
+
+            <h2 class="font-serif text-xl md:text-2xl text-parchment leading-relaxed text-center mb-10" id="questionText">
+                Loading ancient texts...
+            </h2>
+
+            <div class="space-y-4" id="optionsGrid">
+                </div>
+
+        </div>
+
+        <div id="resultsCard" class="hidden book-card rounded-lg p-10 text-center animate-fade-in-up">
+            <div class="text-6xl text-gold mb-6"><i class="fas fa-book-open"></i></div>
+            <h2 class="font-title text-3xl text-parchment mb-4">The Chronicles Are Closed</h2>
+            <p class="font-serif text-stone-400 mb-8">
+                You have mastered <span id="finalScore" class="text-gold font-bold">0</span> out of <span id="totalQuestions">0</span> legends.
+            </p>
+            <div class="space-y-4">
+                <button onclick="location.reload()" class="w-full py-3 border border-stone-600 text-stone-400 hover:text-parchment hover:border-parchment transition font-title">
+                    Re-read the Archives
+                </button>
+                <a href="christmas-hub.html" class="block w-full py-3 bg-gold/10 border border-gold text-gold hover:bg-gold hover:text-black transition font-title font-bold">
+                    Return to Hub
+                </a>
+            </div>
+        </div>
+<article class="mt-24 border-t border-stone-800 pt-16 max-w-2xl mx-auto text-center">
+    <div class="decorative-divider mb-6"><i class="fas fa-book text-gold"></i></div>
+    <h2 class="font-title text-3xl text-parchment mb-6">From Krampus to Coca-Cola: The Evolution of Santa</h2>
+    
+    <div class="prose prose-invert prose-stone mx-auto text-left">
+        <p>
+            The figure we know as Santa Claus is a patchwork quilt of folklore spanning 1,700 years. It began with <strong>Saint Nicholas of Myra</strong>, a Greek bishop famous for leaving coins in shoes.
+        </p>
+        <p>
+            However, the "Darker" side of Christmas often gets forgotten. In pre-Christian Germanic traditions, the midwinter festival of Yule was a time when the veil between the living and the dead was thin. The terrifying <strong>Krampus</strong> served a vital social role: scaring children into good behavior when the promise of sugar plums wasn't enough.
+        </p>
+        <h3 class="text-gold font-title mt-6 mb-2">Did Coca-Cola Invent Santa?</h3>
+        <p>
+            Not entirely. While Haddon Sundblom's 1931 ads cemented the "rosy-cheeked grandfather" image, Santa was already wearing red in 19th-century illustrations by Thomas Nast. Coke simply standardized the specific shade of red we see in malls today.
+        </p>
+    </div>
+</article>
+    </main>
+
+    <div id="factPanel" class="fixed bottom-0 left-0 w-full fact-panel transform translate-y-full transition-transform duration-500 ease-out z-50 shadow-2xl">
+        <div class="max-w-2xl mx-auto p-6 md:p-8 relative">
+            <button onclick="nextQuestion()" class="absolute top-4 right-4 text-stone-500 hover:text-black">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="flex items-start gap-4">
+                <div class="hidden md:block text-4xl text-crimson pt-1">
+                    <i class="fas fa-feather-alt"></i>
+                </div>
+                <div>
+                    <h3 class="font-title text-xl font-bold text-crimson mb-2" id="factTitle">History Note</h3>
+                    <p class="font-serif text-stone-800 leading-relaxed text-sm md:text-base mb-6" id="factBody">
+                        Explanation goes here...
+                    </p>
+                    <button onclick="nextQuestion()" class="px-6 py-2 bg-crimson text-white font-title text-sm tracking-wider hover:bg-red-900 transition">
+                        NEXT CHAPTER &rarr;
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <script>
+    // Bigger pool of Santa / folklore questions
+    const allQuestions = [
+        {
+            q: "Before Santa Claus, which horned figure punished naughty children in Alpine folklore?",
+            options: ["The Grinch", "Krampus", "Belsnickel", "Loki"],
+            a: 1,
+            fact: "Krampus is a half-goat, half-demon figure who punishes misbehaving children during the Christmas season. In Austria, 'Krampusnacht' is celebrated on December 5th."
+        },
+        {
+            q: "Which Norse God is believed to be the original inspiration for Santa riding across the sky?",
+            options: ["Thor", "Loki", "Odin", "Baldur"],
+            a: 2,
+            fact: "Odin was said to lead a 'Wild Hunt' through the sky during Yule, riding his eight-legged horse Sleipnir. This likely inspired Santa's eight reindeer."
+        },
+        {
+            q: "In which modern-day country was the real Saint Nicholas born?",
+            options: ["Finland (North Pole)", "Turkey", "Germany", "Italy"],
+            a: 1,
+            fact: "Saint Nicholas was a Greek bishop born in Patara, located in modern-day Turkey, around 280 A.D. He was famous for giving secret gifts, such as putting coins in shoes."
+        },
+        {
+            q: "Who is responsible for popularizing the image of Santa as a jolly man in a red suit?",
+            options: ["Coca-Cola", "Charles Dickens", "Hallmark Cards", "Queen Victoria"],
+            a: 0,
+            fact: "While Santa wore red before, Haddon Sundblom's 1930s illustrations for Coca-Cola standardized the 'jolly, grandfatherly' image we know today."
+        },
+        {
+            q: "Why do we hang stockings by the fireplace?",
+            options: ["To dry wet socks", "To trap evil spirits", "St. Nick dropped gold in them", "To feed the reindeer"],
+            a: 2,
+            fact: "Legend says St. Nicholas dropped three bags of gold down a chimney for three poor sisters. The gold landed in their stockings, which were hung by the fire to dry."
+        },
+        {
+            q: "The date of December 25th was originally a festival for which Roman god?",
+            options: ["Jupiter", "Mars", "Sol Invictus (The Sun)", "Bacchus"],
+            a: 2,
+            fact: "The Romans celebrated 'Dies Natalis Solis Invicti' (Birthday of the Unconquered Sun) on December 25th. Many midwinter traditions later merged with Christmas."
+        },
+        {
+            q: "On which date is Saint Nicholas Day traditionally celebrated in much of Europe?",
+            options: ["December 1st", "December 5th", "December 6th", "December 24th"],
+            a: 2,
+            fact: "Saint Nicholas Day is usually celebrated on December 6th, especially in countries like the Netherlands, Belgium, Germany and parts of Central Europe."
+        },
+        {
+            q: "The German figure 'Belsnickel' is best described as:",
+            options: [
+                "A ragged, fur-clad gift-bringer who tests children",
+                "A magical reindeer",
+                "A Christmas witch who rides a broom",
+                "A snow demon that steals toys"
+            ],
+            a: 0,
+            fact: "Belsnickel is a gruff, fur-wearing figure who visits homes before Christmas, often scolding naughty children and rewarding the well-behaved with small treats."
+        },
+        {
+            q: "In Italian folklore, which figure rides a broom and delivers gifts on Epiphany?",
+            options: ["La Befana", "Frau Perchta", "Gryla", "Mari Lwyd"],
+            a: 0,
+            fact: "La Befana is an old woman who flies on a broomstick and delivers gifts on the night before Epiphany (January 6th), filling children's stockings with sweets."
+        },
+        {
+            q: "The Scandinavian 'Yule Goat' originally represented:",
+            options: [
+                "Thor's goat-drawn chariot",
+                "A devil sent to steal presents",
+                "A guardian of the forest",
+                "A winter spirit of snowstorms"
+            ],
+            a: 0,
+            fact: "The Yule Goat is linked to the Norse god Thor, whose chariot was pulled by two goats. Over time, it became a symbol of Christmas, sometimes even a gift-bringer."
+        },
+        {
+            q: "In some Northern European traditions, children left hay or carrots in their shoes for:",
+            options: ["Krampus", "Rudolph", "Sleipnir", "The Yule Goat"],
+            a: 2,
+            fact: "Children would leave food in their shoes for Sleipnir, Odin's eight-legged horse, hoping Odin would leave small gifts in return during the Yule season."
+        },
+        {
+            q: "Which famous 1823 poem gave us many modern details of Santa, like reindeer and chimney visits?",
+            options: [
+                "\"A Christmas Carol\"",
+                "\"A Visit from St. Nicholas\"",
+                "\"The Snow Queen\"",
+                "\"The Holly and the Ivy\""
+            ],
+            a: 1,
+            fact: "The poem 'A Visit from St. Nicholas'—better known by its first line, '’Twas the night before Christmas'—introduced many features of the modern Santa myth."
+        },
+        {
+            q: "The name 'Santa Claus' comes from which language's version of Saint Nicholas?",
+            options: ["Dutch", "German", "Finnish", "Latin"],
+            a: 0,
+            fact: "The name 'Santa Claus' comes from the Dutch 'Sinterklaas', itself derived from 'Sint Nikolaas' (Saint Nicholas)."
+        },
+        {
+            q: "In Dutch tradition, Sinterklaas is said to travel to the Low Countries from which place?",
+            options: ["The North Pole", "Spain", "Germany", "Rome"],
+            a: 1,
+            fact: "In Dutch stories, Sinterklaas arrives each year by steamboat from Spain, bringing gifts and sweets for children."
+        },
+        {
+            q: "In Icelandic folklore, which monstrous cat is said to eat those who don't receive new clothes before Christmas?",
+            options: ["Fenrir", "Jólakötturinn", "Grendel", "The Snow Warg"],
+            a: 1,
+            fact: "Jólakötturinn, the Yule Cat, is a giant feline of Icelandic folklore that supposedly devours people who don't get new clothes before Christmas Eve."
+        }
+    ];
+
+    const QUESTION_COUNT = 10; // how many questions per run (picked randomly)
+
+    let questions = [];
+    let currentIdx = 0;
+    let score = 0;
+    let isLocked = false;
+
+    const ui = {
+        card: document.getElementById('quizCard'),
+        qNum: document.getElementById('qNum'),
+        text: document.getElementById('questionText'),
+        grid: document.getElementById('optionsGrid'),
+        panel: document.getElementById('factPanel'),
+        factTitle: document.getElementById('factTitle'),
+        factBody: document.getElementById('factBody'),
+        results: document.getElementById('resultsCard'),
+        finalScore: document.getElementById('finalScore'),
+        total: document.getElementById('totalQuestions')
+    };
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function toRoman(num) {
+        const roman = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+        return roman[num - 1] || num;
+    }
+
+    function startQuiz() {
+        const pool = shuffle([...allQuestions]); // don't mutate original
+        const count = Math.min(QUESTION_COUNT, pool.length);
+        questions = pool.slice(0, count);
+
+        currentIdx = 0;
+        score = 0;
+        isLocked = false;
+
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        ui.panel.classList.remove('translate-y-0');
+        ui.panel.classList.add('translate-y-full'); // Hide panel
+
+        const data = questions[currentIdx];
+        ui.qNum.textContent = toRoman(currentIdx + 1);
+        ui.text.textContent = data.q;
+        ui.grid.innerHTML = '';
+        isLocked = false;
+
+        data.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = "w-full text-left p-4 border border-stone-700 hover:border-gold hover:bg-stone-800 transition-all font-serif text-stone-300 relative group";
+            btn.innerHTML = `
+                <span class="font-bold text-stone-600 group-hover:text-gold mr-3 transition-colors">${String.fromCharCode(65 + idx)}.</span>
+                ${opt}
+            `;
+            btn.onclick = () => checkAnswer(idx, data.a, btn, data.fact);
+            ui.grid.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selected, correct, btn, fact) {
+        if (isLocked) return;
+        isLocked = true;
+
+        const buttons = ui.grid.querySelectorAll('button');
+
+        if (selected === correct) {
+            score++;
+            btn.classList.add('bg-green-900/30', 'border-green-600', 'text-green-100');
+            ui.factTitle.textContent = "Correct / The Truth";
+            ui.factTitle.className = "font-title text-xl font-bold text-green-700 mb-2";
+        } else {
+            btn.classList.add('bg-red-900/30', 'border-crimson', 'text-red-100');
+            buttons[correct].classList.add('border-green-600', 'text-green-500'); // Show correct
+            ui.factTitle.textContent = "Myth Busted";
+            ui.factTitle.className = "font-title text-xl font-bold text-crimson mb-2";
+        }
+
+        // Show Fact Panel
+        ui.factBody.textContent = fact;
+        setTimeout(() => {
+            ui.panel.classList.remove('translate-y-full');
+            ui.panel.classList.add('translate-y-0');
+        }, 500);
+    }
+
+    function nextQuestion() {
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            loadQuestion();
+        } else {
+            ui.panel.classList.remove('translate-y-0');
+            ui.panel.classList.add('translate-y-full');
+            showResults();
+        }
+    }
+
+    function showResults() {
+        ui.card.classList.add('hidden');
+        ui.results.classList.remove('hidden');
+        ui.finalScore.textContent = score;
+        ui.total.textContent = questions.length;
+    }
+
+    // Make nextQuestion available for inline onclick in HTML
+    window.nextQuestion = nextQuestion;
+
+    // Start
+    startQuiz();
+</script>
+
+</body>
+</html>
