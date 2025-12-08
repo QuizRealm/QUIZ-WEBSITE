@@ -1,5 +1,5 @@
 // components.js - CHRISTMAS EDITION (FULL FEATURES) 🎄
-<script src="https://cdn.tailwindcss.com"></script>
+
 console.log("Loading QuizRealm Components...");
 /* * © 2025 QuizRealm Inc. - All Rights Reserved.
  * * UNAUTHORIZED COPYING OF THIS FILE, VIA ANY MEDIUM, IS STRICTLY PROHIBITED.
