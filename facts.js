@@ -3,6 +3,7 @@
  * PROPRIETARY AND CONFIDENTIAL.
  * * Written by [Your Name/Handle], December 2025.
  */
+        <script src="https://cdn.tailwindcss.com"></script>
 
 const quizFacts = {
   tbbt: [
