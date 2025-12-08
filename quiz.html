@@ -383,6 +383,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             { id: "movie_buff",       name: "Movie Quiz Fan",          icon: "fa-film" }
         ];
 
+
+        function shuffleArray(array) {
+    let newArray = [...array]; // Create a copy to avoid modifying the original question data.
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+// --- END SHUFFLE FUNCTION ---
         // --- INIT ---
         function init() {
             const params = new URLSearchParams(window.location.search);
@@ -450,74 +460,93 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         // --- GAMEPLAY ENGINE ---
-        function renderQuestion() {
-            clearInterval(timerInterval);
-            timer = TIME_LIMIT;
-            updateTimerUI();
-            startTimer();
+function renderQuestion() {
+    clearInterval(timerInterval);
+    timer = TIME_LIMIT;
+    updateTimerUI();
+    startTimer();
 
-            if (index >= questions.length) {
-                endGame();
-                return;
-            }
+    if (index >= questions.length) {
+        endGame();
+        return;
+    }
 
-            const q = questions[index];
-            document.getElementById('qIndex').textContent = index + 1;
-            document.getElementById('questionText').textContent = q.question;
+    const q = questions[index];
+    document.getElementById('qIndex').textContent = index + 1;
+    document.getElementById('questionText').textContent = q.question;
 
-            const container = document.getElementById('optionsContainer');
-            container.innerHTML = '';
-            
-            const card = document.getElementById('quizCard');
-            card.classList.remove('fade-enter');
-            void card.offsetWidth; 
-            card.classList.add('fade-enter');
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    
+    const card = document.getElementById('quizCard');
+    card.classList.remove('fade-enter');
+    void card.offsetWidth; 
+    card.classList.add('fade-enter');
 
-            q.options.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = "option-btn w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 text-slate-200 font-medium text-sm md:text-base";
-                btn.innerHTML = `<span class="inline-block w-6 text-slate-500 font-mono">${String.fromCharCode(65+i)}.</span> ${opt}`;
-                btn.onclick = () => handleAnswer(i, btn);
-                container.appendChild(btn);
-            });
-        }
+    // --- NEW SHUFFLE LOGIC ---
+    const originalCorrectAnswer = q.options[q.correctIndex];
+    const shuffledOptions = shuffleArray(q.options);
+    
+    // Find the new index of the correct answer after shuffling
+    const newCorrectIndex = shuffledOptions.findIndex(opt => opt === originalCorrectAnswer);
+    
+    // Store the new correct index temporarily on the question object for `handleAnswer` to use
+    // We use a property unique to this session, like `shuffledCorrectIndex`, not `correctIndex`
+    q.shuffledCorrectIndex = newCorrectIndex;
+    // --- END NEW SHUFFLE LOGIC ---
 
-        function handleAnswer(selectedIndex, btn) {
-            clearInterval(timerInterval);
-            const q = questions[index];
 
-            const timeUsed = TIME_LIMIT - timer;
-            const isCorrect = selectedIndex === q.correctIndex;
-            const correctBtn = document.getElementById('optionsContainer').children[q.correctIndex];
+    shuffledOptions.forEach((opt, i) => { // Use the shuffledOptions array
+        const btn = document.createElement('button');
+        btn.className = "option-btn w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 text-slate-200 font-medium text-sm md:text-base";
+        btn.innerHTML = `<span class="inline-block w-6 text-slate-500 font-mono">${String.fromCharCode(65+i)}.</span> ${opt}`;
+        btn.onclick = () => handleAnswer(i, btn, opt); // Pass the chosen option text
+        container.appendChild(btn);
+    });
+}
 
-            Array.from(document.getElementById('optionsContainer').children).forEach(b => b.disabled = true);
+        function handleAnswer(selectedIndex, btn, selectedOptionText) {
+    clearInterval(timerInterval);
+    const q = questions[index];
 
-            if (isCorrect) {
-                if (btn) btn.classList.add('correct');
-                score++;
-                streak++;
-                if(streak > maxStreak) maxStreak = streak;
+    // Use the stored shuffled index for checking
+    const correctIndexAfterShuffle = q.shuffledCorrectIndex;
+    const isCorrect = selectedIndex === correctIndexAfterShuffle;
+    
+    const timeUsed = TIME_LIMIT - timer;
+    
+    // Find the correct button using the stored index
+    const correctBtn = document.getElementById('optionsContainer').children[correctIndexAfterShuffle];
 
-                questionResults[index] = true;
-                if (timeUsed <= 10) fastCorrectCount++;
-            } else {
-                if(btn) btn.classList.add('wrong');
-                if(correctBtn) correctBtn.classList.add('correct');
-                streak = 0;
-                wrongCount++;
-                questionResults[index] = false;
+    Array.from(document.getElementById('optionsContainer').children).forEach(b => b.disabled = true);
 
-                const card = document.getElementById('quizCard');
-                card.classList.add('animate-shake');
-                setTimeout(()=>card.classList.remove('animate-shake'), 500);
-            }
-            updateHUD();
-            
-            setTimeout(() => {
-                showFeedback(isCorrect, q.options[q.correctIndex]);
-            }, 800);
-        }
+    if (isCorrect) {
+        if (btn) btn.classList.add('correct');
+        score++;
+        streak++;
+        if(streak > maxStreak) maxStreak = streak;
 
+        questionResults[index] = true;
+        if (timeUsed <= 10) fastCorrectCount++;
+    } else {
+        if(btn) btn.classList.add('wrong');
+        if(correctBtn) correctBtn.classList.add('correct');
+        streak = 0;
+        wrongCount++;
+        questionResults[index] = false;
+
+        const card = document.getElementById('quizCard');
+        card.classList.add('animate-shake');
+        setTimeout(()=>card.classList.remove('animate-shake'), 500);
+    }
+    updateHUD();
+    
+    // Pass the correct answer text for the feedback message
+    setTimeout(() => {
+        // We use the text of the correct button instead of q.options[q.correctIndex]
+        showFeedback(isCorrect, correctBtn.textContent.substring(4).trim()); 
+    }, 800);
+}
         function showFeedback(isCorrect, rightAnswer) {
             const overlay = document.getElementById('feedbackOverlay');
             overlay.classList.remove('hidden');
