@@ -1,5 +1,4 @@
 // 1) QUESTION BANKS
-        <script src="https://cdn.tailwindcss.com"></script>
 
 /* * © 2025 QuizRealm Inc. - All Rights Reserved.
  * * UNAUTHORIZED COPYING OF THIS FILE, VIA ANY MEDIUM, IS STRICTLY PROHIBITED.

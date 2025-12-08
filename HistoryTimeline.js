@@ -7,7 +7,6 @@
  * * Written by [Your Name/Handle], December 2025.
  */
 
-        <script src="https://cdn.tailwindcss.com"></script>
 
 (function (global) {
   // -------------------------
