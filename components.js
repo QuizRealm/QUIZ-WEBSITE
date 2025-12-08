@@ -11,6 +11,29 @@ console.log("Loading QuizRealm Components...");
 // 1. HEADER MARKUP GENERATOR
 // =================================================================
 function getQuizHeaderMarkup() {
+    let user = { level: 1, coins: 0, avatarSeed: 'Player', xp: 0 }; // Default fallback
+
+    if (typeof GameEngine !== 'undefined' && GameEngine.user) {
+        user = GameEngine.user; // Grab the live data
+    } else {
+        // Fallback if GameEngine hasn't loaded yet (rare race condition)
+        const saved = localStorage.getItem('QR_PROFILE');
+        if (saved) {
+            try {
+                user = { ...user, ...JSON.parse(saved) };
+            } catch (e) {
+                console.warn("Failed to parse QR_PROFILE:", e);
+            }
+        }
+    }
+
+    const level      = user.level || 1;
+    const coins      = user.coins || 0;
+    const xp         = user.xp || 0;
+    const avatarSeed = user.avatarSeed || 'Player';
+    const avatarUrl  = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${avatarSeed}`;
+
+    // Now build the HTML using live user data + IDs for GameEngine.updateHeaderUI()
     return `
     <header class="w-full sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg shadow-red-900/5 relative overflow-hidden">
         
@@ -72,7 +95,7 @@ function getQuizHeaderMarkup() {
                     <i class="fas fa-font text-purple-400"></i> Hangman
                 </a>
                 <a href="minigames.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
-                    <i class="fas fa-gamepad text-pink-400"></i> Mini-Games
+                    <i class="fas fa-gamepad text-pink-400"></i> Pictionary
                 </a>
             </nav>
 
@@ -82,14 +105,27 @@ function getQuizHeaderMarkup() {
                     <i class="fas fa-gift"></i>
                 </a>
 
+                <!-- Small coins chip (desktop) -->
+                <div class="hidden md:flex flex-col items-end mr-1">
+                    <div class="flex items-center gap-1 text-[10px] text-amber-300">
+                        <i class="fas fa-coins text-[11px]"></i>
+                        <span id="headerCoins">${coins.toLocaleString()}</span>
+                    </div>
+                    <span id="headerXP" class="hidden">${xp}</span>
+                </div>
+
                 <button onclick="window.location.href='profile.html'" 
                     class="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-300 to-yellow-500 flex items-center justify-center text-black font-bold shadow-lg ring-2 ring-black/50">
-                        <i class="fas fa-user"></i>
+                    
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-300 to-yellow-500 flex items-center justify-center text-black font-bold shadow-lg ring-2 ring-black/50 overflow-hidden">
+                        <img id="headerAvatar" src="${avatarUrl}" alt="Player Avatar" class="w-full h-full object-cover">
                     </div>
+
                     <div class="hidden sm:flex flex-col items-start leading-none">
                         <span class="text-xs font-bold text-white group-hover:text-blue-200">My Profile</span>
-                        <span class="text-[10px] text-slate-400">Level 1</span>
+                        <span class="text-[10px] text-slate-400">
+                            Level <span id="headerLevel">${level}</span>
+                        </span>
                     </div>
                 </button>
             </div>
@@ -186,10 +222,9 @@ function getQuizFooterMarkup() {
             </div>
 
             <div class="flex flex-col md:flex-row gap-2">
-    <span>&copy; ${year} QuizRealm Inc.</span>
-    <span class="hidden md:block text-slate-700">|</span>
-    <span class="text-slate-500">Licensed under QuizRealm Proprietary License.</span>
-</div>
+                <span>&copy; ${year} QuizRealm Inc.</span>
+                <span class="hidden md:block text-slate-700">|</span>
+                <span class="text-slate-500">Licensed under QuizRealm Proprietary License.</span>
             </div>
         </div>
     </footer>`;
@@ -204,6 +239,10 @@ if (!customElements.get('quiz-header')) {
     class QuizHeader extends HTMLElement {
         connectedCallback() {
             this.innerHTML = getQuizHeaderMarkup();
+            // Ensure header reflects latest GameEngine state even if engine loaded earlier
+            if (typeof GameEngine !== 'undefined' && typeof GameEngine.updateHeaderUI === 'function') {
+                GameEngine.updateHeaderUI();
+            }
         }
     }
     customElements.define('quiz-header', QuizHeader);
@@ -214,6 +253,9 @@ if (!customElements.get('quiz-home-header')) {
     class QuizHomeHeader extends HTMLElement {
         connectedCallback() {
             this.innerHTML = getQuizHeaderMarkup();
+            if (typeof GameEngine !== 'undefined' && typeof GameEngine.updateHeaderUI === 'function') {
+                GameEngine.updateHeaderUI();
+            }
         }
     }
     customElements.define('quiz-home-header', QuizHomeHeader);
