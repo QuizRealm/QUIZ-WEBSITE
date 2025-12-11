@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="game-engine.js"></script> 
+    <script src="components.js" defer></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Challenge: Name the Movie | Superhero Cinema</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'], 
+                        mono: ['Share Tech Mono', 'monospace'] 
+                    }, 
+                    colors: { 
+                        hudCyan: '#06b6d4', 
+                        hudDark: '#083344',
+                        hudGreen: '#22c55e',
+                        hudRed: '#ef4444',
+                        bgDark: '#020617'
+                    }, 
+                    animation: { 
+                        'scanline': 'scanline 8s linear infinite',
+                        'zoom-slow': 'zoomSlow 20s linear infinite',
+                        'flash-red': 'flashRed 0.5s ease-in-out'
+                    },
+                    keyframes: {
+                        scanline: { '0%': { transform: 'translateY(-100%)' }, '100%': { transform: 'translateY(100%)' } },
+                        zoomSlow: { '0%': { transform: 'scale(1)' }, '100%': { transform: 'scale(1.15)' } },
+                        flashRed: { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.5, backgroundColor: 'rgba(239,68,68,0.2)' } }
+                    }
+                } 
+            } 
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #020617; 
+            /* Cyber Grid Background */
+            background-image: 
+                linear-gradient(rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.9)),
+                linear-gradient(0deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            min-height: 100vh; 
+            color: #e2e8f0; 
+            overflow-x: hidden;
+        }
+
+        /* HUD Frame Styling */
+        .hud-panel {
+            background: rgba(8, 51, 68, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
+            position: relative;
+        }
+        
+        /* Corner Accents */
+        .hud-corner {
+            position: absolute; width: 10px; height: 10px;
+            border: 2px solid #06b6d4; transition: all 0.3s;
+        }
+        .tl { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+        .tr { top: -1px; right: -1px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: -1px; left: -1px; border-right: 0; border-top: 0; }
+        .br { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+        /* The Timer Bar */
+        .timer-fill {
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+<body class="flex flex-col antialiased selection:bg-hudCyan selection:text-black">
+
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-8 relative">
+
+        <div id="introScreen" class="min-h-[70vh] flex flex-col justify-center items-center text-center animate-fade-in relative z-10">
+            
+            <div class="w-32 h-32 relative mb-8 group">
+                <div class="absolute inset-0 bg-hudCyan/20 rounded-full animate-ping"></div>
+                <div class="relative w-full h-full bg-black border-2 border-hudCyan rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.4)]">
+                    <i class="fas fa-eye text-5xl text-hudCyan"></i>
+                </div>
+            </div>
+
+            <h1 class="font-arcade text-5xl md:text-7xl text-white mb-6 drop-shadow-lg">
+                SCREENSHOT <span class="text-hudCyan">CHALLENGE</span>
+            </h1>
+
+            <p class="text-slate-300 text-lg max-w-xl mx-auto mb-10 leading-relaxed font-light">
+                We show you one frame. You name the movie. <br>
+                <span class="text-hudCyan font-bold">You have 10 seconds per image.</span>
+            </p>
+
+            <div class="grid grid-cols-2 gap-4 mb-10 max-w-md w-full">
+                <div class="hud-panel p-4 rounded text-center">
+                    <div class="text-2xl font-mono text-white font-bold">10</div>
+                    <div class="text-[10px] text-hudCyan uppercase tracking-widest">Rounds</div>
+                </div>
+                <div class="hud-panel p-4 rounded text-center">
+                    <div class="text-2xl font-mono text-white font-bold">Hard</div>
+                    <div class="text-[10px] text-hudCyan uppercase tracking-widest">Difficulty</div>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="group relative px-12 py-5 bg-hudCyan/10 hover:bg-hudCyan text-hudCyan hover:text-black font-bold text-xl uppercase tracking-widest border border-hudCyan transition-all clip-path-polygon">
+                <i class="fas fa-play mr-2 text-sm"></i> Initialize
+            </button>
+        </div>
+
+        <div id="gameInterface" class="hidden min-h-[70vh] max-w-3xl mx-auto flex flex-col justify-center">
+            
+            <div class="flex justify-between items-end mb-2 px-1">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs font-mono text-hudCyan">LIVE FEED</span>
+                </div>
+                <span class="text-xl font-mono font-bold text-white" id="counterDisplay">01 / 10</span>
+            </div>
+
+            <div class="hud-panel p-1 rounded-xl mb-6 relative group">
+                <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+                <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+
+                <div class="absolute top-0 left-0 w-full h-1 bg-black z-20">
+                    <div id="timerBar" class="h-full bg-hudCyan w-full"></div>
+                </div>
+
+                <div class="relative h-64 md:h-96 w-full overflow-hidden rounded bg-black">
+                    <div id="gameImage" class="w-full h-full bg-cover bg-center transition-transform duration-[20s] ease-linear scale-100"></div>
+                    
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-hudCyan/10 to-transparent h-[20%] w-full animate-scanline pointer-events-none"></div>
+                    
+                    <div class="absolute inset-0 shadow-[inset_0_0_50px_rgba(0,0,0,0.8)] pointer-events-none"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="optionsGrid">
+                </div>
+
+            <div id="feedbackText" class="text-center h-6 mt-4 text-sm font-mono font-bold tracking-[0.3em] text-white opacity-0 transition-opacity">
+                TARGET IDENTIFIED
+            </div>
+
+        </div>
+
+        <div id="resultsScreen" class="hidden min-h-[70vh] flex flex-col justify-center items-center max-w-2xl mx-auto">
+            
+            <div class="hud-panel p-8 md:p-12 rounded-2xl text-center w-full relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-hudCyan to-transparent"></div>
+
+                <p class="text-hudCyan font-mono text-xs uppercase tracking-widest mb-4">Assessment Complete</p>
+                
+                <h2 class="font-arcade text-4xl md:text-5xl text-white mb-2" id="resultRank">EAGLE EYE</h2>
+                
+                <div class="text-6xl font-bold text-white mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" id="finalScore">
+                    8/10
+                </div>
+
+                <p class="text-slate-300 text-sm max-w-md mx-auto mb-8 leading-relaxed" id="resultMessage">
+                    You have incredible visual memory. You notice details others miss.
+                </p>
+
+                <div class="flex justify-center gap-8 mb-8 border-t border-white/10 pt-6">
+                    <div>
+                        <div class="text-xs text-slate-500 uppercase">Accuracy</div>
+                        <div class="text-xl font-bold text-hudCyan" id="accuracyDisplay">80%</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 uppercase">XP Earned</div>
+                        <div class="text-xl font-bold text-yellow-400" id="xpDisplay">+160</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button onclick="location.reload()" class="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/20 text-white rounded font-bold uppercase text-xs tracking-widest transition-all">
+                        Retry Mission
+                    </button>
+                    <a href="index.html" class="px-8 py-3 bg-hudCyan hover:bg-cyan-400 text-black rounded font-bold uppercase text-xs tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all">
+                        Return to Hub
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 1. DATA (Images evoke the movie scenes without breaking copyright directly in code)
+        // Note: For production, replace these URLs with actual movie stills hosted on your server.
+        const LEVELS = [
+            { 
+                movie: "Spider-Man (2002)", 
+                img: "https://images.unsplash.com/photo-1635805737707-575885ab0820?auto=format&fit=crop&q=80&w=800", // Placeholder: Spider vibe
+                options: ["The Amazing Spider-Man", "Spider-Man (2002)", "Spider-Man: Homecoming", "Venom"]
+            },
+            { 
+                movie: "The Dark Knight", 
+                img: "https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?auto=format&fit=crop&q=80&w=800", // Placeholder: Dark city
+                options: ["Batman Begins", "The Batman", "The Dark Knight", "Daredevil"]
+            },
+            { 
+                movie: "Avengers: Infinity War", 
+                img: "https://images.unsplash.com/photo-1605806616949-1e87b487bc2a?auto=format&fit=crop&q=80&w=800", // Placeholder: Space/Gauntlet vibe
+                options: ["Avengers: Endgame", "Guardians of the Galaxy", "Avengers: Infinity War", "Thor: Ragnarok"]
+            },
+            { 
+                movie: "Wonder Woman", 
+                img: "https://images.unsplash.com/photo-1601644720935-8664fa793444?auto=format&fit=crop&q=80&w=800", // Placeholder: Shield/Hero
+                options: ["Captain Marvel", "Wonder Woman", "Black Widow", "Justice League"]
+            },
+            { 
+                movie: "Logan", 
+                img: "https://images.unsplash.com/photo-1518066000714-58c45f1a2c0a?auto=format&fit=crop&q=80&w=800", // Placeholder: Forest/Gritty
+                options: ["X-Men Origins: Wolverine", "The Wolverine", "Logan", "New Mutants"]
+            },
+            { 
+                movie: "Iron Man", 
+                img: "https://images.unsplash.com/photo-1636572481914-a07d2e7b3c2e?auto=format&fit=crop&q=80&w=800", // Placeholder: Red Tech
+                options: ["Iron Man 2", "Iron Man", "Avengers", "Captain America: Civil War"]
+            },
+            { 
+                movie: "Joker", 
+                img: "https://images.unsplash.com/photo-1596727147705-54a9d0820948?auto=format&fit=crop&q=80&w=800", // Placeholder: Clown
+                options: ["The Dark Knight", "Suicide Squad", "Joker", "Birds of Prey"]
+            },
+            { 
+                movie: "Black Panther", 
+                img: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&q=80&w=800", // Placeholder: Neon/Tech
+                options: ["Black Panther", "Blade", "Luke Cage", "Shang-Chi"]
+            },
+            { 
+                movie: "Man of Steel", 
+                img: "https://images.unsplash.com/photo-1506466010722-395aa2bef877?auto=format&fit=crop&q=80&w=800", // Placeholder: Flying/Cape
+                options: ["Superman Returns", "Man of Steel", "Batman v Superman", "Justice League"]
+            },
+            { 
+                movie: "Deadpool", 
+                img: "https://images.unsplash.com/photo-1608889175123-8ee362201f81?auto=format&fit=crop&q=80&w=800", // Placeholder: Red suit
+                options: ["Kick-Ass", "The Suicide Squad", "Deadpool", "X-Men"]
+            }
+        ];
+
+        // 2. STATE
+        let currentIdx = 0;
+        let score = 0;
+        let timerInterval;
+        let timeLeft = 10;
+        let isLocked = false;
+
+        function startGame() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('gameInterface').classList.remove('hidden');
+            loadRound();
+        }
+
+        function loadRound() {
+            isLocked = false;
+            timeLeft = 10;
+            const data = LEVELS[currentIdx];
+            
+            // UI Reset
+            document.getElementById('counterDisplay').textContent = `${currentIdx + 1} / ${LEVELS.length}`;
+            document.getElementById('gameImage').style.backgroundImage = `url('${data.img}')`;
+            document.getElementById('gameImage').classList.remove('animate-zoom-slow'); // Reset anim
+            void document.getElementById('gameImage').offsetWidth; // Trigger reflow
+            document.getElementById('gameImage').classList.add('animate-zoom-slow');
+            document.getElementById('feedbackText').style.opacity = '0';
+            
+            // Timer Reset
+            document.getElementById('timerBar').style.transition = 'none';
+            document.getElementById('timerBar').style.width = '100%';
+            
+            // Start Timer Animation (CSS)
+            setTimeout(() => {
+                document.getElementById('timerBar').style.transition = 'width 10s linear';
+                document.getElementById('timerBar').style.width = '0%';
+            }, 50);
+
+            // Timer Logic
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if(timeLeft <= 0) {
+                    handleTimeout();
+                }
+            }, 1000);
+
+            // Grid
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            
+            // Shuffle options logic
+            const shuffled = [...data.options].sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full p-4 bg-slate-800/50 border border-slate-600 hover:bg-hudCyan/20 hover:border-hudCyan text-slate-300 hover:text-white transition-all rounded font-mono text-sm md:text-base text-left flex justify-between items-center group";
+                btn.innerHTML = `
+                    <span>${opt}</span>
+                    <div class="w-2 h-2 rounded-full bg-slate-600 group-hover:bg-hudCyan transition-colors"></div>
+                `;
+                btn.onclick = () => checkAnswer(opt, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function handleTimeout() {
+            if(isLocked) return;
+            clearInterval(timerInterval);
+            document.getElementById('feedbackText').textContent = "SIGNAL LOST - TIME OUT";
+            document.getElementById('feedbackText').style.color = "#ef4444"; // Red
+            document.getElementById('feedbackText').style.opacity = '1';
+            
+            // Haptic
+            if(navigator.vibrate) navigator.vibrate(200);
+
+            nextRound();
+        }
+
+        function checkAnswer(selected, btn) {
+            if(isLocked) return;
+            isLocked = true;
+            clearInterval(timerInterval);
+            
+            // Stop timer bar visually
+            const computedStyle = window.getComputedStyle(document.getElementById('timerBar'));
+            const width = computedStyle.getPropertyValue('width');
+            document.getElementById('timerBar').style.transition = 'none';
+            document.getElementById('timerBar').style.width = width;
+
+            const correct = LEVELS[currentIdx].movie;
+
+            if(selected === correct) {
+                score++;
+                btn.className = "w-full p-4 bg-hudGreen/20 border border-hudGreen text-white transition-all rounded font-mono text-sm md:text-base text-left flex justify-between items-center shadow-[0_0_15px_rgba(34,197,94,0.4)]";
+                btn.innerHTML = `<span>${selected}</span> <i class="fas fa-check text-hudGreen"></i>`;
+                document.getElementById('feedbackText').textContent = "TARGET IDENTIFIED";
+                document.getElementById('feedbackText').style.color = "#22c55e";
+                
+                // Add XP Immediately
+                if(window.GameEngine) window.GameEngine.addXP(20);
+
+            } else {
+                btn.className = "w-full p-4 bg-hudRed/20 border border-hudRed text-white transition-all rounded font-mono text-sm md:text-base text-left flex justify-between items-center shadow-[0_0_15px_rgba(239,68,68,0.4)]";
+                btn.innerHTML = `<span>${selected}</span> <i class="fas fa-times text-hudRed"></i>`;
+                document.getElementById('feedbackText').textContent = `ERROR: MATCH IS ${correct.toUpperCase()}`;
+                document.getElementById('feedbackText').style.color = "#ef4444";
+                
+                // Haptic
+                if(navigator.vibrate) navigator.vibrate(200);
+            }
+
+            document.getElementById('feedbackText').style.opacity = '1';
+            nextRound();
+        }
+
+        function nextRound() {
+            setTimeout(() => {
+                currentIdx++;
+                if(currentIdx < LEVELS.length) {
+                    loadRound();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        function showResults() {
+            document.getElementById('gameInterface').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            const rankEl = document.getElementById('resultRank');
+            const msgEl = document.getElementById('resultMessage');
+            
+            document.getElementById('finalScore').textContent = `${score}/10`;
+            document.getElementById('accuracyDisplay').textContent = `${score * 10}%`;
+            document.getElementById('xpDisplay').textContent = `+${score * 20}`;
+
+            if(score === 10) {
+                rankEl.textContent = "HAWKEYE LEVEL";
+                rankEl.className = "font-arcade text-4xl md:text-5xl text-hudCyan mb-2";
+                msgEl.textContent = "Perfect vision. Nothing escapes your sight. Badge Unlocked.";
+                if(window.GameEngine) window.GameEngine.unlockAchievement("Eagle Eye");
+            } else if (score >= 7) {
+                rankEl.textContent = "SIDEKICK";
+                rankEl.className = "font-arcade text-4xl md:text-5xl text-yellow-400 mb-2";
+                msgEl.textContent = "Great work! You know your blockbusters, but a few details slipped past you.";
+            } else {
+                rankEl.textContent = "ROOKIE";
+                rankEl.className = "font-arcade text-4xl md:text-5xl text-slate-400 mb-2";
+                msgEl.textContent = "Your visual database is outdated. Time for a movie marathon.";
+            }
+            checkGameAchievements(finalScore, currentCategory, timeTaken, 10);
+        }
+
+
+        // === ACHIEVEMENT CHECKER ===
+// Call this function when the Game Over screen appears
+// usage: checkGameAchievements(100, 'science', 45, 10); 
+function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
+    
+    if (!window.GameEngine) return;
+
+    // 1. GENERAL
+    window.GameEngine.unlockAchievement("new_recruit"); // First game
+    if (scorePercent === 100) window.GameEngine.unlockAchievement("perfect_score");
+    if (scorePercent >= 50)   window.GameEngine.addXP(scorePercent * 2); // Give XP based on score
+
+    // 2. SPEED
+    if (timeInSeconds < 60) window.GameEngine.unlockAchievement("speed_runner");
+    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement("quick_thinker");
+
+    // 3. CATEGORY SPECIFIC
+    // Normalize category to lowercase to match your IDs
+    const cat = category.toLowerCase();
+
+    if (cat === 'science') {
+        window.GameEngine.unlockAchievement("lab_coat");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("science_whiz");
+    }
+    
+    if (cat === 'history') {
+        window.GameEngine.unlockAchievement("time_traveler");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("history_buff");
+    }
+
+    if (cat === 'movies') {
+        window.GameEngine.unlockAchievement("movie_buff");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("cinephile");
+    }
+
+    if (cat === 'tech') {
+        window.GameEngine.unlockAchievement("tech_guru");
+    }
+
+    // 4. HARDCORE / SPECIFIC QUIZZES
+    // You can check specific IDs if your quiz has them
+    const currentQuizId = new URLSearchParams(window.location.search).get('id');
+    
+    if (currentQuizId === 'superman_legacy' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("superman_legacy");
+    }
+    if (currentQuizId === 'impossible_batman' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("gotham_knight");
+    }
+}
+    </script>
+</body>
+</html>

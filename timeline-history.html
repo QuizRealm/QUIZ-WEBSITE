@@ -24,6 +24,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
 <!-- End Google Tag Manager -->
+ <script type="module" src="firebase-config.js"></script>
   <script src="game-engine.js"></script> <script src="components.js" defer></script> 
 
     <meta charset="UTF-8" />
@@ -600,6 +601,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     document.getElementById('resultModal').classList.remove('hidden');
                 }, 500);
             }
+            checkGameAchievements(finalScore, currentCategory, timeTaken, 10);
         }
 
         function closeModalAndReset() {
@@ -607,6 +609,59 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             initGame(); 
         }
 
+
+
+
+        // === ACHIEVEMENT CHECKER ===
+// Call this function when the Game Over screen appears
+// usage: checkGameAchievements(100, 'science', 45, 10); 
+function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
+    
+    if (!window.GameEngine) return;
+
+    // 1. GENERAL
+    window.GameEngine.unlockAchievement("new_recruit"); // First game
+    if (scorePercent === 100) window.GameEngine.unlockAchievement("perfect_score");
+    if (scorePercent >= 50)   window.GameEngine.addXP(scorePercent * 2); // Give XP based on score
+
+    // 2. SPEED
+    if (timeInSeconds < 60) window.GameEngine.unlockAchievement("speed_runner");
+    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement("quick_thinker");
+
+    // 3. CATEGORY SPECIFIC
+    // Normalize category to lowercase to match your IDs
+    const cat = category.toLowerCase();
+
+    if (cat === 'science') {
+        window.GameEngine.unlockAchievement("lab_coat");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("science_whiz");
+    }
+    
+    if (cat === 'history') {
+        window.GameEngine.unlockAchievement("time_traveler");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("history_buff");
+    }
+
+    if (cat === 'movies') {
+        window.GameEngine.unlockAchievement("movie_buff");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("cinephile");
+    }
+
+    if (cat === 'tech') {
+        window.GameEngine.unlockAchievement("tech_guru");
+    }
+
+    // 4. HARDCORE / SPECIFIC QUIZZES
+    // You can check specific IDs if your quiz has them
+    const currentQuizId = new URLSearchParams(window.location.search).get('id');
+    
+    if (currentQuizId === 'superman_legacy' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("superman_legacy");
+    }
+    if (currentQuizId === 'impossible_batman' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("gotham_knight");
+    }
+}
     </script>
 </body>
 </html>

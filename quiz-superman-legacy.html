@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="game-engine.js"></script> 
+    <script src="components.js" defer></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Superman Legacy | Superhero Cinema</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'], 
+                        mono: ['Share Tech Mono', 'monospace'] 
+                    }, 
+                    colors: { 
+                        kryptonBlue: '#3b82f6', 
+                        kryptonIce: '#cbd5e1',
+                        superRed: '#ef4444',
+                        superGold: '#fbbf24',
+                        bgDark: '#020617'
+                    }, 
+                    animation: { 
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite'
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+                        pulseGlow: { '0%, 100%': { opacity: 0.6, boxShadow: '0 0 20px rgba(59,130,246,0.2)' }, '50%': { opacity: 1, boxShadow: '0 0 40px rgba(59,130,246,0.6)' } }
+                    }
+                } 
+            } 
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #020617; 
+            /* Ice Crystal / Space Background */
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1e3a8a, #020617 80%);
+            min-height: 100vh; 
+            color: #e2e8f0; 
+            overflow-x: hidden;
+        }
+
+        /* Glass / Crystal Card */
+        .crystal-panel {
+            background: rgba(30, 58, 138, 0.3);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Shimmer Effect */
+        .crystal-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 5s infinite;
+            transform: skewX(-25deg);
+        }
+        @keyframes shimmer {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .correct-answer { background: rgba(34, 197, 94, 0.2) !important; border-color: #22c55e !important; color: white !important; }
+        .wrong-answer { background: rgba(239, 68, 68, 0.2) !important; border-color: #ef4444 !important; color: white !important; }
+    </style>
+</head>
+<body class="flex flex-col antialiased">
+
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-8 relative">
+
+        <div id="introScreen" class="min-h-[60vh] flex flex-col justify-center items-center text-center animate-fade-in relative z-10">
+            
+            <div class="w-32 h-32 mb-6 relative animate-float">
+                <div class="absolute inset-0 bg-kryptonBlue/20 blur-xl rounded-full"></div>
+                <div class="relative w-full h-full border-2 border-kryptonBlue bg-blue-900/30 flex items-center justify-center transform rotate-45 shadow-[0_0_50px_rgba(59,130,246,0.6)]">
+                    <div class="transform -rotate-45">
+                        <i class="fas fa-gem text-5xl text-white drop-shadow-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="font-arcade text-5xl md:text-7xl text-white mb-6 drop-shadow-xl">
+                THE LAST SON <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-kryptonBlue to-superRed">OF KRYPTON</span>
+            </h1>
+
+            <p class="text-blue-200 font-mono text-sm tracking-widest uppercase mb-8">
+                >> Accessing Archive: Fortress_Memory_Bank.dat <br>
+                >> Subject: Kal-El Legacy
+            </p>
+
+            <div class="crystal-panel p-6 rounded-xl max-w-lg w-full mb-8 text-left border-l-4 border-superRed">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-white font-bold text-lg">Knowledge Test</h3>
+                    <span class="text-superGold text-xs font-bold border border-superGold/50 px-2 py-1 rounded">LEGACY MODE</span>
+                </div>
+                <ul class="space-y-3 text-sm text-slate-300 font-mono mt-4">
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-bolt text-superRed"></i> 
+                        <span>Earn <strong class="text-white">20 XP</strong> per correct answer</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-crown text-superGold"></i> 
+                        <span>Badge: <strong class="text-white">Son of Krypton</strong> (Perfect Score)</span>
+                    </li>
+                </ul>
+            </div>
+
+            <button onclick="startQuiz()" class="group relative px-12 py-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold tracking-widest uppercase rounded shadow-[0_0_30px_rgba(59,130,246,0.5)] hover:scale-105 transition-all">
+                Enter The Fortress
+            </button>
+        </div>
+
+        <div id="quizInterface" class="hidden min-h-[60vh] max-w-2xl mx-auto">
+            
+            <div class="flex justify-between items-end mb-6 border-b border-blue-500/30 pb-4">
+                <div>
+                    <span class="text-[10px] text-blue-400 font-mono block mb-1">MEMORY SHARD</span>
+                    <span class="text-xl font-bold text-white" id="progressText">01 / 10</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-blue-400 font-mono block mb-1">XP SYNC</span>
+                    <span class="text-xl font-bold text-superGold" id="currentSessionXP">0</span>
+                </div>
+            </div>
+
+            <div class="crystal-panel rounded-2xl p-6 md:p-10 relative z-10">
+                <h2 class="text-2xl font-bold text-white mb-8 leading-snug" id="questionText">Loading Data...</h2>
+                <div class="space-y-3" id="optionsGrid">
+                    </div>
+                <div id="factNote" class="mt-6 p-4 bg-blue-950/50 border border-blue-500/30 rounded text-sm text-blue-200 hidden font-mono"></div>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="hidden max-w-2xl mx-auto text-center">
+            
+            <div class="crystal-panel rounded-2xl p-8 md:p-12 border-t-4 border-superRed">
+                
+                <div class="w-24 h-24 mx-auto bg-gradient-to-br from-blue-600 to-blue-900 rounded-full border-2 border-white flex items-center justify-center mb-6 shadow-xl">
+                     <span class="text-4xl text-white font-bold">S</span>
+                </div>
+
+                <h2 class="text-3xl font-bold text-white mb-2" id="resultTitle">Calculating...</h2>
+                <p class="text-blue-300 font-mono text-xs uppercase tracking-widest mb-6">Simulation Complete</p>
+
+                <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-8">
+                    <div class="bg-black/30 p-4 rounded border border-blue-500/30">
+                        <span class="text-slate-400 text-xs block">Score</span>
+                        <span class="text-2xl font-bold text-white" id="finalScoreDisplay">0/10</span>
+                    </div>
+                    <div class="bg-black/30 p-4 rounded border border-blue-500/30">
+                        <span class="text-slate-400 text-xs block">XP Gained</span>
+                        <span class="text-2xl font-bold text-superGold" id="finalXPEarned">+0</span>
+                    </div>
+                </div>
+                
+                <div id="badgeAlert" class="hidden mb-8 p-4 bg-yellow-500/10 border border-yellow-500/50 rounded flex items-center justify-center gap-3">
+                    <i class="fas fa-medal text-yellow-500 text-xl"></i>
+                    <span class="text-yellow-200 font-bold text-sm">BADGE UNLOCKED: Son of Krypton</span>
+                </div>
+
+                <div class="flex gap-4 justify-center">
+                    <button onclick="location.reload()" class="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded font-bold uppercase text-xs tracking-widest transition-all">
+                        Retry
+                    </button>
+                    <a href="index.html" class="px-8 py-3 bg-superRed hover:bg-red-600 text-white rounded font-bold uppercase text-xs tracking-widest shadow-lg transition-all">
+                        Return to Hub
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // 1. DATA
+        const QUESTIONS = [
+            { 
+                q: "In 'Man of Steel' (2013), what is the Kryptonian symbol for 'Hope'?", 
+                options: ["The Letter S", "The House of El Glyph", "The Sun", "The Shield"], 
+                correct: 1, 
+                note: "While it looks like an 'S', Jor-El explains it is the symbol of his family's house, representing hope."
+            },
+            { 
+                q: "Who played Superman's father, Jor-El, in the 1978 classic film?", 
+                options: ["Gene Hackman", "Marlon Brando", "Terence Stamp", "Robert Redford"], 
+                correct: 1, 
+                note: "Marlon Brando was famously paid a record salary for his short screen time."
+            },
+            { 
+                q: "What is the name of the substance that is Superman's primary weakness?", 
+                options: ["Adamantium", "Vibranium", "Kryptonite", "Promethium"], 
+                correct: 2, 
+                note: "Radioactive fragments of his home planet, usually green, weaken him instantly."
+            },
+            { 
+                q: "In 'Batman v Superman', what monster is created from General Zod's body?", 
+                options: ["Darkseid", "Doomsday", "Bizarro", "Brainiac"], 
+                correct: 1, 
+                note: "Lex Luthor uses Kryptonian technology to mutate Zod's corpse into Doomsday."
+            },
+            { 
+                q: "Who is directing the upcoming 2025 reboot 'Superman: Legacy'?", 
+                options: ["Zack Snyder", "J.J. Abrams", "James Gunn", "Christopher Nolan"], 
+                correct: 2, 
+                note: "James Gunn wrote the script and is directing the film to kick off the new DCU."
+            },
+            { 
+                q: "What is the name of Superman's dog in the comics and animated movies?", 
+                options: ["Ace", "Krypto", "Comet", "Stripe"], 
+                correct: 1, 
+                note: "Krypto the Superdog has powers similar to Superman under a yellow sun."
+            },
+            { 
+                q: "Which actor played Superman in the TV series 'Smallville'?", 
+                options: ["Brandon Routh", "Tom Welling", "Tyler Hoechlin", "Henry Cavill"], 
+                correct: 1, 
+                note: "Tom Welling played Clark Kent for 10 seasons, famously adhering to a 'No Tights, No Flights' rule."
+            },
+            { 
+                q: "What is the name of the dimension where Kryptonian criminals are imprisoned?", 
+                options: ["The Negative Zone", "The Phantom Zone", "The Speed Force", "Apokolips"], 
+                correct: 1, 
+                note: "General Zod and his followers were trapped in the Phantom Zone before Krypton exploded."
+            },
+            { 
+                q: "Lois Lane works for which newspaper?", 
+                options: ["The Daily Bugle", "The Gotham Gazette", "The Daily Planet", "The Central City Citizen"], 
+                correct: 2, 
+                note: "The Daily Planet is the iconic Metropolis newspaper, distinguishable by the giant globe on its roof."
+            },
+            { 
+                q: "What color is the sun of Krypton?", 
+                options: ["Yellow", "Red", "Blue", "White"], 
+                correct: 1, 
+                note: "Krypton orbited a red sun (Rao), which gave them no powers. Earth's yellow sun charges their cells."
+            }
+        ];
+
+        // 2. STATE
+        let currentIdx = 0;
+        let sessionScore = 0;
+        let sessionXP = 0;
+        let isLocked = false;
+
+        function startQuiz() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('quizInterface').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isLocked = false;
+            const data = QUESTIONS[currentIdx];
+            
+            document.getElementById('questionText').textContent = data.q;
+            document.getElementById('progressText').innerText = `${currentIdx + 1} / ${QUESTIONS.length}`;
+            document.getElementById('factNote').classList.add('hidden');
+            
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+
+            data.options.forEach((optText, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-lg border border-white/10 bg-black/20 hover:bg-kryptonBlue/20 hover:border-kryptonBlue transition-all font-mono text-slate-300 text-sm md:text-base group flex justify-between items-center";
+                btn.innerHTML = `
+                    <span><span class="text-kryptonBlue opacity-50 mr-3">0${index + 1}</span> ${optText}</span>
+                    <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity text-kryptonBlue"></i>
+                `;
+                btn.onclick = () => handleAnswer(index, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btn) {
+            if(isLocked) return;
+            isLocked = true;
+
+            const data = QUESTIONS[currentIdx];
+            const isCorrect = (selectedIndex === data.correct);
+            const allBtns = document.querySelectorAll('#optionsGrid button');
+            const noteEl = document.getElementById('factNote');
+
+            if(isCorrect) {
+                // Game Engine XP
+                if(window.GameEngine) window.GameEngine.addXP(20);
+                
+                sessionScore++;
+                sessionXP += 20;
+                document.getElementById('currentSessionXP').textContent = `+${sessionXP}`;
+                
+                btn.classList.remove('bg-black/20', 'border-white/10');
+                btn.classList.add('correct-answer');
+                btn.innerHTML = `<span><i class="fas fa-check mr-3"></i> ${data.options[selectedIndex]}</span>`;
+            } else {
+                btn.classList.remove('bg-black/20', 'border-white/10');
+                btn.classList.add('wrong-answer');
+                btn.innerHTML = `<span><i class="fas fa-times mr-3"></i> ${data.options[selectedIndex]}</span>`;
+                allBtns[data.correct].classList.add('correct-answer', 'opacity-50');
+            }
+
+            // Show Note
+            noteEl.innerHTML = `<strong class="text-white">ARCHIVE DATA:</strong> ${data.note}`;
+            noteEl.classList.remove('hidden');
+
+            setTimeout(() => {
+                currentIdx++;
+                if(currentIdx < QUESTIONS.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            }, 2500); // Longer delay to read the note
+        }
+
+        function showResults() {
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            const scoreDisplay = document.getElementById('finalScoreDisplay');
+            const xpDisplay = document.getElementById('finalXPEarned');
+            const title = document.getElementById('resultTitle');
+
+            scoreDisplay.textContent = `${sessionScore}/10`;
+            xpDisplay.textContent = `+${sessionXP}`;
+
+            if(sessionScore === 10) {
+                title.textContent = "Rank: KRYPTONIAN";
+                title.classList.add('text-superGold');
+                if(window.GameEngine) window.GameEngine.unlockAchievement("Son of Krypton");
+                document.getElementById('badgeAlert').classList.remove('hidden');
+            } else if (sessionScore >= 7) {
+                title.textContent = "Rank: JUSTICE LEAGUER";
+                title.classList.add('text-kryptonBlue');
+            } else {
+                title.textContent = "Rank: CITIZEN";
+                title.classList.add('text-slate-400');
+            }
+            checkGameAchievements(finalScore, currentCategory, timeTaken, 10);
+        }
+
+
+
+        // === ACHIEVEMENT CHECKER ===
+// Call this function when the Game Over screen appears
+// usage: checkGameAchievements(100, 'science', 45, 10); 
+function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
+    
+    if (!window.GameEngine) return;
+
+    // 1. GENERAL
+    window.GameEngine.unlockAchievement("new_recruit"); // First game
+    if (scorePercent === 100) window.GameEngine.unlockAchievement("perfect_score");
+    if (scorePercent >= 50)   window.GameEngine.addXP(scorePercent * 2); // Give XP based on score
+
+    // 2. SPEED
+    if (timeInSeconds < 60) window.GameEngine.unlockAchievement("speed_runner");
+    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement("quick_thinker");
+
+    // 3. CATEGORY SPECIFIC
+    // Normalize category to lowercase to match your IDs
+    const cat = category.toLowerCase();
+
+    if (cat === 'science') {
+        window.GameEngine.unlockAchievement("lab_coat");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("science_whiz");
+    }
+    
+    if (cat === 'history') {
+        window.GameEngine.unlockAchievement("time_traveler");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("history_buff");
+    }
+
+    if (cat === 'movies') {
+        window.GameEngine.unlockAchievement("movie_buff");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("cinephile");
+    }
+
+    if (cat === 'tech') {
+        window.GameEngine.unlockAchievement("tech_guru");
+    }
+
+    // 4. HARDCORE / SPECIFIC QUIZZES
+    // You can check specific IDs if your quiz has them
+    const currentQuizId = new URLSearchParams(window.location.search).get('id');
+    
+    if (currentQuizId === 'superman_legacy' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("superman_legacy");
+    }
+    if (currentQuizId === 'impossible_batman' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("gotham_knight");
+    }
+}
+    </script>
+</body>
+</html>

@@ -1,355 +1,431 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QuizRealm • Random Picker</title>
-    <meta name="theme-color" content="#4f46e5">
-     <script src="game-engine.js"></script> <script src="components.js" defer></script> 
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="game-engine.js"></script> 
+    <script src="components.js" defer></script> 
 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Your Next Quiz | The Cine-Oracle</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="hangman.html" defer></script>
-    <script src="data.js" onerror="console.warn('data.js missing - using internal backup')"></script>
-    <script src="components.js" defer></script>
+    
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
-                    colors: {
-                        brand: {
-                            dark: '#0f172a',
-                            primary: '#4f46e5', // Indigo 600
-                            accent: '#8b5cf6',  // Violet 500
-                            surface: 'rgba(30, 41, 59, 0.7)'
-                        }
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }, 
+                    colors: { 
+                        cinemaGold: '#fbbf24', 
+                        cinemaRed: '#e11d48',
+                        bgDark: '#0a0a0a',
+                        cardSurface: '#171717'
+                    }, 
+                    animation: { 
+                        'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'shuffle': 'shuffle 0.1s infinite'
                     },
-                    boxShadow: {
-                        'glow': '0 0 40px rgba(79, 70, 229, 0.4)',
-                        'card': '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)'
+                    keyframes: {
+                        fadeUp: { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+                        shuffle: { '0%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-2px)' }, '100%': { transform: 'translateY(0)' } }
                     }
-                }
-            }
+                } 
+            } 
         }
-
-        
     </script>
-
     <style>
-        body {
-            background-color: #020617;
-            background-image: 
-                radial-gradient(circle at 0% 0%, #312e81 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, #4c1d95 0%, transparent 50%);
-            background-attachment: fixed;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        body { 
+            background-color: #0a0a0a; 
+            min-height: 100vh; 
+            color: #e2e8f0; 
             overflow-x: hidden;
         }
 
-        /* --- THE SLOT MACHINE WINDOW --- */
-        .slot-window {
-            height: 120px; /* Exact height of one item */
-            overflow: hidden;
-            position: relative;
-            background: rgba(0,0,0,0.3);
-            border-radius: 16px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
+        /* Hero Background */
+        .hero-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 60vh;
+            background: radial-gradient(circle at 50% 0%, #2a1b3d 0%, #0a0a0a 100%);
+            z-index: -1;
         }
 
-        /* Shadows to create depth/curve effect */
-        .slot-window::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30px;
-            background: linear-gradient(to bottom, #0f172a 0%, transparent 100%);
-            z-index: 2; pointer-events: none;
-        }
-        .slot-window::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 30px;
-            background: linear-gradient(to top, #0f172a 0%, transparent 100%);
-            z-index: 2; pointer-events: none;
+        /* The Oracle Card */
+        .oracle-card {
+            background: rgba(23, 23, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* The moving strip */
-        .slot-strip {
-            display: flex;
-            flex-direction: column;
-            transition: transform 3s cubic-bezier(0.15, 0.9, 0.3, 1); /* The "Ease Out" spin effect */
-        }
-
-        /* Individual Items */
-        .slot-item {
-            height: 120px; /* Must match window height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            flex-shrink: 0;
-            opacity: 0.5;
-            transition: opacity 0.3s;
-        }
-        
-        /* The Winner */
-        .slot-item.active {
-            opacity: 1;
-            transform: scale(1.1);
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-        }
-
-        /* --- BUTTONS --- */
-        .btn-modern {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
+        /* Vibe Buttons */
+        .vibe-btn {
             transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
-            border: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-modern:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
-            filter: brightness(1.1);
+        .vibe-btn:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.05);
         }
-        .btn-modern:disabled {
-            filter: grayscale(1);
-            opacity: 0.5;
-            cursor: not-allowed;
+        .vibe-btn.active {
+            background: #e11d48; /* Cinema Red */
+            color: #fff;
+            border-color: #e11d48;
         }
 
-        .btn-secondary {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+        /* Poster Stack Animation */
+        .poster-stack {
+            position: relative;
+            width: 200px;
+            height: 300px;
+            perspective: 1000px;
         }
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.1);
+        .poster-card {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.5s ease;
         }
-
-        /* --- NAVIGATION --- */
-        .nav-link {
-            padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; color: #94a3b8; transition: 0.2s;
-        }
-        .nav-link:hover, .nav-link.active { color: white; background: rgba(255,255,255,0.1); }
     </style>
 </head>
-<body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+<body class="flex flex-col antialiased">
 
-    <nav class="sticky top-0 z-50 backdrop-blur-xl bg-slate-900/80 border-b border-white/5">
-        
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
-                    <i class="fas fa-bolt text-sm"></i>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <div class="hero-bg"></div>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-12 relative">
+
+        <div class="flex flex-col lg:flex-row gap-12 items-center min-h-[600px] mb-24 animate-fade-up">
+            
+            <div class="flex-1 max-w-xl">
+                <div class="inline-flex items-center gap-2 mb-6 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-bold uppercase tracking-wider">
+                    <i class="fas fa-sparkles text-cinemaGold"></i> AI Suggestion Engine
                 </div>
-                <span>Quiz<span class="text-indigo-400">Realm</span></span>
-            </a>
-            
-            <div class="hidden md:flex items-center gap-2">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="categories.html" class="nav-link">Categories</a>
-                <a href="random.html" class="nav-link active">Random</a>
-            </div>
-        </div>
-    </nav>
-
-    <main class="flex-grow flex items-center justify-center p-6 relative">
-        
-        <div class="absolute top-20 left-10 w-64 h-64 bg-indigo-600/20 rounded-full blur-[100px] pointer-events-none"></div>
-        <div class="absolute bottom-20 right-10 w-64 h-64 bg-purple-600/20 rounded-full blur-[100px] pointer-events-none"></div>
-
-        <div class="max-w-md w-full relative z-10">
-            
-            <div class="text-center mb-8">
-                <span class="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-3">
-                    <i class="fas fa-shuffle mr-1"></i> Randomizer
-                </span>
-                <h1 class="text-4xl font-extrabold text-white mb-2 leading-tight">Pick a Category</h1>
-                <p class="text-slate-400">Can't decide? Let the algorithm choose for you.</p>
-            </div>
-
-            <div class="bg-brand-surface backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/10 shadow-glow">
                 
-                <div class="flex justify-between text-indigo-400 text-xl mb-[-10px] relative z-20 px-4">
-                    <i class="fas fa-caret-down"></i>
-                    <i class="fas fa-caret-down"></i>
-                </div>
+                <h1 class="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
+                    What are you in the <span class="text-transparent bg-clip-text bg-gradient-to-r from-cinemaRed to-purple-500">mood</span> for?
+                </h1>
+                
+                <p class="text-slate-400 text-lg mb-10 leading-relaxed">
+                    Select a vibe, and our algorithm will scan the Superhero and Holiday archives to find your perfect match.
+                </p>
 
-                <div class="slot-window mb-8" id="slotWindow">
-                    <div class="slot-strip" id="slotStrip">
-                        </div>
-                </div>
-
-                <button id="spinBtn" class="btn-modern w-full flex items-center justify-center gap-3 text-lg mb-4">
-                    <i class="fas fa-dice-five"></i> SPIN THE WHEEL
-                </button>
-
-                <div id="resultAction" class="hidden animate-fade-in-up">
-                    <button id="playBtn" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
-                        <i class="fas fa-play"></i> START QUIZ
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-10">
+                    <button class="vibe-btn border border-white/20 rounded-lg py-3 px-4 text-sm font-bold text-slate-300" onclick="setVibe('heroic')">
+                        🦸‍♂️ Heroic
                     </button>
-                    <p class="text-center text-xs text-slate-500 mt-3">Selection locked.</p>
+                    <button class="vibe-btn border border-white/20 rounded-lg py-3 px-4 text-sm font-bold text-slate-300" onclick="setVibe('nostalgic')">
+                        🎄 Nostalgic
+                    </button>
+                    <button class="vibe-btn border border-white/20 rounded-lg py-3 px-4 text-sm font-bold text-slate-300" onclick="setVibe('chaos')">
+                        🤡 Chaotic
+                    </button>
+                    <button class="vibe-btn border border-white/20 rounded-lg py-3 px-4 text-sm font-bold text-slate-300" onclick="setVibe('smart')">
+                        🧠 Brainy
+                    </button>
+                    <button class="vibe-btn border border-white/20 rounded-lg py-3 px-4 text-sm font-bold text-slate-300" onclick="setVibe('quick')">
+                        ⚡ Quick
+                    </button>
+                    <button class="vibe-btn border border-white/20 rounded-lg py-3 px-4 text-sm font-bold text-slate-300" onclick="setVibe('random')">
+                        🎲 Surprise Me
+                    </button>
                 </div>
 
+                <button id="findBtn" onclick="findMatch()" class="w-full py-5 bg-white text-black font-black text-xl uppercase tracking-wider rounded-xl hover:bg-slate-200 transition-colors shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
+                    Find My Match
+                </button>
             </div>
 
+            <div class="flex-1 flex justify-center items-center relative w-full">
+                
+                <div class="absolute inset-0 bg-gradient-to-tr from-cinemaRed/20 to-purple-500/20 blur-[100px] rounded-full"></div>
+
+                <div class="oracle-card p-2 rounded-2xl w-full max-w-sm h-[500px] flex flex-col items-center justify-center relative overflow-hidden">
+                    
+                    <div id="stateIdle" class="text-center p-8">
+                        <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-search text-3xl text-slate-500"></i>
+                        </div>
+                        <h3 class="text-white font-bold text-xl mb-2">Ready to Search</h3>
+                        <p class="text-slate-500 text-sm">Select a vibe to begin scanning the archives.</p>
+                    </div>
+
+                    <div id="stateSearching" class="absolute inset-0 bg-black flex flex-col items-center justify-center hidden">
+                        <div class="poster-stack mb-8">
+                            <div id="shuffleCard" class="poster-card bg-slate-800"></div>
+                        </div>
+                        <div class="text-cinemaRed font-mono text-xs uppercase tracking-widest animate-pulse">
+                            Scanning Database...
+                        </div>
+                    </div>
+
+                    <div id="stateResult" class="absolute inset-0 flex flex-col h-full w-full hidden">
+                        <div id="resultImage" class="h-3/5 w-full bg-cover bg-center relative">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#171717] to-transparent"></div>
+                            <div class="absolute top-4 right-4 bg-white text-black text-[10px] font-bold px-2 py-1 uppercase rounded" id="resultCategory">
+                                CATEGORY
+                            </div>
+                        </div>
+                        <div class="h-2/5 w-full bg-[#171717] p-6 flex flex-col justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold text-white mb-2 leading-tight" id="resultTitle">Title</h2>
+                                <p class="text-slate-400 text-sm line-clamp-2" id="resultDesc">Description goes here.</p>
+                            </div>
+                            <a id="resultLink" href="#" class="block w-full py-3 bg-cinemaRed hover:bg-red-600 text-white font-bold text-center uppercase tracking-widest rounded-lg transition-colors text-sm">
+                                Play Now
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
+
+        <div class="border-t border-white/10 pt-16">
+            <div class="flex items-end justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Full Catalog</h2>
+                <div class="flex gap-4 text-sm font-bold text-slate-500">
+                    <span><i class="fas fa-mask mr-2"></i>Superhero</span>
+                    <span><i class="fas fa-tree mr-2"></i>Holiday</span>
+                    <span><i class="fas fa-film mr-2"></i>General</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <a href="quiz-batman-trivia.html" class="group relative h-48 rounded-xl overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?q=80&w=400')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                    <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider mb-1 block">Trivia</span>
+                        <h3 class="text-xl font-bold text-white group-hover:translate-x-2 transition-transform">Batman Impossible</h3>
+                    </div>
+                </a>
+
+                <a href="quiz-gotham-villain.html" class="group relative h-48 rounded-xl overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620510625142-b45cbb784397?q=80&w=400')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                    <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider mb-1 block">Personality</span>
+                        <h3 class="text-xl font-bold text-white group-hover:translate-x-2 transition-transform">Gotham Villain ID</h3>
+                    </div>
+                </a>
+
+                <a href="quiz-dc-vs-marvel.html" class="group relative h-48 rounded-xl overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?q=80&w=400')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                    <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1 block">Poll</span>
+                        <h3 class="text-xl font-bold text-white group-hover:translate-x-2 transition-transform">DC vs Marvel</h3>
+                    </div>
+                </a>
+
+                <a href="quiz-xmas-persona.html" class="group relative h-48 rounded-xl overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1543589077-47d81606c1bf?q=80&w=400')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                    <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-[10px] font-bold text-green-400 uppercase tracking-wider mb-1 block">Holiday</span>
+                        <h3 class="text-xl font-bold text-white group-hover:translate-x-2 transition-transform">Festive Persona</h3>
+                    </div>
+                </a>
+
+                <a href="quiz-superhero-visual.html" class="group relative h-48 rounded-xl overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=400')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                    <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-[10px] font-bold text-yellow-400 uppercase tracking-wider mb-1 block">Visual</span>
+                        <h3 class="text-xl font-bold text-white group-hover:translate-x-2 transition-transform">Screenshot Challenge</h3>
+                    </div>
+                </a>
+
+                <a href="quiz-superman-legacy.html" class="group relative h-48 rounded-xl overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506466010722-395aa2bef877?q=80&w=400')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"></div>
+                    <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider mb-1 block">History</span>
+                        <h3 class="text-xl font-bold text-white group-hover:translate-x-2 transition-transform">Superman Legacy</h3>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
     </main>
 
     <quiz-footer></quiz-footer>
 
     <script>
-        // --- CONFIGURATION ---
-        const ITEM_HEIGHT = 120; // Must match CSS .slot-item height
-        const SPINS_MULTIPLIER = 5; // How many full loops before stopping
-
-        // --- DATA PREPARATION ---
-        let categories = [];
-        
-        // 1. Load Data with Fallback
-        (function initData() {
-            if (typeof CATEGORY_CONFIG === "undefined") {
-                // Default fallback if data.js fails
-                const defaults = ["science", "history", "movies", "tech", "geography", "music", "literature", "sports"];
-                categories = defaults.map(key => ({
-                    key: key,
-                    label: key.charAt(0).toUpperCase() + key.slice(1),
-                    icon: "🎲",
-                    color: "text-indigo-400"
-                }));
-            } else {
-                // Use data.js
-                categories = Object.entries(CATEGORY_CONFIG).map(([key, val]) => ({
-                    key: key,
-                    label: val.label,
-                    icon: val.icon || "❓",
-                    color: "text-white"
-                }));
+        // 1. THE CONTENT DATABASE (All categories mixed)
+        const DATABASE = [
+            // HERO CONTENT
+            { 
+                id: 1, 
+                title: "Gotham Villain Identity", 
+                desc: "Psychological assessment. Are you Joker, Bane, or Riddler?", 
+                url: "quiz-gotham-villain.html", 
+                tags: ["chaos", "smart", "heroic"], 
+                cat: "Personality",
+                img: "https://images.unsplash.com/photo-1620510625142-b45cbb784397?q=80&w=400"
+            },
+            { 
+                id: 2, 
+                title: "Impossible Batman Trivia", 
+                desc: "Only 2% of fans get a perfect score. Hard difficulty.", 
+                url: "quiz-batman-trivia.html", 
+                tags: ["smart", "heroic"], 
+                cat: "Trivia",
+                img: "https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?q=80&w=400"
+            },
+            { 
+                id: 3, 
+                title: "DC vs Marvel Poll", 
+                desc: "Rate 10 movies. We reveal your true allegiance.", 
+                url: "quiz-dc-vs-marvel.html", 
+                tags: ["quick", "heroic"], 
+                cat: "Poll",
+                img: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?q=80&w=400"
+            },
+            { 
+                id: 4, 
+                title: "Spider-Verse Quiz", 
+                desc: "Test your knowledge on the Spider-Man multiverse.", 
+                url: "quiz-webslinger.html", 
+                tags: ["heroic", "quick", "smart"], 
+                cat: "Trivia",
+                img: "https://images.unsplash.com/photo-1635805737707-575885ab0820?q=80&w=400"
+            },
+            { 
+                id: 5, 
+                title: "Superman Legacy", 
+                desc: "Fact-check the history of the Man of Steel.", 
+                url: "quiz-superman-legacy.html", 
+                tags: ["nostalgic", "smart", "heroic"], 
+                cat: "History",
+                img: "https://images.unsplash.com/photo-1506466010722-395aa2bef877?q=80&w=400"
+            },
+            { 
+                id: 6, 
+                title: "Movie Screenshot Challenge", 
+                desc: "Can you name the film from one blurry frame?", 
+                url: "quiz-superhero-visual.html", 
+                tags: ["quick", "smart", "visual"], 
+                cat: "Visual",
+                img: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=400"
+            },
+            
+            // CHRISTMAS CONTENT (Assuming these exist based on context)
+            { 
+                id: 7, 
+                title: "Holiday Persona Test", 
+                desc: "Are you a Planner, a Grinch, or a Chaos Elf?", 
+                url: "quiz-xmas-persona.html", 
+                tags: ["chaos", "nostalgic", "quick"], 
+                cat: "Holiday",
+                img: "https://images.unsplash.com/photo-1543589077-47d81606c1bf?q=80&w=400"
+            },
+            { 
+                id: 8, 
+                title: "Classic Xmas Quotes", 
+                desc: "Finish the line from famous holiday movies.", 
+                url: "quiz-xmas-quotes.html", 
+                tags: ["nostalgic", "smart"], 
+                cat: "Holiday",
+                img: "https://images.unsplash.com/photo-1512389142860-9c449e58a543?q=80&w=400"
             }
-        })();
+        ];
 
-        // --- DOM ELEMENTS ---
-        const strip = document.getElementById('slotStrip');
-        const spinBtn = document.getElementById('spinBtn');
-        const resultAction = document.getElementById('resultAction');
-        const playBtn = document.getElementById('playBtn');
+        let selectedVibe = null;
+        let isSearching = false;
 
-        // --- RENDER STRIP ---
-        // We create a visual strip that repeats the list multiple times to simulate infinite scrolling
-        // Sequence: [List] [List] [List] ... [Target List]
-        // We spin to a specific index in the middle of this massive list.
-        
-        let visualList = [];
-        const REPEATS = 20; // Make strip very long
-
-        function renderStrip() {
-            let html = '';
-            for(let i=0; i < REPEATS; i++) {
-                categories.forEach(cat => {
-                    html += `
-                    <div class="slot-item">
-                        <div class="text-4xl mb-1">${cat.icon}</div>
-                        <div class="font-bold text-xl ${cat.color}">${cat.label}</div>
-                    </div>`;
-                    visualList.push(cat);
-                });
-            }
-            strip.innerHTML = html;
+        // 2. VIBE SELECTION
+        function setVibe(vibe) {
+            if (isSearching) return;
+            selectedVibe = vibe;
+            
+            // UI Toggle
+            document.querySelectorAll('.vibe-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Enable Main Button
+            const btn = document.getElementById('findBtn');
+            btn.disabled = false;
+            btn.textContent = `Find ${vibe.charAt(0).toUpperCase() + vibe.slice(1)} Content`;
+            btn.classList.add('bg-cinemaRed', 'text-white');
+            btn.classList.remove('bg-white', 'text-black');
         }
 
-        renderStrip();
+        // 3. SEARCH LOGIC
+        function findMatch() {
+            if (isSearching || !selectedVibe) return;
+            isSearching = true;
 
-        // --- SPIN LOGIC ---
-        let isSpinning = false;
-        let currentTarget = null;
+            // UI State: Searching
+            document.getElementById('stateIdle').classList.add('hidden');
+            document.getElementById('stateResult').classList.add('hidden');
+            document.getElementById('stateSearching').classList.remove('hidden');
+            document.getElementById('stateSearching').classList.add('flex'); // Ensure flex display
 
-        spinBtn.addEventListener('click', () => {
-            if(isSpinning) return;
-            isSpinning = true;
-
-            // Reset UI
-            resultAction.classList.add('hidden');
-            spinBtn.disabled = true;
-            spinBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> SPINNING...';
-            
-            // Remove previous active highlights
-            document.querySelectorAll('.slot-item').forEach(el => el.classList.remove('active'));
-
-            // 1. Pick a Winner
-            const randomIndex = Math.floor(Math.random() * categories.length);
-            currentTarget = categories[randomIndex];
-
-            // 2. Calculate Position
-            // We want to land on the item somewhere deep in the list (e.g., the 15th repetition)
-            // so the animation has plenty of time to run.
-            const targetSet = 15; // Land in the 15th set of items
-            const finalIndex = (targetSet * categories.length) + randomIndex;
-            
-            // 3. Pixel Math
-            const pixelOffset = finalIndex * ITEM_HEIGHT;
-            
-            // 4. Apply CSS Transform
-            strip.style.transition = "transform 3.5s cubic-bezier(0.15, 0.9, 0.3, 1)";
-            strip.style.transform = `translateY(-${pixelOffset}px)`;
-
-            // 5. Cleanup after animation
-            setTimeout(() => {
-                finishSpin(finalIndex);
-            }, 3500); // Match CSS transition time
-        });
-
-        function finishSpin(finalIndex) {
-            isSpinning = false;
-            
-            // Highlight the winner visually
-            const allItems = document.querySelectorAll('.slot-item');
-            if(allItems[finalIndex]) {
-                allItems[finalIndex].classList.add('active');
+            // Filter Data
+            let pool = DATABASE;
+            if (selectedVibe !== 'random') {
+                pool = DATABASE.filter(item => item.tags.includes(selectedVibe));
+                // Fallback if pool empty
+                if (pool.length === 0) pool = DATABASE;
             }
 
-            // Update Buttons
-            spinBtn.disabled = false;
-            spinBtn.innerHTML = '<i class="fas fa-rotate-right"></i> SPIN AGAIN';
-            spinBtn.classList.remove('btn-modern'); // Downgrade spin button visual priority
-            spinBtn.classList.add('btn-secondary', 'text-sm', 'py-2');
+            // Shuffle Animation (Visual only)
+            let steps = 0;
+            const card = document.getElementById('shuffleCard');
+            const interval = setInterval(() => {
+                const randomVisual = DATABASE[Math.floor(Math.random() * DATABASE.length)];
+                card.style.backgroundImage = `url('${randomVisual.img}')`;
+                steps++;
+                
+                if (steps > 15) {
+                    clearInterval(interval);
+                    showResult(pool);
+                }
+            }, 150); // Speed of shuffle
+        }
 
-            // Show Play Button
-            resultAction.classList.remove('hidden');
-            resultAction.classList.add('flex', 'flex-col');
+        function showResult(pool) {
+            // Pick Winner
+            const winner = pool[Math.floor(Math.random() * pool.length)];
+
+            // Update UI with Winner Data
+            document.getElementById('resultImage').style.backgroundImage = `url('${winner.img}')`;
+            document.getElementById('resultCategory').textContent = winner.cat;
+            document.getElementById('resultTitle').textContent = winner.title;
+            document.getElementById('resultDesc').textContent = winner.desc;
+            document.getElementById('resultLink').href = winner.url;
+
+            // Transition
+            document.getElementById('stateSearching').classList.add('hidden');
+            document.getElementById('stateSearching').classList.remove('flex');
+            document.getElementById('stateResult').classList.remove('hidden');
             
-            // Add Confetti (Simple version)
-            triggerConfetti();
+            // Reset state allows playing again immediately
+            isSearching = false;
         }
-
-        playBtn.addEventListener('click', () => {
-            if(!currentTarget) return;
-            playBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> LOADING...';
-            setTimeout(() => {
-                window.location.href = `mode.html?category=${currentTarget.key}`;
-            }, 500);
-        });
-
-        // --- UTILS ---
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        function triggerConfetti() {
-            // A simple CSS animation effect could be added here, 
-            // but for simplicity we'll just flash the border
-            const card = document.querySelector('.bg-brand-surface');
-            card.style.borderColor = '#10b981'; // Green flash
-            setTimeout(() => {
-                card.style.borderColor = 'rgba(255,255,255,0.1)';
-            }, 500);
-        }
-
     </script>
 </body>
 </html>

@@ -10,6 +10,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+<script type="module" src="firebase-config.js"></script>
 <!-- End Google Tag Manager -->
   <script src="game-engine.js"></script> <script src="components.js" defer></script> 
 
@@ -380,32 +381,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
     }
 
-    function checkAnswer(selected, correct, btn, fact) {
-        if (isLocked) return;
-        isLocked = true;
+    function checkAnswer(btn, selectedIdx, correctIdx) {
+    if (isLocked) return;
+    isLocked = true;
 
-        const buttons = ui.grid.querySelectorAll('button');
+    const buttons = ui.options.querySelectorAll('button');
 
-        if (selected === correct) {
-            score++;
-            btn.classList.add('bg-green-900/30', 'border-green-600', 'text-green-100');
-            ui.factTitle.textContent = "Correct / The Truth";
-            ui.factTitle.className = "font-title text-xl font-bold text-green-700 mb-2";
-            GameEngine.addXP(50);
-        } else {
-            btn.classList.add('bg-red-900/30', 'border-crimson', 'text-red-100');
-            buttons[correct].classList.add('border-green-600', 'text-green-500'); // Show correct
-            ui.factTitle.textContent = "Myth Busted";
-            ui.factTitle.className = "font-title text-xl font-bold text-crimson mb-2";
+    if (selectedIdx === correctIdx) {
+        btn.className = "w-full text-left p-4 rounded-xl border border-green-500 bg-green-500/20 text-white font-bold shadow-[0_0_15px_rgba(34,197,94,0.4)]";
+        ui.feedback.textContent = "Correct! 🎬";
+        ui.feedback.classList.add('text-green-400');
+
+        // SAFE XP UPDATE
+        try {
+            if (window.GameEngine && typeof GameEngine.addXP === "function") {
+                GameEngine.addXP(50);
+            }
+        } catch (e) {
+            console.error("XP update failed:", e);
         }
 
-        // Show Fact Panel
-        ui.factBody.textContent = fact;
-        setTimeout(() => {
-            ui.panel.classList.remove('translate-y-full');
-            ui.panel.classList.add('translate-y-0');
-        }, 500);
+        score++;
+    } else {
+        btn.className = "w-full text-left p-4 rounded-xl border border-red-500 bg-red-500/20 text-white font-bold";
+        ui.card.classList.add('shake');
+        setTimeout(() => ui.card.classList.remove('shake'), 500);
+
+        buttons[correctIdx].className = "w-full text-left p-4 rounded-xl border border-green-500 bg-green-500/20 text-white opacity-70";
+
+        ui.feedback.textContent = "Wrong! It was " + quizQuestions[currentIdx].options[correctIdx];
+        ui.feedback.classList.add('text-red-400');
     }
+
+    ui.feedback.classList.remove('hidden');
+    ui.nextBtn.classList.remove('hidden');
+}
+
 
     function nextQuestion() {
         currentIdx++;
@@ -423,6 +434,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         ui.results.classList.remove('hidden');
         ui.finalScore.textContent = score;
         ui.total.textContent = questions.length;
+        checkGameAchievements(finalScore, currentCategory, timeTaken, 10);
     }
 
     // Make nextQuestion available for inline onclick in HTML
@@ -430,6 +442,56 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // Start
     startQuiz();
+    // === ACHIEVEMENT CHECKER ===
+// Call this function when the Game Over screen appears
+// usage: checkGameAchievements(100, 'science', 45, 10); 
+function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
+    
+    if (!window.GameEngine) return;
+
+    // 1. GENERAL
+    window.GameEngine.unlockAchievement("new_recruit"); // First game
+    if (scorePercent === 100) window.GameEngine.unlockAchievement("perfect_score");
+    if (scorePercent >= 50)   window.GameEngine.addXP(scorePercent * 2); // Give XP based on score
+
+    // 2. SPEED
+    if (timeInSeconds < 60) window.GameEngine.unlockAchievement("speed_runner");
+    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement("quick_thinker");
+
+    // 3. CATEGORY SPECIFIC
+    // Normalize category to lowercase to match your IDs
+    const cat = category.toLowerCase();
+
+    if (cat === 'science') {
+        window.GameEngine.unlockAchievement("lab_coat");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("science_whiz");
+    }
+    
+    if (cat === 'history') {
+        window.GameEngine.unlockAchievement("time_traveler");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("history_buff");
+    }
+
+    if (cat === 'movies') {
+        window.GameEngine.unlockAchievement("movie_buff");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("cinephile");
+    }
+
+    if (cat === 'tech') {
+        window.GameEngine.unlockAchievement("tech_guru");
+    }
+
+    // 4. HARDCORE / SPECIFIC QUIZZES
+    // You can check specific IDs if your quiz has them
+    const currentQuizId = new URLSearchParams(window.location.search).get('id');
+    
+    if (currentQuizId === 'superman_legacy' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("superman_legacy");
+    }
+    if (currentQuizId === 'impossible_batman' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("gotham_knight");
+    }
+}
 </script>
 
 </body>

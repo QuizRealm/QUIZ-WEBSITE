@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizRealm • Daily Hub</title>
+    <meta name="theme-color" content="#020617">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="game-engine.js"></script> 
+    <script src="components.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['Share Tech Mono', 'monospace'] },
+                    colors: { bgDark: '#020617', accentCyan: '#06b6d4', accentGold: '#eab308' },
+                    animation: { 'float': 'float 6s ease-in-out infinite', 'shimmer': 'shimmer 2s infinite' },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+                        shimmer: { '100%': { transform: 'translateX(100%)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020617; color: #e2e8f0; min-height: 100vh; overflow-x: hidden; }
+        /* Clean, subtle background */
+        .bg-gradient-mesh {
+            background-color: #020617;
+            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+        }
+        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="flex flex-col antialiased bg-gradient-mesh">
+    
+    <quiz-header></quiz-header>
+
+    <div class="sticky top-0 z-50 bg-[#020617]/80 backdrop-blur-md border-b border-white/5 py-3">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-xs font-bold tracking-widest text-slate-400">DAILY HUB LIVE</span>
+            </div>
+            
+            <div class="flex items-center gap-6 text-sm font-bold">
+                <div class="flex items-center gap-2">
+                    <span class="text-blue-400 text-xs">LVL</span>
+                    <span id="navLevel" class="text-white">...</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-purple-400 text-xs">XP</span>
+                    <span id="navXP" class="text-white">...</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-coins text-amber-400 text-xs"></i>
+                    <span id="navTokens" class="text-white">...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto p-4 md:p-8 space-y-8">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-8 flex flex-col h-full">
+                <div class="relative w-full h-[500px] rounded-[2rem] overflow-hidden group cursor-pointer shadow-2xl transition-all duration-500 hover:shadow-cyan-500/10" onclick="playDaily()">
+                    <div id="missionBg" class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] ease-out group-hover:scale-105" 
+                         style="background-image: url('https://images.unsplash.com/photo-1535905557558-afc4877a26fc?auto=format&fit=crop&q=80');">
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/40 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#020617]/90 via-transparent to-transparent"></div>
+                    <div class="absolute inset-0 p-10 md:p-12 flex flex-col justify-end items-start z-10">
+                        <div class="absolute top-10 left-10">
+                            <span class="bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg animate-pulse">Live Event</span>
+                        </div>
+                        <div class="space-y-4 max-w-2xl transform transition-all duration-500 group-hover:-translate-y-2">
+                            <h2 class="text-cyan-400 text-sm font-bold tracking-[0.2em] uppercase mb-2 flex items-center gap-3"><span class="w-8 h-[2px] bg-cyan-400"></span>Today's Feature</h2>
+                            <h1 class="text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tight drop-shadow-2xl" id="missionTitle">SUPERMAN LEGACY</h1>
+                            <p class="text-slate-300 text-lg font-light leading-relaxed border-l-2 border-white/20 pl-4 mt-4" id="missionDesc">The Man of Steel. The Myth. The Legend. Only 4% get it right.</p>
+                        </div>
+                        <div class="w-full flex flex-col md:flex-row items-center gap-8 mt-10 border-t border-white/10 pt-8">
+                            <button class="relative group/btn overflow-hidden rounded-full bg-white text-[#020617] font-black text-lg py-4 px-12 transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] w-full md:w-auto">
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-slate-200 to-transparent -translate-x-full group-hover/btn:animate-shimmer"></div>
+                                <span class="relative flex items-center justify-center gap-3"><i class="fas fa-play"></i> PLAY NOW</span>
+                            </button>
+                            <div class="flex items-center gap-8 text-sm font-medium text-slate-400 w-full md:w-auto justify-center md:justify-start">
+                                <div class="flex flex-col"><span class="text-[10px] uppercase tracking-wider text-slate-500">Reward</span><span class="text-cyan-400 text-xl font-bold" id="xpReward">+1,200</span></div>
+                                <div class="w-px h-8 bg-white/10"></div>
+                                <div class="flex flex-col"><span class="text-[10px] uppercase tracking-wider text-slate-500">Ends In</span><span class="text-white text-xl font-mono" id="countdown">--:--:--</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass-panel p-8 rounded-[2rem] relative overflow-hidden group h-[240px] flex flex-col justify-center">
+                    <div class="relative z-10">
+                        <span class="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Daily Loot</span>
+                        <h3 class="text-white font-bold text-2xl mt-1">Mystery Chest</h3>
+                        <p class="text-sm text-slate-400 mt-2 mb-4">Complete today's feature to unlock.</p>
+                        <div class="flex gap-2">
+                            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 border border-white/10"><i class="fas fa-mask"></i></div>
+                            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 border border-white/10"><i class="fas fa-coins"></i></div>
+                        </div>
+                    </div>
+                    <div class="absolute -right-4 top-1/2 -translate-y-1/2 text-9xl animate-float opacity-80 filter drop-shadow-2xl">🎁</div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-[2rem] h-[236px] overflow-y-auto hide-scrollbar">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-white font-bold">Side Objectives</h3>
+                        <span class="text-xs bg-white/10 px-2 py-1 rounded text-slate-400">3 Active</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5">
+                            <div class="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center"><i class="fas fa-crosshairs"></i></div>
+                            <div class="flex-grow">
+                                <div class="flex justify-between text-xs font-bold text-white mb-1"><span>Sharpshooter</span><span class="text-green-400">100 XP</span></div>
+                                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden"><div id="bar-acc" class="h-full bg-green-500 w-0 transition-all duration-1000"></div></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5">
+                            <div class="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center"><i class="fas fa-bolt"></i></div>
+                            <div class="flex-grow">
+                                <div class="flex justify-between text-xs font-bold text-white mb-1"><span>Speed Run</span><span class="text-purple-400">250 XP</span></div>
+                                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden"><div id="bar-speed" class="h-full bg-purple-500 w-0 transition-all duration-1000"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div class="glass-panel rounded-3xl p-6 relative overflow-hidden group hover:bg-white/5 transition-all">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="bg-blue-500/10 p-3 rounded-2xl text-blue-400 text-xl"><i class="fas fa-globe-americas"></i></div>
+                    <div class="flex items-center gap-1 text-[10px] font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded-full uppercase">
+                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div> Live
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Global Community</h3>
+                    <div class="text-3xl font-black text-white mb-1">1,482</div>
+                    <p class="text-sm text-slate-500">Players online right now.</p>
+                </div>
+                <div class="mt-6 flex items-center gap-2">
+                    <div class="flex -space-x-2">
+                        <img src="https://ui-avatars.com/api/?name=A&background=random" class="w-6 h-6 rounded-full border-2 border-[#020617]">
+                        <img src="https://ui-avatars.com/api/?name=B&background=random" class="w-6 h-6 rounded-full border-2 border-[#020617]">
+                        <img src="https://ui-avatars.com/api/?name=C&background=random" class="w-6 h-6 rounded-full border-2 border-[#020617]">
+                    </div>
+                    <span class="text-xs text-slate-400">+1.4k others</span>
+                </div>
+                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition-all"></div>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-6 relative overflow-hidden group hover:bg-white/5 transition-all">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="bg-amber-500/10 p-3 rounded-2xl text-amber-400 text-xl"><i class="fas fa-trophy"></i></div>
+                    <button class="text-[10px] font-bold text-white bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition">VIEW ALL</button>
+                </div>
+                <div>
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Today's Top Performers</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="text-amber-400 font-bold text-sm">#1</span>
+                                <span class="text-white text-sm font-bold">CyberNinja</span>
+                            </div>
+                            <span class="text-xs font-mono text-slate-400">100% (42s)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="text-slate-300 font-bold text-sm">#2</span>
+                                <span class="text-white text-sm font-bold">PixelMage</span>
+                            </div>
+                            <span class="text-xs font-mono text-slate-400">100% (45s)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="text-amber-700 font-bold text-sm">#3</span>
+                                <span class="text-white text-sm font-bold">Dr. Quiz</span>
+                            </div>
+                            <span class="text-xs font-mono text-slate-400">98% (30s)</span>
+                        </div>
+                    </div>
+                </div>
+                 <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-500/20 rounded-full blur-3xl group-hover:bg-amber-500/30 transition-all"></div>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-6 relative overflow-hidden group cursor-pointer border border-white/5 hover:border-purple-500/50 transition-all">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620553184661-d70312cb3531?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-30 group-hover:scale-110 transition duration-700"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#020617] to-transparent"></div>
+                
+                <div class="relative z-10 flex flex-col h-full justify-between">
+                    <div class="flex justify-between items-start">
+                        <div class="bg-purple-500/20 p-2 rounded-xl text-purple-400 backdrop-blur-md"><i class="fas fa-calendar-alt"></i></div>
+                        <span class="text-[10px] font-bold text-white bg-black/50 backdrop-blur px-2 py-1 rounded border border-white/10">TOMORROW</span>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h3 class="text-purple-300 text-xs font-bold uppercase tracking-widest mb-1">Coming Attraction</h3>
+                        <h2 class="text-2xl font-black text-white leading-tight group-hover:text-purple-200 transition">SCI-FI SATURDAY</h2>
+                        <div class="mt-4 flex items-center gap-2 text-xs text-slate-400 group-hover:text-white transition">
+                            <i class="far fa-bell"></i> Notify me when live
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+</body>
+<script>
+    // 1. CONFIGURATION (The Content)
+    const SCHEDULE = {
+        0: { id: 'superman_legacy', title: "SUPERMAN LEGACY", desc: "History of the Man of Steel. Only 4% get it right.", xp: 1200, diff: 'HARD', img: "https://images.unsplash.com/photo-1520038410233-7141dd782f0a?auto=format&fit=crop&q=80" },
+        1: { id: 'gotham_villain', title: "GOTHAM VILLAINS", desc: "Which Arkham inmate matches your psychology?", xp: 500, diff: 'EASY', img: "https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?auto=format&fit=crop&q=80" },
+        2: { id: 'impossible_batman', title: "IMPOSSIBLE BATMAN", desc: "Prove you are the world's greatest detective.", xp: 750, diff: 'HARD', img: "https://images.unsplash.com/photo-1478720568477-152d9b164e63?auto=format&fit=crop&q=80" },
+        3: { id: 'dc_vs_marvel', title: "DC VS MARVEL", desc: "Choose your allegiance in this showdown.", xp: 500, diff: 'MEDIUM', img: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&q=80" },
+        4: { id: 'screenshot_quiz', title: "FRAME PERFECT", desc: "Guess the movie from a single frame.", xp: 600, diff: 'MEDIUM', img: "https://images.unsplash.com/photo-1596727147705-0608c643e34b?auto=format&fit=crop&q=80" },
+        5: { id: 'gotham_villain', title: "VILLAIN FRIDAY", desc: "Arkham is loose again. Identify them all.", xp: 800, diff: 'MEDIUM', img: "https://images.unsplash.com/photo-1605806616949-1e87b487bc2a?auto=format&fit=crop&q=80" },
+        6: { id: 'superman_legacy', title: "WEEKEND WARRIOR", desc: "Maximum XP Event for the weekend.", xp: 1500, diff: 'HARD', img: "https://images.unsplash.com/photo-1535905557558-afc4877a26fc?auto=format&fit=crop&q=80" }
+    };
+
+    let currentDaily = null;
+
+    // 2. IMMEDIATE RENDER (Fixes Blank Card)
+    (function initPage() {
+        const today = new Date().getDay();
+        currentDaily = SCHEDULE[today] || SCHEDULE[1];
+
+        // Safe Element Selection
+        const els = {
+            title: document.getElementById('missionTitle'),
+            desc: document.getElementById('missionDesc'),
+            xp: document.getElementById('xpReward'),
+            bg: document.getElementById('missionBg')
+        };
+
+        if(els.title) els.title.innerText = currentDaily.title;
+        if(els.desc) els.desc.innerText = currentDaily.desc;
+        if(els.xp) els.xp.innerText = `+${currentDaily.xp}`;
+        if(els.bg) els.bg.style.backgroundImage = `url('${currentDaily.img}')`;
+    })();
+
+    // 3. THE HEARTBEAT (Fixes Clock & XP)
+    setInterval(() => {
+        // A. UPDATE CLOCK (Countdown to Midnight)
+        const now = new Date();
+        const midnight = new Date(now).setHours(24,0,0,0);
+        const diff = midnight - now;
+
+        const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+        const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+        const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+
+        const countdownEl = document.getElementById('countdown');
+        if (countdownEl) countdownEl.innerText = `${h}:${m}:${s}`;
+
+        // B. UPDATE STATS (Check GameEngine constantly)
+        if (window.GameEngine && window.GameEngine.state) {
+            const s = window.GameEngine.state;
+            
+            const elLevel = document.getElementById('navLevel');
+            const elXP = document.getElementById('navXP');
+            const elTokens = document.getElementById('navTokens');
+
+            // Force update if found
+            if (elLevel) elLevel.innerText = s.level || 1;
+            if (elXP) elXP.innerText = (s.xp || 0).toLocaleString();
+            if (elTokens) elTokens.innerText = (s.coins || 0).toLocaleString();
+            
+            // Optional: Update Bounties if played today
+            const todayStr = new Date().toDateString();
+            if (s.lastDailyDate === todayStr) {
+                const bar1 = document.getElementById('bar-acc');
+                if (bar1) bar1.style.width = '100%';
+            }
+        }
+    }, 1000); // Runs every 1 second
+
+    // 4. PLAY ACTION
+    window.playDaily = function() {
+        localStorage.setItem('QR_DAILY_ATTEMPT', new Date().toDateString());
+        window.location.href = `quiz.html?id=${currentDaily.id}&mode=daily&diff=${currentDaily.diff.toLowerCase()}`;
+    };
+</script>
+</html>

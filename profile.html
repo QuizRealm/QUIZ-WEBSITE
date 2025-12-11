@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google Tag Manager -->
     <script>
         (function(w,d,s,l,i){
             w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -9,29 +8,25 @@
             var f=d.getElementsByTagName(s)[0],
                 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
             j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;
-            f.parentNode.insertBefore(j,f);
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-ML3F7KLZ');
     </script>
-    <!-- End Google Tag Manager -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+
+
+    <script src="game-engine.js"></script>
+    <script type="module" src="firebase-config.js"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuizRealm • Player Profile</title>
     <meta name="theme-color" content="#0A0F1E">
 
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
-    <link rel="manifest" href="assets/site.webmanifest">
-    <link rel="shortcut icon" href="assets/favicon.ico">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script src="components.js" defer></script>
-    <script src="data.js"></script>
 
     <script>
         tailwind.config = {
@@ -39,23 +34,17 @@
                 extend: {
                     fontFamily: {
                         sans: ['Outfit', 'sans-serif'],
-                        arcade: ['Bungee', 'cursive'],
+                        arcade: ['Bungee', 'cursive']
                     },
                     colors: {
                         bgDark: '#0A0F1E',
                         bgDarker: '#050810',
                         accentBlue: '#3b82f6',
                         accentCyan: '#06b6d4',
-                        glass: 'rgba(30, 41, 59, 0.6)'
+                        glass: 'rgba(30, 41, 59, 0.7)'
                     },
                     animation: {
-                        'shimmer': 'shimmer 2s linear infinite',
-                    },
-                    keyframes: {
-                        shimmer: {
-                            '0%': { backgroundPosition: '-200% 0' },
-                            '100%': { backgroundPosition: '200% 0' }
-                        }
+                        'shimmer': 'shimmer 2s linear infinite'
                     }
                 }
             }
@@ -63,800 +52,657 @@
     </script>
 
     <style>
-        :root {
-            --bgDarker: #050810;
-            --glass: rgba(30, 41, 59, 0.6);
-        }
-
         body {
-            background-color: var(--bgDarker);
-            background-image: radial-gradient(circle at 50% 0%, #1e3a8a, #050810 80%);
-            min-height: 100vh;
-            overflow-x: hidden;
+            background-color: #050810;
             color: #e2e8f0;
+            overflow-x: hidden;
         }
-
-        .grid-bg {
-            background-size: 50px 50px;
-            background-image:
-                linear-gradient(to right, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
-            mask-image: linear-gradient(to bottom, black 10%, transparent 80%);
-            -webkit-mask-image: linear-gradient(to bottom, black 10%, transparent 80%);
-        }
-
         .glass-panel {
-            background: var(--glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-            transition: border-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .glass-panel-hover:hover {
-            border-color: rgba(59, 130, 246, 0.4);
-            transform: translateY(-1px);
-            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.7);
-        }
-
-        .nav-tab { position: relative; color: #94a3b8; }
-        .nav-tab.active { color: white; font-weight: 700; }
-        .nav-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 100%; height: 3px;
-            background: #3b82f6;
-            border-radius: 3px 3px 0 0;
-            box-shadow: 0 -2px 10px rgba(59, 130, 246, 0.5);
-        }
-
         .xp-bar-fill {
             background: linear-gradient(90deg, #3b82f6, #06b6d4, #3b82f6);
             background-size: 200% 100%;
             animation: shimmer 3s infinite linear;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
         }
-
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
     </style>
 </head>
-<body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
-    <!-- Google Tag Manager (noscript) -->
+<body class="flex flex-col min-h-screen">
     <noscript>
         <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
                 height="0" width="0" style="display:none;visibility:hidden"></iframe>
     </noscript>
-    <!-- End Google Tag Manager (noscript) -->
 
-    <div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
+    <div class="fixed inset-0 z-[-1] opacity-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900 via-[#050810] to-[#050810]"></div>
 
     <quiz-header></quiz-header>
 
     <main class="flex-grow p-4 md:py-8 max-w-[1200px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- LEFT: Profile, XP, Power-ups -->
+        
         <aside class="lg:col-span-4 space-y-6">
-            <!-- PROFILE CARD -->
-            <div class="glass-panel glass-panel-hover rounded-2xl overflow-hidden group">
-                <div class="h-32 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800')] bg-cover bg-center relative flex items-center justify-center">
-                    <div class="absolute inset-0 bg-blue-900/60 backdrop-blur-sm"></div>
-                    <button onclick="openEditModal()" class="absolute top-3 right-3 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full backdrop-blur transition border border-white/10" title="Edit Profile">
-                        <i class="fas fa-pen text-xs"></i>
-                    </button>
+            <div class="glass-panel rounded-2xl overflow-hidden relative group">
+                <div class="h-32 bg-blue-900 relative">
+                    <img src="https://images.unsplash.com/photo-1535905557558-afc4877a26fc?q=80&w=800"
+                         class="w-full h-full object-cover opacity-60" alt="Profile Banner">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0f172a] to-transparent"></div>
                 </div>
 
                 <div class="px-6 pb-6 relative -mt-16 text-center">
-                    <div class="relative w-32 h-32 mx-auto mb-4 group/avatar cursor-pointer" onclick="openEditModal()">
-                        <div class="w-full h-full rounded-full overflow-hidden border-4 border-bgDarker bg-slate-800 shadow-2xl relative z-10">
-                            <img id="mainAvatarImg" src="" class="w-full h-full object-cover" alt="Profile Avatar">
+                    <div class="relative w-32 h-32 mx-auto mb-3 group/avatar">
+                        <div class="w-full h-full rounded-full overflow-hidden border-4 border-[#050810] bg-slate-800 shadow-2xl relative">
+                            <img id="profileAvatar"
+                                 src="https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Guest"
+                                 class="w-full h-full object-cover transition duration-300"
+                                 alt="Player Avatar">
                         </div>
-                        <div class="absolute bottom-1 right-1 z-20 bg-accentBlue text-white text-xs font-bold px-3 py-1 rounded-full border-4 border-bgDarker shadow-lg">
-                            LVL <span id="heroLevel">1</span>
-                        </div>
-                        <div class="absolute inset-0 bg-black/50 rounded-full z-10 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity border-4 border-transparent">
-                            <i class="fas fa-camera text-white"></i>
-                        </div>
+                        <button onclick="window.randomizeAvatar()" 
+                                class="absolute bottom-1 right-1 bg-white text-slate-900 hover:bg-blue-400 hover:text-white p-2 rounded-full shadow-lg border-2 border-[#050810] transition z-10"
+                                title="New Look">
+                            <i class="fas fa-sync-alt text-xs"></i>
+                        </button>
                     </div>
 
                     <div class="flex items-center justify-center gap-2 mb-1">
-                        <h1 class="text-2xl font-bold text-white tracking-tight" id="heroNameDisplay">Player</h1>
+                        <h1 class="text-2xl font-bold text-white" id="profileName">Guest Hero</h1>
+                        <i class="fas fa-pen text-xs text-slate-500 hover:text-white cursor-pointer" 
+                           onclick="document.getElementById('nicknameInput').focus()"
+                           title="Edit name below"></i>
                     </div>
-                    <div class="text-sm font-bold text-accentCyan mb-6" id="heroRank">Unranked</div>
+                    
+                    <div class="text-sm font-bold text-cyan-400 mb-5" id="profileRank">Civilian</div>
 
-                    <div class="relative text-left bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 shadow-inner">
-                        <div class="flex justify-between text-xs font-bold text-slate-300 mb-2">
-                            <span>EXP PROGRESS</span>
-                            <span id="xpText" class="text-accentBlue">0 / 1000</span>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-white/5">
+                        <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-2">
+                            <span>PROGRESS</span>
+                            <span id="profileXP" class="text-blue-400" id="profileXP">0 / 1000 XP</span>
                         </div>
-
-                        <div class="w-full bg-slate-950 h-4 rounded-full overflow-hidden relative border border-white/5 shadow-inner">
-                            <div class="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_5px,#fff_5px,#fff_10px)]"></div>
-                            <div id="xpBar" class="xp-bar-fill h-full w-0 rounded-full relative">
-                                <div class="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
-                            </div>
-                        </div>
-                        <div class="mt-2 text-[10px] text-slate-500 text-center">
-                            <span id="xpToNext">1000</span> XP needed for next level
+                        <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden relative">
+                            <div id="xpBarFill" class="xp-bar-fill h-full w-0 rounded-full"></div>
                         </div>
                     </div>
                 </div>
             </div>
-<div class="glass-panel rounded-xl p-6 h-full flex flex-col">
-                    <h3 class="text-base font-bold text-white mb-6 flex items-center">
-                        <i class="fas fa-history text-slate-500 mr-3"></i> Recent Activity
-                    </h3>
-                    <div class="space-y-4 flex-grow overflow-y-auto custom-scroll pr-2" id="activityLog"></div>
-                </div>
-            <!-- POWER-UPS -->
-            <div class="glass-panel rounded-xl p-5">
-                <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-wider">Equipped Power-ups</h3>
-                <div class="flex gap-3">
-                    <div class="w-14 h-14 rounded-xl bg-blue-900/20 border border-blue-500/30 flex items-center justify-center text-accentBlue shadow-[0_0_15px_rgba(59,130,246,0.1)] hover:scale-105 transition cursor-pointer" title="Time Freeze">
-                        <i class="fas fa-snowflake text-lg"></i>
-                    </div>
-                    <div class="w-14 h-14 rounded-xl bg-slate-800/30 border border-slate-700/50 flex items-center justify-center text-slate-600 border-dashed">
-                        <i class="fas fa-plus"></i>
-                    </div>
+
+            <div class="glass-panel rounded-xl p-5 h-[320px] flex flex-col">
+                <h3 class="text-sm font-bold text-white mb-4 uppercase tracking-wider text-slate-400">
+                    <i class="fas fa-history mr-2"></i> Recent Activity
+                </h3>
+                <div id="activityLog" class="space-y-3 overflow-y-auto pr-2 flex-grow scrollbar-thin">
+                    <div class="text-center text-xs text-slate-500 mt-10">Loading history...</div>
                 </div>
             </div>
-
         </aside>
 
-        <!-- RIGHT: Stats, Activity, Achievements -->
         <div class="lg:col-span-8 space-y-6">
-            <!-- TOP STATS -->
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div class="glass-panel p-5 rounded-xl flex items-center gap-4 border-b-2 border-b-accentBlue/30 hover:bg-white/5 transition">
-                    <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-accentBlue text-xl">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-bold uppercase">Total Score</div>
-                        <div class="text-2xl font-bold text-white" id="statTotalScore">0</div>
-                    </div>
+            
+            <div class="grid grid-cols-3 gap-4">
+                <div class="glass-panel p-4 rounded-xl flex flex-col items-center justify-center text-center hover:bg-white/5 transition">
+                    <i class="fas fa-bolt text-yellow-400 text-2xl mb-2"></i>
+                    <div class="text-2xl font-bold text-white" id="statScore">0</div>
+                    <div class="text-[10px] uppercase font-bold text-slate-500">Total XP</div>
                 </div>
-                <div class="glass-panel p-5 rounded-xl flex items-center gap-4 border-b-2 border-b-accentCyan/30 hover:bg-white/5 transition">
-                    <div class="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center text-accentCyan text-xl">
-                        <i class="fas fa-fire"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-bold uppercase">Best Streak</div>
-                        <div class="text-2xl font-bold text-white" id="statStreak">0</div>
-                    </div>
+                <div class="glass-panel p-4 rounded-xl flex flex-col items-center justify-center text-center hover:bg-white/5 transition">
+                    <i class="fas fa-fire text-orange-500 text-2xl mb-2"></i>
+                    <div class="text-2xl font-bold text-white" id="statStreak">0</div>
+                    <div class="text-[10px] uppercase font-bold text-slate-500">Daily Streak</div>
                 </div>
-                <div class="glass-panel p-5 rounded-xl flex items-center gap-4 border-b-2 border-b-emerald-500/30 col-span-2 md:col-span-1 hover:bg-white/5 transition">
-                    <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-xl">
-                        <i class="fas fa-bullseye"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-bold uppercase">Accuracy</div>
-                        <div class="text-2xl font-bold text-white" id="statAccuracy">0%</div>
-                    </div>
+                <div class="glass-panel p-4 rounded-xl flex flex-col items-center justify-center text-center hover:bg-white/5 transition">
+                    <i class="fas fa-award text-emerald-400 text-2xl mb-2"></i>
+                    <div class="text-2xl font-bold text-white" id="statBadges">0</div>
+                    <div class="text-[10px] uppercase font-bold text-slate-500">Achievements</div>
                 </div>
             </div>
 
-            <!-- PERFORMANCE + ACTIVITY -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel rounded-xl p-6 h-full">
-                    <h3 class="text-base font-bold text-white mb-6 flex items-center">
-                        <i class="fas fa-chart-pie text-slate-500 mr-3"></i> Performance Matrix
-                    </h3>
-                    <div class="space-y-6" id="skillMatrix"></div>
-                </div>
+            <div class="glass-panel p-6 rounded-xl">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">
+                    <i class="fas fa-chart-pie mr-2"></i> Hero Skill Matrix
+                </h3>
+                <div id="skillMatrix" class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4"></div>
+            </div>
 
-            <!-- ACCOUNT / SIGN UP / SIGN IN CARD -->
-            <div class="glass-panel rounded-xl p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fas fa-user-shield text-slate-400"></i>
-                        Account & Sync
-                    </h3>
-                    <span id="accountStatusChip" class="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-slate-900 text-slate-300 border border-slate-600 uppercase tracking-wide">
-                        Guest Mode
+            <div class="glass-panel p-6 rounded-xl relative overflow-hidden transition-all duration-300" id="authContainer">
+                
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2" id="authTitle">
+                            <i class="fas fa-id-card text-blue-500"></i> Identity Card
+                        </h3>
+                        <p id="authDesc" class="text-xs text-slate-400 mt-1 max-w-md">
+                            Manage your hero identity and cloud save status.
+                        </p>
+                    </div>
+                    <span id="authBadge" class="px-2 py-1 rounded bg-slate-800 border border-slate-600 text-[10px] uppercase font-bold text-slate-400">
+                        Guest
                     </span>
                 </div>
 
-                <p id="accountStatusText" class="text-xs text-slate-400 leading-relaxed">
-                    You’re playing in <span class="font-semibold text-white">Guest Mode</span>. Your XP, coins and stats are saved on this device only.
-                    Create a free account to sync progress across all your devices when Firebase is enabled.
-                </p>
-
-                <div class="mt-5 grid grid-cols-2 gap-2 text-xs font-semibold rounded-xl bg-black/30 p-1 border border-white/5">
-                    <button id="authTabSignup"
-                            onclick="switchAuthTab('signup')"
-                            class="py-2 rounded-lg bg-accentBlue text-white shadow-lg shadow-blue-500/20 transition">
-                        Sign Up
-                    </button>
-                    <button id="authTabSignin"
-                            onclick="switchAuthTab('signin')"
-                            class="py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition">
-                        Sign In
-                    </button>
+                <div id="identityCard" class="bg-black/30 p-4 rounded-lg border border-white/5 mb-5">
+                    <label class="text-[10px] uppercase font-bold text-slate-500 mb-2 block">
+                        Choose Your Hero Nickname <span class="text-emerald-400">(Shown everywhere)</span>
+                    </label>
+                    <div class="flex gap-2 flex-col sm:flex-row">
+                        <input id="nicknameInput" type="text" placeholder="Enter Hero Name..." maxlength="24"
+                               class="flex-1 bg-slate-900 border border-slate-700 text-white text-sm rounded-lg p-3 focus:border-blue-500 focus:outline-none placeholder-slate-600">
+                        <div class="flex gap-2">
+                            <button onclick="window.generateCoolName()" 
+                                    class="bg-slate-700 hover:bg-slate-600 text-white px-4 rounded-lg border border-slate-600 transition flex items-center justify-center"
+                                    title="Generate Funny Name">
+                                <i class="fas fa-dice text-lg"></i>
+                            </button>
+                            <button onclick="window.saveGuestIdentity()" 
+                                    class="bg-blue-600 hover:bg-blue-500 text-white px-4 rounded-lg font-bold text-sm shadow-lg shadow-blue-500/20 transition">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-[11px] text-slate-500">
+                        <span class="font-bold text-emerald-400">Note:</span> Even if you sign in with Google, your <span class="font-semibold">nickname</span> is shown on the site, not your real name.
+                    </p>
                 </div>
 
-                <!-- AUTH FORMS -->
-                <div id="authFormSignup" class="mt-5 space-y-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">Email</label>
-                        <input type="email" id="signupEmail"
-                               class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accentBlue focus:ring-1 focus:ring-accentBlue transition"
-                               placeholder="you@email.com">
+                <div id="viewGuestAuth" class="space-y-4">
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-white/10"></div>
+                        <span class="flex-shrink-0 mx-4 text-slate-500 text-[10px] uppercase">Sync to Cloud</span>
+                        <div class="flex-grow border-t border-white/10"></div>
                     </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">Nickname</label>
-                        <input type="text" id="signupNickname"
-                               class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accentBlue focus:ring-1 focus:ring-accentBlue transition"
-                               placeholder="Quiz legend name">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">Password</label>
-                        <input type="password" id="signupPassword"
-                               class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accentBlue focus:ring-1 focus:ring-accentBlue transition"
-                               placeholder="••••••••">
-                    </div>
-                    <button onclick="handleSignup()"
-                            class="w-full mt-1 bg-gradient-to-r from-accentBlue to-accentCyan hover:from-blue-500 hover:to-cyan-400 text-white text-xs font-bold py-2.5 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 transition">
-                        <i class="fas fa-user-plus text-[11px]"></i>
-                        <span>Create free account (UI only)</span>
+
+                    <button onclick="handleGoogleLogin()"
+                            class="w-full bg-white hover:bg-slate-100 text-slate-900 font-bold py-3 rounded-lg flex items-center justify-center gap-3 transition transform active:scale-[0.99]">
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
+                        Sign in with Google
                     </button>
+                    
+                    <div class="text-center">
+                        <button onclick="document.getElementById('emailForm').classList.toggle('hidden')" 
+                                class="text-xs text-slate-500 hover:text-slate-300 underline">
+                            Or use email/password
+                        </button>
+                    </div>
+
+                    <div id="emailForm" class="hidden space-y-3 pt-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input id="emailInput" type="email" placeholder="Email" class="bg-black/40 border border-white/10 text-white text-sm rounded-lg p-3">
+                            <input id="passInput" type="password" placeholder="Password" class="bg-black/40 border border-white/10 text-white text-sm rounded-lg p-3">
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="handleEmailLogin()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg text-sm font-bold">Sign In</button>
+                            <button onclick="handleEmailSignup()" class="flex-1 bg-blue-900/50 hover:bg-blue-900 text-blue-200 py-2 rounded-lg text-sm font-bold">Register</button>
+                        </div>
+                    </div>
+                    <div id="authError" class="text-red-400 text-xs font-bold hidden text-center"></div>
                 </div>
 
-                <div id="authFormSignin" class="mt-5 space-y-3 hidden">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">Email</label>
-                        <input type="email" id="signinEmail"
-                               class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accentBlue focus:ring-1 focus:ring-accentBlue transition"
-                               placeholder="you@email.com">
+                <div id="viewUser" class="hidden text-center py-6">
+                    <div class="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/30 shadow-[0_0_15px_rgba(74,222,128,0.2)]">
+                        <i class="fas fa-wifi text-green-400 text-3xl"></i>
                     </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">Password</label>
-                        <input type="password" id="signinPassword"
-                               class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-accentBlue focus:ring-1 focus:ring-accentBlue transition"
-                               placeholder="••••••••">
+                    
+                    <h3 class="text-2xl font-bold text-white mb-1">YOU ARE CONNECTED</h3>
+                    <p class="text-green-400 text-sm font-bold mb-4 tracking-wide uppercase">Cloud Sync Active</p>
+                    
+                    <div class="bg-white/5 rounded-lg p-4 max-w-sm mx-auto mb-6 text-left border border-white/5">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div>
+                                <div class="text-[10px] text-slate-400 uppercase">Account Email</div>
+                                <div id="userEmailDisplay" class="text-sm font-bold text-white truncate">user@example.com</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
+                                <i class="fas fa-fingerprint"></i>
+                            </div>
+                            <div>
+                                <div class="text-[10px] text-slate-400 uppercase">Player ID</div>
+                                <div id="userIdDisplay" class="text-xs font-mono text-slate-300 truncate">...</div>
+                            </div>
+                        </div>
                     </div>
-                    <button onclick="handleSignin()"
-                            class="w-full mt-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 rounded-xl border border-white/10 flex items-center justify-center gap-2 transition">
-                        <i class="fas fa-right-to-bracket text-[11px]"></i>
-                        <span>Sign in (demo only)</span>
+
+                    <button onclick="handleLogout()"
+                            class="text-red-400 hover:text-white hover:bg-red-600/80 border border-red-500/30 px-8 py-2 rounded-lg transition duration-300 text-sm font-bold">
+                        Disconnect / Sign Out
                     </button>
                 </div>
-
-                
             </div>
-                
-            </div>
 
-            <!-- ACHIEVEMENTS -->
-            <div class="glass-panel rounded-xl p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-base font-bold text-white flex items-center">
-                        <i class="fas fa-award text-slate-500 mr-3"></i> Achievements
-                    </h3>
-                    <a href="achievements.html" class="text-xs font-bold text-accentBlue hover:text-white transition">View All</a>
-                </div>
-
-                <div id="achievementsStrip" class="flex gap-4 overflow-x-auto pb-4 custom-scroll"></div>
-            </div>
         </div>
     </main>
 
-    <!-- EDIT PROFILE MODAL -->
-    <div id="editModal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeEditModal()"></div>
-
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-2xl transform transition-all scale-100">
-            <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <i class="fas fa-user-edit text-accentBlue"></i> Edit Profile
-            </h2>
-
-            <div class="space-y-6">
-                <div class="flex flex-col items-center gap-4">
-                    <div class="relative w-24 h-24">
-                        <img id="previewAvatar" src="" class="w-full h-full rounded-full border-2 border-accentBlue object-cover bg-slate-800">
-                    </div>
-                    <button onclick="regenerateAvatar()" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg border border-white/10 transition flex items-center gap-2">
-                        <i class="fas fa-dice"></i> Randomize Avatar
-                    </button>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Nickname</label>
-                    <input type="text" id="editNickname" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accentBlue focus:ring-1 focus:ring-accentBlue transition" placeholder="Enter name...">
-                </div>
-
-                <div class="flex gap-3 pt-2">
-                    <button onclick="closeEditModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-bold transition">Cancel</button>
-                    <button onclick="saveProfile()" class="flex-1 bg-accentBlue hover:bg-blue-600 text-white py-3 rounded-xl font-bold transition shadow-lg shadow-blue-500/20">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <quiz-footer></quiz-footer>
 
-    <!-- GAME ENGINE + PROFILE LOGIC -->
-    <script>
-        // ===============================
-        // CORE GAME ENGINE (XP / LEVELS)
-        // ===============================
-        const GameEngine = {
-            // Default User State
-            user: {
-                nickname: "Player",
-                avatarSeed: "Player",
-                xp: 0,
-                level: 1,
-                coins: 0,
-                stats: {
-                    gamesPlayed: 0,
-                    wins: 0,
-                    perfectRuns: 0,
-                    bestStreak: 0,
-                    correct: 0,   // optional, used by profile
-                    total: 0      // optional, used by profile
-                },
-                achievements: [], // Stores IDs like ['first_win', 'speedster']
-                auth: {
-                    status: "guest",   // 'guest' | 'logged_in'
-                    email: null,
-                    provider: "local"
+    <script type="module">
+        /*********************************************************
+         * SAFETY WRAPPER AROUND GameEngine.updateHeaderUI
+         * to prevent infinite recursion with components.js
+         *********************************************************/
+        if (window.GameEngine) {
+            const originalUpdateHeaderUI = typeof GameEngine.updateHeaderUI === "function"
+                ? GameEngine.updateHeaderUI.bind(GameEngine)
+                : null;
+
+            GameEngine._headerUpdating = false;
+
+            GameEngine.updateHeaderUI = function(...args) {
+                if (GameEngine._headerUpdating) return;
+                GameEngine._headerUpdating = true;
+                try {
+                    if (originalUpdateHeaderUI) {
+                        originalUpdateHeaderUI(...args);
+                    }
+                } finally {
+                    GameEngine._headerUpdating = false;
                 }
-            },
+            };
+        }
 
-            // Achievement Database
-            achievementsDB: {
-                'first_win':  { title: "First Blood",  icon: "fa-trophy", desc: "Win your first game." },
-                'novice':     { title: "Novice",       icon: "fa-star",   desc: "Reach Level 5." },
-                'speedster':  { title: "Speedster",    icon: "fa-bolt",   desc: "Answer in under 3 seconds." },
-                'collector':  { title: "Collector",    icon: "fa-gem",    desc: "Earn 1000 Coins." }
-            },
+        /*********************************************************
+         * PROFILE / AUTH LOGIC
+         *********************************************************/
+        import {
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider,
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-            // Initialize: Load from Storage (later Firebase)
-            init() {
-                const saved = localStorage.getItem('QR_PROFILE');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    // Merge saved data with default structure (shallow merge)
-                    this.user = { ...this.user, ...parsed };
-                    // Merge nested objects safely
-                    this.user.stats = { ...this.user.stats, ...(parsed.stats || {}) };
-                    this.user.auth  = { ...this.user.auth,  ...(parsed.auth || {}) };
-                }
-                this.updateLevel();
-                this.updateHeaderUI();
-                console.log("GameEngine Loaded. User:", this.user.nickname);
-            },
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-            // Save: Write to Storage (later Firebase)
-            save() {
-                localStorage.setItem('QR_PROFILE', JSON.stringify(this.user));
-                this.updateHeaderUI();
-                window.dispatchEvent(new CustomEvent('userUpdate', { detail: this.user }));
-            },
+        // --- NAME GENERATOR LISTS ---
+        const ADJECTIVES = ["Cosmic", "Iron", "Shadow", "Neon", "Dark", "Scarlet", "Quantum", "Electric", "Rogue", "Mystic", "Savage", "Phantom"];
+        const NOUNS = ["Goblin", "Avenger", "Knight", "Wizard", "Falcon", "Panther", "Guardian", "Hunter", "Storm", "Viper", "Hawk", "Spectre", "Titan"];
 
-            // Add XP
-            addXP(amount) {
-                this.user.xp += amount;
-                this.user.coins += Math.floor(amount / 10); // 1 Coin per 10 XP
+        function buildRandomNickname() {
+            const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+            const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+            const num = Math.floor(100000 + Math.random() * 900000); // 6-digit
+            return `${adj} ${noun} #${num}`;
+        }
 
-                const oldLevel = this.user.level;
-                this.updateLevel();
+        let currentUser = null;
+        let currentAvatarSeed = localStorage.getItem("QR_AVATAR_SEED") || "Guest";
+        let currentNickname = localStorage.getItem("QR_NICKNAME") || "Guest Hero";
 
-                if (this.user.level > oldLevel) {
-                    this.showToast(`LEVEL UP!`, `You reached Level ${this.user.level}`, "text-yellow-400");
-                } else {
-                    this.showToast(`+${amount} XP`, `Total: ${this.user.xp}`, "text-blue-400");
-                }
+        function ensureNickname() {
+            const stored = localStorage.getItem("QR_NICKNAME");
+            if (stored && stored.trim()) {
+                currentNickname = stored.trim();
+                return;
+            }
+            if (!currentNickname || currentNickname === "Guest Hero") {
+                currentNickname = buildRandomNickname();
+                try {
+                    localStorage.setItem("QR_NICKNAME", currentNickname);
+                } catch {}
+            }
+        }
+        ensureNickname();
 
-                this.save();
-            },
+        window.generateCoolName = () => {
+            const name = buildRandomNickname();
+            const input = document.getElementById('nicknameInput');
+            if (input) input.value = name;
+        };
 
-            // Level Logic
-            updateLevel() {
-                let level = 1;
-                let xp = this.user.xp;
-                let cost = 1000;
+        window.randomizeAvatar = () => {
+            const seed = Math.random().toString(36).substring(7);
+            currentAvatarSeed = seed;
+            updateAvatarDisplay();
+            try {
+                localStorage.setItem("QR_AVATAR_SEED", seed);
+            } catch {}
+        };
 
-                while (xp >= cost) {
-                    xp -= cost;
-                    level++;
-                    cost = level * 1000;
-                }
-                this.user.level = level;
-            },
+        window.saveGuestIdentity = async () => {
+            const input = document.getElementById('nicknameInput');
+            if (input && input.value.trim()) {
+                currentNickname = input.value.trim();
+                try {
+                    localStorage.setItem("QR_NICKNAME", currentNickname);
+                } catch {}
+                updateProfileHeader();
 
-            // Unlock Achievement
-            unlockAchievement(id) {
-                if (!this.user.achievements.includes(id)) {
-                    this.user.achievements.push(id);
-                    this.addXP(500);
-
-                    const ach = this.achievementsDB[id] || { title: "Secret", desc: "Unlocked a hidden achievement" };
-                    this.showToast(`ACHIEVEMENT UNLOCKED`, ach.title, "text-purple-400");
-                    this.save();
-                }
-            },
-
-            // Update Header UI
-            updateHeaderUI() {
-                const xpEl   = document.getElementById('headerXP');
-                const lvlEl  = document.getElementById('headerLevel');
-                const coinEl = document.getElementById('headerCoins');
-                const avatarEl = document.getElementById('headerAvatar');
-
-                if (xpEl)   xpEl.textContent   = this.user.xp.toLocaleString();
-                if (lvlEl)  lvlEl.textContent  = this.user.level;
-                if (coinEl) coinEl.textContent = this.user.coins.toLocaleString();
-                if (avatarEl) {
-                    avatarEl.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${this.user.avatarSeed || this.user.nickname}`;
+                // If logged in, persist nickname to user's hero doc
+                if (currentUser && window.db) {
+                    try {
+                        const userRef = doc(window.db, "heroes", currentUser.uid);
+                        await setDoc(userRef, { nickname: currentNickname }, { merge: true });
+                    } catch (e) {
+                        console.warn("Failed to save nickname in Firestore:", e);
+                    }
                 }
 
-                // Custom event for any listener
-                window.dispatchEvent(new CustomEvent('userUpdate', { detail: this.user }));
-            },
-
-            // Toast
-            showToast(title, msg, colorClass) {
-                const existing = document.querySelectorAll('.qr-toast');
-                existing.forEach(t => t.remove());
-
-                const toast = document.createElement('div');
-                toast.className = `qr-toast fixed bottom-4 right-4 bg-slate-900 border border-white/10 p-4 rounded-xl shadow-2xl flex items-center gap-4 z-[9999] animate-bounce`;
-                toast.innerHTML = `
-                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center ${colorClass}">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-white text-sm">${title}</h4>
-                        <p class="text-xs text-slate-400">${msg}</p>
-                    </div>
-                `;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 3000);
+                // Button feedback
+                const btn = input.parentElement.querySelector('button:last-child');
+                if (btn) {
+                    const original = btn.textContent;
+                    btn.textContent = "Saved!";
+                    btn.classList.add("bg-green-600");
+                    setTimeout(() => {
+                        btn.textContent = original;
+                        btn.classList.remove("bg-green-600");
+                    }, 1500);
+                }
             }
         };
 
-        GameEngine.init();
-
-        // ===============================
-        // PROFILE PAGE LOGIC
-        // ===============================
-        const RANKS = [
-            { lvl: 0,   title: "Unranked",      color: "text-slate-400" },
-            { lvl: 2,   title: "Bronze Tier",   color: "text-orange-400" },
-            { lvl: 5,   title: "Silver Tier",   color: "text-slate-200" },
-            { lvl: 10,  title: "Gold Tier",     color: "text-yellow-400" },
-            { lvl: 20,  title: "Platinum Tier", color: "text-cyan-400" },
-            { lvl: 50,  title: "Diamond Tier",  color: "text-blue-400" },
-            { lvl: 100, title: "Master Tier",   color: "text-purple-400" }
-        ];
-
-        let tempAvatarSeed = '';
-
-        function calculateLevelAndProgress(totalXP) {
-            let level = 1;
-            let xp = totalXP;
-            let xpNeededForNext = 1000;
-
-            while (xp >= xpNeededForNext) {
-                xp -= xpNeededForNext;
-                level++;
-                xpNeededForNext = level * 1000;
-            }
-
-            return {
-                level,
-                currentLevelXP: xp,
-                nextLevelRequirement: xpNeededForNext,
-                percentage: Math.min((xp / xpNeededForNext) * 100, 100)
-            };
+        function updateAvatarDisplay() {
+            const img = document.getElementById('profileAvatar');
+            if (img) img.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(currentAvatarSeed)}`;
         }
 
-        function getRank(level) {
-            return RANKS.slice().reverse().find(r => level >= r.lvl) || RANKS[0];
+        function updateProfileHeader() {
+            const nameEl = document.getElementById('profileName');
+            if (nameEl) nameEl.textContent = currentNickname;
         }
 
-        function refreshProfileUI() {
-            const user = GameEngine.user;
-
-            const nickname = user.nickname || 'Player';
-            const totalXP  = user.xp || 0;
-            const coins    = user.coins || 0;
-            const avatarSeed = user.avatarSeed || nickname;
-
-            const lvlData = calculateLevelAndProgress(totalXP);
-
-            // Hero
-            document.getElementById('heroNameDisplay').textContent = nickname;
-            document.getElementById('heroLevel').textContent = lvlData.level;
-            document.getElementById('mainAvatarImg').src =
-                `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${avatarSeed}`;
-
-            // Rank
-            const rankObj = getRank(lvlData.level);
-            const rankEl = document.getElementById('heroRank');
-            rankEl.textContent = rankObj.title;
-            rankEl.className = `text-sm font-bold tracking-wide ${rankObj.color}`;
-
-            // XP bar
-            const xpRemaining = lvlData.nextLevelRequirement - lvlData.currentLevelXP;
-            document.getElementById('xpText').textContent =
-                `${lvlData.currentLevelXP} / ${lvlData.nextLevelRequirement}`;
-            document.getElementById('xpBar').style.width = `${lvlData.percentage}%`;
-            document.getElementById('xpToNext').textContent = xpRemaining.toLocaleString();
-
-            // Stats
-            const score = (user.totalScore || 0) || (totalXP * 10);
-            document.getElementById('statTotalScore').textContent = score.toLocaleString();
-
-            const bestStreak = (user.stats && user.stats.bestStreak) || 0;
-            document.getElementById('statStreak').textContent = bestStreak;
-
-            const totalGames = (user.stats && (user.stats.total || user.stats.gamesPlayed)) || 0;
-            const correctAnswers = (user.stats && (user.stats.correct || user.stats.wins)) || 0;
-            const acc = totalGames > 0 ? Math.round((correctAnswers / totalGames) * 100) : 0;
-            document.getElementById('statAccuracy').textContent = acc + '%';
-
-            renderPerformance();
-            renderActivityLog();
-            renderAchievements();
-            refreshAccountUI();
+        function calculateLevel(xp) {
+            if (xp >= 1000) return "Justice League Member";
+            if (xp >= 500) return "Gotham Vigilante";
+            if (xp >= 100) return "Sidekick";
+            return "Civilian";
         }
 
-        // PERFORMANCE
-        function renderPerformance() {
-            const categories = [
-                { label: 'Science',   color: 'bg-purple-500' },
-                { label: 'History',   color: 'bg-orange-500' },
-                { label: 'Geography', color: 'bg-emerald-500' },
-                { label: 'Tech',      color: 'bg-blue-500' }
+        function updateStatsUI(xp, levelLabel, streak, badgeCount) {
+            // 1. Get Level from Engine or calculate it locally if needed
+            const currentLevel = window.GameEngine?.state?.level || Math.floor(Math.sqrt(xp / 100)) || 1;
+            
+            // 2. Calculate Math for Progress Bar (Quadratic Curve)
+            const startXP = 100 * (currentLevel * currentLevel);      // XP needed to reach current level
+            const nextXP  = 100 * ((currentLevel + 1) * (currentLevel + 1)); // XP needed for next level
+            
+            const range = nextXP - startXP;
+            const progress = xp - startXP;
+            const percent = Math.max(0, Math.min(100, (progress / range) * 100));
+
+            // 3. Update Text (e.g., "450 / 900 XP")
+            document.getElementById('profileXP').textContent = `${progress.toLocaleString()} / ${range.toLocaleString()} XP`;
+            
+            // 4. Update Bar Width
+            document.getElementById('xpBarFill').style.width = `${percent}%`;
+
+            // 5. Update Other Stats
+            document.getElementById('profileRank').textContent = levelLabel;
+            document.getElementById('statScore').textContent = xp.toLocaleString();
+            document.getElementById('statStreak').textContent = streak;
+            document.getElementById('statBadges').textContent = badgeCount;
+        }
+        function renderSkillMatrix(xp) {
+            const matrix = document.getElementById('skillMatrix');
+            const factor = Math.min(100, Math.log10(xp + 10) * 30);
+            
+            const skills = [
+                { name: "DC Lore", val: factor,                   color: "bg-blue-500" },
+                { name: "Marvel Lore", val: Math.max(10, factor - 10), color: "bg-red-500" },
+                { name: "Villains",   val: Math.max(5,  factor - 5),  color: "bg-purple-500" },
+                { name: "Weapons",    val: Math.max(15, factor - 15), color: "bg-yellow-500" }
             ];
-            const container = document.getElementById('skillMatrix');
-            container.innerHTML = '';
 
-            categories.forEach(cat => {
-                // For now demo random-ish but stable-ish based on XP
-                const base = Math.min(80, 40 + Math.floor(GameEngine.user.xp / 500));
-                const randomPct = Math.max(30, Math.min(95, base + (Math.random() * 10 - 5)));
+            matrix.innerHTML = skills.map(s => `
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-xs font-bold text-slate-300">${s.name}</span>
+                        <span class="text-[10px] text-slate-500">${Math.round(s.val)}%</span>
+                    </div>
+                    <div class="w-full bg-black/40 h-2 rounded-full overflow-hidden">
+                        <div class="${s.color} h-full rounded-full transition-all duration-1000" style="width: ${s.val}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-                container.innerHTML += `
+        function renderActivityLog(isLoggedIn, xp) {
+            const log = document.getElementById('activityLog');
+            let html = '';
+            
+            if (isLoggedIn) {
+                html += `
+                <div class="flex gap-3 items-center p-2 rounded hover:bg-white/5 transition border-l-2 border-green-500 bg-green-500/5">
+                    <div class="w-8 h-8 rounded bg-slate-900 flex items-center justify-center text-green-400">
+                        <i class="fas fa-plug"></i>
+                    </div>
                     <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm font-bold text-slate-300 tracking-wide">${cat.label}</span>
-                            <span class="text-xs font-bold text-slate-400">${Math.round(randomPct)}%</span>
-                        </div>
-                        <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden shadow-inner border border-white/5">
-                            <div class="${cat.color} h-full rounded-full relative" style="width: ${Math.round(randomPct)}%">
-                                <div class="absolute inset-0 bg-white/20"></div>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        // ACTIVITY LOG (simple mock based on stats)
-        function renderActivityLog() {
-            const container = document.getElementById('activityLog');
-            const stats = GameEngine.user.stats || {};
-            const totalGames = stats.total || stats.gamesPlayed || 0;
-
-            const logs = [
-                { icon: 'fa-user',    color: 'text-blue-400',   text: 'Profile Created',              time: '2 days ago' },
-                { icon: 'fa-trophy',  color: 'text-yellow-500', text: 'Joined QuizRealm',            time: '2 days ago' }
-            ];
-
-            if (totalGames > 0) {
-                logs.unshift({
-                    icon: 'fa-gamepad',
-                    color: 'text-green-400',
-                    text: `Played ${totalGames} game${totalGames > 1 ? 's' : ''}`,
-                    time: 'Recently'
-                });
-            }
-
-            if (GameEngine.user.level > 1) {
-                logs.unshift({
-                    icon: 'fa-arrow-up',
-                    color: 'text-cyan-400',
-                    text: `Reached Level ${GameEngine.user.level}`,
-                    time: 'Just now'
-                });
-            }
-
-            container.innerHTML = '';
-            logs.forEach(log => {
-                container.innerHTML += `
-                    <div class="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition border border-transparent hover:border-white/5">
-                        <div class="mt-1 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center ${log.color} border border-white/10 shadow-sm">
-                            <i class="fas ${log.icon} text-xs"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm text-slate-200 font-medium">${log.text}</p>
-                            <span class="text-[10px] text-slate-500 uppercase tracking-wide">${log.time}</span>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        // ACHIEVEMENTS STRIP
-        function renderAchievements() {
-            const container = document.getElementById('achievementsStrip');
-            container.innerHTML = '';
-
-            const unlocked = GameEngine.user.achievements || [];
-            const db = GameEngine.achievementsDB;
-
-            // Unlocked first
-            unlocked.forEach(id => {
-                const ach = db[id] || { title: 'Secret', icon: 'fa-question', desc: 'Hidden achievement' };
-                container.innerHTML += `
-                    <div class="flex-shrink-0 w-24 h-28 bg-slate-800/40 border border-emerald-500/60 rounded-lg flex flex-col items-center justify-center gap-2 group hover:border-emerald-400/80 transition shadow-[0_0_20px_rgba(16,185,129,0.25)]">
-                        <i class="fas ${ach.icon} text-2xl text-emerald-400 drop-shadow-lg"></i>
-                        <span class="text-[10px] text-slate-200 group-hover:text-white font-bold text-center px-1 leading-tight">${ach.title}</span>
-                    </div>`;
-            });
-
-            // Locked placeholders
-            Object.keys(db).forEach(id => {
-                if (unlocked.includes(id)) return;
-                const ach = db[id];
-                container.innerHTML += `
-                    <div class="flex-shrink-0 w-24 h-28 bg-slate-900/60 border border-slate-700 rounded-lg flex flex-col items-center justify-center gap-2 opacity-60 grayscale hover:opacity-90 hover:grayscale-0 hover:border-purple-400/60 transition">
-                        <i class="fas fa-lock text-2xl text-slate-500"></i>
-                        <span class="text-[10px] text-slate-500 font-bold text-center px-1 leading-tight">${ach.title}</span>
-                    </div>`;
-            });
-
-            if (!unlocked.length && !Object.keys(db).length) {
-                container.innerHTML = `
-                    <div class="text-xs text-slate-400">
-                        Play some games to start unlocking achievements!
-                    </div>`;
-            }
-        }
-
-        // EDIT PROFILE
-        function openEditModal() {
-            const modal = document.getElementById('editModal');
-            const nickInput = document.getElementById('editNickname');
-            const prevImg = document.getElementById('previewAvatar');
-
-            const user = GameEngine.user;
-            modal.classList.remove('hidden');
-
-            nickInput.value = user.nickname || 'Player';
-            tempAvatarSeed = user.avatarSeed || nickInput.value;
-            prevImg.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${tempAvatarSeed}`;
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-
-        function regenerateAvatar() {
-            tempAvatarSeed = Math.random().toString(36).substring(7);
-            document.getElementById('previewAvatar').src =
-                `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${tempAvatarSeed}`;
-        }
-
-        function saveProfile() {
-            const newNick = document.getElementById('editNickname').value.trim();
-            if (!newNick) {
-                alert("Nickname cannot be empty");
-                return;
-            }
-
-            GameEngine.user.nickname = newNick;
-            GameEngine.user.avatarSeed = tempAvatarSeed || newNick;
-
-            GameEngine.save();
-            refreshProfileUI();
-            closeEditModal();
-            GameEngine.showToast("Profile Updated", "Your avatar and nickname have been saved.", "text-green-400");
-        }
-
-        // ACCOUNT CARD LOGIC
-        function refreshAccountUI() {
-            const statusChip = document.getElementById('accountStatusChip');
-            const statusText = document.getElementById('accountStatusText');
-            const auth = GameEngine.user.auth || { status: 'guest' };
-
-            if (auth.status === 'logged_in' && auth.email) {
-                statusChip.textContent = "Connected";
-                statusChip.className =
-                    "text-[10px] font-semibold px-2.5 py-1 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-500/60 uppercase tracking-wide";
-                statusText.innerHTML =
-                    `Signed in as <span class="font-semibold text-white">${auth.email}</span>. ` +
-                    `Your XP, coins and progress are ready to sync to the cloud once Firebase is connected.`;
+                        <div class="text-xs font-bold text-white">Online & Synced</div>
+                        <div class="text-[10px] text-slate-500">Cloud save active</div>
+                    </div>
+                </div>`;
             } else {
-                statusChip.textContent = "Guest Mode";
-                statusChip.className =
-                    "text-[10px] font-semibold px-2.5 py-1 rounded-full bg-slate-900 text-slate-300 border border-slate-600 uppercase tracking-wide";
-                statusText.innerHTML =
-                    `You’re playing in <span class="font-semibold text-white">Guest Mode</span>. ` +
-                    `Your XP, coins and stats are saved on this device only. Create a free account to sync progress across devices in the future.`;
+                html += `
+                <div class="flex gap-3 items-center p-2 rounded hover:bg-white/5 transition border-l-2 border-slate-600">
+                    <div class="w-8 h-8 rounded bg-slate-900 flex items-center justify-center text-slate-400">
+                        <i class="fas fa-ghost"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white">Guest Session</div>
+                        <div class="text-[10px] text-slate-500">Progress saved on this device only</div>
+                    </div>
+                </div>`;
+            }
+
+            if (xp > 0) {
+                html += `
+                <div class="flex gap-3 items-center p-2 rounded hover:bg-white/5 transition">
+                    <div class="w-8 h-8 rounded bg-slate-900 flex items-center justify-center text-yellow-400">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white">Gaining Experience</div>
+                        <div class="text-[10px] text-slate-500">Total XP: ${xp}</div>
+                    </div>
+                </div>`;
+            }
+
+            log.innerHTML = html;
+        }
+
+        function loadLocalProgress() {
+            let xp = parseInt(localStorage.getItem('QR_XP')) || 0;
+            if (window.GameEngine && typeof GameEngine.xp === "number") xp = GameEngine.xp;
+            
+            const level = calculateLevel(xp);
+            const streak = parseInt(localStorage.getItem('QR_STREAK')) || 0;
+            const badges = (window.GameEngine && GameEngine.badges && GameEngine.badges.size) || 0;
+            
+            updateStatsUI(xp, level, streak, badges);
+            renderSkillMatrix(xp);
+            renderActivityLog(false, xp);
+        }
+
+        async function syncUserData(user) {
+            if (!window.db) return;
+            const userRef = doc(window.db, "heroes", user.uid);
+            
+            try {
+                const snap = await getDoc(userRef);
+                if (snap.exists()) {
+                    const data = snap.data();
+
+                    if (window.GameEngine) {
+                        GameEngine.xp = data.xp || GameEngine.xp || 0;
+                        GameEngine.streak = data.streak || GameEngine.streak || 0;
+                    }
+                    
+                    const xp = window.GameEngine?.xp || data.xp || 0;
+                    const streak = window.GameEngine?.streak || data.streak || 0;
+                    const levelLabel = data.level || calculateLevel(xp);
+                    const badgeCount = data.badges?.length || (window.GameEngine?.badges?.size || 0);
+
+                    // nickname priority: Firestore -> local -> generated
+                    if (data.nickname && data.nickname.trim()) {
+                        currentNickname = data.nickname.trim();
+                        try { localStorage.setItem("QR_NICKNAME", currentNickname); } catch {}
+                    } else {
+                        ensureNickname();
+                        await setDoc(userRef, { nickname: currentNickname }, { merge: true });
+                    }
+
+                    updateProfileHeader();
+                    updateStatsUI(xp, levelLabel, streak, badgeCount);
+                    renderSkillMatrix(xp);
+                    renderActivityLog(true, xp);
+                } else {
+                    ensureNickname();
+                    const xp = window.GameEngine?.xp || 0;
+                    await setDoc(userRef, {
+                        email: user.email,
+                        xp,
+                        level: calculateLevel(xp),
+                        streak: 0,
+                        nickname: currentNickname
+                    }, { merge: true });
+                }
+            } catch (e) {
+                console.error("Sync Error", e);
             }
         }
 
-        function switchAuthTab(view) {
-            const signupTab = document.getElementById('authTabSignup');
-            const signinTab = document.getElementById('authTabSignin');
-            const signupForm = document.getElementById('authFormSignup');
-            const signinForm = document.getElementById('authFormSignin');
+        function renderLoggedInState(user) {
+            document.getElementById('viewGuestAuth').classList.add('hidden');
+            document.getElementById('viewUser').classList.remove('hidden');
 
-            if (view === 'signup') {
-                signupTab.classList.add('bg-accentBlue','text-white','shadow-lg','shadow-blue-500/20');
-                signupTab.classList.remove('text-slate-300','hover:bg-white/5');
-                signinTab.classList.remove('bg-accentBlue','text-white','shadow-lg','shadow-blue-500/20');
-                signinTab.classList.add('text-slate-300','hover:bg-white/5');
+            const badge = document.getElementById('authBadge');
+            badge.textContent = "SECURE";
+            badge.className = "px-2 py-1 rounded bg-green-900/50 border border-green-500/30 text-[10px] uppercase font-bold text-green-400";
+            
+            document.getElementById('authTitle').innerHTML = `<i class="fas fa-check-circle text-green-500"></i> Account Verified`;
+            document.getElementById('authDesc').textContent = "Your stats are syncing in real-time.";
 
-                signupForm.classList.remove('hidden');
-                signinForm.classList.add('hidden');
+            document.getElementById('userEmailDisplay').textContent = user.email || "Google Account";
+            document.getElementById('userIdDisplay').textContent = user.uid;
+
+            ensureNickname();
+            updateProfileHeader();
+
+            if (user.photoURL) {
+                document.getElementById('profileAvatar').src = user.photoURL;
             } else {
-                signinTab.classList.add('bg-accentBlue','text-white','shadow-lg','shadow-blue-500/20');
-                signinTab.classList.remove('text-slate-300','hover:bg-white/5');
-                signupTab.classList.remove('bg-accentBlue','text-white','shadow-lg','shadow-blue-500/20');
-                signupTab.classList.add('text-slate-300','hover:bg-white/5');
-
-                signinForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
+                updateAvatarDisplay();
             }
         }
 
-        function handleSignup() {
-            const email = document.getElementById('signupEmail').value.trim();
-            const nick  = document.getElementById('signupNickname').value.trim();
-            const pass  = document.getElementById('signupPassword').value.trim();
+        function renderGuestState() {
+            document.getElementById('viewGuestAuth').classList.remove('hidden');
+            document.getElementById('viewUser').classList.add('hidden');
 
-            if (!email || !nick || !pass) {
-                GameEngine.showToast("Missing fields", "Please fill email, nickname and password.", "text-red-400");
-                return;
-            }
+            const badge = document.getElementById('authBadge');
+            badge.textContent = "GUEST";
+            badge.className = "px-2 py-1 rounded bg-slate-800 border border-slate-600 text-[10px] uppercase font-bold text-slate-400";
 
-            GameEngine.user.nickname = nick;
-            GameEngine.user.auth = {
-                status: "logged_in",
-                email: email,
-                provider: "local-demo"
-            };
+            document.getElementById('authTitle').innerHTML = `<i class="fas fa-id-card text-blue-500"></i> Identity Card`;
+            document.getElementById('authDesc').textContent = "Manage your hero identity and cloud save status.";
 
-            GameEngine.save();
-            refreshProfileUI();
-            GameEngine.showToast("Account Created", "Demo account stored locally. Backend coming soon.", "text-emerald-400");
+            ensureNickname();
+            const nickInput = document.getElementById('nicknameInput');
+            if (nickInput) nickInput.value = currentNickname;
+            updateAvatarDisplay();
+            updateProfileHeader();
         }
 
-        function handleSignin() {
-            const email = document.getElementById('signinEmail').value.trim();
-            const pass  = document.getElementById('signinPassword').value.trim();
-
-            if (!email || !pass) {
-                GameEngine.showToast("Missing fields", "Please enter email and password.", "text-red-400");
-                return;
-            }
-
-            // Demo only: mark as logged in, keep existing stats
-            GameEngine.user.auth = {
-                status: "logged_in",
-                email: email,
-                provider: "local-demo"
-            };
-
-            GameEngine.save();
-            refreshProfileUI();
-            GameEngine.showToast("Signed In", "Demo sign-in completed. Real auth will be added later.", "text-blue-300");
+        async function initAuthObserver() {
+            const checkAuth = setInterval(() => {
+                if (window.auth) {
+                    clearInterval(checkAuth);
+                    
+                    onAuthStateChanged(window.auth, async (user) => {
+                        currentUser = user;
+                        
+                        // FIX: Only show "Logged In" screen if NOT anonymous
+                        if (user && !user.isAnonymous) {
+                            console.log("User is Secure/Registered");
+                            renderLoggedInState(user);
+                            await syncUserData(user);
+                        } else {
+                            console.log("User is Guest/Anonymous");
+                            renderGuestState(); // Show Google/Email buttons
+                            loadLocalProgress();
+                        }
+                    });
+                }
+            }, 100);
         }
 
-        // INIT
-        window.addEventListener('load', () => {
-            refreshProfileUI();
-        });
+        const provider = new GoogleAuthProvider();
 
-        window.addEventListener('userUpdate', () => {
-            refreshProfileUI();
-        });
+        window.handleGoogleLogin = async () => {
+            try {
+                await signInWithPopup(window.auth, provider);
+            } catch (error) {
+                const el = document.getElementById('authError');
+                if (el) {
+                    el.textContent = error.message;
+                    el.classList.remove('hidden');
+                }
+            }
+        };
+
+        window.handleEmailLogin = async () => {
+            const e = document.getElementById('emailInput').value;
+            const p = document.getElementById('passInput').value;
+            if (!e || !p) return;
+            try {
+                await signInWithEmailAndPassword(window.auth, e, p);
+            } catch (err) {
+                const el = document.getElementById('authError');
+                if (el) {
+                    el.textContent = "Login Failed: " + err.message;
+                    el.classList.remove('hidden');
+                }
+            }
+        };
+
+        window.handleEmailSignup = async () => {
+            const e = document.getElementById('emailInput').value;
+            const p = document.getElementById('passInput').value;
+            if (!e || !p) return;
+            try {
+                await createUserWithEmailAndPassword(window.auth, e, p);
+            } catch (err) {
+                const el = document.getElementById('authError');
+                if (el) {
+                    el.textContent = "Signup Failed: " + err.message;
+                    el.classList.remove('hidden');
+                }
+            }
+        };
+
+        window.handleLogout = async () => {
+            try {
+                await signOut(window.auth);
+            } catch (e) {
+                console.error("Signout error:", e);
+            }
+            // Extra safety: clear Firebase auth cache in localStorage for dev/live-server
+            try {
+                Object.keys(localStorage).forEach(k => {
+                    if (k.startsWith('firebase:authUser:') || k.startsWith('firebase:authDomain:')) {
+                        localStorage.removeItem(k);
+                    }
+                });
+            } catch {}
+            // Keep nickname/avatar, just force UI refresh
+            window.location.reload();
+        };
+
+        // Init
+        initAuthObserver();
+        loadLocalProgress();
+        updateAvatarDisplay();
+        updateProfileHeader();
     </script>
 </body>
 </html>

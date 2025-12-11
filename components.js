@@ -1,39 +1,62 @@
-// components.js - CHRISTMAS EDITION (FULL FEATURES) 🎄
+// components.js - QUIZREALM GLOBAL LAYOUT (HEADER + FOOTER)
 
 console.log("Loading QuizRealm Components...");
 
-/* * © 2025 QuizRealm Inc. - All Rights Reserved.
- * * UNAUTHORIZED COPYING OF THIS FILE, VIA ANY MEDIUM, IS STRICTLY PROHIBITED.
- * PROPRIETARY AND CONFIDENTIAL.
- * * Written by [Your Name/Handle], December 2025.
- */
+/* © 2025 QuizRealm Inc. - All Rights Reserved. */
+
+// Small helper: get the best current snapshot from GameEngine (or fallback)
+function getHeaderUserSnapshot() {
+    // Default values
+    let snapshot = {
+        level: 1,
+        coins: 0,
+        xp: 0,
+        avatarSeed: "Player"
+    };
+
+    // Preferred source: GameEngine (single source of truth)
+    try {
+        if (window.GameEngine && typeof window.GameEngine.getUserSnapshot === "function") {
+            const u = window.GameEngine.getUserSnapshot();
+            snapshot.level      = u.level  ?? 1;
+            snapshot.coins      = u.coins  ?? 0;
+            snapshot.xp         = u.xp     ?? 0;
+            snapshot.avatarSeed = u.avatarSeed || "Player";
+            return snapshot;
+        }
+    } catch (e) {
+        console.warn("Header: GameEngine snapshot failed, will try local fallback.", e);
+    }
+
+    // Very last fallback: localStorage (for very early load or engine missing)
+    try {
+        const saved = localStorage.getItem("QR_PROFILE");
+        if (saved) {
+            const data = JSON.parse(saved);
+            snapshot.level      = data.level      ?? snapshot.level;
+            snapshot.coins      = data.coins      ?? snapshot.coins;
+            snapshot.xp         = data.xp         ?? snapshot.xp;
+            snapshot.avatarSeed = data.avatarSeed || snapshot.avatarSeed;
+        }
+    } catch (e) {
+        console.warn("Header: Failed to parse QR_PROFILE fallback", e);
+    }
+
+    return snapshot;
+}
+
 // =================================================================
 // 1. HEADER MARKUP GENERATOR
 // =================================================================
 function getQuizHeaderMarkup() {
-    let user = { level: 1, coins: 0, avatarSeed: 'Player', xp: 0 }; // Default fallback
-
-    if (typeof GameEngine !== 'undefined' && GameEngine.user) {
-        user = GameEngine.user; // Grab the live data
-    } else {
-        // Fallback if GameEngine hasn't loaded yet (rare race condition)
-        const saved = localStorage.getItem('QR_PROFILE');
-        if (saved) {
-            try {
-                user = { ...user, ...JSON.parse(saved) };
-            } catch (e) {
-                console.warn("Failed to parse QR_PROFILE:", e);
-            }
-        }
-    }
+    const user = getHeaderUserSnapshot();
 
     const level      = user.level || 1;
     const coins      = user.coins || 0;
     const xp         = user.xp || 0;
-    const avatarSeed = user.avatarSeed || 'Player';
-    const avatarUrl  = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${avatarSeed}`;
+    const avatarSeed = user.avatarSeed || "Player";
+    const avatarUrl  = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(avatarSeed)}`;
 
-    // Now build the HTML using live user data + IDs for GameEngine.updateHeaderUI()
     return `
     <header class="w-full sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg shadow-red-900/5 relative overflow-hidden">
         
@@ -85,7 +108,7 @@ function getQuizHeaderMarkup() {
                 <a href="categories.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
                     <i class="fas fa-layer-group text-blue-400"></i> Categories
                 </a>
-                <a href="quiz.html?mode=daily" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
+                <a href="daily.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
                     <i class="fas fa-calendar-day text-emerald-400"></i> Daily
                 </a>
                 <a href="timeline-history.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
@@ -111,6 +134,7 @@ function getQuizHeaderMarkup() {
                         <i class="fas fa-coins text-[11px]"></i>
                         <span id="headerCoins">${coins.toLocaleString()}</span>
                     </div>
+                    <!-- XP hidden but available for scripts -->
                     <span id="headerXP" class="hidden">${xp}</span>
                 </div>
 
@@ -159,7 +183,7 @@ function getQuizHeaderMarkup() {
 }
 
 // =================================================================
-// 2. FOOTER MARKUP GENERATOR (Full 4-Column Version)
+// 2. FOOTER MARKUP GENERATOR
 // =================================================================
 function getQuizFooterMarkup() {
     const year = new Date().getFullYear();
@@ -231,48 +255,74 @@ function getQuizFooterMarkup() {
 }
 
 // =================================================================
-// 3. DEFINE CUSTOM ELEMENTS
+// 3. CUSTOM ELEMENTS
 // =================================================================
 
-// Define Header
-if (!customElements.get('quiz-header')) {
-    class QuizHeader extends HTMLElement {
-        connectedCallback() {
-            this.innerHTML = getQuizHeaderMarkup();
-            // Ensure header reflects latest GameEngine state even if engine loaded earlier
-            if (typeof GameEngine !== 'undefined' && typeof GameEngine.updateHeaderUI === 'function') {
-                GameEngine.updateHeaderUI();
-            }
-        }
+function setupHeaderElement(el) {
+    // Initial render
+    el.innerHTML = getQuizHeaderMarkup();
+
+    // After GameEngine initializes, force a UI update once
+    if (window.GameEngine && typeof window.GameEngine.updateHeaderUI === "function") {
+        window.GameEngine.updateHeaderUI();
     }
-    customElements.define('quiz-header', QuizHeader);
+
+    // Listen for userUpdate events (fired by GameEngine when state changes)
+    const handler = () => {
+        if (window.GameEngine && typeof window.GameEngine.updateHeaderUI === "function") {
+            window.GameEngine.updateHeaderUI();
+        }
+    };
+
+    el._qrUserHandler = handler;
+    window.addEventListener("userUpdate", handler);
 }
 
-// Define Home Header
-if (!customElements.get('quiz-home-header')) {
-    class QuizHomeHeader extends HTMLElement {
+function teardownHeaderElement(el) {
+    if (el._qrUserHandler) {
+        window.removeEventListener("userUpdate", el._qrUserHandler);
+        delete el._qrUserHandler;
+    }
+}
+
+// Define Header
+if (!customElements.get("quiz-header")) {
+    class QuizHeader extends HTMLElement {
         connectedCallback() {
-            this.innerHTML = getQuizHeaderMarkup();
-            if (typeof GameEngine !== 'undefined' && typeof GameEngine.updateHeaderUI === 'function') {
-                GameEngine.updateHeaderUI();
-            }
+            setupHeaderElement(this);
+        }
+        disconnectedCallback() {
+            teardownHeaderElement(this);
         }
     }
-    customElements.define('quiz-home-header', QuizHomeHeader);
+    customElements.define("quiz-header", QuizHeader);
+}
+
+// Define Home Header (same behavior, just a different tag)
+if (!customElements.get("quiz-home-header")) {
+    class QuizHomeHeader extends HTMLElement {
+        connectedCallback() {
+            setupHeaderElement(this);
+        }
+        disconnectedCallback() {
+            teardownHeaderElement(this);
+        }
+    }
+    customElements.define("quiz-home-header", QuizHomeHeader);
 }
 
 // Define Footer
-if (!customElements.get('quiz-footer')) {
+if (!customElements.get("quiz-footer")) {
     class QuizFooter extends HTMLElement {
         connectedCallback() {
             this.innerHTML = getQuizFooterMarkup();
         }
     }
-    customElements.define('quiz-footer', QuizFooter);
+    customElements.define("quiz-footer", QuizFooter);
 }
 
-// Define SEO Content (Restored Full Version)
-if (!customElements.get('quiz-seo-content')) {
+// Define SEO Content (unchanged)
+if (!customElements.get("quiz-seo-content")) {
     class QuizSeoContent extends HTMLElement {
         connectedCallback() {
             this.innerHTML = `
@@ -328,7 +378,7 @@ if (!customElements.get('quiz-seo-content')) {
             `;
         }
     }
-    customElements.define('quiz-seo-content', QuizSeoContent);
+    customElements.define("quiz-seo-content", QuizSeoContent);
 }
 
 console.log("Components.js loaded successfully.");

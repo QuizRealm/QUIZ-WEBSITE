@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="game-engine.js"></script> 
+    <script src="components.js" defer></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web-Slinger Knowledge | Superhero Cinema</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'], 
+                        marker: ['Permanent Marker', 'cursive']
+                    }, 
+                    colors: { 
+                        spideyRed: '#ef4444', 
+                        spideyBlue: '#3b82f6',
+                        milesBlack: '#0f172a',
+                        glitchCyan: '#06b6d4',
+                        glitchMagenta: '#d946ef'
+                    }, 
+                    animation: { 
+                        'glitch': 'glitch 2s infinite',
+                        'float': 'float 4s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        glitch: {
+                            '0%': { textShadow: '2px 2px #ef4444, -2px -2px #06b6d4' },
+                            '25%': { textShadow: '-2px 2px #d946ef, 2px -2px #3b82f6' },
+                            '50%': { textShadow: '2px -2px #ef4444, -2px 2px #06b6d4' },
+                            '75%': { textShadow: '-2px -2px #d946ef, 2px 2px #3b82f6' },
+                            '100%': { textShadow: '2px 2px #ef4444, -2px -2px #06b6d4' }
+                        },
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }
+                    }
+                } 
+            } 
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            /* Halftone Pattern for Comic Vibe */
+            background-image: 
+                radial-gradient(circle, #1e293b 1px, transparent 1px),
+                linear-gradient(to bottom, #0f172a, #1e1b4b);
+            background-size: 20px 20px, 100% 100%;
+            min-height: 100vh; 
+            color: #e2e8f0; 
+            overflow-x: hidden;
+        }
+
+        /* Comic Card */
+        .comic-panel {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #fff;
+            box-shadow: 10px 10px 0px rgba(239, 68, 68, 0.5);
+            transform: rotate(-1deg);
+            position: relative;
+        }
+
+        /* Glitch Button */
+        .glitch-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .glitch-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px #06b6d4;
+        }
+        
+        .correct-answer { 
+            background: #22c55e !important; 
+            border-color: #fff !important; 
+            color: white !important; 
+            transform: scale(1.02);
+        }
+        .wrong-answer { 
+            background: #ef4444 !important; 
+            border-color: #fff !important; 
+            color: white !important; 
+            animation: shake 0.4s;
+        }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    </style>
+</head>
+<body class="flex flex-col antialiased">
+
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-8 relative">
+
+        <div id="introScreen" class="min-h-[60vh] flex flex-col justify-center items-center text-center animate-fade-in relative z-10">
+            
+            <div class="relative mb-8 animate-float">
+                <div class="absolute inset-0 bg-spideyRed blur-2xl opacity-50"></div>
+                <div class="relative w-32 h-32 bg-black rounded-full border-4 border-spideyRed flex items-center justify-center z-10">
+                    <i class="fas fa-spider text-6xl text-white"></i>
+                </div>
+                <div class="absolute -top-2 -right-4 text-glitchCyan font-marker text-2xl rotate-12">THWIP!</div>
+            </div>
+
+            <h1 class="font-arcade text-5xl md:text-7xl text-white mb-4 animate-glitch leading-tight">
+                SPIDER-SOCIETY <br> RECRUITMENT
+            </h1>
+
+            <div class="comic-panel p-6 max-w-lg w-full mb-8 text-left mx-auto rotate-1">
+                <div class="flex justify-between items-start mb-2 border-b-2 border-white/20 pb-2">
+                    <h3 class="text-spideyRed font-bold font-marker text-xl">MISSION BRIEF</h3>
+                    <span class="bg-spideyBlue text-white text-xs font-bold px-2 py-1 -skew-x-12">MULTIVERSE LEVEL</span>
+                </div>
+                <p class="text-slate-300 font-sans text-sm mt-4 leading-relaxed">
+                    Alright, let's do this one last time. We need to verify your identity. Answer 10 questions about the Spider-Verse to prove you belong in the suit.
+                </p>
+                <div class="mt-4 flex gap-4 text-xs font-mono text-glitchCyan">
+                    <span>> REWARD: 200 XP</span>
+                    <span>> BADGE: TRAVELER</span>
+                </div>
+            </div>
+
+            <button onclick="startQuiz()" class="glitch-btn px-10 py-4 bg-spideyRed text-white font-arcade text-xl uppercase tracking-widest border-2 border-white">
+                Put On The Mask
+            </button>
+        </div>
+
+        <div id="quizInterface" class="hidden min-h-[60vh] max-w-2xl mx-auto">
+            
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <span class="text-[10px] text-spideyBlue font-bold font-mono block mb-1">WEB FLUID LEVELS</span>
+                    <div class="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full bg-gradient-to-r from-spideyRed to-spideyBlue w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-spideyBlue font-bold font-mono block mb-1">XP SYNC</span>
+                    <span class="text-xl font-bold text-white font-arcade" id="currentSessionXP">0</span>
+                </div>
+            </div>
+
+            <div class="comic-panel p-6 md:p-10 relative z-10 bg-slate-900">
+                <div class="absolute -top-3 -left-3 bg-white text-black font-marker px-3 py-1 rotate-[-3deg] border-2 border-black">
+                    Q: <span id="qNum">1</span>
+                </div>
+
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-8 mt-2 leading-snug font-sans" id="questionText">
+                    Loading Data...
+                </h2>
+                
+                <div class="space-y-3" id="optionsGrid">
+                    </div>
+                
+                <div id="spideySense" class="mt-6 flex gap-3 items-start hidden animate-pulse">
+                    <i class="fas fa-wifi text-spideyRed text-xl rotate-45"></i>
+                    <p class="text-sm text-spideyBlue font-mono" id="factNote"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="hidden max-w-2xl mx-auto text-center">
+            
+            <div class="comic-panel p-8 md:p-12 bg-slate-900 rotate-0">
+                
+                <div class="w-24 h-24 mx-auto bg-black rounded-full border-4 border-white flex items-center justify-center mb-6 shadow-xl relative">
+                     <span class="text-4xl text-white">🕷️</span>
+                     <div class="absolute -bottom-2 -right-2 bg-glitchMagenta text-white font-marker text-xs px-2 py-1 rotate-12">NICE!</div>
+                </div>
+
+                <h2 class="font-arcade text-3xl text-white mb-2" id="resultTitle">Calculating...</h2>
+                <div class="text-5xl font-black text-spideyRed mb-6 font-sans" id="finalScoreDisplay">0/10</div>
+
+                <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-8">
+                    <div class="bg-white/5 p-4 border border-white/10">
+                        <span class="text-slate-400 text-xs block font-mono">STATUS</span>
+                        <span class="text-lg font-bold text-white" id="rankText">UNKNOWN</span>
+                    </div>
+                    <div class="bg-white/5 p-4 border border-white/10">
+                        <span class="text-slate-400 text-xs block font-mono">XP EARNED</span>
+                        <span class="text-lg font-bold text-glitchCyan" id="finalXPEarned">+0</span>
+                    </div>
+                </div>
+                
+                <div id="badgeAlert" class="hidden mb-8 p-4 bg-gradient-to-r from-spideyRed/20 to-spideyBlue/20 border border-white/20 flex items-center justify-center gap-3">
+                    <i class="fas fa-certificate text-white text-xl"></i>
+                    <span class="text-white font-bold text-sm">BADGE: Spider-Verse Traveler</span>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button onclick="location.reload()" class="px-8 py-3 bg-transparent border-2 border-white text-white font-bold uppercase text-xs tracking-widest hover:bg-white hover:text-black transition-all">
+                        Retry
+                    </button>
+                    <a href="index.html" class="px-8 py-3 bg-spideyBlue border-2 border-spideyBlue text-white font-bold uppercase text-xs tracking-widest hover:bg-blue-600 transition-all shadow-lg">
+                        Back to Hub
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // 1. DATA
+        const QUESTIONS = [
+            { 
+                q: "What is the famous philosophy Uncle Ben teaches Peter?", 
+                options: ["Knowledge is power", "With great power comes great responsibility", "Might makes right", "Live fast, web hard"], 
+                correct: 1, 
+                note: "This phrase first appeared in Amazing Fantasy #15 (1962)."
+            },
+            { 
+                q: "In 'Captain America: Civil War', who recruits Spider-Man?", 
+                options: ["Captain America", "Nick Fury", "Tony Stark", "Black Widow"], 
+                correct: 2, 
+                note: "Tony Stark visits Peter's apartment in Queens to recruit him."
+            },
+            { 
+                q: "Which newspaper does Peter Parker traditionally work for?", 
+                options: ["The Daily Planet", "The Daily Bugle", "The Gotham Gazette", "The New York Times"], 
+                correct: 1, 
+                note: "Run by the loud-mouthed J. Jonah Jameson."
+            },
+            { 
+                q: "In 'Spider-Man 2' (2004), who is the main villain?", 
+                options: ["Green Goblin", "Venom", "Doctor Octopus", "Sandman"], 
+                correct: 2, 
+                note: "Alfred Molina gave an iconic performance as Otto Octavius."
+            },
+            { 
+                q: "What is the real name of the Gwen Stacy Spider-Woman (Spider-Gwen)?", 
+                options: ["Gwen Stacy", "Mary Jane", "Jessica Drew", "Silk"], 
+                correct: 0, 
+                note: "On Earth-65, Gwen was bitten by the spider instead of Peter."
+            },
+            { 
+                q: "In 'No Way Home', how many villains get transported to the MCU?", 
+                options: ["Three", "Five", "Six", "Four"], 
+                correct: 1, 
+                note: "Green Goblin, Doc Ock, Electro, Sandman, and Lizard."
+            },
+            { 
+                q: "What is MJ's full name in the MCU (Tom Holland movies)?", 
+                options: ["Mary Jane Watson", "Michelle Jones", "Mary Jo", "Monica Jane"], 
+                correct: 1, 
+                note: "The MCU reinvented the character as Michelle Jones (MJ)."
+            },
+            { 
+                q: "Who created Miles Morales?", 
+                options: ["Stan Lee", "Brian Michael Bendis", "Todd McFarlane", "Steve Ditko"], 
+                correct: 1, 
+                note: "Bendis and artist Sara Pichelli created Miles in 2011."
+            },
+            { 
+                q: "Which element is Venom weak to?", 
+                options: ["Water", "Fire and Sound", "Electricity", "Ice"], 
+                correct: 1, 
+                note: "Symbiotes are extremely vulnerable to intense heat and sonics."
+            },
+            { 
+                q: "In 'Into the Spider-Verse', what kind of animal is Spider-Ham?", 
+                options: ["A Pig", "A Spider bitten by a pig", "A Cat", "A Hamster"], 
+                correct: 1, 
+                note: "Surprisingly, he was a spider bitten by a radioactive pig!"
+            }
+        ];
+
+        // 2. STATE
+        let currentIdx = 0;
+        let sessionScore = 0;
+        let sessionXP = 0;
+        let isLocked = false;
+
+        function startQuiz() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('quizInterface').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isLocked = false;
+            const data = QUESTIONS[currentIdx];
+            
+            document.getElementById('questionText').textContent = data.q;
+            document.getElementById('qNum').textContent = currentIdx + 1;
+            document.getElementById('spideySense').classList.add('hidden');
+            
+            // Progress Bar
+            const pct = ((currentIdx) / QUESTIONS.length) * 100;
+            document.getElementById('progressBar').style.width = `${pct}%`;
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+
+            data.options.forEach((optText, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 bg-black border-2 border-slate-700 text-white font-sans font-bold hover:border-spideyRed hover:text-spideyRed transition-all flex items-center gap-3 group skew-x-[-2deg]";
+                btn.innerHTML = `
+                    <div class="w-6 h-6 bg-slate-800 text-slate-400 flex items-center justify-center text-xs group-hover:bg-spideyRed group-hover:text-white transition-colors skew-x-[2deg]">
+                        ${String.fromCharCode(65 + index)}
+                    </div>
+                    <span class="skew-x-[2deg]">${optText}</span>
+                `;
+                btn.onclick = () => handleAnswer(index, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btn) {
+            if(isLocked) return;
+            isLocked = true;
+
+            const data = QUESTIONS[currentIdx];
+            const isCorrect = (selectedIndex === data.correct);
+            const allBtns = document.querySelectorAll('#optionsGrid button');
+            const senseNote = document.getElementById('spideySense');
+            const noteText = document.getElementById('factNote');
+
+            if(isCorrect) {
+                // Game Engine XP
+                if(window.GameEngine) window.GameEngine.addXP(20);
+                
+                sessionScore++;
+                sessionXP += 20;
+                document.getElementById('currentSessionXP').textContent = `+${sessionXP}`;
+                
+                btn.classList.add('correct-answer');
+            } else {
+                btn.classList.add('wrong-answer');
+                allBtns[data.correct].classList.add('correct-answer', 'opacity-50');
+            }
+
+            // Show Spidey Sense Note
+            noteText.innerHTML = `<strong class="text-white">SPIDEY FACT:</strong> ${data.note}`;
+            senseNote.classList.remove('hidden');
+
+            setTimeout(() => {
+                currentIdx++;
+                if(currentIdx < QUESTIONS.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            }, 2500);
+        }
+
+        function showResults() {
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            const scoreDisplay = document.getElementById('finalScoreDisplay');
+            const xpDisplay = document.getElementById('finalXPEarned');
+            const title = document.getElementById('resultTitle');
+            const rank = document.getElementById('rankText');
+
+            scoreDisplay.textContent = `${sessionScore}/10`;
+            xpDisplay.textContent = `+${sessionXP}`;
+
+            if(sessionScore === 10) {
+                title.textContent = "AMAZING!";
+                title.classList.add('text-spideyRed');
+                rank.textContent = "AVENGER LEVEL";
+                if(window.GameEngine) window.GameEngine.unlockAchievement("Spider-Verse Traveler");
+                document.getElementById('badgeAlert').classList.remove('hidden');
+            } else if (sessionScore >= 7) {
+                title.textContent = "SPECTACULAR!";
+                title.classList.add('text-spideyBlue');
+                rank.textContent = "STREET HERO";
+            } else {
+                title.textContent = "OOPS...";
+                title.classList.add('text-slate-400');
+                rank.textContent = "CIVILIAN";
+            }
+            checkGameAchievements(finalScore, currentCategory, timeTaken, 10);
+        }
+
+
+
+        // === ACHIEVEMENT CHECKER ===
+// Call this function when the Game Over screen appears
+// usage: checkGameAchievements(100, 'science', 45, 10); 
+function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
+    
+    if (!window.GameEngine) return;
+
+    // 1. GENERAL
+    window.GameEngine.unlockAchievement("new_recruit"); // First game
+    if (scorePercent === 100) window.GameEngine.unlockAchievement("perfect_score");
+    if (scorePercent >= 50)   window.GameEngine.addXP(scorePercent * 2); // Give XP based on score
+
+    // 2. SPEED
+    if (timeInSeconds < 60) window.GameEngine.unlockAchievement("speed_runner");
+    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement("quick_thinker");
+
+    // 3. CATEGORY SPECIFIC
+    // Normalize category to lowercase to match your IDs
+    const cat = category.toLowerCase();
+
+    if (cat === 'science') {
+        window.GameEngine.unlockAchievement("lab_coat");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("science_whiz");
+    }
+    
+    if (cat === 'history') {
+        window.GameEngine.unlockAchievement("time_traveler");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("history_buff");
+    }
+
+    if (cat === 'movies') {
+        window.GameEngine.unlockAchievement("movie_buff");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("cinephile");
+    }
+
+    if (cat === 'tech') {
+        window.GameEngine.unlockAchievement("tech_guru");
+    }
+
+    // 4. HARDCORE / SPECIFIC QUIZZES
+    // You can check specific IDs if your quiz has them
+    const currentQuizId = new URLSearchParams(window.location.search).get('id');
+    
+    if (currentQuizId === 'superman_legacy' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("superman_legacy");
+    }
+    if (currentQuizId === 'impossible_batman' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("gotham_knight");
+    }
+}
+    </script>
+</body>
+</html>

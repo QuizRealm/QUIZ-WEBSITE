@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+<script type="module" src="firebase-config.js"></script>
+    <script src="game-engine.js"></script> 
+    <script src="components.js" defer></script> 
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ultimate Superhero Knowledge Center</title>
+    
+    <meta name="description" content="The headquarters for superhero movie trivia. Test your Batman knowledge, rate DC vs Marvel, and discover your Gotham villain persona.">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        heroRed: '#ef4444',     // Marvel-ish Red
+                        heroBlue: '#3b82f6',    // Superman Blue
+                        heroGold: '#f59e0b',    // Wonder Woman Gold
+                        villainPurple: '#7e22ce', // Joker/Thanos Purple
+                        heroGreen: '#22c55e',   // Hulk/Lantern
+                        bgDark: '#0f172a',
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'marquee': 'marquee 25s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: '1', boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' },
+                            '50%': { opacity: '0.5', boxShadow: '0 0 10px rgba(59, 130, 246, 0.2)' },
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            /* Superhero "Dark Mode" Background */
+            background-color: #020617; 
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #020617 80%);
+            min-height: 100vh; 
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Particle/Ember Container */
+        .ember-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .ember {
+            position: absolute;
+            bottom: -10px;
+            color: #fbbf24; /* Gold sparks */
+            opacity: 0.3;
+            animation: rise linear infinite;
+        }
+        @keyframes rise {
+            to { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Archive Card Styling */
+        .archive-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+        .archive-card:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(59, 130, 246, 0.5); /* Hero Blue Glow */
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #020617; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased selection:bg-heroBlue selection:text-white">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<quiz-header></quiz-header>
+
+    <div class="bg-slate-900/80 border-y border-blue-500/20 py-2 overflow-hidden relative z-20 backdrop-blur-sm">
+        <div class="animate-marquee whitespace-nowrap flex gap-12 text-xs font-mono text-blue-200 tracking-widest uppercase">
+            <span><i class="fas fa-calendar-alt mr-2"></i> Next Major Release: <span id="tickerDays">00</span> Days</span>
+            <span><i class="fas fa-fire mr-2"></i> Trending: "Batman Trivia" pass rate is only 2%</span>
+            <span><i class="fas fa-film mr-2"></i> Fact: The first superhero movie was released in 1941 (Captain Marvel).</span>
+            <span><i class="fas fa-shield-alt mr-2"></i> Fan Vote: Superman Legacy hype is at 98%</span>
+        </div>
+    </div>
+
+    <div class="ember-container" id="emberContainer"></div>
+
+    <main class="flex-grow w-full relative z-10">
+        
+        <section class="max-w-[1200px] mx-auto px-4 pt-10 pb-8 text-center relative">
+            
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full -z-10"></div>
+
+            <div class="inline-flex items-center gap-2 mb-4 px-4 py-1 rounded-full bg-blue-900/30 border border-blue-500/30 text-blue-300 text-xs font-bold uppercase tracking-widest animate-fade-in">
+                <i class="fas fa-bolt text-heroGold"></i> Welcome to the HQ
+            </div>
+
+            <h1 class="font-arcade text-5xl md:text-7xl text-white mb-6 drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
+                ULTIMATE <span class="text-transparent bg-clip-text bg-gradient-to-r from-heroBlue to-villainPurple">SUPERHERO</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-heroRed to-heroGold">KNOWLEDGE CENTER</span>
+            </h1>
+
+            <p class="text-slate-300 max-w-2xl mx-auto text-lg leading-relaxed mb-10">
+                Your command center for cinema trivia. Test your allegiance, uncover your villainous side, and prove you know more than just the post-credit scenes.
+            </p>
+
+        </section>
+
+        <section class="max-w-[1200px] mx-auto px-4 mb-20">
+            <div class="flex items-end justify-between mb-8 border-b border-white/10 pb-4">
+                <h2 class="font-arcade text-2xl text-white flex items-center gap-3">
+                    <i class="fas fa-mask text-heroRed"></i> Featured Missions
+                </h2>
+                <span class="text-xs text-slate-500 uppercase tracking-widest hidden md:inline">5 Challenges Active</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <a href="quiz-gotham-villain.html" class="group relative overflow-hidden rounded-xl border border-villainPurple/20 bg-gradient-to-br from-purple-950/40 to-black p-6 hover:border-villainPurple hover:shadow-[0_0_30px_rgba(126,34,206,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-user-secret text-5xl text-villainPurple"></i>
+                    </div>
+                    <div class="text-villainPurple text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-villainPurple animate-pulse"></span> Personality Match
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-purple-200">Which Gotham Villain Matches Your Dark Side?</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-purple-900 pl-3">Are you a chaotic Joker, a calculating Riddler, or a vengeful Bane?</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-purple-400 group-hover:translate-x-2 transition-transform">
+                        REVEAL YOUR SIDE <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <a href="quiz-batman-trivia.html" class="group relative overflow-hidden rounded-xl border border-slate-600/30 bg-gradient-to-br from-slate-900 to-black p-6 hover:border-slate-400 hover:shadow-[0_0_30px_rgba(148,163,184,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-crow text-5xl text-slate-400"></i>
+                    </div>
+                    <div class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-slate-500 animate-pulse"></span> Expert Difficulty
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-slate-200">The Impossible Batman Trivia</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-slate-700 pl-3">Only 1 in 50 fans score 100%. Do you know the Detective Comics history?</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-400 group-hover:translate-x-2 transition-transform">
+                        ENTER THE CAVE <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <a href="quiz-dc-vs-marvel.html" class="group relative overflow-hidden rounded-xl border border-heroRed/20 bg-gradient-to-br from-red-950/40 to-black p-6 hover:border-heroRed hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-fist-raised text-5xl text-heroRed"></i>
+                    </div>
+                    <div class="text-red-400 text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Team Loyalty
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-red-100">Rate These 10 Movies: DC or Marvel?</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-red-900 pl-3">We analyze your ratings to reveal your true comic book allegiance.</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-red-400 group-hover:translate-x-2 transition-transform">
+                        PICK A SIDE <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+                
+                <a href="quiz-superhero-visual.html" class="group relative overflow-hidden rounded-xl border border-heroGreen/20 bg-gradient-to-br from-green-950/40 to-black p-6 hover:border-heroGreen hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-eye text-5xl text-heroGreen"></i>
+                    </div>
+                    <div class="text-heroGreen text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-heroGreen animate-pulse"></span> Speed Test
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-green-100">Name the Movie From One Screenshot</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-green-900 pl-3">We show 1 frame. You name the hero. 5 seconds per round.</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-green-400 group-hover:translate-x-2 transition-transform">
+                        TEST VISION <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                 <a href="quiz-superman-legacy.html" class="group relative overflow-hidden rounded-xl border border-heroBlue/20 bg-gradient-to-br from-blue-950/40 to-black p-6 hover:border-heroBlue hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all">
+                    <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity transform group-hover:scale-110 duration-500">
+                        <i class="fas fa-globe-americas text-5xl text-heroBlue"></i>
+                    </div>
+                    <div class="text-heroBlue text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-heroBlue animate-pulse"></span> Legacy Quiz
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-blue-100">The Ultimate Superman Legacy Quiz</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-blue-900 pl-3">Prepare for the new movie by mastering the history of the Man of Steel.</p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-heroBlue group-hover:translate-x-2 transition-transform">
+                        TAKE FLIGHT <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <div class="w-full max-w-5xl mx-auto mb-16 relative z-20">
+            
+            <div class="flex flex-col md:flex-row justify-between items-end mb-6 px-4">
+                <div class="text-left">
+                    <span class="inline-block py-1 px-3 rounded bg-blue-900/30 border border-blue-500/30 text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-2 animate-pulse">
+                        <i class="fas fa-crosshairs mr-1"></i> Daily Drops
+                    </span>
+                    <h2 class="font-arcade text-3xl md:text-4xl text-white leading-none drop-shadow-lg">
+                        THE HERO <span class="text-transparent bg-clip-text bg-gradient-to-r from-heroBlue to-heroRed">ROSTER</span>
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-2 max-w-lg">
+                        <strong>Mission Status:</strong> A new hero file unlocks every 24 hours. Collect all data cards to unlock the Avengers Level Threat quiz.
+                    </p>
+                </div>
+                
+                <div class="hidden md:block text-right">
+                    <div class="text-[10px] text-slate-500 font-mono uppercase tracking-wider">
+                        Next Drop: <span class="text-heroGreen">Midnight</span>
+                    </div>
+                    <div class="text-[10px] text-slate-500 font-mono uppercase tracking-wider">
+                        Phase: <span class="text-white">Multiverse Saga</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative group">
+                <div class="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none"></div>
+                
+                <div class="flex gap-4 overflow-x-auto pb-8 pt-2 px-4 snap-x snap-mandatory custom-scrollbar">
+                    
+                    <a href="quiz-webslinger.html" class="snap-center block shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border-2 border-red-500/50 hover:border-red-400 shadow-[0_0_30px_rgba(239,68,68,0.15)] hover:shadow-[0_0_50px_rgba(239,68,68,0.5)] bg-gradient-to-b from-red-900/20 to-black group/card hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+    
+    <div class="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">TODAY</div>
+
+    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
+        <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-500 flex items-center justify-center mb-4 group-hover/card:animate-spin-slow transition-all group-hover/card:bg-red-500/20">
+            <i class="fas fa-spider text-2xl text-red-400 group-hover/card:text-red-300"></i>
+        </div>
+        <h3 class="font-arcade text-xl text-white mb-2">Web-Slinger</h3>
+        <p class="text-xs text-slate-400 leading-relaxed mb-8">
+            Test your knowledge on the Friendly Neighborhood Hero.
+        </p>
+        <span class="text-[10px] font-bold text-red-400 border border-red-500/30 px-4 py-2 rounded bg-red-900/20 group-hover/card:bg-red-600 group-hover/card:text-white group-hover/card:border-transparent transition-all">
+            START MISSION
+        </span>
+    </div>
+</a>
+
+                    <div class="snap-center shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border border-white/10 bg-black/40 grayscale hover:grayscale-0 transition-all duration-500 group/card">
+                        <div class="absolute top-3 right-3 bg-white/10 text-slate-400 text-[10px] font-bold px-2 py-1 rounded">LOCKED</div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-slate-900/80 to-transparent"></div>
+
+                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
+                            <i class="fas fa-lock text-3xl text-slate-600 mb-4 group-hover/card:text-white transition-colors"></i>
+                            <h3 class="font-arcade text-lg text-slate-300 mb-1">File: <br><span class="text-white">Dark Knight</span></h3>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-2">Classified</p>
+                        </div>
+                    </div>
+
+                    <div class="snap-center shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border border-white/10 bg-black/40 grayscale hover:grayscale-0 transition-all duration-500 group/card">
+                        <div class="absolute top-3 right-3 bg-white/10 text-slate-400 text-[10px] font-bold px-2 py-1 rounded">LOCKED</div>
+                         <div class="absolute inset-0 bg-gradient-to-t from-black via-slate-900/80 to-transparent"></div>
+                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
+                            <i class="fas fa-lock text-3xl text-slate-600 mb-4 group-hover/card:text-white transition-colors"></i>
+                            <h3 class="font-arcade text-lg text-slate-300 mb-1">File: <br><span class="text-white">Emerald Ring</span></h3>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-2">Classified</p>
+                        </div>
+                    </div>
+
+                    <div class="snap-center shrink-0 w-32 h-80 rounded-xl border border-dashed border-white/10 flex items-center justify-center">
+                        <span class="text-xs text-slate-700 -rotate-90 tracking-widest uppercase">Deciphering...</span>
+                    </div>
+
+                    <div class="snap-center shrink-0 w-64 h-80 rounded-xl relative overflow-hidden border-2 border-heroGold shadow-[0_0_40px_rgba(245,158,11,0.2)] bg-gradient-to-b from-yellow-900/40 to-black group/gold cursor-not-allowed">
+                        <div class="absolute top-0 left-0 w-full bg-heroGold text-black text-[9px] font-bold text-center py-1">OMEGA LEVEL THREAT</div>
+                        
+                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
+                            <div class="mb-4 relative">
+                                <div class="absolute inset-0 bg-heroGold blur-xl opacity-20 animate-pulse"></div>
+                                <i class="fas fa-gem text-5xl text-heroGold drop-shadow-lg"></i>
+                            </div>
+                            <h3 class="font-arcade text-2xl text-white mb-2">THE INFINITY<br>GAUNTLET</h3>
+                            <p class="text-xs text-yellow-200/60 leading-relaxed mb-4">
+                                Only true heroes can wield this power.
+                            </p>
+                            <div class="flex items-center gap-2 text-[10px] text-heroGold border border-heroGold/30 px-3 py-1 rounded bg-black/50">
+                                <i class="fas fa-lock"></i> UNLOCKS SOON
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none"></div>
+            </div>
+        </div>
+
+        <section class="max-w-[1200px] mx-auto px-4 mb-20">
+            <div class="bg-black/20 border border-white/5 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 border-t border-r border-white/5 rounded-tr-3xl"></div>
+                
+                <h2 class="font-arcade text-3xl text-white mb-8 flex items-center gap-4">
+                    <i class="fas fa-database text-slate-500"></i> The Hero Archives
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-heroGold font-bold text-sm uppercase tracking-wider mb-3">Origins</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">Action Comics #1:</strong> The Golden Age began in 1938 with the debut of Superman. A near-mint copy of this comic sold for $3.2 million.
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-heroBlue font-bold text-sm uppercase tracking-wider mb-3">Cinema History</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">The Blade Effect:</strong> While X-Men (2000) is credited with starting the modern era, 1998's *Blade* was the first successful Marvel theatrical release, proving R-rated heroes could work.
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-heroRed font-bold text-sm uppercase tracking-wider mb-3">The MCU</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">Improvised Genius:</strong> Robert Downey Jr.'s line "I am Iron Man" at the end of the first film was completely ad-libbed, changing the course of the entire franchise.
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-villainPurple font-bold text-sm uppercase tracking-wider mb-3">Villains</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">Heath Ledger's Joker:</strong> He designed the makeup himself, reasoning that the Joker would apply it messily. The film crew had to replicate his design exactly every day.
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl">
+                        <h3 class="text-heroGreen font-bold text-sm uppercase tracking-wider mb-3">Materials</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            <strong class="text-white">Vibranium vs Adamantium:</strong> Vibranium absorbs vibration (Captain America's shield), while Adamantium is virtually indestructible (Wolverine's skeleton).
+                        </p>
+                    </div>
+
+                    <div class="archive-card p-6 rounded-xl bg-gradient-to-br from-blue-950/30 to-transparent border-blue-900/30">
+                        <h3 class="text-blue-400 font-bold text-sm uppercase tracking-wider mb-3">Quiz Hint</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Taking the <a href="quiz-superman-legacy.html" class="text-blue-400 underline decoration-dotted">Superman Legacy</a> quiz? Don't forget that his original powers did not include flight—only "leaping tall buildings."
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-[1000px] mx-auto px-4 mb-24 flex flex-col md:flex-row items-center gap-12">
+            
+            <div class="flex-1 space-y-6 text-slate-300">
+                <h3 class="text-3xl font-bold text-white font-arcade leading-tight">
+                    Join The <br><span class="text-heroBlue">Justice Initiative</span>
+                </h3>
+                <p class="text-lg">
+                    Have you completed the Gotham Villain Assessment? Get your full psychological profile sent to your secure inbox.
+                </p>
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-3"><i class="fas fa-check text-heroBlue"></i> <span>Unlock "Villain Compatibility" chart.</span></li>
+                    <li class="flex items-center gap-3"><i class="fas fa-check text-heroBlue"></i> <span>Get the "Secret Identity" printable.</span></li>
+                    <li class="flex items-center gap-3"><i class="fas fa-check text-heroBlue"></i> <span>Early access to new quizzes.</span></li>
+                </ul>
+            </div>
+
+            <div class="w-full md:w-1/3">
+                <div class="bg-gradient-to-b from-blue-900 to-black border border-blue-500/30 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 group-hover:animate-[marquee_1s_ease-in-out]"></div>
+
+                    <div class="w-20 h-20 mx-auto bg-blue-600 rounded-full flex items-center justify-center text-3xl text-white mb-6 shadow-lg shadow-blue-500/50">
+                        <i class="fas fa-envelope-open-text animate-pulse"></i>
+                    </div>
+                    <h4 class="text-white font-bold text-xl mb-2">Access Database</h4>
+                    <p class="text-xs text-blue-200 mb-6">Clearance Level 5 Required.</p>
+                    <input type="email" placeholder="hero@avengers.com" class="w-full bg-black/50 border border-blue-500/30 rounded-lg p-3 text-sm text-white mb-3 focus:outline-none focus:border-blue-500 transition-colors">
+                    <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg">
+                        GRANT ACCESS
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // 1. Cosmic Ember/Particle Animation (Replaces Snow)
+        function createEmbers() {
+            const container = document.getElementById('emberContainer');
+            const count = 40; // Number of particles
+            
+            for(let i=0; i<count; i++) {
+                const ember = document.createElement('div');
+                ember.className = 'ember';
+                // Randomly choose between a dot or a tiny star
+                ember.innerHTML = Math.random() > 0.5 ? '.' : '✦';
+                ember.style.left = Math.random() * 100 + '%';
+                ember.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                // Random colors: Gold, Red, or faint Blue
+                const colors = ['#fbbf24', '#ef4444', '#3b82f6'];
+                ember.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                ember.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                ember.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(ember);
+            }
+        }
+
+        // 2. Ticker Logic (Generic Countdown to "Release")
+        function updateTicker() {
+            // Set a fake "Next Movie" date (e.g., 45 days from now) just for visual effect
+            const days = 45; 
+            const tickerEl = document.getElementById('tickerDays');
+            if(tickerEl) tickerEl.textContent = days;
+        }
+
+        window.onload = function() {
+            createEmbers();
+            updateTicker();
+        };
+    </script>
+</body>
+</html>

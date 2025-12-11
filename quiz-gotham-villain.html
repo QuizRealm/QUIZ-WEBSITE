@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    <script type="module" src="firebase-config.js"></script>
+    <script src="game-engine.js"></script> 
+    <script src="components.js" defer></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gotham Villain Identity Test | Superhero Cinema</title>
+    <meta name="description" content="A psychological evaluation to determine your Gotham City archetype. Are you an Agent of Chaos, a Mastermind, or a Conqueror?">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'], 
+                        mono: ['Share Tech Mono', 'monospace'] 
+                    }, 
+                    colors: { 
+                        villainPurple: '#7e22ce', 
+                        villainGreen: '#22c55e', 
+                        baneGrey: '#475569',
+                        bgDark: '#020617' 
+                    }, 
+                    animation: { 
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glitch': 'glitch 1s linear infinite'
+                    } 
+                } 
+            } 
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #020617; 
+            /* Dark Purple Vignette */
+            background-image: radial-gradient(circle at 50% -20%, #2e1065, #020617 70%); 
+            min-height: 100vh; 
+            color: #e2e8f0; 
+        }
+        .glass-card { 
+            background: rgba(15, 23, 42, 0.7); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(126, 34, 206, 0.2); 
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.7); 
+        }
+        .blur-gate { filter: blur(6px); user-select: none; pointer-events: none; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #7e22ce; border-radius: 4px; }
+    </style>
+</head>
+<body class="flex flex-col antialiased">
+
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-3xl mx-auto px-4 py-8">
+        
+        <div id="introScreen" class="text-center space-y-8 animate-fade-in mb-24 min-h-[50vh] flex flex-col justify-center">
+            <div class="inline-block p-5 rounded-full bg-purple-900/30 border border-purple-500/30 text-purple-400 text-5xl mb-4 shadow-[0_0_30px_rgba(126,34,206,0.3)]">
+                <i class="fas fa-mask"></i>
+            </div>
+            <h1 class="font-arcade text-4xl md:text-6xl text-white leading-tight">
+                Who Are You In <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-green-500">Gotham City?</span>
+            </h1>
+            <p class="text-slate-300 text-lg max-w-xl mx-auto leading-relaxed">
+                Arkham Asylum has a cell waiting for everyone. This psychological evaluation will determine where you belong. Are you the <strong class="text-white">Mastermind</strong>, the <strong class="text-white">Brute</strong>, or the <strong class="text-white">Chaos Agent</strong>?
+            </p>
+            <button onclick="startQuiz()" class="px-10 py-4 bg-purple-700 hover:bg-purple-600 text-white font-bold rounded-xl text-lg shadow-lg shadow-purple-900/50 transition-all transform hover:scale-105 border border-purple-500/30">
+                ENTER THE ASYLUM
+            </button>
+            <div class="text-xs text-slate-500 uppercase tracking-widest mt-4">
+                <i class="fas fa-lock mr-1"></i> Confidential Assessment • 8 Scenarios
+            </div>
+        </div>
+
+        <div id="quizInterface" class="hidden min-h-[50vh]">
+            <div class="flex justify-between items-end mb-4 px-2">
+                <span class="text-xs text-purple-400 font-mono"><i class="fas fa-terminal mr-2"></i>EVALUATION RUNNING</span>
+                <span class="text-xs font-bold text-white" id="progressText">1/8</span>
+            </div>
+            
+            <div class="h-1.5 w-full bg-slate-900 rounded-full mb-8 overflow-hidden border border-white/5">
+                <div id="progressBar" class="h-full bg-gradient-to-r from-purple-600 to-green-500 transition-all duration-500" style="width: 0%"></div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 md:p-10 relative overflow-hidden">
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-8 leading-snug" id="questionText">Loading...</h2>
+                <div class="space-y-3" id="optionsGrid"></div>
+            </div>
+        </div>
+
+        <div id="analyzingScreen" class="hidden text-center space-y-6 min-h-[50vh] flex flex-col justify-center">
+            <div class="w-24 h-24 mx-auto border-4 border-purple-900 border-t-green-500 rounded-full animate-spin"></div>
+            <h2 class="font-mono text-xl text-green-400 animate-pulse-fast" id="analyzingText">ACCESSING POLICE FILES...</h2>
+            <div class="max-w-md mx-auto h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-purple-600 animate-[width_3s_ease-in-out_infinite]" style="width: 50%"></div>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="hidden">
+            <div class="glass-card rounded-2xl overflow-hidden mb-6 border-t-4 border-t-purple-500">
+                <div class="p-8 text-center bg-gradient-to-b from-purple-900/20 to-transparent">
+                    <p class="text-sm font-bold text-purple-400 uppercase tracking-widest mb-2">Patient Profile Identified:</p>
+                    <h1 class="font-arcade text-4xl md:text-5xl text-white mb-4 drop-shadow-lg" id="resultTitle">UNKNOWN</h1>
+                    <div class="text-6xl mb-6 animate-bounce-slight" id="resultIcon">🃏</div>
+                    <p class="text-slate-300 text-lg leading-relaxed max-w-xl mx-auto" id="resultShortDesc">Loading description...</p>
+                </div>
+            </div>
+
+            <div class="relative glass-card rounded-2xl p-8 overflow-hidden">
+                
+                <div id="lockedContent" class="blur-gate opacity-50 space-y-6">
+                    <div>
+                        <h3 class="font-bold text-white text-xl mb-2"><i class="fas fa-brain text-purple-500 mr-2"></i> Psychological Deep Dive</h3>
+                        <p class="text-sm text-slate-400">Your obsession with chaos stems from a rejection of societal norms...</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-black/40 p-4 rounded-lg">
+                            <h4 class="text-xs text-slate-500 uppercase">Nemesis Match</h4>
+                            <div class="h-4 w-3/4 bg-slate-700 rounded mt-2"></div>
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-lg">
+                            <h4 class="text-xs text-slate-500 uppercase">Risk Level</h4>
+                            <div class="h-4 w-1/2 bg-slate-700 rounded mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="lockOverlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-6 text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-full flex items-center justify-center text-2xl text-white shadow-xl mb-4 border border-white/20">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="font-arcade text-2xl text-white mb-2">Classified Arkham File</h3>
+                    <p class="text-slate-300 text-sm mb-6 max-w-md">
+                        Get your full <strong>Psychological Profile</strong> and <strong>Weakness Analysis</strong> sent to your secure inbox.
+                    </p>
+                    <form onsubmit="handleUnlock(event)" class="w-full max-w-sm space-y-3">
+                        <input type="email" required placeholder="name@gotham.com" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none transition-all">
+                        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-lg shadow-lg shadow-purple-900/50 transition-all flex items-center justify-center gap-2">
+                            DECRYPT FILE <i class="fas fa-unlock"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <div id="realContent" class="hidden space-y-8 animate-fade-in">
+                    <div class="bg-purple-900/20 border-l-4 border-purple-500 p-4 rounded-r-lg">
+                        <h3 class="font-bold text-purple-400 text-lg mb-2">🧠 Why You Are Like This</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed" id="psychoAnalysis">TEXT</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Your Greatest Rivals</h4>
+                            <ul class="space-y-2 text-sm text-white" id="movieList"></ul>
+                        </div>
+                        <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Signature Strength</h4>
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-fist-raised text-red-500 text-xl"></i>
+                                <p class="text-sm text-white" id="superPower">TEXT</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center pt-6 border-t border-white/10">
+                        <a href="index.html" class="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-white transition-colors">
+                            <i class="fas fa-arrow-left"></i> Return to HQ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <article class="mt-24 border-t border-white/10 pt-16 max-w-3xl mx-auto">
+            <span class="text-purple-500 font-bold tracking-widest uppercase text-xs">Behind the Mask</span>
+            <h2 class="text-3xl font-bold text-white mt-2 mb-6">The Psychology of the Supervillain: Why We Love the Bad Guys</h2>
+            
+            <div class="prose prose-invert prose-slate max-w-none">
+                <p class="text-slate-300 leading-relaxed mb-6">
+                    Dr. Travis Langley, a psychologist who studies pop culture, notes that villains allow us to explore our "Shadow Self"—the darker impulses we suppress in daily life. In Gotham City, villains aren't just criminals; they are philosophical counter-arguments to Batman's rigid order.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white/5 p-6 rounded-xl border-l-2 border-green-500">
+                        <h3 class="font-bold text-white text-lg mb-2">The Narcissist (The Riddler)</h3>
+                        <p class="text-xs text-slate-400">Driven by a need for intellectual validation. Their crimes are a cry for attention, screaming "Look how smart I am!" They fail because their ego demands they leave clues.</p>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-xl border-l-2 border-purple-500">
+                        <h3 class="font-bold text-white text-lg mb-2">The Nihilist (The Joker)</h3>
+                        <p class="text-xs text-slate-400">Believes that rules are a joke and morality is a bad punchline. They don't want money; they want to prove that everyone is just one bad day away from snapping.</p>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-white mb-4">The "Anti-Villain" Phenomenon</h3>
+                <p class="text-slate-300 leading-relaxed mb-4">
+                    Characters like Catwoman represent the "Anti-Villain." They act out of self-interest rather than malice. In psychological terms, they represent <strong>Pragmatic Survivalism</strong>. They will save the cat (literally), but they'll steal the diamond collar while doing it.
+                </p>
+                <p class="text-slate-300 leading-relaxed">
+                    By understanding which archetype you align with, you learn about your own motivations. Do you crave order (Bane), validation (Riddler), or freedom (Catwoman)?
+                </p>
+            </div>
+        </article>
+
+    </main>
+
+    <script>
+        // ==========================================
+        // 1. GOTHAM SCENARIO DATA
+        // ==========================================
+        const questions = [
+            {
+                q: "Batman has foiled your plan. How do you react?",
+                options: [
+                    { txt: "Laugh uncontrollably. The game is the fun part!", type: "joker" },
+                    { txt: "Analyze where the calculation went wrong.", type: "riddler" },
+                    { txt: "Break him physically next time.", type: "bane" },
+                    { txt: "Escape while he's distracted. I survived, that's a win.", type: "catwoman" },
+                    { txt: "Flip a coin to decide my next move.", type: "twoface" }
+                ]
+            },
+            {
+                q: "What is your primary motivation?",
+                options: [
+                    { txt: "To prove I am the smartest person in the room.", type: "riddler" },
+                    { txt: "Chaos. Pure, unadulterated chaos.", type: "joker" },
+                    { txt: "Order through absolute control.", type: "bane" },
+                    { txt: "Shiny things and independence.", type: "catwoman" },
+                    { txt: "Fairness. The world is cruel, chance is fair.", type: "twoface" }
+                ]
+            },
+            {
+                q: "Choose your weapon.",
+                options: [
+                    { txt: "Complex puzzles and death traps.", type: "riddler" },
+                    { txt: "My bare hands and tactical genius.", type: "bane" },
+                    { txt: "Crowbar, dynamite, laughing gas.", type: "joker" },
+                    { txt: "Whip and claws.", type: "catwoman" },
+                    { txt: "A .22 revolver.", type: "twoface" }
+                ]
+            },
+            {
+                q: "How do you view Gotham City?",
+                options: [
+                    { txt: "A playground for my amusement.", type: "joker" },
+                    { txt: "A corrupt pit that needs to be razed and rebuilt.", type: "bane" },
+                    { txt: "A giant puzzle waiting to be solved.", type: "riddler" },
+                    { txt: "A place full of rich people waiting to be robbed.", type: "catwoman" },
+                    { txt: "A city of hypocrites.", type: "twoface" }
+                ]
+            },
+            {
+                q: "You've captured the Bat. What now?",
+                options: [
+                    { txt: "Put him in a maze. If he escapes, he earns it.", type: "riddler" },
+                    { txt: "Wait... if I kill him, who will I play with?", type: "joker" },
+                    { txt: "Break his spirit, then his body.", type: "bane" },
+                    { txt: "Kiss him, steal his wallet, leave.", type: "catwoman" },
+                    { txt: "Let the coin decide his fate.", type: "twoface" }
+                ]
+            },
+            {
+                q: "What is your greatest weakness?",
+                options: [
+                    { txt: "My ego. I need them to know it was me.", type: "riddler" },
+                    { txt: "I don't actually want to win.", type: "joker" },
+                    { txt: "My reliance on Venom (or my pride).", type: "bane" },
+                    { txt: "I have a soft spot for strays.", type: "catwoman" },
+                    { txt: "I cannot make a decision without my token.", type: "twoface" }
+                ]
+            },
+            {
+                q: "Pick a costume style.",
+                options: [
+                    { txt: "Purple suit, green hair, messy makeup.", type: "joker" },
+                    { txt: "Green suit covered in question marks.", type: "riddler" },
+                    { txt: "Military tactical gear and a mask.", type: "bane" },
+                    { txt: "Sleek black leather.", type: "catwoman" },
+                    { txt: "A suit that is half pristine, half burnt.", type: "twoface" }
+                ]
+            },
+            {
+                q: "The police have surrounded the building. You...",
+                options: [
+                    { txt: "Broadcast a riddle they must solve to stop the bomb.", type: "riddler" },
+                    { txt: "Walk out the front door wearing a police uniform.", type: "joker" },
+                    { txt: "Fight them all. I am an army of one.", type: "bane" },
+                    { txt: "Disappear into the shadows silently.", type: "catwoman" },
+                    { txt: "Negotiate... or shoot. Depends on the coin.", type: "twoface" }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // 2. VILLAIN PROFILES
+        // ==========================================
+        const profiles = {
+            'joker': {
+                title: "The Joker",
+                icon: "🤡",
+                short: "You are the Clown Prince of Crime. You don't want money or power; you just want to watch the world burn.",
+                psycho: "You exhibit 'Nihilistic Hedonism'. You believe society is a bad joke and you are the punchline. You are unpredictable, charismatic, and terrifyingly free because you have absolutely nothing to lose.",
+                movies: ["The Dark Knight", "Joker (2019)", "Batman (1989)"],
+                power: "Chaos Mastery: You turn any plan into a disaster for your opponent."
+            },
+            'riddler': {
+                title: "The Riddler",
+                icon: "❓",
+                short: "You are Edward Nygma. You possess a genius-level intellect but are crippled by your need to prove it.",
+                psycho: "You fit the 'Narcissistic Intellectual' profile. You treat people as pawns and life as a chess game. Your downfall is always your arrogance—you can't resist leaving a signature because you need the credit.",
+                movies: ["The Batman (2022)", "Batman Forever", "Gotham (TV)"],
+                power: "Mental Domination: You can outsmart anyone, provided you don't monologue."
+            },
+            'bane': {
+                title: "Bane",
+                icon: "💪",
+                short: "You are the Man Who Broke the Bat. You combine brute force with intense discipline and strategic brilliance.",
+                psycho: "You are a 'Revolutionary Zealot'. You believe the system is broken and only pain can cleanse it. Unlike the Joker, you have a plan. You are patient, focused, and utterly ruthless.",
+                movies: ["The Dark Knight Rises", "Batman & Robin"],
+                power: "Unstoppable Force: Once you start a mission, nothing stops you."
+            },
+            'catwoman': {
+                title: "Catwoman",
+                icon: "🐈‍⬛",
+                short: "You are Selina Kyle. You aren't a villain, you're a survivor. You walk the line between good and bad.",
+                psycho: "You exhibit 'Pragmatic Self-Preservation'. You trust no one but yourself. You enjoy the thrill of the heist more than the money. You have a moral code, but it's flexible.",
+                movies: ["Batman Returns", "The Dark Knight Rises", "The Batman"],
+                power: "Stealth & Agility: You can escape any situation unscathed."
+            },
+            'twoface': {
+                title: "Two-Face",
+                icon: "🪙",
+                short: "You are Harvey Dent. You believe the only fair thing in a cruel world is unbiased chance.",
+                psycho: "You represent 'Dual Nature'. You are constantly at war with yourself. You relinquish responsibility to fate (the coin) because the pressure of making the 'right' choice broke you.",
+                movies: ["The Dark Knight", "Batman Forever"],
+                power: "Unpredictability: Not even you know what you will do next."
+            }
+        };
+
+        // State
+        let currentIdx = 0;
+        let scores = { joker:0, riddler:0, bane:0, catwoman:0, twoface:0 };
+
+        function startQuiz() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('quizInterface').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const data = questions[currentIdx];
+            // Randomize options
+            const shuffledOptions = [...data.options].sort(() => Math.random() - 0.5);
+
+            document.getElementById('questionText').textContent = data.q;
+            document.getElementById('progressText').textContent = `${currentIdx + 1}/${questions.length}`;
+            document.getElementById('progressBar').style.width = `${((currentIdx) / questions.length) * 100}%`;
+            
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-4 md:p-5 rounded-xl border border-white/10 bg-white/5 hover:bg-purple-900/40 hover:border-purple-500/50 transition-all flex items-center justify-between group";
+                btn.innerHTML = `
+                    <span class="text-slate-200 group-hover:text-white font-medium text-sm md:text-base">${opt.txt}</span>
+                    <div class="w-5 h-5 rounded-full border border-slate-500 group-hover:border-purple-400 flex items-center justify-center">
+                        <div class="w-2.5 h-2.5 rounded-full bg-purple-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                `;
+                btn.onclick = () => handleAnswer(opt.type);
+                grid.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(type) {
+            scores[type]++;
+            currentIdx++;
+
+            if (currentIdx < questions.length) {
+                loadQuestion();
+            } else {
+                showAnalyzing();
+            }
+        }
+
+        function showAnalyzing() {
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('analyzingScreen').classList.remove('hidden');
+
+            const texts = [
+                "ACCESSING ARKHAM DATABASE...",
+                "COMPARING PSYCH PROFILES...",
+                "DECODING FEAR TOXIN...",
+                "FINALIZING DIAGNOSIS..."
+            ];
+
+            let step = 0;
+            const interval = setInterval(() => {
+                if(step < texts.length) {
+                    document.getElementById('analyzingText').textContent = texts[step];
+                    step++;
+                } else {
+                    clearInterval(interval);
+                    showResults();
+                }
+            }, 800);
+        }
+
+        function showResults() {
+            document.getElementById('analyzingScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            // Find winner
+            let winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            const profile = profiles[winner];
+
+            // Render Hook
+            document.getElementById('resultTitle').textContent = profile.title;
+            document.getElementById('resultIcon').textContent = profile.icon;
+            document.getElementById('resultShortDesc').textContent = profile.short;
+
+            // Prepare Hidden Content
+            document.getElementById('psychoAnalysis').textContent = profile.psycho;
+            document.getElementById('superPower').textContent = profile.power;
+            
+            const movieList = document.getElementById('movieList');
+            movieList.innerHTML = profile.movies.map(m => `<li><i class="fas fa-film text-purple-500 mr-2"></i> ${m}</li>`).join('');
+        }
+
+        function handleUnlock(e) {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> DECRYPTING...';
+            btn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                document.getElementById('lockOverlay').classList.add('hidden');
+                document.getElementById('lockedContent').classList.add('hidden');
+                document.getElementById('realContent').classList.remove('hidden');
+            }, 1500);
+        }
+// === ACHIEVEMENT CHECKER ===
+// Call this function when the Game Over screen appears
+// usage: checkGameAchievements(100, 'science', 45, 10); 
+function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
+    
+    if (!window.GameEngine) return;
+
+    // 1. GENERAL
+    window.GameEngine.unlockAchievement("new_recruit"); // First game
+    if (scorePercent === 100) window.GameEngine.unlockAchievement("perfect_score");
+    if (scorePercent >= 50)   window.GameEngine.addXP(scorePercent * 2); // Give XP based on score
+
+    // 2. SPEED
+    if (timeInSeconds < 60) window.GameEngine.unlockAchievement("speed_runner");
+    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement("quick_thinker");
+
+    // 3. CATEGORY SPECIFIC
+    // Normalize category to lowercase to match your IDs
+    const cat = category.toLowerCase();
+
+    if (cat === 'science') {
+        window.GameEngine.unlockAchievement("lab_coat");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("science_whiz");
+    }
+    
+    if (cat === 'history') {
+        window.GameEngine.unlockAchievement("time_traveler");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("history_buff");
+    }
+
+    if (cat === 'movies') {
+        window.GameEngine.unlockAchievement("movie_buff");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("cinephile");
+    }
+
+    if (cat === 'tech') {
+        window.GameEngine.unlockAchievement("tech_guru");
+    }
+
+    // 4. HARDCORE / SPECIFIC QUIZZES
+    // You can check specific IDs if your quiz has them
+    const currentQuizId = new URLSearchParams(window.location.search).get('id');
+    
+    if (currentQuizId === 'superman_legacy' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("superman_legacy");
+    }
+    if (currentQuizId === 'impossible_batman' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("gotham_knight");
+    }
+}
+    </script>
+</body>
+</html>

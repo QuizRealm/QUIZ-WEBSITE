@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="game-engine.js"></script> 
+    <script src="components.js" defer></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DC vs Marvel: The Arena | Superhero Cinema</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'], 
+                        mono: ['Share Tech Mono', 'monospace'] 
+                    }, 
+                    colors: { 
+                        marvelRed: '#e62429', 
+                        dcBlue: '#0476f2',
+                        bgDark: '#0f172a'
+                    }, 
+                    animation: { 
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-glow': 'pulseGlow 2s infinite'
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+                        slideUp: { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+                        pulseGlow: { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.6 } }
+                    }
+                } 
+            } 
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #020617; 
+            min-height: 100vh; 
+            color: #e2e8f0; 
+            overflow-x: hidden;
+        }
+
+        /* DUALITY BACKGROUND */
+        .battle-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: linear-gradient(115deg, #0f172a 50%, #0f172a 50%);
+        }
+        .battle-bg::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(115deg, rgba(230, 36, 41, 0.15) 45%, transparent 45%, transparent 55%, rgba(4, 118, 242, 0.15) 55%);
+        }
+
+        /* GLASS CARD */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* DYNAMIC THEMES */
+        .theme-marvel { border-color: #e62429; box-shadow: 0 0 30px rgba(230, 36, 41, 0.2); }
+        .theme-dc { border-color: #0476f2; box-shadow: 0 0 30px rgba(4, 118, 242, 0.2); }
+
+        /* RATING BUTTONS */
+        .rate-btn {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .rate-btn:hover { transform: scale(1.1) translateY(-2px); }
+        .rate-btn.active { transform: scale(1.15); }
+        
+        .marvel-active { color: #e62429; text-shadow: 0 0 10px rgba(230, 36, 41, 0.6); }
+        .dc-active { color: #0476f2; text-shadow: 0 0 10px rgba(4, 118, 242, 0.6); }
+
+        /* VS ANIMATION */
+        .vs-badge {
+            background: #020617;
+            border: 2px solid #fff;
+            transform: skew(-10deg);
+            box-shadow: 5px 5px 0px rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="flex flex-col antialiased">
+    
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <div class="battle-bg"></div>
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-8 relative">
+
+        <div id="introScreen" class="min-h-[70vh] flex flex-col justify-center items-center relative animate-slide-up">
+            
+            <div class="absolute top-0 w-full max-w-2xl flex justify-between text-[10px] font-mono text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2 mb-10">
+                <span><i class="fas fa-globe-americas mr-2"></i>Global Database</span>
+                <span class="text-white animate-pulse"><i class="fas fa-circle text-red-500 text-[8px] mr-1"></i>Live: Voting Active</span>
+            </div>
+
+            <div class="flex items-center justify-center gap-4 md:gap-12 mb-8 relative">
+                <div class="text-center group cursor-default">
+                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-marvelRed bg-marvelRed/10 flex items-center justify-center mb-4 transition-all group-hover:scale-105 shadow-[0_0_40px_rgba(230,36,41,0.3)]">
+                        <i class="fas fa-shield-alt text-4xl md:text-5xl text-marvelRed"></i>
+                    </div>
+                    <h2 class="font-bold text-marvelRed tracking-widest text-sm uppercase">Team Marvel</h2>
+                </div>
+
+                <div class="vs-badge w-16 h-16 md:w-20 md:h-20 flex items-center justify-center z-10">
+                    <span class="font-arcade text-2xl md:text-3xl text-white transform skew-x-10">VS</span>
+                </div>
+
+                <div class="text-center group cursor-default">
+                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-dcBlue bg-dcBlue/10 flex items-center justify-center mb-4 transition-all group-hover:scale-105 shadow-[0_0_40px_rgba(4,118,242,0.3)]">
+                        <i class="fas fa-mask text-4xl md:text-5xl text-dcBlue"></i>
+                    </div>
+                    <h2 class="font-bold text-dcBlue tracking-widest text-sm uppercase">Team DC</h2>
+                </div>
+            </div>
+
+            <h1 class="font-arcade text-5xl md:text-7xl text-white text-center leading-none mb-6">
+                THE CINEMATIC<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-marvelRed to-dcBlue">CIVIL WAR</span>
+            </h1>
+
+            <p class="text-slate-400 text-lg text-center max-w-lg mb-10 leading-relaxed">
+                We've selected 10 controversial movies. Rate them to calculate your true allegiance. Are you a <span class="text-white">True Believer</span> or a <span class="text-white">Dark Knight</span>?
+            </p>
+
+            <button onclick="startGame()" class="group relative px-12 py-5 bg-white text-black font-black text-xl uppercase tracking-wider skew-x-[-10deg] hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                <span class="block skew-x-[10deg]">Enter The Arena</span>
+            </button>
+            
+            <p class="mt-6 text-xs text-slate-500 font-mono">
+                <i class="fas fa-gift text-yellow-500 mr-2"></i>Reward: 50 XP + "Critic" Badge
+            </p>
+        </div>
+
+        <div id="gameInterface" class="hidden min-h-[70vh] flex flex-col items-center justify-center">
+            
+            <div class="w-full max-w-lg flex justify-between items-end mb-6">
+                <div>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest block mb-1">Current Subject</span>
+                    <div id="franchiseTag" class="inline-block px-3 py-1 bg-red-600 text-white text-xs font-bold uppercase rounded-sm">MARVEL STUDIOS</div>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest block mb-1">Progress</span>
+                    <span class="font-arcade text-2xl text-white" id="progressDisplay">01/10</span>
+                </div>
+            </div>
+
+            <div id="movieCard" class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden relative transition-all duration-500 theme-marvel">
+                
+                <div class="h-64 relative overflow-hidden group">
+                    <div id="posterImage" class="absolute inset-0 bg-cover bg-center transition-transform duration-3000 ease-linear transform scale-100 group-hover:scale-110"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent"></div>
+                    
+                    <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-sm border border-white/20 text-white px-3 py-1 rounded-full text-xs font-bold font-mono" id="movieYear">
+                        2008
+                    </div>
+                </div>
+
+                <div class="p-8 text-center relative -mt-12 z-10">
+                    <h2 class="text-3xl md:text-4xl font-black text-white mb-2 leading-none uppercase drop-shadow-xl" id="movieTitle">IRON MAN</h2>
+                    <div class="w-12 h-1 bg-white/20 mx-auto mb-8 rounded-full"></div>
+
+                    <div class="mb-2">
+                        <div class="flex justify-center gap-2 md:gap-4 mb-3" id="starContainer">
+                            </div>
+                    </div>
+                    
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] h-4" id="ratingText">TAP TO RATE</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="hidden min-h-[70vh] flex flex-col items-center justify-center max-w-3xl mx-auto">
+            
+            <div class="glass-panel w-full p-8 md:p-12 rounded-3xl text-center border-t-4 border-t-white">
+                
+                <p class="text-slate-400 font-mono text-xs uppercase tracking-widest mb-4">Analysis Complete</p>
+                
+                <h2 class="font-arcade text-4xl md:text-6xl text-white mb-2" id="resultArchetype">THE HYBRID</h2>
+                <p class="text-slate-300 text-lg mb-8 max-w-lg mx-auto leading-relaxed" id="resultDesc">
+                    Calculating your cinematic DNA...
+                </p>
+
+                <div class="relative h-12 bg-slate-800 rounded-lg overflow-hidden flex mb-8 max-w-lg mx-auto shadow-inner">
+                    <div id="barMarvel" class="h-full bg-marvelRed flex items-center justify-start pl-4 font-bold text-white transition-all duration-1000" style="width: 50%">
+                        <i class="fas fa-shield-alt mr-2"></i> <span id="pctMarvel">50%</span>
+                    </div>
+                    <div id="barDC" class="h-full bg-dcBlue flex items-center justify-end pr-4 font-bold text-white transition-all duration-1000" style="width: 50%">
+                        <span id="pctDC">50%</span> <i class="fas fa-mask ml-2"></i>
+                    </div>
+                    <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-white/20 -translate-x-1/2"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 text-left max-w-lg mx-auto">
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-green-400 font-bold uppercase block mb-1">Your Highest Rated</span>
+                        <div class="font-bold text-white text-sm" id="highMovie">Loading...</div>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-red-400 font-bold uppercase block mb-1">Your Lowest Rated</span>
+                        <div class="font-bold text-white text-sm" id="lowMovie">Loading...</div>
+                    </div>
+                </div>
+
+                <div id="xpAlert" class="hidden inline-flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/50 px-4 py-2 rounded-full mb-8 animate-pulse">
+                    <i class="fas fa-medal text-yellow-500"></i>
+                    <span class="text-yellow-400 text-xs font-bold">BADGE UNLOCKED: FILM CRITIC</span>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-center gap-4">
+                     <button onclick="location.reload()" class="px-8 py-4 bg-transparent border border-white/20 hover:bg-white/10 text-white font-bold uppercase tracking-wider rounded-lg transition-colors text-sm">
+                        Retake Quiz
+                    </button>
+                    <a href="index.html" class="px-8 py-4 bg-white text-black font-bold uppercase tracking-wider rounded-lg hover:scale-105 transition-transform text-sm shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+                        Return to Hub
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 1. DATASETS
+        const MOVIES = [
+            { title: "The Dark Knight", year: "2008", type: "dc", img: "https://images.unsplash.com/photo-1478720568477-152d9b164e63?auto=format&fit=crop&q=80&w=600" },
+            { title: "Avengers: Endgame", year: "2019", type: "marvel", img: "https://images.unsplash.com/photo-1626278664285-f796b96180af?auto=format&fit=crop&q=80&w=600" },
+            { title: "Man of Steel", year: "2013", type: "dc", img: "https://images.unsplash.com/photo-1623939632177-8324f9f77247?auto=format&fit=crop&q=80&w=600" },
+            { title: "Guardians of the Galaxy", year: "2014", type: "marvel", img: "https://images.unsplash.com/photo-1635863138275-d9b33299680b?auto=format&fit=crop&q=80&w=600" },
+            { title: "The Batman", year: "2022", type: "dc", img: "https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?auto=format&fit=crop&q=80&w=600" },
+            { title: "Iron Man", year: "2008", type: "marvel", img: "https://images.unsplash.com/photo-1636572481914-a07d2e7b3c2e?auto=format&fit=crop&q=80&w=600" },
+            { title: "Wonder Woman", year: "2017", type: "dc", img: "https://images.unsplash.com/photo-1601644720935-8664fa793444?auto=format&fit=crop&q=80&w=600" },
+            { title: "Thor: Ragnarok", year: "2017", type: "marvel", img: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&q=80&w=600" },
+            { title: "Joker", year: "2019", type: "dc", img: "https://images.unsplash.com/photo-1596727147705-54a9d0820948?auto=format&fit=crop&q=80&w=600" },
+            { title: "Black Panther", year: "2018", type: "marvel", img: "https://images.unsplash.com/photo-1635805737707-575885ab0820?auto=format&fit=crop&q=80&w=600" }
+        ];
+
+        // 2. STATE
+        let currentIdx = 0;
+        let scores = { marvel: 0, marvelCount: 0, dc: 0, dcCount: 0 };
+        let movieRatings = []; // Track individual ratings
+        let isTransitioning = false;
+
+        // 3. INITIALIZATION
+        function initButtons() {
+            const container = document.getElementById('starContainer');
+            container.innerHTML = '';
+            // Generate 5 rating buttons
+            for(let i=1; i<=5; i++) {
+                const btn = document.createElement('button');
+                btn.className = "rate-btn w-10 h-10 md:w-12 md:h-12 rounded-lg bg-black/40 border border-white/20 text-slate-500 font-bold text-lg md:text-xl flex items-center justify-center";
+                btn.innerHTML = i;
+                btn.onmouseenter = () => highlightRating(i);
+                btn.onmouseleave = () => resetRating();
+                btn.onclick = () => submitRating(i);
+                container.appendChild(btn);
+            }
+        }
+
+        function startGame() {
+            initButtons();
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('introScreen').classList.remove('flex'); // Remove flex to hide completely
+            document.getElementById('gameInterface').classList.remove('hidden');
+            loadMovie();
+        }
+
+        // 4. CORE LOOP
+        function loadMovie() {
+            const data = MOVIES[currentIdx];
+            const card = document.getElementById('movieCard');
+            const tag = document.getElementById('franchiseTag');
+            const container = document.getElementById('starContainer');
+
+            // Set Content
+            document.getElementById('movieTitle').textContent = data.title;
+            document.getElementById('movieYear').textContent = data.year;
+            document.getElementById('progressDisplay').textContent = `${currentIdx + 1}/${MOVIES.length}`;
+            document.getElementById('posterImage').style.backgroundImage = `url('${data.img}')`;
+
+            // THEME SWITCHING (Red vs Blue)
+            if(data.type === 'marvel') {
+                card.className = "glass-panel w-full max-w-lg rounded-3xl overflow-hidden relative transition-all duration-500 theme-marvel";
+                tag.className = "inline-block px-3 py-1 bg-marvelRed text-white text-xs font-bold uppercase rounded-sm";
+                tag.textContent = "MARVEL STUDIOS";
+                container.setAttribute('data-theme', 'marvel'); // For JS styling
+            } else {
+                card.className = "glass-panel w-full max-w-lg rounded-3xl overflow-hidden relative transition-all duration-500 theme-dc";
+                tag.className = "inline-block px-3 py-1 bg-dcBlue text-white text-xs font-bold uppercase rounded-sm";
+                tag.textContent = "DC UNIVERSE";
+                container.setAttribute('data-theme', 'dc');
+            }
+        }
+
+        // 5. INTERACTION
+        function highlightRating(val) {
+            if(isTransitioning) return;
+            const theme = document.getElementById('starContainer').getAttribute('data-theme');
+            const activeClass = theme === 'marvel' ? 'marvel-active' : 'dc-active';
+            const bgClass = theme === 'marvel' ? 'border-marvelRed' : 'border-dcBlue';
+
+            const btns = document.querySelectorAll('.rate-btn');
+            const labels = ["Unwatchable", "Poor", "Average", "Great", "Masterpiece"];
+
+            btns.forEach((btn, i) => {
+                // Reset styling
+                btn.className = "rate-btn w-10 h-10 md:w-12 md:h-12 rounded-lg bg-black/40 border border-white/20 text-slate-500 font-bold text-lg md:text-xl flex items-center justify-center";
+                
+                // Apply Highlight
+                if(i < val) {
+                    btn.classList.add(activeClass, 'active');
+                    btn.style.borderColor = theme === 'marvel' ? '#e62429' : '#0476f2';
+                }
+            });
+
+            document.getElementById('ratingText').textContent = labels[val-1];
+            document.getElementById('ratingText').className = `text-xs font-bold uppercase tracking-[0.2em] h-4 ${theme === 'marvel' ? 'text-marvelRed' : 'text-dcBlue'}`;
+        }
+
+        function resetRating() {
+            if(isTransitioning) return;
+            const btns = document.querySelectorAll('.rate-btn');
+            btns.forEach(btn => {
+                btn.className = "rate-btn w-10 h-10 md:w-12 md:h-12 rounded-lg bg-black/40 border border-white/20 text-slate-500 font-bold text-lg md:text-xl flex items-center justify-center";
+                btn.style.borderColor = "rgba(255,255,255,0.2)";
+            });
+            document.getElementById('ratingText').textContent = "TAP TO RATE";
+            document.getElementById('ratingText').className = "text-xs text-slate-400 font-bold uppercase tracking-[0.2em] h-4";
+        }
+
+        function submitRating(val) {
+            if(isTransitioning) return;
+            isTransitioning = true;
+            
+            // Logic
+            const movie = MOVIES[currentIdx];
+            if(movie.type === 'marvel') {
+                scores.marvel += val;
+                scores.marvelCount++;
+            } else {
+                scores.dc += val;
+                scores.dcCount++;
+            }
+
+            // Track for end screen
+            movieRatings.push({ title: movie.title, rating: val });
+
+            // Visual Feedback: Fade Out
+            const card = document.getElementById('movieCard');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(-20px)';
+
+            setTimeout(() => {
+                currentIdx++;
+                if(currentIdx < MOVIES.length) {
+                    loadMovie();
+                    // Fade In
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                    resetRating();
+                    isTransitioning = false;
+                } else {
+                    calculateResults();
+                }
+            }, 500);
+        }
+
+        // 6. CALCULATIONS & RESULTS
+        function calculateResults() {
+            document.getElementById('gameInterface').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            // 1. Averages
+            const marvelAvg = scores.marvelCount ? (scores.marvel / scores.marvelCount) : 0;
+            const dcAvg = scores.dcCount ? (scores.dc / scores.dcCount) : 0;
+            
+            const total = marvelAvg + dcAvg;
+            const marvelPct = Math.round((marvelAvg / total) * 100) || 50; // default 50 if 0
+            const dcPct = 100 - marvelPct;
+
+            // 2. High/Low Logic
+            // Sort by rating desc
+            const sorted = [...movieRatings].sort((a,b) => b.rating - a.rating);
+            const high = sorted[0];
+            const low = sorted[sorted.length - 1];
+
+            document.getElementById('highMovie').innerHTML = `${high.title} <span class="text-yellow-400 ml-2">${high.rating}/5</span>`;
+            document.getElementById('lowMovie').innerHTML = `${low.title} <span class="text-slate-400 ml-2">${low.rating}/5</span>`;
+
+            // 3. Archetypes
+            const title = document.getElementById('resultArchetype');
+            const desc = document.getElementById('resultDesc');
+            
+            if(Math.abs(marvelPct - 50) < 10) {
+                title.textContent = "THE PEACEKEEPER";
+                title.className = "font-arcade text-4xl md:text-6xl text-purple-400 mb-2";
+                desc.textContent = "You don't care about the studio logo; you care about the story. You found merit (and flaws) in both universes equally.";
+            } else if (marvelPct > dcPct) {
+                title.textContent = "MARVEL LOYALIST";
+                title.className = "font-arcade text-4xl md:text-6xl text-marvelRed mb-2";
+                desc.textContent = "You prefer the 'Marvel Formula': interconnected storytelling, wit, and vibrant visuals. You stick with the Avengers until the end of the line.";
+            } else {
+                title.textContent = "GOTHAM GUARDIAN";
+                title.className = "font-arcade text-4xl md:text-6xl text-dcBlue mb-2";
+                desc.textContent = "You gravitate towards modern myths, darker tones, and singular director visions. You prefer your heroes complicated and your stakes high.";
+            }
+
+            // 4. Animate Bars
+            setTimeout(() => {
+                document.getElementById('barMarvel').style.width = `${marvelPct}%`;
+                document.getElementById('barDC').style.width = `${dcPct}%`;
+                document.getElementById('pctMarvel').textContent = `${marvelPct}%`;
+                document.getElementById('pctDC').textContent = `${dcPct}%`;
+            }, 100);
+
+            // 5. XP Award
+            if(window.GameEngine) {
+                window.GameEngine.addXP(50);
+                window.GameEngine.unlockAchievement("Film Critic");
+                document.getElementById('xpAlert').classList.remove('hidden');
+            }
+        }
+
+        // === ACHIEVEMENT CHECKER ===
+// Call this function when the Game Over screen appears
+// usage: checkGameAchievements(100, 'science', 45, 10); 
+function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
+    
+    if (!window.GameEngine) return;
+
+    // 1. GENERAL
+    window.GameEngine.unlockAchievement("new_recruit"); // First game
+    if (scorePercent === 100) window.GameEngine.unlockAchievement("perfect_score");
+    if (scorePercent >= 50)   window.GameEngine.addXP(scorePercent * 2); // Give XP based on score
+
+    // 2. SPEED
+    if (timeInSeconds < 60) window.GameEngine.unlockAchievement("speed_runner");
+    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement("quick_thinker");
+
+    // 3. CATEGORY SPECIFIC
+    // Normalize category to lowercase to match your IDs
+    const cat = category.toLowerCase();
+
+    if (cat === 'science') {
+        window.GameEngine.unlockAchievement("lab_coat");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("science_whiz");
+    }
+    
+    if (cat === 'history') {
+        window.GameEngine.unlockAchievement("time_traveler");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("history_buff");
+    }
+
+    if (cat === 'movies') {
+        window.GameEngine.unlockAchievement("movie_buff");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("cinephile");
+    }
+
+    if (cat === 'tech') {
+        window.GameEngine.unlockAchievement("tech_guru");
+    }
+
+    // 4. HARDCORE / SPECIFIC QUIZZES
+    // You can check specific IDs if your quiz has them
+    const currentQuizId = new URLSearchParams(window.location.search).get('id');
+    
+    if (currentQuizId === 'superman_legacy' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("superman_legacy");
+    }
+    if (currentQuizId === 'impossible_batman' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("gotham_knight");
+    }
+}
+    </script>
+</body>
+</html>

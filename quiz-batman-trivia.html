@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    <script type="module" src="firebase-config.js"></script>
+    
+    <script src="game-engine.js"></script> 
+    <script src="components.js" defer></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Impossible Batman Trivia | Superhero Cinema</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'], 
+                        mono: ['Share Tech Mono', 'monospace'] 
+                    }, 
+                    colors: { 
+                        batBlue: '#3b82f6', 
+                        batDark: '#020617',
+                        neonBlue: '#0ea5e9'
+                    }, 
+                    animation: { 
+                        'scan': 'scan 4s linear infinite',
+                    },
+                    keyframes: {
+                        scan: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' }
+                        }
+                    } 
+                } 
+            } 
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #020617; 
+            /* Carbon Fiber texture + Dark overlay */
+            background-image: 
+                linear-gradient(rgba(2, 6, 23, 0.95), rgba(2, 6, 23, 0.9)),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            min-height: 100vh; 
+            color: #e2e8f0; 
+        }
+
+        /* The Bat-Computer Interface Look */
+        .holo-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Scanning Line Effect */
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 50px;
+            background: linear-gradient(to bottom, transparent, rgba(14, 165, 233, 0.1), transparent);
+            animation: scan 3s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Answer Feedback States */
+        .correct-answer { 
+            background: rgba(34, 197, 94, 0.2) !important; 
+            border-color: #22c55e !important; 
+            color: white !important; 
+        }
+        .wrong-answer { 
+            background: rgba(239, 68, 68, 0.2) !important; 
+            border-color: #ef4444 !important; 
+            color: white !important; 
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake { 
+            0%, 100% { transform: translateX(0); } 
+            25% { transform: translateX(-5px); } 
+            75% { transform: translateX(5px); } 
+        }
+    </style>
+</head>
+<body class="flex flex-col antialiased">
+
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-8 relative">
+        
+        <div id="introScreen" class="text-center min-h-[60vh] flex flex-col justify-center items-center animate-fade-in">
+            
+            <div class="mb-8 relative">
+                <div class="w-24 h-24 bg-blue-900/20 rounded-full flex items-center justify-center border border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.4)] animate-pulse">
+                    <i class="fas fa-fingerprint text-4xl text-blue-400"></i>
+                </div>
+                <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-blue-950 border border-blue-500 text-[10px] font-bold px-3 py-1 rounded text-blue-300 whitespace-nowrap">
+                    SECURE LOGIN
+                </div>
+            </div>
+
+            <h1 class="font-arcade text-5xl md:text-7xl text-white leading-tight mb-4 drop-shadow-xl">
+                WAYNE <span class="text-blue-500">ARCHIVES</span>
+            </h1>
+            
+            <p class="font-mono text-blue-300 text-sm tracking-[0.2em] mb-8 uppercase">
+                >> Welcome, <span id="playerNameDisplay" class="text-white font-bold">Detective</span> <br>
+                >> Accessing File: The_Dark_Knight.enc
+            </p>
+
+            <div class="holo-card p-6 rounded-xl max-w-lg w-full mb-8 text-left border-l-4 border-l-yellow-500">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-white font-bold text-lg">Mission Parameters</h3>
+                    <span class="text-yellow-400 text-xs font-bold border border-yellow-400/50 px-2 py-1 rounded">HARDCORE</span>
+                </div>
+                <ul class="space-y-3 text-sm text-slate-300 font-mono mt-4">
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-plus-circle text-blue-500"></i> 
+                        <span>Earn <strong class="text-white">20 XP</strong> per correct answer</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-trophy text-yellow-500"></i> 
+                        <span>Badge: <strong class="text-white">World's Greatest Detective</strong> (10/10 Score)</span>
+                    </li>
+                </ul>
+            </div>
+
+            <button onclick="startQuiz()" class="group relative px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold tracking-widest uppercase rounded shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all">
+                Initialize Quiz
+            </button>
+        </div>
+
+        <div id="quizInterface" class="hidden min-h-[60vh] max-w-2xl mx-auto">
+            
+            <div class="flex justify-between items-end mb-6 border-b border-blue-900/50 pb-4">
+                <div>
+                    <span class="text-[10px] text-blue-400 font-mono block mb-1">FILE DECRYPTION</span>
+                    <span class="text-xl font-bold text-white" id="progressText">01 / 10</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-blue-400 font-mono block mb-1">SESSION XP</span>
+                    <span class="text-xl font-bold text-yellow-400" id="currentSessionXP">0</span>
+                </div>
+            </div>
+
+            <div class="holo-card rounded-2xl p-6 md:p-10 relative z-10">
+                <div class="scanline"></div>
+                
+                <h2 class="text-2xl font-bold text-white mb-8 leading-snug relative z-10" id="questionText">Loading Data...</h2>
+                
+                <div class="space-y-3 relative z-10" id="optionsGrid">
+                    </div>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="hidden max-w-2xl mx-auto">
+            <div class="holo-card rounded-2xl overflow-hidden mb-8 border-t-4 border-t-blue-500">
+                <div class="p-8 text-center bg-gradient-to-b from-blue-900/20 to-transparent">
+                    
+                    <div class="w-24 h-24 mx-auto bg-black rounded-full border-2 border-blue-500 flex items-center justify-center mb-6 shadow-lg">
+                         <span class="text-4xl" id="rankIcon">🦇</span>
+                    </div>
+
+                    <h2 class="text-3xl font-bold text-white mb-2" id="resultTitle">Calculating...</h2>
+                    <p class="text-blue-400 font-mono text-xs uppercase tracking-widest mb-6">Final Assessment Complete</p>
+
+                    <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-8">
+                        <div class="bg-black/30 p-4 rounded border border-white/10">
+                            <span class="text-slate-400 text-xs block">Score</span>
+                            <span class="text-2xl font-bold text-white" id="finalScoreDisplay">0/10</span>
+                        </div>
+                        <div class="bg-black/30 p-4 rounded border border-white/10">
+                            <span class="text-slate-400 text-xs block">XP Earned</span>
+                            <span class="text-2xl font-bold text-yellow-400" id="finalXPEarned">+0</span>
+                        </div>
+                    </div>
+                    
+                    <div id="badgeAlert" class="hidden mb-8 p-4 bg-yellow-900/20 border border-yellow-500/50 rounded flex items-center justify-center gap-3 animate-bounce-slight">
+                        <i class="fas fa-medal text-yellow-400 text-xl"></i>
+                        <span class="text-yellow-200 font-bold text-sm">BADGE UNLOCKED: Greatest Detective</span>
+                    </div>
+
+                    <div class="flex gap-4 justify-center">
+                        <button onclick="location.reload()" class="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded font-bold uppercase text-xs tracking-widest transition-all">
+                            Retake
+                        </button>
+                        <a href="hero-hub.html" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold uppercase text-xs tracking-widest shadow-lg transition-all">
+                            Return to Hub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 1. DATA: The Questions
+        const QUESTIONS = [
+            { q: "In 'The Dark Knight', what card does the Joker leave at the bank scene?", options: ["King of Hearts", "Ace of Spades", "The Joker", "Queen of Diamonds"], correct: 2 },
+            { q: "Which actor played Batman in the 1997 film 'Batman & Robin'?", options: ["Val Kilmer", "George Clooney", "Michael Keaton", "Christian Bale"], correct: 1 },
+            { q: "In 'Batman Begins', what flower creates the Fear Toxin?", options: ["The Blue Poppy", "The Black Orchid", "Nightshade", "Lotus of Shadow"], correct: 0 },
+            { q: "What is the prison Bruce Wayne escapes from in 'The Dark Knight Rises'?", options: ["Blackgate", "The Pit", "Arkham Asylum", "Santa Prisca"], correct: 1 },
+            { q: "Who directed the 1989 'Batman' movie?", options: ["Christopher Nolan", "Joel Schumacher", "Tim Burton", "Zack Snyder"], correct: 2 },
+            { q: "In 'The Batman' (2022), which Nirvana song is the theme?", options: ["Something in the Way", "Smells Like Teen Spirit", "Come As You Are", "Heart-Shaped Box"], correct: 0 },
+            { q: "What villain was introduced in 'Batman: The Animated Series' before the comics?", options: ["Poison Ivy", "Talia al Ghul", "Harley Quinn", "Catwoman"], correct: 2 },
+            { q: "Who broke Batman's back in the comics (and movies)?", options: ["Killer Croc", "Bane", "Doomsday", "Deathstroke"], correct: 1 },
+            { q: "What is the password to the Batcave in 'The LEGO Batman Movie'?", options: ["IronManSucks", "Darkness", "Martha", "Password123"], correct: 0 },
+            { q: "In 'Batman v Superman', what word stops the fight?", options: ["Justice", "Lois", "Martha", "Krypton"], correct: 2 }
+        ];
+
+        // 2. STATE
+        let currentIdx = 0;
+        let sessionScore = 0;
+        let sessionXP = 0;
+        let isLocked = false;
+
+        // 3. WAIT FOR ENGINE LOAD
+        window.addEventListener('load', () => {
+            // Personalize Intro with GameEngine data
+            setTimeout(() => {
+                if(window.GameEngine && window.GameEngine.user) {
+                    const name = window.GameEngine.user.nickname || "Detective";
+                    document.getElementById('playerNameDisplay').textContent = name;
+                }
+            }, 500);
+        });
+
+        function startQuiz() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('quizInterface').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isLocked = false;
+            const data = QUESTIONS[currentIdx];
+            
+            document.getElementById('questionText').textContent = data.q;
+            document.getElementById('progressText').innerText = `${currentIdx + 1} / ${QUESTIONS.length}`;
+            
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+
+            data.options.forEach((optText, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-blue-900/30 hover:border-blue-500 transition-all font-mono text-slate-300 text-sm md:text-base group flex justify-between items-center";
+                btn.innerHTML = `
+                    <span><span class="text-blue-500 opacity-50 mr-3">0${index + 1}</span> ${optText}</span>
+                    <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity text-blue-500"></i>
+                `;
+                btn.onclick = () => handleAnswer(index, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btn) {
+            if(isLocked) return;
+            isLocked = true;
+
+            const data = QUESTIONS[currentIdx];
+            const isCorrect = (selectedIndex === data.correct);
+            const allBtns = document.querySelectorAll('#optionsGrid button');
+
+            if(isCorrect) {
+                // ============================================
+                // INTEGRATION: ENGINE ADD XP
+                // ============================================
+                if(window.GameEngine) {
+                    window.GameEngine.addXP(20); 
+                    // Toast is handled automatically by addXP in your engine
+                }
+                
+                sessionScore++;
+                sessionXP += 20;
+                document.getElementById('currentSessionXP').textContent = sessionXP;
+                
+                // Visuals
+                btn.classList.remove('bg-white/5', 'border-white/10');
+                btn.classList.add('correct-answer');
+                btn.innerHTML = `<span><i class="fas fa-check mr-3"></i> ${data.options[selectedIndex]}</span>`;
+            
+            } else {
+                // Visuals
+                btn.classList.remove('bg-white/5', 'border-white/10');
+                btn.classList.add('wrong-answer');
+                btn.innerHTML = `<span><i class="fas fa-times mr-3"></i> ${data.options[selectedIndex]}</span>`;
+
+                // Highlight correct one
+                allBtns[data.correct].classList.add('correct-answer', 'opacity-50');
+            }
+
+            setTimeout(() => {
+                currentIdx++;
+                if(currentIdx < QUESTIONS.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        function showResults() {
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            const scoreDisplay = document.getElementById('finalScoreDisplay');
+            const xpDisplay = document.getElementById('finalXPEarned');
+            const title = document.getElementById('resultTitle');
+            const icon = document.getElementById('rankIcon');
+
+            scoreDisplay.textContent = `${sessionScore} / 10`;
+            xpDisplay.textContent = `+${sessionXP}`;
+
+            if(sessionScore === 10) {
+                title.textContent = "Rank: Greatest Detective";
+                title.classList.add('text-yellow-400');
+                icon.textContent = "🏆";
+                
+                // ============================================
+                // INTEGRATION: UNLOCK BADGE
+                // ============================================
+                if(window.GameEngine) {
+                    window.GameEngine.unlockAchievement("World's Greatest Detective");
+                }
+                document.getElementById('badgeAlert').classList.remove('hidden');
+
+            } else if (sessionScore >= 7) {
+                title.textContent = "Rank: Robin";
+                title.classList.add('text-blue-400');
+                icon.textContent = "👊";
+            } else {
+                title.textContent = "Rank: Civilian";
+                title.classList.add('text-slate-400');
+                icon.textContent = "☕";
+            }
+        }
+
+        // === ACHIEVEMENT CHECKER ===
+// Call this function when the Game Over screen appears
+// usage: checkGameAchievements(100, 'science', 45, 10); 
+function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
+    
+    if (!window.GameEngine) return;
+
+    // 1. GENERAL
+    window.GameEngine.unlockAchievement("new_recruit"); // First game
+    if (scorePercent === 100) window.GameEngine.unlockAchievement("perfect_score");
+    if (scorePercent >= 50)   window.GameEngine.addXP(scorePercent * 2); // Give XP based on score
+
+    // 2. SPEED
+    if (timeInSeconds < 60) window.GameEngine.unlockAchievement("speed_runner");
+    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement("quick_thinker");
+
+    // 3. CATEGORY SPECIFIC
+    // Normalize category to lowercase to match your IDs
+    const cat = category.toLowerCase();
+
+    if (cat === 'science') {
+        window.GameEngine.unlockAchievement("lab_coat");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("science_whiz");
+    }
+    
+    if (cat === 'history') {
+        window.GameEngine.unlockAchievement("time_traveler");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("history_buff");
+    }
+
+    if (cat === 'movies') {
+        window.GameEngine.unlockAchievement("movie_buff");
+        if (scorePercent === 100) window.GameEngine.unlockAchievement("cinephile");
+    }
+
+    if (cat === 'tech') {
+        window.GameEngine.unlockAchievement("tech_guru");
+    }
+
+    // 4. HARDCORE / SPECIFIC QUIZZES
+    // You can check specific IDs if your quiz has them
+    const currentQuizId = new URLSearchParams(window.location.search).get('id');
+    
+    if (currentQuizId === 'superman_legacy' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("superman_legacy");
+    }
+    if (currentQuizId === 'impossible_batman' && scorePercent === 100) {
+        window.GameEngine.unlockAchievement("gotham_knight");
+    }
+}
+    </script>
+</body>
+</html>
