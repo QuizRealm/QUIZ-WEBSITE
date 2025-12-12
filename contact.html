@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizRealm • Player Support</title>
+    <meta name="theme-color" content="#0A0F1E">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="game-engine.js"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: { bgDark: '#020617', accentCyan: '#06b6d4', accentGold: '#fbbf24' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020617; color: #e2e8f0; min-height: 100vh; background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #020617 70%); }
+        .glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .input-field {
+            background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); color: white;
+            padding: 12px; border-radius: 8px; width: 100%; transition: all 0.3s;
+        }
+        .input-field:focus { border-color: #06b6d4; outline: none; background: rgba(6, 182, 212, 0.05); }
+        .faq-item[open] summary ~ * { animation: sweep .3s ease-in-out; }
+        @keyframes sweep { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="flex flex-col antialiased">
+
+    <quiz-header></quiz-header>
+
+    <div class="bg-[#020617]/95 border-b border-white/5 py-8 text-center relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+        <h1 class="text-3xl font-bold text-white mb-2 tracking-wide uppercase">Help Center</h1>
+        <p class="text-slate-400 text-sm">Report bugs, suggest features, or get help with your account.</p>
+    </div>
+
+    <main class="flex-grow p-6 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+        <aside class="lg:col-span-5 space-y-8">
+            
+            <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-accentCyan">
+                <h3 class="text-white font-bold mb-4 flex items-center gap-2"><i class="fas fa-headset text-accentCyan"></i> Direct Channels</h3>
+                <div class="space-y-4 text-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center text-slate-300"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <div class="text-slate-500 text-xs uppercase font-bold">Email Support</div>
+                            <a href="mailto:mustafasharaf2023@gmail.com" class="text-white hover:text-accentCyan transition">mustafasharaf2023@gmail.com</a>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center text-slate-300"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <div class="text-slate-500 text-xs uppercase font-bold">Response Time</div>
+                            <div class="text-white">Usually within 24 hours</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-white font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-widest"><i class="fas fa-question-circle text-slate-500"></i> Common Questions</h3>
+                <div class="space-y-2">
+                    <details class="faq-item group glass-panel rounded-lg open:bg-white/5 transition">
+                        <summary class="flex cursor-pointer items-center justify-between p-4 font-medium text-slate-300 group-hover:text-white">
+                            <span>How do I save my progress?</span>
+                            <i class="fas fa-chevron-down text-xs transition group-open:rotate-180"></i>
+                        </summary>
+                        <div class="p-4 pt-0 text-sm text-slate-400 leading-relaxed">
+                            Click "My Profile" in the header and sign in with Google. Once connected, your XP and Level will sync across all devices.
+                        </div>
+                    </details>
+                    <details class="faq-item group glass-panel rounded-lg open:bg-white/5 transition">
+                        <summary class="flex cursor-pointer items-center justify-between p-4 font-medium text-slate-300 group-hover:text-white">
+                            <span>I found a bug in a quiz!</span>
+                            <i class="fas fa-chevron-down text-xs transition group-open:rotate-180"></i>
+                        </summary>
+                        <div class="p-4 pt-0 text-sm text-slate-400 leading-relaxed">
+                            We appreciate the help! Use the form on the right to report it. Please include the Quiz Category and the Question text if possible.
+                        </div>
+                    </details>
+                    <details class="faq-item group glass-panel rounded-lg open:bg-white/5 transition">
+                        <summary class="flex cursor-pointer items-center justify-between p-4 font-medium text-slate-300 group-hover:text-white">
+                            <span>Can I suggest a new category?</span>
+                            <i class="fas fa-chevron-down text-xs transition group-open:rotate-180"></i>
+                        </summary>
+                        <div class="p-4 pt-0 text-sm text-slate-400 leading-relaxed">
+                            Absolutely! Select "Feature Request" in the form and tell us what you'd like to see next.
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </aside>
+
+        <div class="lg:col-span-7">
+            <div class="glass-panel p-8 rounded-2xl relative overflow-hidden">
+                
+                <div class="absolute top-0 right-0 w-64 h-64 bg-accentCyan/5 rounded-full blur-[80px] -z-10"></div>
+
+                <h2 class="text-xl font-bold text-white mb-6">Send us a message</h2>
+
+                <form action="https://formspree.io/f/mjknjevb" method="POST" class="space-y-5">
+                    
+                    <div class="grid grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">First Name</label>
+                            <input type="text" name="firstName" required class="input-field" placeholder="Bruce">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Last Name</label>
+                            <input type="text" name="lastName" class="input-field" placeholder="Wayne">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Email Address</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-4 top-3.5 text-slate-500"></i>
+                            <input type="email" name="email" id="userEmail" required class="input-field pl-10" placeholder="hero@example.com">
+                            <div id="emailLock" class="hidden absolute right-3 top-3 text-[10px] bg-green-900/50 text-green-400 px-2 rounded border border-green-500/20">
+                                <i class="fas fa-check-circle"></i> VERIFIED
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Topic</label>
+                        <select name="topic" class="input-field bg-[#0a0f1e] cursor-pointer">
+                            <option value="General">General Inquiry</option>
+                            <option value="Bug">Report a Bug</option>
+                            <option value="Feedback">Feedback / Suggestion</option>
+                            <option value="Business">Partnership</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Message</label>
+                        <textarea name="message" rows="5" required class="input-field resize-none" placeholder="How can we help you today?"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-accentCyan hover:bg-cyan-400 text-black font-bold py-4 rounded-lg transition-all transform hover:-translate-y-1 shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center justify-center gap-2">
+                        <span>SEND MESSAGE</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script type="module">
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        
+        // Wait for config to load
+        setTimeout(() => {
+            if(window.auth) {
+                onAuthStateChanged(window.auth, (user) => {
+                    if (user && user.email) {
+                        const emailInput = document.getElementById('userEmail');
+                        const lockBadge = document.getElementById('emailLock');
+                        
+                        emailInput.value = user.email;
+                        emailInput.readOnly = true;
+                        emailInput.style.opacity = "0.7";
+                        emailInput.style.cursor = "not-allowed";
+                        lockBadge.classList.remove('hidden');
+                    }
+                });
+            }
+        }, 500);
+    </script>
+
+</body>
+</html>

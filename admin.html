@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QuizRealm • God Mode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 1. YOUR CONFIG (Same as firebase-config.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqRiQs_ezSxSpaYo0BO8WAcJF9LKvyOwo",
+            authDomain: "thequizrealm-ef52c.firebaseapp.com",
+            projectId: "thequizrealm-ef52c",
+            storageBucket: "thequizrealm-ef52c.firebasestorage.app",
+            messagingSenderId: "56820951002",
+            appId: "1:56820951002:web:3f7d419d62f6d7ee2102e3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 2. FETCH USERS
+        async function loadUsers() {
+            const table = document.getElementById('userTable');
+            table.innerHTML = '<tr class="text-slate-500"><td colspan="5" class="p-4 text-center">Scanning Multiverse...</td></tr>';
+
+            try {
+                // Get 'heroes' collection sorted by XP (Highest first)
+                const q = query(collection(db, "heroes"), orderBy("xp", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                table.innerHTML = ''; // Clear loading message
+                
+                let count = 0;
+                querySnapshot.forEach((doc) => {
+                    const u = doc.data();
+                    count++;
+                    
+                    // Format Date
+                    let dateStr = "Unknown";
+                    if(u.lastLogin) {
+                        const date = new Date(u.lastLogin);
+                        dateStr = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+                    }
+
+                    const row = `
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition">
+                            <td class="p-4 text-slate-400 font-mono text-xs">${count}</td>
+                            <td class="p-4 text-white font-bold flex items-center gap-3">
+                                <img src="https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${u.avatarSeed || 'Guest'}" class="w-8 h-8 rounded bg-slate-800">
+                                ${u.nickname || "Anonymous"}
+                            </td>
+                            <td class="p-4 text-accentCyan font-mono">${(u.xp || 0).toLocaleString()}</td>
+                            <td class="p-4 text-slate-300 text-xs">${u.level || 1}</td>
+                            <td class="p-4 text-slate-500 text-xs">${dateStr}</td>
+                        </tr>
+                    `;
+                    table.innerHTML += row;
+                });
+
+                document.getElementById('totalPlayers').innerText = count;
+
+            } catch (e) {
+                console.error(e);
+                table.innerHTML = `<tr class="text-red-400"><td colspan="5" class="p-4 text-center">Error: ${e.message}</td></tr>`;
+            }
+        }
+
+        window.onload = loadUsers;
+    </script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { bgDark: '#050810', accentCyan: '#06b6d4' } } } }
+    </script>
+</head>
+<body class="bg-bgDark text-slate-200 p-8 min-h-screen">
+    
+    <div class="max-w-5xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-white tracking-widest uppercase">
+                <i class="fas fa-user-secret text-accentCyan mr-2"></i> God Mode
+            </h1>
+            <div class="bg-slate-900 border border-white/10 px-4 py-2 rounded-lg">
+                <span class="text-slate-500 text-xs uppercase font-bold mr-2">Total Heroes</span>
+                <span class="text-white font-mono text-xl" id="totalPlayers">0</span>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/50 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-950 text-slate-500 text-xs uppercase tracking-wider border-b border-white/10">
+                        <th class="p-4 font-bold">#</th>
+                        <th class="p-4 font-bold">Hero</th>
+                        <th class="p-4 font-bold">XP</th>
+                        <th class="p-4 font-bold">Level</th>
+                        <th class="p-4 font-bold">Last Seen</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable">
+                    </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4 text-center">
+            <button onclick="location.reload()" class="text-xs text-accentCyan hover:text-white uppercase font-bold tracking-widest transition">
+                <i class="fas fa-sync mr-1"></i> Refresh Data
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>

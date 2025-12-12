@@ -58,7 +58,7 @@ function getQuizHeaderMarkup() {
     const avatarUrl  = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(avatarSeed)}`;
 
     return `
-    <header class="w-full sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg shadow-red-900/5 relative overflow-hidden">
+    <header class="w-full sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg shadow-red-900/5 relative overflow-visible">
         
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500/0 via-red-500/50 to-red-500/0 opacity-50"></div>
 
@@ -96,30 +96,92 @@ function getQuizHeaderMarkup() {
                 </div>
             </a>
 
-            <nav class="hidden xl:flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5">
+            <nav class="hidden xl:flex items-center gap-2 bg-white/5 p-1.5 rounded-xl border border-white/5 relative">
                 
                 <a href="christmas-hub.html" class="relative flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-red-900/80 to-red-800/80 border border-red-500/30 hover:border-red-400 hover:shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all group mr-2">
                     <i class="fas fa-tree text-green-400 group-hover:animate-bounce"></i>
-                    <span class="text-xs font-bold text-white uppercase tracking-wide">Xmas Hub</span>
+                    <span class="text-xs font-bold text-white uppercase tracking-wide">Xmas Special</span>
                 </a>
 
                 <div class="w-[1px] h-6 bg-white/10 mx-1"></div>
 
-                <a href="categories.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
-                    <i class="fas fa-layer-group text-blue-400"></i> Categories
+                <a href="categories.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center gap-2 group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <i class="fas fa-layer-group text-blue-400 group-hover:text-blue-200 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]"></i> 
+                    <span class="relative z-10 group-hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">Categories</span>
                 </a>
-                <a href="daily.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
-                    <i class="fas fa-calendar-day text-emerald-400"></i> Daily
+
+                <a href="daily.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center gap-2 relative group">
+                    <i class="fas fa-clock text-emerald-400 group-hover:rotate-12 transition"></i> Daily
+                    <span class="absolute top-1.5 right-1 flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
                 </a>
-                <a href="timeline-history.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
-                    <i class="fas fa-hourglass-half text-amber-400"></i> Timeline
-                </a>
-                <a href="hangman.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
-                    <i class="fas fa-font text-purple-400"></i> Hangman
-                </a>
-                <a href="minigames.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2">
-                    <i class="fas fa-gamepad text-pink-400"></i> Pictionary
-                </a>
+
+                <div class="relative group h-full">
+                    <a href="arcade.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center gap-2 h-full">
+                        <i class="fas fa-gamepad text-pink-400"></i> The Arcade <i class="fas fa-chevron-down text-[8px] opacity-50 ml-1"></i>
+                    </a>
+
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-72 hidden group-hover:block hover:block z-[100]">
+                        <div class="bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl p-2 flex flex-col gap-1 backdrop-blur-xl">
+                            <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-widest border-b border-white/5 mb-1">Mini Games</div>
+                            
+                            <a href="fusion-core.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+                                <div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-400 border border-green-500/20 group-hover/item:bg-green-500 group-hover/item:text-black transition">
+                                    <i class="fas fa-microchip"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-white text-xs font-bold uppercase">Logic League</span>
+                                    <span class="text-[9px] text-slate-500">Mastermind Puzzle</span>
+                                </div>
+                            </a>
+
+                            <a href="timeline-history.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+                                <div class="w-8 h-8 rounded bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20 group-hover/item:bg-amber-500 group-hover/item:text-black transition">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-white text-xs font-bold uppercase">History Timeline</span>
+                                    <span class="text-[9px] text-slate-500">Order Events</span>
+                                </div>
+                            </a>
+
+                            <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+                                <div class="w-8 h-8 rounded bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20 group-hover/item:bg-red-500 group-hover/item:text-black transition">
+                                    <i class="fas fa-mask"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-white text-xs font-bold uppercase">Superhero Cinema</span>
+                                    <span class="text-[9px] text-slate-500">Movie Trivia</span>
+                                </div>
+                            </a>
+
+                            <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+                                <div class="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover/item:bg-blue-500 group-hover/item:text-black transition">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-white text-xs font-bold uppercase">Speed Math</span>
+                                    <span class="text-[9px] text-slate-500">Quick Calculations</span>
+                                </div>
+                            </a>
+
+                             <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+                                <div class="w-8 h-8 rounded bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20 group-hover/item:bg-purple-500 group-hover/item:text-black transition">
+                                    <i class="fas fa-globe-americas"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-white text-xs font-bold uppercase">Geo Guesser</span>
+                                    <span class="text-[9px] text-slate-500">Map Skills</span>
+                                </div>
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
             </nav>
 
             <div class="flex items-center gap-3">
@@ -128,13 +190,11 @@ function getQuizHeaderMarkup() {
                     <i class="fas fa-gift"></i>
                 </a>
 
-                <!-- Small coins chip (desktop) -->
                 <div class="hidden md:flex flex-col items-end mr-1">
                     <div class="flex items-center gap-1 text-[10px] text-amber-300">
                         <i class="fas fa-coins text-[11px]"></i>
                         <span id="headerCoins">${coins.toLocaleString()}</span>
                     </div>
-                    <!-- XP hidden but available for scripts -->
                     <span id="headerXP" class="hidden">${xp}</span>
                 </div>
 
@@ -155,27 +215,28 @@ function getQuizHeaderMarkup() {
             </div>
         </div>
 
-        <div class="md:hidden border-t border-white/10 bg-[#020617]/95 backdrop-blur-xl px-2 py-2">
+        <div class="md:hidden border-t border-white/10 bg-[#020617]/95 backdrop-blur-xl px-2 py-2 fixed bottom-0 w-full z-[60]">
             <nav class="grid grid-cols-5 gap-1">
                 <a href="categories.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white">
                     <i class="fas fa-layer-group text-sm mb-1 text-blue-400"></i>
-                    <span class="text-[9px] font-bold">Categories</span>
+                    <span class="text-[9px] font-bold">Topics</span>
                 </a>
-                <a href="hangman.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white">
-                    <i class="fas fa-font text-sm mb-1 text-purple-400"></i>
-                    <span class="text-[9px] font-bold">Word</span>
-                </a>
-                <a href="christmas-hub.html" class="flex flex-col items-center justify-center py-2 rounded-lg bg-red-900/20 text-red-400 border border-red-500/20">
-                    <i class="fas fa-tree text-sm mb-1 animate-bounce"></i>
-                    <span class="text-[9px] font-bold">Xmas</span>
-                </a>
-                <a href="timeline-history.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white">
-                    <i class="fas fa-hourglass-half text-sm mb-1 text-amber-400"></i>
-                    <span class="text-[9px] font-bold">Time</span>
-                </a>
-                <a href="minigames.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white">
+                <a href="arcade.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white">
                     <i class="fas fa-gamepad text-sm mb-1 text-pink-400"></i>
-                    <span class="text-[9px] font-bold">Games</span>
+                    <span class="text-[9px] font-bold">Arcade</span>
+                </a>
+                <a href="christmas-hub.html" class="flex flex-col items-center justify-center py-2 rounded-lg bg-red-900/20 text-red-400 border border-red-500/20 -mt-4 mb-2 shadow-lg shadow-red-900/40">
+                    <i class="fas fa-tree text-lg mb-0 animate-bounce"></i>
+                    <span class="text-[9px] font-bold">XMAS</span>
+                </a>
+                <a href="daily.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white relative">
+                    <div class="absolute top-2 right-4 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+                    <i class="fas fa-calendar-day text-sm mb-1 text-emerald-400"></i>
+                    <span class="text-[9px] font-bold">Daily</span>
+                </a>
+                <a href="profile.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white">
+                    <i class="fas fa-user text-sm mb-1 text-amber-400"></i>
+                    <span class="text-[9px] font-bold">Me</span>
                 </a>
             </nav>
         </div>
@@ -188,7 +249,7 @@ function getQuizHeaderMarkup() {
 function getQuizFooterMarkup() {
     const year = new Date().getFullYear();
     return `
-    <footer class="relative mt-20 bg-[#050505] pt-16 pb-8 font-sans text-xs border-t border-green-500/20">
+    <footer class="relative mt-20 bg-[#050505] pt-16 pb-24 md:pb-8 font-sans text-xs border-t border-green-500/20">
         
         <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/50 to-transparent"></div>
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-24 bg-green-500/5 blur-[80px] pointer-events-none"></div>
@@ -218,6 +279,7 @@ function getQuizFooterMarkup() {
                         <li><a href="index.html" class="hover:text-white transition flex items-center gap-2"><i class="fas fa-home text-[10px] text-slate-600" aria-label="Go to Homepage"></i> Home</a></li>
                         <li><a href="christmas-hub.html" class="text-red-400 hover:text-red-300 transition font-bold flex items-center gap-2"><i class="fas fa-tree text-[10px]"></i> Holiday Hub</a></li>
                         <li><a href="categories.html" class="hover:text-white transition">All Categories</a></li>
+                        <li><a href="arcade.html" class="hover:text-white transition text-pink-400">The Arcade</a></li>
                         <li><a href="achievements.html" class="hover:text-white transition">Trophy Room</a></li>
                     </ul>
                 </div>
@@ -228,7 +290,8 @@ function getQuizFooterMarkup() {
                         <li><a href="about.html" class="hover:text-white transition">About Us</a></li>
                         <li><a href="contact.html" class="hover:text-white transition">Contact</a></li>
                         <li><a href="privacy.html" class="hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="terms.html" class="hover:text-white transition">Terms of Use</a></li>
+                        <li><a href="Terms.html" class="hover:text-white transition">Terms of Use</a></li>
+                        <li><a href="FAQ.html" class="hover:text-white transition">FAQs</a></li>
                     </ul>
                 </div>
 
@@ -241,7 +304,7 @@ function getQuizFooterMarkup() {
                         </span>
                         <span class="font-bold">Servers Online</span>
                     </div>
-                    <p class="text-slate-600 text-[10px]">Version 2.0.4 (Winter Patch)</p>
+                    <p class="text-slate-600 text-[10px]">Version 2.1.0 (Arcade Patch)</p>
                 </div>
             </div>
 
@@ -277,6 +340,16 @@ function setupHeaderElement(el) {
     el._qrUserHandler = handler;
     window.addEventListener("userUpdate", handler);
 }
+function makeHeaderLinksRootScoped(root = "/") {
+  document.querySelectorAll("quiz-header a[href], quiz-footer a[href]").forEach(a => {
+    const href = a.getAttribute("href") || "";
+    // Ignore external, anchors, mailto/tel, already-rooted
+    if (!href || href.startsWith("http") || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("/")) return;
+    a.setAttribute("href", root + href.replace(/^\.\//, ""));
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => makeHeaderLinksRootScoped("/"));
 
 function teardownHeaderElement(el) {
     if (el._qrUserHandler) {
@@ -358,7 +431,7 @@ if (!customElements.get("quiz-seo-content")) {
                         </p>
                         <div class="bg-white/5 rounded-lg p-3 border-l-2 border-blue-500">
                             <p class="text-xs text-slate-400">
-                                <strong class="text-white">PRO TIP:</strong> Stuck on a difficult question? Use your <strong>Power-Ups</strong>. The <em>50/50 Split</em> removes two wrong answers, while <em>Time Freeze</em> pauses the clock for 10 seconds.
+                                <strong class="text-white">PRO TIP:</strong> Check out <strong>The Arcade</strong> to play unique mini-games like Logic League and History Timeline to earn extra coins.
                             </p>
                         </div>
                     </div>

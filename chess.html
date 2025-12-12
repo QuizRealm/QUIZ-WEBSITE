@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grandmaster's Forge - Play & Learn Chess</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        chess: {
+                            dark: '#262421',
+                            light: '#f0d9b5',
+                            boardDark: '#b58863',
+                            boardLight: '#f0d9b5',
+                            accent: '#81b64c',
+                            accentHover: '#45753c'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #302e2b; /* Common chess site background color */
+            color: #ffffff;
+        }
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #262421;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #81b64c;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-chess-dark shadow-md sticky top-0 z-50 border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <i class="fa-solid fa-chess-knight text-chess-accent text-3xl mr-2"></i>
+                    <span class="font-bold text-xl tracking-tight text-gray-100">Grandmaster's<span class="text-chess-accent">Forge</span></span>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Play</a>
+                    <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Puzzles</a>
+                    <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Learn</a>
+                    <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Watch</a>
+                </nav>
+
+                <!-- Auth Buttons -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button class="text-gray-300 hover:text-white font-medium text-sm transition-colors">Log In</button>
+                    <button class="bg-chess-accent hover:bg-chess-accentHover text-white px-4 py-2 rounded-md text-sm font-bold shadow-sm transition-colors transform active:scale-95">Sign Up</button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-gray-300 hover:text-white p-2">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-chess-dark border-t border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Play</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Puzzles</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Learn</a>
+                <div class="border-t border-gray-700 mt-2 pt-2">
+                    <a href="#" class="block px-3 py-2 text-base font-medium text-gray-300">Log In</a>
+                    <a href="#" class="block px-3 py-2 text-base font-medium text-chess-accent font-bold">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        
+        <!-- Hero Section -->
+        <section class="relative bg-[#262421] py-16 lg:py-24 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center">
+                
+                <!-- Text Content -->
+                <div class="lg:w-1/2 lg:pr-12 mb-10 lg:mb-0 text-center lg:text-left">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6">
+                        Master the Game of <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-chess-accent to-green-300">Kings & Queens</span>
+                    </h1>
+                    <p class="text-lg text-gray-400 mb-8 max-w-2xl mx-auto lg:mx-0">
+                        Join millions of players worldwide. Play online, solve daily puzzles, and analyze your games with our advanced engine.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
+                        <button class="bg-chess-accent hover:bg-chess-accentHover text-white px-8 py-4 rounded-lg text-lg font-bold shadow-lg flex items-center justify-center gap-2 transform transition hover:scale-105">
+                            <i class="fa-solid fa-play"></i> Play Now
+                        </button>
+                        <button class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-4 rounded-lg text-lg font-bold shadow-lg flex items-center justify-center gap-2 transform transition hover:scale-105">
+                            <i class="fa-solid fa-puzzle-piece"></i> Daily Puzzle
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hero Graphic (CSS Board Representation) -->
+                <div class="lg:w-1/2 flex justify-center perspective-1000">
+                    <div class="relative w-72 h-72 sm:w-96 sm:h-96 bg-[#262421] rounded-lg shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-700 border-8 border-[#403d39]">
+                        <!-- Simple 3x3 Grid representing a board fragment -->
+                        <div class="grid grid-cols-2 h-full w-full">
+                            <div class="bg-chess-boardLight flex items-center justify-center text-6xl text-black">
+                                <i class="fa-solid fa-chess-rook"></i>
+                            </div>
+                            <div class="bg-chess-boardDark flex items-center justify-center text-6xl text-white">
+                                <i class="fa-solid fa-chess-king"></i>
+                            </div>
+                            <div class="bg-chess-boardDark flex items-center justify-center text-6xl text-white">
+                                <i class="fa-solid fa-chess-pawn"></i>
+                            </div>
+                            <div class="bg-chess-boardLight flex items-center justify-center text-6xl text-black">
+                                <i class="fa-solid fa-chess-knight"></i>
+                            </div>
+                        </div>
+                        <!-- Floating Badge -->
+                        <div class="absolute -bottom-6 -left-6 bg-gray-800 p-4 rounded-lg shadow-xl border border-gray-700 flex items-center gap-3">
+                            <div class="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
+                            <span class="text-sm font-semibold text-gray-200">14,203 Players Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Background Decorative Elements -->
+            <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-chess-accent opacity-5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-blue-500 opacity-5 rounded-full blur-3xl"></div>
+        </section>
+
+        <!-- Features Grid / Cards -->
+        <section class="py-16 bg-[#302e2b]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-white mb-4">Everything You Need to Improve</h2>
+                    <p class="text-gray-400">Select a mode to get started immediately.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Card 1: Play Computer -->
+                    <div class="bg-[#262421] rounded-xl p-6 border border-gray-700 card-hover cursor-pointer group">
+                        <div class="h-12 w-12 bg-blue-900/50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
+                            <i class="fa-solid fa-robot text-blue-400 group-hover:text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Play vs Computer</h3>
+                        <p class="text-gray-400 text-sm mb-4">Challenge our adaptive AI engine. From absolute beginner to Grandmaster level.</p>
+                        <span class="text-blue-400 text-sm font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                            Start Game <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </div>
+
+                    <!-- Card 2: Play Online -->
+                    <div class="bg-[#262421] rounded-xl p-6 border border-gray-700 card-hover cursor-pointer group">
+                        <div class="h-12 w-12 bg-green-900/50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-600 transition-colors">
+                            <i class="fa-solid fa-earth-americas text-green-400 group-hover:text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Play Online</h3>
+                        <p class="text-gray-400 text-sm mb-4">Find an opponent in seconds. Bullet, Blitz, Rapid, or Correspondence chess.</p>
+                        <span class="text-green-400 text-sm font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                            Find Match <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </div>
+
+                    <!-- Card 3: Puzzles -->
+                    <div class="bg-[#262421] rounded-xl p-6 border border-gray-700 card-hover cursor-pointer group">
+                        <div class="h-12 w-12 bg-orange-900/50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-600 transition-colors">
+                            <i class="fa-solid fa-puzzle-piece text-orange-400 group-hover:text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Tactics Puzzles</h3>
+                        <p class="text-gray-400 text-sm mb-4">Sharpen your tactical vision with over 100,000 unique chess puzzles.</p>
+                        <span class="text-orange-400 text-sm font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                            Solve Now <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </div>
+
+                    <!-- Card 4: Lessons -->
+                    <div class="bg-[#262421] rounded-xl p-6 border border-gray-700 card-hover cursor-pointer group">
+                        <div class="h-12 w-12 bg-purple-900/50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-colors">
+                            <i class="fa-solid fa-graduation-cap text-purple-400 group-hover:text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Interactive Lessons</h3>
+                        <p class="text-gray-400 text-sm mb-4">Step-by-step guides on openings, middle-game strategy, and endgames.</p>
+                        <span class="text-purple-400 text-sm font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                            Start Learning <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </div>
+
+                    <!-- Card 5: Analysis Board -->
+                    <div class="bg-[#262421] rounded-xl p-6 border border-gray-700 card-hover cursor-pointer group">
+                        <div class="h-12 w-12 bg-teal-900/50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-teal-600 transition-colors">
+                            <i class="fa-solid fa-magnifying-glass-chart text-teal-400 group-hover:text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Analysis Board</h3>
+                        <p class="text-gray-400 text-sm mb-4">Review your games or set up positions to analyze with the Stockfish engine.</p>
+                        <span class="text-teal-400 text-sm font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                            Analyze <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </div>
+
+                    <!-- Card 6: Vision Training -->
+                    <div class="bg-[#262421] rounded-xl p-6 border border-gray-700 card-hover cursor-pointer group">
+                        <div class="h-12 w-12 bg-red-900/50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-red-600 transition-colors">
+                            <i class="fa-solid fa-eye text-red-400 group-hover:text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Vision Training</h3>
+                        <p class="text-gray-400 text-sm mb-4">Learn coordinate notation and improve your board visualization speed.</p>
+                        <span class="text-red-400 text-sm font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                            Train Vision <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Quote Section -->
+        <section class="bg-[#262421] py-12 border-t border-gray-800">
+            <div class="max-w-4xl mx-auto px-4 text-center">
+                <i class="fa-solid fa-quote-left text-4xl text-gray-600 mb-4 block"></i>
+                <blockquote class="text-xl sm:text-2xl font-serif text-gray-300 italic mb-4">
+                    "Chess is the gymnasium of the mind."
+                </blockquote>
+                <cite class="text-chess-accent font-semibold not-italic">— Blaise Pascal</cite>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#211f1c] text-gray-400 border-t border-gray-800 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                
+                <!-- Col 1 -->
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase text-sm tracking-wider">Play</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Daily Chess</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Live Chess</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Computer</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Tournaments</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 2 -->
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase text-sm tracking-wider">Learn</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Chess Openings</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Endgame Practice</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Strategy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Glossary</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3 -->
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase text-sm tracking-wider">Community</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Forum</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Clubs</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Coaches</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Streamers</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4 -->
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase text-sm tracking-wider">About</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Our Story</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Fair Play</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center gap-2 mb-4 md:mb-0">
+                    <i class="fa-solid fa-chess-knight text-gray-500"></i>
+                    <span class="text-sm">© 2025 Grandmaster's Forge. All rights reserved.</span>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fa-brands fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fa-brands fa-discord text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fa-brands fa-twitch text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fa-brands fa-youtube text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple script to handle interaction feedback
+        document.querySelectorAll('button, .card-hover').forEach(element => {
+            element.addEventListener('click', function(e) {
+                // In a real app, this would route to a page
+                // For this demo, we can just console log
+                const text = this.innerText || "Element";
+                console.log('Clicked: ' + text.split('\n')[0]);
+            });
+        });
+    </script>
+</body>
+</html>

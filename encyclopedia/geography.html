@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- CookieYes (PASTE YOUR EXACT SCRIPT HERE)
+  <script id="cookieyes" type="text/javascript" src="YOUR_COOKIEYES_SCRIPT_URL"></script>
+  End CookieYes -->
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+
+  <title>Geography Explained: Countries, Capitals, Flags, Maps & Trivia | QuizRealm</title>
+  <meta name="description" content="Explore world geography: countries, capitals, flags, landmarks, borders, and map facts. Then test your knowledge with QuizRealm geography quizzes, Pictionary, and timeline challenges.">
+
+  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+  <meta name="msapplication-TileColor" content="#020617">
+  <meta name="theme-color" content="#020617">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arcade: ['Bungee', 'cursive'],
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace']
+          },
+          colors: {
+            bgDarker: '#050810',
+            accentBlue: '#3b82f6',
+            accentCyan: '#06b6d4',
+            accentGreen: '#10b981',
+            accentOrange: '#f97316',
+            accentGold: '#fbbf24',
+            accentTeal: '#14b8a6',
+            accentLime: '#84cc16'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body{
+      background-color:#050810;
+      background-image: radial-gradient(circle at 50% 0%, #0b3a2d, #050810 78%);
+      color:#e2e8f0;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    .grid-bg{
+      background-size:60px 60px;
+      background-image:
+        linear-gradient(to right, rgba(20,184,166,0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59,130,246,0.03) 1px, transparent 1px);
+      mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
+    }
+    .glass{
+      background: rgba(30,41,59,0.60);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 60px -40px rgba(0,0,0,0.9);
+    }
+
+    /* 9:16 box without Tailwind aspect plugin */
+    .ratio-9-16{ position:relative; width:100%; padding-top:177.7778%; }
+    .ratio-9-16 > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+
+    /* Promo card structure (Geography-themed) */
+    .qr-card-container{ width:100%; }
+    .qr-promo-card{
+      position:relative;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(2,6,23,0.55);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 24px 70px -50px rgba(0,0,0,0.95);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .qr-promo-card:hover{
+      transform: translateY(-4px);
+      border-color: rgba(20,184,166,0.60);
+      background: rgba(2,6,23,0.62);
+    }
+    .qr-badge{
+      position:absolute;
+      top:14px; left:14px;
+      z-index:5;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      padding:7px 10px;
+      border-radius:999px;
+      color:#061018;
+      background: linear-gradient(90deg, rgba(20,184,166,1), rgba(59,130,246,1));
+      border:1px solid rgba(255,255,255,0.18);
+    }
+    .qr-card-image{
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      background: radial-gradient(circle at top, rgba(20,184,166,0.18), rgba(2,6,23,0.9));
+    }
+    .qr-img-fill{ width:100%; height:100%; object-fit:cover; display:block; }
+    .qr-card-content{ padding:18px 18px 20px; }
+    .qr-card-title{
+      font-family:'Bungee', cursive;
+      font-size:18px;
+      line-height:1.1;
+      color:#fff;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+    .qr-card-desc{
+      font-size:13px;
+      color: rgba(226,232,240,0.85);
+      line-height:1.5;
+      margin-bottom:14px;
+    }
+    .qr-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      font-size:12px;
+      color:#061018;
+      background: linear-gradient(90deg, rgba(20,184,166,1), rgba(59,130,246,1));
+      border:1px solid rgba(255,255,255,0.14);
+      transition: transform .18s ease, filter .18s ease;
+      text-decoration:none;
+    }
+    .qr-btn:hover{ transform: translateY(-2px); filter: brightness(1.06); }
+
+    .pill-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(226,232,240,0.92);
+      transition: background .15s ease, border-color .15s ease, transform .15s ease;
+      text-decoration:none;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .pill-link:hover{
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(20,184,166,0.55);
+      transform: translateY(-1px);
+      color:#fff;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-10 md:py-14 space-y-10">
+
+    <!-- Top quick nav -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <a class="pill-link" href="/index.html"><i class="fas fa-house"></i> Home</a>
+        <a class="pill-link" href="/categories.html"><i class="fas fa-layer-group"></i> Categories</a>
+        <a class="pill-link" href="/mode.html?category=geography"><i class="fas fa-play"></i> Play Geography</a>
+      </div>
+      <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+        Encyclopedia • Geography
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <section class="glass rounded-2xl p-6 md:p-8 overflow-hidden">
+      <div class="flex flex-col lg:flex-row gap-8 lg:items-center">
+
+        <!-- Text -->
+        <div class="flex-1 space-y-4">
+          <div class="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-accentCyan">
+            <i class="fas fa-globe-europe"></i>
+            Geography Encyclopedia • Countries • Capitals • Maps
+          </div>
+
+          <h1 class="font-arcade text-3xl md:text-5xl text-white leading-tight">
+            Geography
+          </h1>
+
+          <p class="text-slate-300 leading-relaxed max-w-2xl">
+            <strong class="text-white">Geography</strong> is the ultimate “high-signal” trivia category: countries, capitals, flags, borders,
+            mountains, rivers, time zones, and landmark locations.
+            This encyclopedia page is built to refresh your memory fast — then launch you into interactive quizzes,
+            <strong class="text-white">Pictionary scene/flag recognition</strong>, and timeline-style challenges.
+          </p>
+
+          <p class="text-slate-400 text-sm leading-relaxed max-w-2xl">
+            If you want to level up quickly: master capitals, learn regional patterns (languages, currencies, borders),
+            and train your visual memory with flags and map silhouettes. That combination is what top scorers use.
+          </p>
+
+          <!-- Primary actions -->
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="/mode.html?category=geography"
+               class="px-6 py-3 rounded-xl bg-accentBlue text-white font-bold hover:scale-105 transition inline-flex items-center gap-2">
+              <i class="fas fa-play"></i>
+              Start Geography Quiz
+            </a>
+
+            <!-- Remembered: label is Pictionary; link stays minigames -->
+            <a href="/minigames.html?category=geography"
+               class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition inline-flex items-center gap-2">
+              <i class="fas fa-pen-nib"></i>
+              Pictionary
+            </a>
+
+            <a href="/timeline-history.html?category=geography"
+               class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition inline-flex items-center gap-2">
+              <i class="fas fa-stream"></i>
+              Timeline Game
+            </a>
+          </div>
+
+          <!-- Secondary nav -->
+          <div class="flex flex-wrap gap-3 pt-1">
+            <a href="/index.html"
+               class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition inline-flex items-center gap-2">
+              <i class="fas fa-house"></i> Home
+            </a>
+            <a href="/categories.html"
+               class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition inline-flex items-center gap-2">
+              <i class="fas fa-layer-group"></i> All Categories
+            </a>
+            <a href="/encyclopedia.html"
+               class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition inline-flex items-center gap-2">
+              <i class="fas fa-book-open"></i> Encyclopedia Hub
+            </a>
+          </div>
+        </div>
+
+        <!-- 9:16 spotlight image -->
+        <div class="w-full lg:w-[340px] lg:flex-shrink-0 mx-auto lg:mx-0">
+          <div class="rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(20,184,166,0.14)]">
+            <div class="ratio-9-16">
+              <img src="/assets/facts/capitals.webp" alt="Geography category cover art">
+            </div>
+          </div>
+          <div class="mt-3 text-xs text-slate-500 italic text-center lg:text-left">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2-column content -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- Main content -->
+      <div class="lg:col-span-8 space-y-8">
+
+        <!-- Quick facts -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">195</div>
+            <div class="text-xs text-slate-400 uppercase">Countries</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">7</div>
+            <div class="text-xs text-slate-400 uppercase">Continents</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">24</div>
+            <div class="text-xs text-slate-400 uppercase">Time zones*</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">∞</div>
+            <div class="text-xs text-slate-400 uppercase">Map facts</div>
+          </div>
+        </section>
+
+        <!-- What it is -->
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">What is Geography trivia?</h2>
+          <p class="text-slate-300 leading-relaxed">
+            Geography trivia tests <strong class="text-white">location knowledge</strong> (where things are),
+            <strong class="text-white">identity knowledge</strong> (what things are called), and
+            <strong class="text-white">pattern recognition</strong> (how regions connect).
+            The best players don’t memorize randomly — they build mental maps: neighbors, coastlines, capitals, and flag patterns.
+          </p>
+          <p class="text-slate-300 leading-relaxed">
+            QuizRealm geography questions can cover countries and capitals, flags, mountains and rivers, deserts and seas,
+            borders and enclaves, major cities, landmarks, and “weird but true” facts that stick in memory.
+          </p>
+        </section>
+
+        <!-- Core pillars -->
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">High-score pillars</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Capitals & Major Cities</div>
+              <div class="text-sm text-slate-300">Fast recall wins. Learn regional clusters (Nordics, Balkans, Andes, Gulf, etc.).</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Flags & Symbols</div>
+              <div class="text-sm text-slate-300">Colors, emblems, and layout patterns (tricolors, Nordic crosses, coat-of-arms).</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Borders & Neighbors</div>
+              <div class="text-sm text-slate-300">Who touches whom? Enclaves/exclaves, landlocked countries, and sea access.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Landforms & Landmarks</div>
+              <div class="text-sm text-slate-300">Mountains, rivers, deserts, and “where is this landmark?” questions.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- What geography questions usually test -->
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">What geography questions usually test</h2>
+          <ul class="space-y-3 text-slate-300">
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Recognition speed:</span> flags, silhouettes, “spot the country” visuals.</div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Precision:</span> capitals, currencies, languages, and exact border neighbors.</div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Context:</span> continents, regions, climate zones, and major natural features.</div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">“Weird facts” memory:</span> tiny countries, longest borders, unusual time offsets.</div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Micro-learning / SEO block -->
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">Fast geography cheatsheet</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">If you forget a capital</div>
+              <div class="text-sm text-slate-300 mt-2">
+                Think region first, then language. Many capitals share linguistic clues (e.g., -grad, -polis, -burg, -stan patterns).
+              </div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">If you confuse flags</div>
+              <div class="text-sm text-slate-300 mt-2">
+                Focus on unique identifiers: coat-of-arms placement, star count, cross type, stripe order, and emblem shapes.
+              </div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">If you miss borders</div>
+              <div class="text-sm text-slate-300 mt-2">
+                Learn “border hubs” (countries with many neighbors). They are disproportionately common in quizzes.
+              </div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">If maps feel hard</div>
+              <div class="text-sm text-slate-300 mt-2">
+                Train silhouettes via Pictionary/visual play. Visual memory improves faster than brute-force memorization.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CTA row -->
+        <section class="glass rounded-2xl p-6">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-white">Ready to test your world knowledge?</h2>
+              <p class="text-slate-400 text-sm">Pick difficulty and start instantly.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <a href="/mode.html?category=geography" class="px-6 py-3 rounded-xl bg-accentBlue text-white font-bold hover:scale-105 transition">
+                Play Geography Quiz
+              </a>
+              <a href="/categories.html" class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition">
+                Browse Categories
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">Frequently asked questions</h2>
+
+          <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div class="font-bold text-white">What should I learn first for geography trivia?</div>
+            <div class="text-sm text-slate-300 mt-1">
+              Start with continents → countries → capitals, then add flags and neighbors. Visual games (like Pictionary) accelerate learning.
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div class="font-bold text-white">How do I get better quickly?</div>
+            <div class="text-sm text-slate-300 mt-1">
+              Mix modes: quiz for recall, Pictionary for recognition, and timeline-style play for sequences and historical geography context.
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-24 h-fit">
+
+        <!-- Explorer challenge card (promo) -->
+        <div class="qr-card-container">
+          <div class="qr-promo-card">
+            <div class="qr-badge">Explorer Challenge</div>
+
+            <div class="qr-card-image">
+              <div class="ratio-9-16">
+                <img src="/assets/geo.webp" alt="Geography explorer challenge cover" class="qr-img-fill">
+              </div>
+            </div>
+
+            <div class="qr-card-content">
+              <h3 class="qr-card-title">BECOME A MAP MASTER</h3>
+              <p class="qr-card-desc">
+                Train your brain like a GPS: capitals, flags, borders, landmarks. Start easy, then go for perfect streaks on hard.
+              </p>
+              <a href="/mode.html?category=geography" class="qr-btn">
+                Start the Challenge <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pictionary promo -->
+        <div class="glass rounded-2xl p-6 border-l-4 border-l-accentTeal">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="fas fa-pen-nib" style="color: rgba(20,184,166,1)"></i>
+            <div class="text-sm font-bold text-white uppercase tracking-widest">Pictionary</div>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Visual geography is a superpower. Recognize flags, silhouettes, landmarks, and map shapes faster than your opponents.
+          </p>
+          <a href="/minigames.html?category=geography"
+             class="mt-4 inline-flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl border border-white/15 text-white hover:bg-white/5 transition font-bold">
+            Play Pictionary <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Daily / Rapid practice -->
+        <div class="glass rounded-2xl p-6 border-l-4 border-l-accentOrange">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="fas fa-bolt text-accentOrange"></i>
+            <div class="text-sm font-bold text-white uppercase tracking-widest">Fast practice</div>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Want quick reps? Use rapid play or daily challenges to build consistency and long-term retention.
+          </p>
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <a href="/rapid.html" class="px-4 py-3 rounded-xl border border-white/15 text-white hover:bg-white/5 transition font-bold text-center">
+              Rapid
+            </a>
+            <a href="/daily.html" class="px-4 py-3 rounded-xl border border-white/15 text-white hover:bg-white/5 transition font-bold text-center">
+              Daily
+            </a>
+          </div>
+        </div>
+
+        <!-- Site navigation -->
+        <div class="glass rounded-2xl p-6">
+          <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-3">Quick navigation</div>
+          <div class="grid grid-cols-1 gap-3">
+            <a class="pill-link w-full justify-center" href="/index.html"><i class="fas fa-house"></i> Home</a>
+            <a class="pill-link w-full justify-center" href="/categories.html"><i class="fas fa-layer-group"></i> Categories</a>
+            <a class="pill-link w-full justify-center" href="/mode.html?category=geography"><i class="fas fa-play"></i> Play Geography</a>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>
