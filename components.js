@@ -125,62 +125,62 @@ function getQuizHeaderMarkup() {
                     </a>
 
                     <div class="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-72 hidden group-hover:block hover:block z-[100]">
-                        <div class="bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl p-2 flex flex-col gap-1 backdrop-blur-xl">
-                            <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-widest border-b border-white/5 mb-1">Mini Games</div>
-                            
-                            <a href="fusion-core.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-                                <div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-400 border border-green-500/20 group-hover/item:bg-green-500 group-hover/item:text-black transition">
-                                    <i class="fas fa-microchip"></i>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-white text-xs font-bold uppercase">Logic League</span>
-                                    <span class="text-[9px] text-slate-500">Mastermind Puzzle</span>
-                                </div>
-                            </a>
+    <div class="bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl p-2 flex flex-col gap-1 backdrop-blur-xl">
+        <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-widest border-b border-white/5 mb-1">Mini Games</div>
+        
+        <a href="fusion-core.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+            <div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-400 border border-green-500/20 group-hover/item:bg-green-500 group-hover/item:text-black transition">
+                <i class="fas fa-microchip"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase">Logic League</span>
+                <span class="text-[9px] text-slate-500">Mastermind Puzzle</span>
+            </div>
+        </a>
 
-                            <a href="timeline-history.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-                                <div class="w-8 h-8 rounded bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20 group-hover/item:bg-amber-500 group-hover/item:text-black transition">
-                                    <i class="fas fa-hourglass-half"></i>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-white text-xs font-bold uppercase">History Timeline</span>
-                                    <span class="text-[9px] text-slate-500">Order Events</span>
-                                </div>
-                            </a>
+        <a href="timeline-history.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+            <div class="w-8 h-8 rounded bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20 group-hover/item:bg-amber-500 group-hover/item:text-black transition">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase">History Timeline</span>
+                <span class="text-[9px] text-slate-500">Order Events</span>
+            </div>
+        </a>
 
-                            <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-                                <div class="w-8 h-8 rounded bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20 group-hover/item:bg-red-500 group-hover/item:text-black transition">
-                                    <i class="fas fa-mask"></i>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-white text-xs font-bold uppercase">Superhero Cinema</span>
-                                    <span class="text-[9px] text-slate-500">Movie Trivia</span>
-                                </div>
-                            </a>
+        <a href="rapid.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+            <div class="w-8 h-8 rounded bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20 group-hover/item:bg-red-500 group-hover/item:text-black transition">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase">Rapid Fire</span>
+                <span class="text-[9px] text-slate-500">Fast-Paced Trivia</span>
+            </div>
+        </a>
 
-                            <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-                                <div class="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover/item:bg-blue-500 group-hover/item:text-black transition">
-                                    <i class="fas fa-calculator"></i>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-white text-xs font-bold uppercase">Speed Math</span>
-                                    <span class="text-[9px] text-slate-500">Quick Calculations</span>
-                                </div>
-                            </a>
+        <a href="hangman.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+            <div class="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 group-hover/item:bg-emerald-500 group-hover/item:text-black transition">
+                <i class="fas fa-font"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase">Hangman</span>
+                <span class="text-[9px] text-slate-500">Classic Word Game</span>
+            </div>
+        </a>
 
-                             <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-                                <div class="w-8 h-8 rounded bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20 group-hover/item:bg-purple-500 group-hover/item:text-black transition">
-                                    <i class="fas fa-globe-americas"></i>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-white text-xs font-bold uppercase">Geo Guesser</span>
-                                    <span class="text-[9px] text-slate-500">Map Skills</span>
-                                </div>
-                            </a>
+        <a href="minigames.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
+            <div class="w-8 h-8 rounded bg-pink-500/10 flex items-center justify-center text-pink-400 border border-pink-500/20 group-hover/item:bg-pink-500 group-hover/item:text-black transition">
+                <i class="fas fa-pencil-alt"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase">Pictionary Live</span>
+                <span class="text-[9px] text-slate-500">Multiplayer Drawing</span>
+            </div>
+        </a>
 
-                        </div>
-                    </div>
-                </div>
+    </div>
+</div>
+                
 
             </nav>
 
