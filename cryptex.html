@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <title>CryptEx • Word Decryption Puzzle | QuizRealm</title>
+  <meta name="description" content="Play CryptEx: a fast word decryption puzzle. Guess letters, lock correct positions, and solve the hidden word in limited attempts. Mobile-friendly and quick to learn." />
+  <meta name="theme-color" content="#020202" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script src="components.js" defer></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Rajdhani', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace']
+          },
+          colors: {
+            ctxGreen: '#00ff41',
+            ctxOrange: '#ff9c00',
+            ctxRed: '#ff2a2a'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root{
+      --bg:#020202;
+      --panel: rgba(10,10,10,.72);
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.06);
+      --ctxGreen:#00ff41;
+      --ctxOrange:#ff9c00;
+      --ctxRed:#ff2a2a;
+    }
+
+    body{
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(rgba(0, 20, 0, 0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 20, 0, 0.10) 1px, transparent 1px),
+        radial-gradient(circle at 50% 0%, rgba(0,255,65,0.09), transparent 60%),
+        radial-gradient(circle at 85% 20%, rgba(255,156,0,0.08), transparent 55%);
+      background-size: 20px 20px, 20px 20px, auto, auto;
+      color: #e5e7eb;
+      min-height: 100vh;
+      touch-action: manipulation;
+    }
+
+    .panel{
+      background: var(--panel);
+      border: 1px solid var(--stroke);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 22px 70px -55px rgba(0,0,0,0.95);
+      border-radius: 22px;
+    }
+
+    .soft{
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--stroke2);
+      border-radius: 18px;
+    }
+
+    /* Board */
+    .game-row{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      margin-bottom: 12px;
+      opacity: 0.35;
+      transform: scale(0.995);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .game-row.active{ opacity: 1; transform: scale(1); }
+    .game-row.done{ opacity: 0.75; filter: grayscale(.55); }
+
+    .letter-slot{
+      width: 54px;
+      height: 62px;
+      background: rgba(5,5,5,0.85);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.85rem;
+      color: #fff;
+      text-transform: uppercase;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.6),
+        0 10px 20px rgba(0,0,0,0.35);
+      transition: border-color .15s ease, transform .15s ease, background .2s ease, color .2s ease;
+    }
+    @media (min-width: 768px){
+      .letter-slot{ width: 62px; height: 70px; font-size: 2rem; }
+    }
+
+    .letter-slot.filled{
+      border-color: rgba(255,255,255,0.55);
+      text-shadow: 0 0 10px rgba(255,255,255,0.35);
+    }
+
+    .letter-slot.correct{
+      background: rgba(0,255,65,0.12);
+      border-color: rgba(0,255,65,0.75);
+      color: var(--ctxGreen);
+      text-shadow: 0 0 12px rgba(0,255,65,0.45);
+      box-shadow: 0 0 24px rgba(0,255,65,0.10);
+    }
+    .letter-slot.partial{
+      background: rgba(255,156,0,0.12);
+      border-color: rgba(255,156,0,0.75);
+      color: var(--ctxOrange);
+      text-shadow: 0 0 10px rgba(255,156,0,0.35);
+    }
+    .letter-slot.wrong{
+      background: rgba(255,255,255,0.03);
+      border-color: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.30);
+    }
+
+    /* Keyboard */
+    .keyboard{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      width: 100%;
+      max-width: 740px;
+      margin: 0 auto;
+    }
+    .kb-row{
+      display:flex;
+      gap: 8px;
+      justify-content:center;
+      width: 100%;
+    }
+    .key{
+      height: 52px;
+      flex: 1 1 auto;
+      max-width: 52px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: .08em;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .08s ease, border-color .15s ease, background .15s ease, filter .15s ease;
+      box-shadow: 0 12px 26px -18px rgba(0,0,0,0.85);
+      font-family: 'Rajdhani', sans-serif;
+    }
+    .key:active{ transform: scale(0.96); filter: brightness(1.12); }
+    .key.big{ max-width: 92px; flex: 1.6 1 auto; }
+
+    .key.used-wrong{
+      background: rgba(0,0,0,0.35);
+      color: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.06);
+    }
+    .key.used-partial{
+      border-color: rgba(255,156,0,0.65);
+      color: var(--ctxOrange);
+      box-shadow: 0 0 18px rgba(255,156,0,0.12);
+    }
+    .key.used-correct{
+      background: rgba(0,255,65,0.10);
+      border-color: rgba(0,255,65,0.65);
+      color: var(--ctxGreen);
+      box-shadow: 0 0 18px rgba(0,255,65,0.12);
+    }
+
+    /* Scan line subtle */
+    .scan-line{
+      position: fixed;
+      left: 0; right: 0;
+      height: 3px;
+      background: rgba(0,255,65,0.25);
+      filter: blur(.2px);
+      animation: scan 3.6s linear infinite;
+      pointer-events:none;
+      z-index: 10;
+    }
+    @keyframes scan{ 0% { top:-10%; } 100% { top:110%; } }
+
+    /* Modal button */
+    .neon-btn{
+      width:100%;
+      background: transparent;
+      border: 1px solid rgba(0,255,65,0.65);
+      color: rgba(0,255,65,0.95);
+      font-family: 'Share Tech Mono', monospace;
+      padding: 12px 18px;
+      border-radius: 14px;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: .14em;
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease, color .15s ease, box-shadow .15s ease;
+      box-shadow: 0 0 0 0 rgba(0,255,65,0.0);
+    }
+    .neon-btn:hover{
+      background: rgba(0,255,65,0.14);
+      box-shadow: 0 0 24px rgba(0,255,65,0.12);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <div class="scan-line"></div>
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-[980px] mx-auto px-4 py-6 md:py-10">
+    <!-- HERO -->
+    <section class="panel p-5 md:p-8 mb-5 md:mb-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] uppercase tracking-[0.35em] text-slate-300">
+            <i class="fas fa-lock text-ctxGreen"></i> Word Decryption Puzzle
+          </div>
+
+          <h1 class="font-display font-black text-4xl md:text-6xl text-white tracking-widest uppercase mt-3 leading-none">
+            CRYPT<span class="text-ctxGreen">EX</span>
+          </h1>
+
+          <p class="text-slate-300 text-sm md:text-base mt-3 max-w-2xl leading-relaxed">
+            Guess letters to reveal the hidden word. Correct letters lock into place, and misplaced letters still help you narrow down the solution.
+          </p>
+        </div>
+
+        <div class="soft p-4 md:p-5 flex items-center justify-between md:flex-col md:items-end md:justify-center gap-3">
+          <div class="text-[10px] uppercase tracking-[0.35em] text-slate-400 font-bold">Attempts</div>
+          <div class="flex items-baseline gap-2">
+            <div id="attemptsLeft" class="font-mono text-4xl md:text-5xl text-ctxRed">6</div>
+            <div class="font-mono text-sm text-slate-400">left</div>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono">
+            Word length: <span class="text-white">5</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 md:mt-6 soft p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="flex items-center gap-3 text-sm text-slate-300">
+          <span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded bg-ctxGreen"></span> correct place</span>
+          <span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded bg-ctxOrange"></span> in word</span>
+          <span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded bg-slate-500"></span> not in word</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="undoBtn"
+                  class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold uppercase tracking-wider text-xs transition">
+            <i class="fas fa-rotate-left mr-2"></i> Undo
+          </button>
+          <button id="resetBtn"
+                  class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold uppercase tracking-wider text-xs transition">
+            <i class="fas fa-rotate mr-2"></i> New Word
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME CARD -->
+    <section class="panel p-5 md:p-8">
+      <div id="game-board" class="w-full flex flex-col items-center"></div>
+
+      <div class="mt-6">
+        <div class="text-[10px] uppercase tracking-[0.35em] text-slate-400 font-bold mb-3 text-center">
+          Secure Input Console
+        </div>
+        <div class="keyboard" id="keyboard-container"></div>
+      </div>
+    </section>
+
+    <!-- SEO / RESOURCEFUL CONTENT -->
+    <section class="mt-8 panel p-6 md:p-8">
+      <div class="text-[10px] uppercase tracking-[0.35em] text-slate-400 font-bold mb-2">How to get better</div>
+      <h2 class="font-display font-black uppercase tracking-wide text-white text-2xl md:text-3xl mb-3">
+        A simple decryption strategy that wins more often
+      </h2>
+      <div class="text-slate-300 text-sm leading-relaxed space-y-3 max-w-3xl">
+        <p>
+          Start with a word that uses <strong class="text-white">common letters</strong> and avoids repeats.
+          Your first attempt is about information: you want to discover which letters are in the word and which are not.
+        </p>
+        <p>
+          When a letter turns <strong class="text-ctxGreen">green</strong>, treat it as locked and build around it.
+          If a letter turns <strong class="text-ctxOrange">orange</strong>, keep it but move it—use it to test positions methodically.
+        </p>
+        <p class="text-slate-400">
+          CryptEx is a quick logic puzzle designed for mobile play—ideal for short sessions, daily streaks, and improving pattern recognition.
+        </p>
+      </div>
+
+      <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="soft p-4">
+          <div class="text-white font-bold mb-1">Fewer random guesses</div>
+          <div class="text-slate-400 text-sm">Every attempt should test a hypothesis.</div>
+        </div>
+        <div class="soft p-4">
+          <div class="text-white font-bold mb-1">Lock + rotate</div>
+          <div class="text-slate-400 text-sm">Keep greens fixed, rotate everything else.</div>
+        </div>
+        <div class="soft p-4">
+          <div class="text-white font-bold mb-1">Watch duplicates</div>
+          <div class="text-slate-400 text-sm">Orange can mean “present”, not “twice”.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <!-- RESULT MODAL -->
+  <div id="result-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <div class="panel border border-white/10 p-8 rounded-2xl max-w-sm w-full text-center">
+      <h2 id="modal-title" class="font-display font-black text-4xl md:text-5xl text-white mb-2 uppercase">ACCESS GRANTED</h2>
+      <div class="text-slate-400 font-mono text-sm mb-6">
+        WORD: <span id="modal-word" class="text-ctxGreen font-bold text-xl tracking-widest">-----</span>
+      </div>
+
+      <p id="modal-msg" class="text-white mb-8">Complete.</p>
+
+      <button onclick="location.reload()" class="neon-btn">
+        <i class="fas fa-rotate mr-2"></i> Play Again
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // --- WORD BANK (5 letters) ---
+    const WORD_BANK = [
+      "APPLE","BEACH","BRAIN","BREAD","BRUSH","CHAIR","CHEST","CHORD","CLICK","CLOCK",
+      "CLOUD","DANCE","DIARY","DRINK","DRIVE","EARTH","FEAST","FIELD","FRUIT","GLASS",
+      "GHOST","GRAPE","GREEN","HEART","HEAVY","HONEY","HORSE","HOUSE","IMAGE","JUICE",
+      "LIGHT","LEMON","LUNCH","MELON","METAL","MONEY","MONTH","MOTOR","MOUTH","MUSIC",
+      "NIGHT","NOISE","NORTH","NURSE","OCEAN","PARTY","PHONE","PHOTO","PIANO","PILOT",
+      "PLANE","PLANT","PLATE","POWER","RADIO","RANGE","RIVER","ROBOT","ROUND","SCALE",
+      "SCENE","SCOPE","SHAPE","SHARE","SHEEP","SHEET","SHIRT","SHOES","SIGHT","SKILL",
+      "SLEEP","SMALL","SMILE","SNAKE","SPACE","SPOON","STACK","STAFF","STAGE","START",
+      "STEAM","STEEL","STONE","STORM","SUGAR","TABLE","TASTE","THEME","THING","TIGER",
+      "TITLE","TOAST","TOUCH","TOWER","TRACK","TRADE","TRAIN","TRUCK","UNCLE","VALUE",
+      "VIDEO","VIRUS","VOICE","WASTE","WATCH","WATER","WHALE","WORLD","WRITE","YOUTH","ZEBRA"
+    ];
+
+    const MAX_ROWS = 6;
+    const WORD_LENGTH = 5;
+
+    let secretWord = "";
+    let currentRow = 0;
+    let currentGuess = Array(WORD_LENGTH).fill(null);
+    let lockedLetters = Array(WORD_LENGTH).fill(null);
+    let isGameOver = false;
+    let isProcessing = false;
+
+    const els = {
+      board: document.getElementById('game-board'),
+      kb: document.getElementById('keyboard-container'),
+      attemptsLeft: document.getElementById('attemptsLeft'),
+      undoBtn: document.getElementById('undoBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      modal: document.getElementById('result-modal'),
+      modalTitle: document.getElementById('modal-title'),
+      modalWord: document.getElementById('modal-word'),
+      modalMsg: document.getElementById('modal-msg')
+    };
+
+    function initGame() {
+      secretWord = WORD_BANK[Math.floor(Math.random() * WORD_BANK.length)];
+      // console.log("Target:", secretWord);
+
+      currentRow = 0;
+      currentGuess = Array(WORD_LENGTH).fill(null);
+      lockedLetters = Array(WORD_LENGTH).fill(null);
+      isGameOver = false;
+      isProcessing = false;
+
+      buildBoard();
+      buildKeyboard();
+      updateAttempts();
+      setActiveRow(0);
+      paintRow();
+      els.modal.classList.add('hidden');
+    }
+
+    function buildBoard() {
+      els.board.innerHTML = '';
+      for (let r = 0; r < MAX_ROWS; r++) {
+        const row = document.createElement('div');
+        row.className = 'game-row';
+        row.id = `row-${r}`;
+
+        for (let c = 0; c < WORD_LENGTH; c++) {
+          const slot = document.createElement('div');
+          slot.className = 'letter-slot';
+          slot.id = `slot-${r}-${c}`;
+          row.appendChild(slot);
+        }
+        els.board.appendChild(row);
+      }
+    }
+
+    function buildKeyboard() {
+      els.kb.innerHTML = '';
+      const rows = [
+        ['Q','W','E','R','T','Y','U','I','O','P'],
+        ['A','S','D','F','G','H','J','K','L'],
+        ['Z','X','C','V','B','N','M','DEL']
+      ];
+
+      rows.forEach(keys => {
+        const row = document.createElement('div');
+        row.className = 'kb-row';
+        keys.forEach(k => {
+          const key = document.createElement('button');
+          key.type = "button";
+          key.className = 'key';
+          if (k === 'DEL') key.classList.add('big');
+          key.dataset.key = k;
+          key.innerHTML = (k === 'DEL') ? '<i class="fas fa-backspace"></i>' : k;
+          key.addEventListener('click', () => handleInput(k));
+          row.appendChild(key);
+        });
+        els.kb.appendChild(row);
+      });
+    }
+
+    function handleInput(key) {
+      if (isGameOver || isProcessing) return;
+
+      if (key === 'DEL') return deleteLetter();
+      if (/^[A-Z]$/.test(key)) return addLetter(key);
+    }
+
+    function addLetter(letter) {
+      // fill first non-locked empty
+      for (let i = 0; i < WORD_LENGTH; i++) {
+        if (lockedLetters[i] === null && currentGuess[i] === null) {
+          currentGuess[i] = letter;
+          paintRow();
+          return maybeAutoSubmit();
+        }
+      }
+    }
+
+    function deleteLetter() {
+      for (let i = WORD_LENGTH - 1; i >= 0; i--) {
+        if (lockedLetters[i] === null && currentGuess[i] !== null) {
+          currentGuess[i] = null;
+          paintRow();
+          return;
+        }
+      }
+    }
+
+    function paintRow() {
+      const r = currentRow;
+      for (let c = 0; c < WORD_LENGTH; c++) {
+        const slot = document.getElementById(`slot-${r}-${c}`);
+        slot.classList.remove('filled','correct','partial','wrong');
+
+        if (lockedLetters[c] !== null) {
+          slot.textContent = lockedLetters[c];
+          slot.classList.add('correct');
+        } else if (currentGuess[c] !== null) {
+          slot.textContent = currentGuess[c];
+          slot.classList.add('filled');
+        } else {
+          slot.textContent = '';
+        }
+      }
+    }
+
+    function maybeAutoSubmit() {
+      // full when all are either locked or guessed
+      for (let i = 0; i < WORD_LENGTH; i++) {
+        if (lockedLetters[i] === null && currentGuess[i] === null) return;
+      }
+      submitGuess();
+    }
+
+    function setActiveRow(r) {
+      document.querySelectorAll('.game-row').forEach(el => el.classList.remove('active'));
+      const row = document.getElementById(`row-${r}`);
+      if (row) row.classList.add('active');
+    }
+
+    function updateAttempts() {
+      const left = MAX_ROWS - currentRow;
+      els.attemptsLeft.textContent = left;
+    }
+
+    function constructFullGuess() {
+      let out = '';
+      for (let i = 0; i < WORD_LENGTH; i++) {
+        out += (lockedLetters[i] !== null) ? lockedLetters[i] : currentGuess[i];
+      }
+      return out;
+    }
+
+    function submitGuess() {
+      if (isProcessing) return;
+      isProcessing = true;
+
+      const fullGuess = constructFullGuess();
+      const answer = secretWord.split('');
+      const guess = fullGuess.split('');
+
+      // frequency map for non-exact evaluation
+      const freq = {};
+      for (const ch of answer) freq[ch] = (freq[ch] || 0) + 1;
+
+      const status = Array(WORD_LENGTH).fill('wrong');
+      const newLocked = [...lockedLetters];
+
+      // Exact pass
+      for (let i = 0; i < WORD_LENGTH; i++) {
+        if (guess[i] === answer[i]) {
+          status[i] = 'correct';
+          newLocked[i] = guess[i];
+          freq[guess[i]]--;
+          updateKeyState(guess[i], 'used-correct');
+        }
+      }
+
+      // Partial pass
+      for (let i = 0; i < WORD_LENGTH; i++) {
+        if (status[i] === 'correct') continue;
+        const ch = guess[i];
+        if (freq[ch] > 0) {
+          status[i] = 'partial';
+          freq[ch]--;
+          updateKeyState(ch, 'used-partial');
+        } else {
+          updateKeyState(ch, 'used-wrong');
+        }
+      }
+
+      // Animate reveal on the current row
+      for (let i = 0; i < WORD_LENGTH; i++) {
+        setTimeout(() => {
+          const slot = document.getElementById(`slot-${currentRow}-${i}`);
+          slot.classList.remove('filled');
+          slot.classList.add(status[i]);
+        }, i * 120);
+      }
+
+      setTimeout(() => {
+        // Win
+        if (fullGuess === secretWord) {
+          return showResult(true);
+        }
+
+        // Mark row done
+        const rowEl = document.getElementById(`row-${currentRow}`);
+        rowEl.classList.remove('active');
+        rowEl.classList.add('done');
+
+        // Lose
+        if (currentRow >= MAX_ROWS - 1) {
+          return showResult(false);
+        }
+
+        // Next row
+        currentRow++;
+        lockedLetters = newLocked;
+        currentGuess = Array(WORD_LENGTH).fill(null);
+        setActiveRow(currentRow);
+        paintRow();
+        updateAttempts();
+        isProcessing = false;
+      }, (WORD_LENGTH * 120) + 220);
+    }
+
+    function updateKeyState(char, state) {
+      const el = document.querySelector(`.key[data-key="${char}"]`);
+      if (!el) return;
+
+      // do not downgrade correct
+      if (el.classList.contains('used-correct')) return;
+      if (state === 'used-wrong' && el.classList.contains('used-partial')) return;
+
+      el.classList.remove('used-wrong','used-partial');
+      el.classList.add(state);
+    }
+
+    function showResult(win) {
+      isGameOver = true;
+      isProcessing = false;
+
+      els.modal.classList.remove('hidden');
+      els.modalWord.textContent = secretWord;
+
+      if (win) {
+        els.modalTitle.textContent = "DECRYPTED";
+        els.modalTitle.className = "font-display font-black text-4xl md:text-5xl text-ctxGreen mb-2 uppercase";
+        els.modalMsg.textContent = "Access granted. Pattern confirmed.";
+      } else {
+        els.modalTitle.textContent = "LOCKED OUT";
+        els.modalTitle.className = "font-display font-black text-4xl md:text-5xl text-ctxRed mb-2 uppercase";
+        els.modalMsg.textContent = "No attempts left. Try a new word.";
+      }
+    }
+
+    // Buttons
+    els.undoBtn.addEventListener('click', deleteLetter);
+    els.resetBtn.addEventListener('click', initGame);
+
+    // Physical keyboard
+    document.addEventListener('keydown', (e) => {
+      const k = e.key.toUpperCase();
+      if (k === 'BACKSPACE') return handleInput('DEL');
+      if (/^[A-Z]$/.test(k)) return handleInput(k);
+    });
+
+    window.addEventListener('load', initGame);
+  </script>
+</body>
+</html>

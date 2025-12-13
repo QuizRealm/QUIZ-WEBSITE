@@ -58,7 +58,8 @@ function getQuizHeaderMarkup() {
     const avatarUrl  = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(avatarSeed)}`;
 
     return `
-    <header class="w-full sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg shadow-red-900/5 relative overflow-visible">
+<header class="w-full sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg shadow-red-900/5 relative overflow-visible"
+        style="-webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);">
         
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500/0 via-red-500/50 to-red-500/0 opacity-50"></div>
 
@@ -76,16 +77,27 @@ function getQuizHeaderMarkup() {
             </div>
         </div>
 
-        <div class="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between gap-4">
+<div class="max-w-[1400px] mx-auto px-3 sm:px-4 py-3
+            flex flex-col sm:flex-row
+            sm:items-center
+            sm:justify-between
+            gap-3">
             
-            <a href="index.html" class="flex items-center gap-3 group shrink-0">
+<a href="index.html"
+   class="flex items-center gap-3 group
+          w-full sm:w-auto
+          justify-center sm:justify-start
+          shrink-0">
                 <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all relative border border-white/10">
                     <div class="absolute -top-1.5 -right-1.5 bg-red-600 w-4 h-4 rounded-full border-2 border-[#020617] z-20"></div>
                     <i class="fas fa-ghost text-xl md:text-2xl text-white relative z-10"></i>
                 </div>
                 
                 <div class="flex flex-col justify-center">
-                    <span class="font-arcade text-lg md:text-2xl text-white leading-none tracking-widest drop-shadow-md group-hover:text-blue-200 transition-colors">
+<span class="font-arcade
+             text-xl sm:text-lg md:text-2xl
+             text-white leading-none tracking-widest
+             drop-shadow-md">
                         QUIZ<span class="text-blue-500">REALM</span>
                     </span>
                     <div class="flex items-center gap-2 mt-0.5">
@@ -184,7 +196,7 @@ function getQuizHeaderMarkup() {
 
             </nav>
 
-            <div class="flex items-center gap-3">
+<div class="flex items-center gap-2 sm:gap-3 shrink-0">
                 
                 <a href="christmas-hub.html" class="xl:hidden w-10 h-10 rounded-xl bg-gradient-to-br from-red-900 to-black border border-red-500/30 flex items-center justify-center text-red-400 animate-pulse active:scale-95 transition">
                     <i class="fas fa-gift"></i>
@@ -215,31 +227,70 @@ function getQuizHeaderMarkup() {
             </div>
         </div>
 
-        <div class="md:hidden border-t border-white/10 bg-[#020617]/95 backdrop-blur-xl px-2 py-2 fixed bottom-0 w-full z-[60]">
-            <nav class="grid grid-cols-5 gap-1">
-                <a href="categories.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white">
-                    <i class="fas fa-layer-group text-sm mb-1 text-blue-400"></i>
-                    <span class="text-[9px] font-bold">Topics</span>
-                </a>
-                <a href="arcade.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white">
-                    <i class="fas fa-gamepad text-sm mb-1 text-pink-400"></i>
-                    <span class="text-[9px] font-bold">Arcade</span>
-                </a>
-                <a href="christmas-hub.html" class="flex flex-col items-center justify-center py-2 rounded-lg bg-red-900/20 text-red-400 border border-red-500/20 -mt-4 mb-2 shadow-lg shadow-red-900/40">
-                    <i class="fas fa-tree text-lg mb-0 animate-bounce"></i>
-                    <span class="text-[9px] font-bold">XMAS</span>
-                </a>
-                <a href="daily.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white relative">
-                    <div class="absolute top-2 right-4 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
-                    <i class="fas fa-calendar-day text-sm mb-1 text-emerald-400"></i>
-                    <span class="text-[9px] font-bold">Daily</span>
-                </a>
-                <a href="profile.html" class="flex flex-col items-center justify-center py-2 rounded-lg active:bg-white/5 text-slate-400 hover:text-white">
-                    <i class="fas fa-user text-sm mb-1 text-amber-400"></i>
-                    <span class="text-[9px] font-bold">Me</span>
-                </a>
-            </nav>
+         <!-- MOBILE BOTTOM NAV (iPhone-safe + title restored) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 z-[80] border-t border-white/10 bg-[#020617]/95 backdrop-blur-xl"
+     style="padding-bottom: env(safe-area-inset-bottom);">
+
+  <div class="max-w-[900px] mx-auto px-3 pt-2 pb-2">
+
+    <!-- Title row (always visible) -->
+    <div class="flex items-center justify-between mb-2">
+      <a href="index.html"
+         class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 active:scale-[0.98] transition">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-900 border border-white/10 flex items-center justify-center">
+          <i class="fas fa-ghost text-white text-sm"></i>
+        </span>
+
+        <!-- IMPORTANT: do NOT rely on font-arcade on mobile -->
+        <div class="leading-none">
+          <div class="text-white font-extrabold tracking-widest text-[12px]">
+            QUIZ<span class="text-blue-400">REALM</span>
+          </div>
+          <div class="text-[9px] text-slate-400 tracking-widest uppercase mt-0.5">
+            Play • Learn • Compete
+          </div>
         </div>
+      </a>
+
+      <!-- Sticky Home button (extra, visible, not redundant) -->
+      <a href="index.html"
+         class="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-200 active:scale-[0.98] transition">
+        <i class="fas fa-house"></i>
+      </a>
+    </div>
+
+    <!-- Buttons row (your important ones) -->
+    <nav class="grid grid-cols-4 gap-2">
+      <a href="categories.html"
+         class="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white/5 border border-white/10 text-white active:scale-[0.98] transition">
+        <i class="fas fa-layer-group text-base text-blue-300 mb-1"></i>
+        <span class="text-[10px] font-extrabold tracking-widest uppercase">Categories</span>
+      </a>
+
+      <a href="arcade.html"
+         class="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white/5 border border-white/10 text-white active:scale-[0.98] transition">
+        <i class="fas fa-gamepad text-base text-pink-300 mb-1"></i>
+        <span class="text-[10px] font-extrabold tracking-widest uppercase">Arcade</span>
+      </a>
+
+      <a href="daily.html"
+         class="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white/5 border border-white/10 text-white active:scale-[0.98] transition relative">
+        <i class="fas fa-calendar-day text-base text-emerald-300 mb-1"></i>
+        <span class="text-[10px] font-extrabold tracking-widest uppercase">Daily</span>
+        <span class="absolute top-2 right-3 w-2 h-2 bg-red-500 rounded-full"></span>
+      </a>
+
+      <a href="profile.html"
+         class="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white/5 border border-white/10 text-white active:scale-[0.98] transition">
+        <i class="fas fa-user text-base text-amber-300 mb-1"></i>
+        <span class="text-[10px] font-extrabold tracking-widest uppercase">Me</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+        
     </header>`;
 }
 
@@ -453,5 +504,175 @@ if (!customElements.get("quiz-seo-content")) {
     }
     customElements.define("quiz-seo-content", QuizSeoContent);
 }
+// ================================
+// GLOBAL RESOURCE HUB (AUTO-INJECT)
+// Inserts a helpful SEO + navigation card BEFORE <quiz-footer>
+// ================================
+function injectGlobalResourceHubCard() {
+  const footer = document.querySelector("quiz-footer");
+  if (!footer) return;
+
+  // Avoid duplicates
+  if (document.getElementById("qr-resource-hub-card")) return;
+
+  // Optional: do not show on some pages (uncomment if you want)
+  // const block = ["arcade.html", "categories.html"];
+  // if (block.some(p => location.pathname.endsWith(p))) return;
+
+  const section = document.createElement("section");
+  section.id = "qr-resource-hub-card";
+  section.className = "w-full max-w-[1400px] mx-auto px-4 my-12 md:my-16";
+
+  section.innerHTML = `
+    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#060B18] via-[#050810] to-[#070A12] shadow-2xl">
+
+      <!-- Subtle grid + glow (different style than your usual SEO cards) -->
+      <div class="absolute inset-0 opacity-60"
+           style="background-image:
+             radial-gradient(circle at 20% 15%, rgba(34,211,238,0.16), transparent 50%),
+             radial-gradient(circle at 85% 25%, rgba(59,130,246,0.12), transparent 45%),
+             radial-gradient(circle at 35% 85%, rgba(16,185,129,0.10), transparent 50%),
+             linear-gradient(to bottom, rgba(255,255,255,0.04), transparent 40%),
+             repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 34px);">
+      </div>
+
+      <div class="relative p-6 md:p-10">
+        <div class="flex flex-col lg:flex-row gap-8 lg:items-start">
+
+          <!-- Left: value proposition + SEO copy -->
+          <div class="flex-1">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] font-mono uppercase tracking-[0.32em] text-slate-300">
+              <i class="fas fa-compass text-cyan-300"></i>
+              QuizRealm Resource Hub
+            </div>
+
+            <h2 class="font-arcade text-2xl md:text-4xl text-white leading-tight mt-4">
+              Find the right game fast — and get better every round
+            </h2>
+
+            <p class="text-slate-300 leading-relaxed mt-3 max-w-2xl">
+              Use this quick hub to jump into <strong class="text-white">trivia categories</strong>, explore the <strong class="text-white">Arcade mini-games</strong>,
+              and learn the rules that help you score higher. Internal links like these also make navigation easier across QuizRealm.
+            </p>
+
+            <!-- Micro “guide” blocks (useful content = SEO-friendly) -->
+            <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div class="text-[10px] uppercase tracking-[0.28em] text-slate-400 font-bold mb-2">Best for new players</div>
+                <div class="text-white font-bold">Start with Categories</div>
+                <div class="text-slate-400 text-xs mt-1">Pick a topic, choose difficulty, play instantly.</div>
+              </div>
+
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div class="text-[10px] uppercase tracking-[0.28em] text-slate-400 font-bold mb-2">Best for daily habit</div>
+                <div class="text-white font-bold">Daily Challenge</div>
+                <div class="text-slate-400 text-xs mt-1">One run per day — climb steadily over time.</div>
+              </div>
+
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div class="text-[10px] uppercase tracking-[0.28em] text-slate-400 font-bold mb-2">Best for speed</div>
+                <div class="text-white font-bold">Arcade Mode</div>
+                <div class="text-slate-400 text-xs mt-1">Short sessions, high replay value, fast feedback.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: link tiles (strong internal linking + descriptive anchor text) -->
+          <div class="w-full lg:w-[440px]">
+            <div class="rounded-3xl border border-white/10 bg-black/30 backdrop-blur-xl p-5 md:p-6">
+              <div class="flex items-center justify-between gap-3 mb-4">
+                <div class="text-[10px] uppercase tracking-[0.32em] text-slate-400 font-bold">
+                  Quick Links
+                </div>
+                <div class="text-[10px] font-mono text-slate-500">
+                  Updated globally
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 gap-3">
+                <a href="/index.html"
+                   class="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-4 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-300">
+                    <i class="fas fa-house"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-white font-bold uppercase tracking-wider text-xs">QuizRealm Home</div>
+                    <div class="text-slate-400 text-xs">Main hub, featured modes, latest updates.</div>
+                  </div>
+                  <i class="fas fa-chevron-right text-slate-500 group-hover:text-white transition"></i>
+                </a>
+
+                <a href="/categories.html"
+                   class="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-4 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300">
+                    <i class="fas fa-layer-group"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-white font-bold uppercase tracking-wider text-xs">Trivia Categories</div>
+                    <div class="text-slate-400 text-xs">Browse TV, movies, science, history, geography and more.</div>
+                  </div>
+                  <i class="fas fa-chevron-right text-slate-500 group-hover:text-white transition"></i>
+                </a>
+
+                <a href="/daily.html"
+                   class="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-4 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-300">
+                    <i class="fas fa-calendar-day"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-white font-bold uppercase tracking-wider text-xs">Daily Challenge Quiz</div>
+                    <div class="text-slate-400 text-xs">A fresh run to keep your streak alive.</div>
+                  </div>
+                  <i class="fas fa-chevron-right text-slate-500 group-hover:text-white transition"></i>
+                </a>
+
+                <a href="/arcade.html"
+                   class="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-4 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-300">
+                    <i class="fas fa-gamepad"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-white font-bold uppercase tracking-wider text-xs">Arcade Mini-Games</div>
+                    <div class="text-slate-400 text-xs">Timeline, Hangman, Logic League, and more.</div>
+                  </div>
+                  <i class="fas fa-chevron-right text-slate-500 group-hover:text-white transition"></i>
+                </a>
+
+                <a href="/timeline-history.html"
+                   class="group rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/15 hover:to-blue-500/15 transition p-4 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white">
+                    <i class="fas fa-hourglass-half"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-white font-black uppercase tracking-wider text-xs">Featured: Timeline Game</div>
+                    <div class="text-slate-300 text-xs">Order events correctly — the fastest way to learn history.</div>
+                  </div>
+                  <span class="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-200 px-2 py-1 rounded-full border border-cyan-400/30 bg-cyan-400/10">
+                    Play
+                  </span>
+                </a>
+              </div>
+
+              <!-- Small SEO-friendly FAQ microcopy -->
+              <div class="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div class="text-[10px] uppercase tracking-[0.28em] text-slate-400 font-bold mb-2">
+                  Quick Tip
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                  Want higher scores? Pick one topic, play 2–3 short rounds, and learn from the explanations. Consistency beats speed-guessing.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  `;
+
+  footer.parentNode.insertBefore(section, footer);
+}
+
+document.addEventListener("DOMContentLoaded", injectGlobalResourceHubCard);
 
 console.log("Components.js loaded successfully.");

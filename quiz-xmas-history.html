@@ -205,294 +205,324 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
    <script>
-    // Bigger pool of Santa / folklore questions
-    const allQuestions = [
-        {
-            q: "Before Santa Claus, which horned figure punished naughty children in Alpine folklore?",
-            options: ["The Grinch", "Krampus", "Belsnickel", "Loki"],
-            a: 1,
-            fact: "Krampus is a half-goat, half-demon figure who punishes misbehaving children during the Christmas season. In Austria, 'Krampusnacht' is celebrated on December 5th."
-        },
-        {
-            q: "Which Norse God is believed to be the original inspiration for Santa riding across the sky?",
-            options: ["Thor", "Loki", "Odin", "Baldur"],
-            a: 2,
-            fact: "Odin was said to lead a 'Wild Hunt' through the sky during Yule, riding his eight-legged horse Sleipnir. This likely inspired Santa's eight reindeer."
-        },
-        {
-            q: "In which modern-day country was the real Saint Nicholas born?",
-            options: ["Finland (North Pole)", "Turkey", "Germany", "Italy"],
-            a: 1,
-            fact: "Saint Nicholas was a Greek bishop born in Patara, located in modern-day Turkey, around 280 A.D. He was famous for giving secret gifts, such as putting coins in shoes."
-        },
-        {
-            q: "Who is responsible for popularizing the image of Santa as a jolly man in a red suit?",
-            options: ["Coca-Cola", "Charles Dickens", "Hallmark Cards", "Queen Victoria"],
-            a: 0,
-            fact: "While Santa wore red before, Haddon Sundblom's 1930s illustrations for Coca-Cola standardized the 'jolly, grandfatherly' image we know today."
-        },
-        {
-            q: "Why do we hang stockings by the fireplace?",
-            options: ["To dry wet socks", "To trap evil spirits", "St. Nick dropped gold in them", "To feed the reindeer"],
-            a: 2,
-            fact: "Legend says St. Nicholas dropped three bags of gold down a chimney for three poor sisters. The gold landed in their stockings, which were hung by the fire to dry."
-        },
-        {
-            q: "The date of December 25th was originally a festival for which Roman god?",
-            options: ["Jupiter", "Mars", "Sol Invictus (The Sun)", "Bacchus"],
-            a: 2,
-            fact: "The Romans celebrated 'Dies Natalis Solis Invicti' (Birthday of the Unconquered Sun) on December 25th. Many midwinter traditions later merged with Christmas."
-        },
-        {
-            q: "On which date is Saint Nicholas Day traditionally celebrated in much of Europe?",
-            options: ["December 1st", "December 5th", "December 6th", "December 24th"],
-            a: 2,
-            fact: "Saint Nicholas Day is usually celebrated on December 6th, especially in countries like the Netherlands, Belgium, Germany and parts of Central Europe."
-        },
-        {
-            q: "The German figure 'Belsnickel' is best described as:",
-            options: [
-                "A ragged, fur-clad gift-bringer who tests children",
-                "A magical reindeer",
-                "A Christmas witch who rides a broom",
-                "A snow demon that steals toys"
-            ],
-            a: 0,
-            fact: "Belsnickel is a gruff, fur-wearing figure who visits homes before Christmas, often scolding naughty children and rewarding the well-behaved with small treats."
-        },
-        {
-            q: "In Italian folklore, which figure rides a broom and delivers gifts on Epiphany?",
-            options: ["La Befana", "Frau Perchta", "Gryla", "Mari Lwyd"],
-            a: 0,
-            fact: "La Befana is an old woman who flies on a broomstick and delivers gifts on the night before Epiphany (January 6th), filling children's stockings with sweets."
-        },
-        {
-            q: "The Scandinavian 'Yule Goat' originally represented:",
-            options: [
-                "Thor's goat-drawn chariot",
-                "A devil sent to steal presents",
-                "A guardian of the forest",
-                "A winter spirit of snowstorms"
-            ],
-            a: 0,
-            fact: "The Yule Goat is linked to the Norse god Thor, whose chariot was pulled by two goats. Over time, it became a symbol of Christmas, sometimes even a gift-bringer."
-        },
-        {
-            q: "In some Northern European traditions, children left hay or carrots in their shoes for:",
-            options: ["Krampus", "Rudolph", "Sleipnir", "The Yule Goat"],
-            a: 2,
-            fact: "Children would leave food in their shoes for Sleipnir, Odin's eight-legged horse, hoping Odin would leave small gifts in return during the Yule season."
-        },
-        {
-            q: "Which famous 1823 poem gave us many modern details of Santa, like reindeer and chimney visits?",
-            options: [
-                "\"A Christmas Carol\"",
-                "\"A Visit from St. Nicholas\"",
-                "\"The Snow Queen\"",
-                "\"The Holly and the Ivy\""
-            ],
-            a: 1,
-            fact: "The poem 'A Visit from St. Nicholas'—better known by its first line, '’Twas the night before Christmas'—introduced many features of the modern Santa myth."
-        },
-        {
-            q: "The name 'Santa Claus' comes from which language's version of Saint Nicholas?",
-            options: ["Dutch", "German", "Finnish", "Latin"],
-            a: 0,
-            fact: "The name 'Santa Claus' comes from the Dutch 'Sinterklaas', itself derived from 'Sint Nikolaas' (Saint Nicholas)."
-        },
-        {
-            q: "In Dutch tradition, Sinterklaas is said to travel to the Low Countries from which place?",
-            options: ["The North Pole", "Spain", "Germany", "Rome"],
-            a: 1,
-            fact: "In Dutch stories, Sinterklaas arrives each year by steamboat from Spain, bringing gifts and sweets for children."
-        },
-        {
-            q: "In Icelandic folklore, which monstrous cat is said to eat those who don't receive new clothes before Christmas?",
-            options: ["Fenrir", "Jólakötturinn", "Grendel", "The Snow Warg"],
-            a: 1,
-            fact: "Jólakötturinn, the Yule Cat, is a giant feline of Icelandic folklore that supposedly devours people who don't get new clothes before Christmas Eve."
-        }
-    ];
-
-    const QUESTION_COUNT = 10; // how many questions per run (picked randomly)
-
-    let questions = [];
-    let currentIdx = 0;
-    let score = 0;
-    let isLocked = false;
-
-    const ui = {
-        card: document.getElementById('quizCard'),
-        qNum: document.getElementById('qNum'),
-        text: document.getElementById('questionText'),
-        grid: document.getElementById('optionsGrid'),
-        panel: document.getElementById('factPanel'),
-        factTitle: document.getElementById('factTitle'),
-        factBody: document.getElementById('factBody'),
-        results: document.getElementById('resultsCard'),
-        finalScore: document.getElementById('finalScore'),
-        total: document.getElementById('totalQuestions')
-    };
-
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
+  // Bigger pool of Santa / folklore questions
+  const allQuestions = [
+    {
+      q: "Before Santa Claus, which horned figure punished naughty children in Alpine folklore?",
+      options: ["The Grinch", "Krampus", "Belsnickel", "Loki"],
+      a: 1,
+      fact: "Krampus is a half-goat, half-demon figure who punishes misbehaving children during the Christmas season. In Austria, 'Krampusnacht' is celebrated on December 5th."
+    },
+    {
+      q: "Which Norse God is believed to be the original inspiration for Santa riding across the sky?",
+      options: ["Thor", "Loki", "Odin", "Baldur"],
+      a: 2,
+      fact: "Odin was said to lead a 'Wild Hunt' through the sky during Yule, riding his eight-legged horse Sleipnir. This likely inspired Santa's eight reindeer."
+    },
+    {
+      q: "In which modern-day country was the real Saint Nicholas born?",
+      options: ["Finland (North Pole)", "Turkey", "Germany", "Italy"],
+      a: 1,
+      fact: "Saint Nicholas was a Greek bishop born in Patara, located in modern-day Turkey, around 280 A.D. He was famous for giving secret gifts, such as putting coins in shoes."
+    },
+    {
+      q: "Who is responsible for popularizing the image of Santa as a jolly man in a red suit?",
+      options: ["Coca-Cola", "Charles Dickens", "Hallmark Cards", "Queen Victoria"],
+      a: 0,
+      fact: "While Santa wore red before, Haddon Sundblom's 1930s illustrations for Coca-Cola standardized the 'jolly, grandfatherly' image we know today."
+    },
+    {
+      q: "Why do we hang stockings by the fireplace?",
+      options: ["To dry wet socks", "To trap evil spirits", "St. Nick dropped gold in them", "To feed the reindeer"],
+      a: 2,
+      fact: "Legend says St. Nicholas dropped three bags of gold down a chimney for three poor sisters. The gold landed in their stockings, which were hung by the fire to dry."
+    },
+    {
+      q: "The date of December 25th was originally a festival for which Roman god?",
+      options: ["Jupiter", "Mars", "Sol Invictus (The Sun)", "Bacchus"],
+      a: 2,
+      fact: "The Romans celebrated 'Dies Natalis Solis Invicti' (Birthday of the Unconquered Sun) on December 25th. Many midwinter traditions later merged with Christmas."
+    },
+    {
+      q: "On which date is Saint Nicholas Day traditionally celebrated in much of Europe?",
+      options: ["December 1st", "December 5th", "December 6th", "December 24th"],
+      a: 2,
+      fact: "Saint Nicholas Day is usually celebrated on December 6th, especially in countries like the Netherlands, Belgium, Germany and parts of Central Europe."
+    },
+    {
+      q: "The German figure 'Belsnickel' is best described as:",
+      options: [
+        "A ragged, fur-clad gift-bringer who tests children",
+        "A magical reindeer",
+        "A Christmas witch who rides a broom",
+        "A snow demon that steals toys"
+      ],
+      a: 0,
+      fact: "Belsnickel is a gruff, fur-wearing figure who visits homes before Christmas, often scolding naughty children and rewarding the well-behaved with small treats."
+    },
+    {
+      q: "In Italian folklore, which figure rides a broom and delivers gifts on Epiphany?",
+      options: ["La Befana", "Frau Perchta", "Gryla", "Mari Lwyd"],
+      a: 0,
+      fact: "La Befana is an old woman who flies on a broomstick and delivers gifts on the night before Epiphany (January 6th), filling children's stockings with sweets."
+    },
+    {
+      q: "The Scandinavian 'Yule Goat' originally represented:",
+      options: [
+        "Thor's goat-drawn chariot",
+        "A devil sent to steal presents",
+        "A guardian of the forest",
+        "A winter spirit of snowstorms"
+      ],
+      a: 0,
+      fact: "The Yule Goat is linked to the Norse god Thor, whose chariot was pulled by two goats. Over time, it became a symbol of Christmas, sometimes even a gift-bringer."
+    },
+    {
+      q: "In some Northern European traditions, children left hay or carrots in their shoes for:",
+      options: ["Krampus", "Rudolph", "Sleipnir", "The Yule Goat"],
+      a: 2,
+      fact: "Children would leave food in their shoes for Sleipnir, Odin's eight-legged horse, hoping Odin would leave small gifts in return during the Yule season."
+    },
+    {
+      q: "Which famous 1823 poem gave us many modern details of Santa, like reindeer and chimney visits?",
+      options: [
+        "\"A Christmas Carol\"",
+        "\"A Visit from St. Nicholas\"",
+        "\"The Snow Queen\"",
+        "\"The Holly and the Ivy\""
+      ],
+      a: 1,
+      fact: "The poem 'A Visit from St. Nicholas'—better known by its first line, '’Twas the night before Christmas'—introduced many features of the modern Santa myth."
+    },
+    {
+      q: "The name 'Santa Claus' comes from which language's version of Saint Nicholas?",
+      options: ["Dutch", "German", "Finnish", "Latin"],
+      a: 0,
+      fact: "The name 'Santa Claus' comes from the Dutch 'Sinterklaas', itself derived from 'Sint Nikolaas' (Saint Nicholas)."
+    },
+    {
+      q: "In Dutch tradition, Sinterklaas is said to travel to the Low Countries from which place?",
+      options: ["The North Pole", "Spain", "Germany", "Rome"],
+      a: 1,
+      fact: "In Dutch stories, Sinterklaas arrives each year by steamboat from Spain, bringing gifts and sweets for children."
+    },
+    {
+      q: "In Icelandic folklore, which monstrous cat is said to eat those who don't receive new clothes before Christmas?",
+      options: ["Fenrir", "Jólakötturinn", "Grendel", "The Snow Warg"],
+      a: 1,
+      fact: "Jólakötturinn, the Yule Cat, is a giant feline of Icelandic folklore that supposedly devours people who don't get new clothes before Christmas Eve."
     }
+  ];
 
-    function toRoman(num) {
-        const roman = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
-        return roman[num - 1] || num;
+  const QUESTION_COUNT = 10;
+
+  let questions = [];
+  let currentIdx = 0;
+  let score = 0;
+  let isLocked = false;
+
+  let startTimeMs = Date.now();
+
+  const ui = {
+    card: document.getElementById('quizCard'),
+    qNum: document.getElementById('qNum'),
+    text: document.getElementById('questionText'),
+    grid: document.getElementById('optionsGrid'),
+    panel: document.getElementById('factPanel'),
+    factTitle: document.getElementById('factTitle'),
+    factBody: document.getElementById('factBody'),
+    results: document.getElementById('resultsCard'),
+    finalScore: document.getElementById('finalScore'),
+    total: document.getElementById('totalQuestions')
+  };
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
     }
+    return array;
+  }
 
-    function startQuiz() {
-        const pool = shuffle([...allQuestions]); // don't mutate original
-        const count = Math.min(QUESTION_COUNT, pool.length);
-        questions = pool.slice(0, count);
+  function toRoman(num) {
+    const roman = ["I","II","III","IV","V","VI","VII","VIII","IX","X"];
+    return roman[num - 1] || String(num);
+  }
 
-        currentIdx = 0;
-        score = 0;
-        isLocked = false;
+  function showPanel() {
+    ui.panel.classList.remove('translate-y-full');
+    ui.panel.classList.add('translate-y-0');
+  }
 
-        loadQuestion();
-    }
+  function hidePanel() {
+    ui.panel.classList.remove('translate-y-0');
+    ui.panel.classList.add('translate-y-full');
+  }
 
-    function loadQuestion() {
-        ui.panel.classList.remove('translate-y-0');
-        ui.panel.classList.add('translate-y-full'); // Hide panel
+  function startQuiz() {
+    const pool = shuffle([...allQuestions]);
+    const count = Math.min(QUESTION_COUNT, pool.length);
+    questions = pool.slice(0, count);
 
-        const data = questions[currentIdx];
-        ui.qNum.textContent = toRoman(currentIdx + 1);
-        ui.text.textContent = data.q;
-        ui.grid.innerHTML = '';
-        isLocked = false;
+    currentIdx = 0;
+    score = 0;
+    isLocked = false;
+    startTimeMs = Date.now();
 
-        data.options.forEach((opt, idx) => {
-            const btn = document.createElement('button');
-            btn.className = "w-full text-left p-4 border border-stone-700 hover:border-gold hover:bg-stone-800 transition-all font-serif text-stone-300 relative group";
-            btn.innerHTML = `
-                <span class="font-bold text-stone-600 group-hover:text-gold mr-3 transition-colors">${String.fromCharCode(65 + idx)}.</span>
-                ${opt}
-            `;
-            btn.onclick = () => checkAnswer(idx, data.a, btn, data.fact);
-            ui.grid.appendChild(btn);
-        });
-    }
+    ui.card.classList.remove('hidden');
+    ui.results.classList.add('hidden');
+    hidePanel();
 
-    function checkAnswer(btn, selectedIdx, correctIdx) {
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    hidePanel();
+
+    const data = questions[currentIdx];
+    ui.qNum.textContent = toRoman(currentIdx + 1);
+    ui.text.textContent = data.q;
+    ui.grid.innerHTML = '';
+    isLocked = false;
+
+    data.options.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className =
+        "w-full text-left p-4 border border-stone-700 hover:border-gold hover:bg-stone-800 transition-all font-serif text-stone-300 relative group";
+      btn.innerHTML = `
+        <span class="font-bold text-stone-600 group-hover:text-gold mr-3 transition-colors">${String.fromCharCode(65 + idx)}.</span>
+        ${opt}
+      `;
+      btn.addEventListener('click', () => checkAnswer(idx));
+      ui.grid.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selectedIdx) {
     if (isLocked) return;
     isLocked = true;
 
-    const buttons = ui.options.querySelectorAll('button');
+    const data = questions[currentIdx];
+    const correctIdx = data.a;
 
+    const buttons = ui.grid.querySelectorAll('button');
+
+    // Disable all buttons (prevents double click)
+    buttons.forEach(b => (b.disabled = true));
+
+    // Mark selection + correct
     if (selectedIdx === correctIdx) {
-        btn.className = "w-full text-left p-4 rounded-xl border border-green-500 bg-green-500/20 text-white font-bold shadow-[0_0_15px_rgba(34,197,94,0.4)]";
-        ui.feedback.textContent = "Correct! 🎬";
-        ui.feedback.classList.add('text-green-400');
+      score++;
 
-        // SAFE XP UPDATE
-        try {
-            if (window.GameEngine && typeof GameEngine.addXP === "function") {
-                GameEngine.addXP(50);
-            }
-        } catch (e) {
-            console.error("XP update failed:", e);
-        }
-
-        score++;
+      buttons[selectedIdx].className =
+        "w-full text-left p-4 border border-emerald-400 bg-emerald-500/15 text-parchment font-serif transition-all";
+      ui.factTitle.textContent = "Correct";
+      ui.factTitle.className = "font-title text-xl font-bold text-emerald-700 mb-2";
     } else {
-        btn.className = "w-full text-left p-4 rounded-xl border border-red-500 bg-red-500/20 text-white font-bold";
-        ui.card.classList.add('shake');
-        setTimeout(() => ui.card.classList.remove('shake'), 500);
+      buttons[selectedIdx].className =
+        "w-full text-left p-4 border border-red-400 bg-red-500/15 text-parchment font-serif transition-all";
 
-        buttons[correctIdx].className = "w-full text-left p-4 rounded-xl border border-green-500 bg-green-500/20 text-white opacity-70";
+      buttons[correctIdx].className =
+        "w-full text-left p-4 border border-emerald-400 bg-emerald-500/10 text-parchment font-serif transition-all";
 
-        ui.feedback.textContent = "Wrong! It was " + quizQuestions[currentIdx].options[correctIdx];
-        ui.feedback.classList.add('text-red-400');
+      ui.factTitle.textContent = "Not quite";
+      ui.factTitle.className = "font-title text-xl font-bold text-crimson mb-2";
     }
 
-    ui.feedback.classList.remove('hidden');
-    ui.nextBtn.classList.remove('hidden');
-}
+    const correctText = data.options[correctIdx];
+    ui.factBody.innerHTML = `
+      <div class="mb-3"><strong>Answer:</strong> ${correctText}</div>
+      <div>${data.fact}</div>
+    `;
 
-
-    function nextQuestion() {
-        currentIdx++;
-        if (currentIdx < questions.length) {
-            loadQuestion();
-        } else {
-            ui.panel.classList.remove('translate-y-0');
-            ui.panel.classList.add('translate-y-full');
-            showResults();
-        }
+    // Safe XP call (won't crash if engine differs)
+    try {
+      if (window.GameEngine && typeof window.GameEngine.addXP === "function") {
+        window.GameEngine.addXP(selectedIdx === correctIdx ? 50 : 10);
+      }
+    } catch (e) {
+      console.warn("XP update skipped:", e);
     }
 
-    function showResults() {
-        ui.card.classList.add('hidden');
-        ui.results.classList.remove('hidden');
-        ui.finalScore.textContent = score;
-        ui.total.textContent = questions.length;
-        checkGameAchievements(finalScore, currentCategory, timeTaken, 10);
+    // Show the panel + wait for NEXT
+    showPanel();
+  }
+
+  function nextQuestion() {
+    hidePanel();
+
+    currentIdx++;
+    if (currentIdx < questions.length) {
+      loadQuestion();
+      return;
     }
+    showResults();
+  }
 
-    // Make nextQuestion available for inline onclick in HTML
-    window.nextQuestion = nextQuestion;
+  function showResults() {
+    ui.card.classList.add('hidden');
+    ui.results.classList.remove('hidden');
+    ui.finalScore.textContent = score;
+    ui.total.textContent = questions.length;
 
-    // Start
-    startQuiz();
-    // === ACHIEVEMENT CHECKER ===
-// Call this function when the Game Over screen appears
-// usage: checkGameAchievements(100, 'science', 45, 10); 
-function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
-    
+    // Achievement hook (won't crash if missing)
+    const timeTakenSec = Math.max(1, Math.round((Date.now() - startTimeMs) / 1000));
+    const scorePercent = Math.round((score / Math.max(1, questions.length)) * 100);
+
+    try {
+      if (typeof checkGameAchievements === "function") {
+        checkGameAchievements(scorePercent, "christmas", timeTakenSec, questions.length);
+      }
+    } catch (e) {
+      console.warn("Achievements skipped:", e);
+    }
+  }
+
+  // Make nextQuestion available for inline onclick in HTML
+  window.nextQuestion = nextQuestion;
+
+  // Start
+  startQuiz();
+
+  // === ACHIEVEMENT CHECKER ===
+  function checkGameAchievements(scorePercent, category, timeInSeconds, totalQuestions) {
     if (!window.GameEngine) return;
 
-    // 1. GENERAL
-    window.GameEngine.unlockAchievement("new_recruit"); // First game
-    if (scorePercent === 100) window.GameEngine.unlockAchievement("perfect_score");
-    if (scorePercent >= 50)   window.GameEngine.addXP(scorePercent * 2); // Give XP based on score
+    window.GameEngine.unlockAchievement?.("new_recruit");
+    if (scorePercent === 100) window.GameEngine.unlockAchievement?.("perfect_score");
+    if (scorePercent >= 50) window.GameEngine.addXP?.(scorePercent * 2);
 
-    // 2. SPEED
-    if (timeInSeconds < 60) window.GameEngine.unlockAchievement("speed_runner");
-    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement("quick_thinker");
+    if (timeInSeconds < 60) window.GameEngine.unlockAchievement?.("speed_runner");
+    if (timeInSeconds < 5)  window.GameEngine.unlockAchievement?.("quick_thinker");
 
-    // 3. CATEGORY SPECIFIC
-    // Normalize category to lowercase to match your IDs
-    const cat = category.toLowerCase();
+    const cat = String(category || "").toLowerCase();
 
     if (cat === 'science') {
-        window.GameEngine.unlockAchievement("lab_coat");
-        if (scorePercent === 100) window.GameEngine.unlockAchievement("science_whiz");
+      window.GameEngine.unlockAchievement?.("lab_coat");
+      if (scorePercent === 100) window.GameEngine.unlockAchievement?.("science_whiz");
     }
-    
     if (cat === 'history') {
-        window.GameEngine.unlockAchievement("time_traveler");
-        if (scorePercent === 100) window.GameEngine.unlockAchievement("history_buff");
+      window.GameEngine.unlockAchievement?.("time_traveler");
+      if (scorePercent === 100) window.GameEngine.unlockAchievement?.("history_buff");
     }
-
     if (cat === 'movies') {
-        window.GameEngine.unlockAchievement("movie_buff");
-        if (scorePercent === 100) window.GameEngine.unlockAchievement("cinephile");
+      window.GameEngine.unlockAchievement?.("movie_buff");
+      if (scorePercent === 100) window.GameEngine.unlockAchievement?.("cinephile");
     }
-
     if (cat === 'tech') {
-        window.GameEngine.unlockAchievement("tech_guru");
+      window.GameEngine.unlockAchievement?.("tech_guru");
     }
 
-    // 4. HARDCORE / SPECIFIC QUIZZES
-    // You can check specific IDs if your quiz has them
     const currentQuizId = new URLSearchParams(window.location.search).get('id');
-    
     if (currentQuizId === 'superman_legacy' && scorePercent === 100) {
-        window.GameEngine.unlockAchievement("superman_legacy");
+      window.GameEngine.unlockAchievement?.("superman_legacy");
     }
     if (currentQuizId === 'impossible_batman' && scorePercent === 100) {
-        window.GameEngine.unlockAchievement("gotham_knight");
+      window.GameEngine.unlockAchievement?.("gotham_knight");
     }
-}
+  }
 </script>
+
 
 </body>
 </html>
