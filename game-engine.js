@@ -247,7 +247,7 @@
                 this.updateHeaderUI();
                 this.updateProfileUI();
                 this._updateSimpleUI();
-                
+                this._notifyUserUpdate();
                 this.showToast(`+${add} XP`, `Total XP: ${this.state.xp.toLocaleString()}`, "text-blue-400");
             } catch (e) { console.error("addXP error:", e); }
         },
@@ -262,6 +262,7 @@
                     this._saveCloudSafe();
                     this.updateHeaderUI();
                     this.updateProfileUI();
+                    this._notifyUserUpdate();
                     this.showToast("Achievement Unlocked", id, "text-purple-400");
                 }
             } catch (e) {}
@@ -295,19 +296,35 @@
         // --------------------------------------------------------
         // UI UPDATES
         // --------------------------------------------------------
+
+
+
+        _notifyUserUpdate() {
+  if (this._notifyScheduled) return;
+  this._notifyScheduled = true;
+
+  queueMicrotask(() => {
+    this._notifyScheduled = false;
+    window.dispatchEvent(new CustomEvent("userUpdate", { detail: this.getUserSnapshot() }));
+  });
+},
+
         updateHeaderUI() {
-            try {
-                const lvlEl = document.getElementById("headerLevel");
-                if (lvlEl) lvlEl.textContent = this.state.level || 1;
-                const xpEl = document.getElementById("headerXP");
-                if (xpEl) xpEl.textContent = this.state.xp || 0;
-                const coinEl = document.getElementById("headerCoins");
-                if (coinEl) coinEl.textContent = (this.state.coins || 0).toLocaleString();
-                const avatarEl = document.getElementById("headerAvatar");
-                if (avatarEl) avatarEl.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${this.state.avatarSeed}`;
-                window.dispatchEvent(new CustomEvent("userUpdate", { detail: this.getUserSnapshot() }));
-            } catch (e) {}
-        },
+  try {
+    const lvlEl = document.getElementById("headerLevel");
+    if (lvlEl) lvlEl.textContent = this.state.level || 1;
+
+    const xpEl = document.getElementById("headerXP");
+    if (xpEl) xpEl.textContent = this.state.xp || 0;
+
+    const coinEl = document.getElementById("headerCoins");
+    if (coinEl) coinEl.textContent = (this.state.coins || 0).toLocaleString();
+
+    const avatarEl = document.getElementById("headerAvatar");
+    if (avatarEl) avatarEl.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${this.state.avatarSeed}`;
+  } catch (e) {}
+},
+
 
         updateProfileUI() {
             // (Same as before, simplified for brevity)

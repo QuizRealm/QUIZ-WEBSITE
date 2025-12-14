@@ -373,24 +373,47 @@ function getQuizFooterMarkup() {
 // =================================================================
 
 function setupHeaderElement(el) {
-    // Initial render
-    el.innerHTML = getQuizHeaderMarkup();
+  // Initial render
+  el.innerHTML = getQuizHeaderMarkup();
 
-    // After GameEngine initializes, force a UI update once
-    if (window.GameEngine && typeof window.GameEngine.updateHeaderUI === "function") {
-        window.GameEngine.updateHeaderUI();
+  // Render header from a snapshot (no events fired)
+  const renderHeaderFromSnapshot = (s) => {
+    if (!s) return;
+
+    const lvlEl = el.querySelector("#headerLevel");
+    if (lvlEl) lvlEl.textContent = s.level || 1;
+
+    const xpEl = el.querySelector("#headerXP");
+    if (xpEl) xpEl.textContent = s.xp || 0;
+
+    const coinEl = el.querySelector("#headerCoins");
+    if (coinEl) coinEl.textContent = (s.coins || 0).toLocaleString();
+
+    const avatarEl = el.querySelector("#headerAvatar");
+    if (avatarEl) {
+      avatarEl.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(s.avatarSeed || "Player")}`;
     }
+  };
 
-    // Listen for userUpdate events (fired by GameEngine when state changes)
-    const handler = () => {
-        if (window.GameEngine && typeof window.GameEngine.updateHeaderUI === "function") {
-            window.GameEngine.updateHeaderUI();
-        }
-    };
+  // One-time update after init (OK even if it dispatches userUpdate once)
+  if (window.GameEngine?.updateHeaderUI) {
+    window.GameEngine.updateHeaderUI();
+  }
 
-    el._qrUserHandler = handler;
-    window.addEventListener("userUpdate", handler);
+  // Listen for userUpdate events and render from e.detail (NO calling updateHeaderUI here)
+  const handler = (e) => {
+    renderHeaderFromSnapshot(e?.detail);
+  };
+
+  el._qrUserHandler = handler;
+  window.addEventListener("userUpdate", handler);
+
+  // If GameEngine already exists, render immediately (useful on SPA-like pages)
+  if (window.GameEngine?.getUserSnapshot) {
+    renderHeaderFromSnapshot(window.GameEngine.getUserSnapshot());
+  }
 }
+
 function makeHeaderLinksRootScoped(root = "/") {
   document.querySelectorAll("quiz-header a[href], quiz-footer a[href]").forEach(a => {
     const href = a.getAttribute("href") || "";
