@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>The Vibe Lab™ — 30‑Second Music Taste Test</title>
+
+  <!-- Primary SEO -->
+  <meta name="theme-color" content="#050505" />
+  <meta name="description" content="18 one‑second picks. Your vibe profile. Instant Spotify + YouTube playlists. Built to share on Instagram Stories & TikTok." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://your-domain.com/" />
+
+  <!-- Open Graph / Social -->
+  <meta property="og:title" content="The Vibe Lab™ — 30‑Second Music Taste Test" />
+  <meta property="og:description" content="18 one‑second picks. Instant vibe profile + playlists. Story-ready share card." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/og-vibelab.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Fonts (Premium + clean) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Roboto+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            void: '#050505',
+            ink: '#0b0b0c',
+            panel: 'rgba(255,255,255,0.06)',
+            line: 'rgba(255,255,255,0.12)',
+            fog: 'rgba(255,255,255,0.70)',
+            dim: 'rgba(255,255,255,0.52)',
+            hot: '#ff3d81',
+            cool: '#3b82f6',
+            lime: '#39ff14'
+          },
+          fontFamily: {
+            ui: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Arial', 'sans-serif'],
+            mono: ['Roboto Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          },
+          borderRadius: {
+            xl2: '1.25rem'
+          },
+          boxShadow: {
+            soft: '0 20px 60px rgba(0,0,0,0.45)',
+            glow: '0 0 0 1px rgba(255,255,255,0.10), 0 20px 80px rgba(255,61,129,0.12)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root{ color-scheme: dark; }
+
+    /* Background: premium glass + subtle grain */
+    .bg-premium{
+      background:
+        radial-gradient(900px 500px at 15% 15%, rgba(255,61,129,0.14), transparent 55%),
+        radial-gradient(900px 500px at 85% 25%, rgba(59,130,246,0.14), transparent 55%),
+        radial-gradient(900px 500px at 50% 90%, rgba(57,255,20,0.08), transparent 60%),
+        linear-gradient(180deg, #050505 0%, #070707 70%, #050505 100%);
+    }
+
+    .grain::before{
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="140" height="140" filter="url(%23n)" opacity="0.6"/></svg>');
+      mix-blend-mode: overlay;
+    }
+
+    /* Micro interaction */
+    @keyframes pop { 0%{ transform: translateY(8px); opacity: 0; } 100%{ transform: translateY(0); opacity: 1; } }
+    .pop-in{ animation: pop 420ms cubic-bezier(0.2,0.8,0.2,1) both; }
+
+    @keyframes pulsebar { 0%{ transform: scaleX(1); } 100%{ transform: scaleX(0); } }
+
+    .tap-fast{ -webkit-tap-highlight-color: transparent; }
+
+    @media (prefers-reduced-motion: reduce){
+      .pop-in{ animation: none; }
+    }
+  </style>
+
+  <!-- CookieYes (keep as you provided) -->
+  <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/YOUR_COOKIE_CODE/script.js"></script>
+
+  <!-- Google Tag Manager (keep as you provided) -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','YOUR_GTM_ID_HERE');</script>
+
+  <!-- Structured Data (basic) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "The Vibe Lab",
+    "applicationCategory": "EntertainmentApplication",
+    "operatingSystem": "Web",
+    "description": "A fast, tap-based music taste test that generates vibe profiles and playlists for Spotify and YouTube.",
+    "url": "https://your-domain.com/"
+  }
+  </script>
+</head>
+
+<body class="bg-void text-white font-ui antialiased overflow-x-hidden grain">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=YOUR_GTM_ID_HERE"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+
+  <div class="min-h-screen bg-premium">
+
+    <!-- Top bar -->
+    <header class="relative z-10 max-w-6xl mx-auto px-5 py-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-white/8 border border-line shadow-soft grid place-items-center">
+          <span class="font-mono text-xs text-fog">VL</span>
+        </div>
+        <div>
+          <div class="text-[11px] font-mono tracking-widest uppercase text-dim">The Vibe Lab™</div>
+          <div class="text-sm font-semibold">30‑Second Test</div>
+        </div>
+      </div>
+      <div class="hidden sm:flex items-center gap-2">
+        <span class="px-3 py-1.5 rounded-full border border-line bg-white/5 text-[11px] font-mono tracking-widest uppercase text-dim">18 taps</span>
+        <span class="px-3 py-1.5 rounded-full border border-line bg-white/5 text-[11px] font-mono tracking-widest uppercase text-dim">Story-ready</span>
+      </div>
+    </header>
+
+    <!-- App root -->
+    <main class="relative z-10 max-w-6xl mx-auto px-5 pb-16">
+
+      <!-- LANDING -->
+      <section id="screen-landing" class="pop-in">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+
+          <div class="rounded-3xl border border-line bg-white/5 backdrop-blur-xl shadow-glow p-7 md:p-9">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-line bg-white/5">
+              <span class="w-1.5 h-1.5 rounded-full bg-hot"></span>
+              <span class="text-[11px] font-mono tracking-widest uppercase text-dim">Tap-speed vibe calibration</span>
+            </div>
+
+            <h1 class="mt-5 text-4xl md:text-5xl font-extrabold leading-[1.02] tracking-tight">
+              18 one‑second picks.
+              <span class="block text-fog">Instant vibe profile + playlists.</span>
+            </h1>
+
+            <p class="mt-4 text-base md:text-lg text-white/80 leading-relaxed">
+              No long forms. No typing. Just rapid-fire choices.
+              You’ll get a share card optimized for Instagram Stories and TikTok — plus a full playlist on Spotify and YouTube.
+            </p>
+
+            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+              <button id="btn-start" class="tap-fast w-full sm:w-auto px-5 py-4 rounded-2xl bg-hot text-white font-semibold shadow-soft hover:opacity-95 active:opacity-90">
+                Start the 30‑sec test
+              </button>
+              <button id="btn-preview" class="tap-fast w-full sm:w-auto px-5 py-4 rounded-2xl border border-line bg-white/5 text-white/90 font-semibold hover:bg-white/8 active:bg-white/10">
+                See a sample result
+              </button>
+            </div>
+
+            <div class="mt-6 grid grid-cols-3 gap-3">
+              <div class="rounded-2xl border border-line bg-white/5 p-4">
+                <div class="text-[11px] font-mono uppercase tracking-widest text-dim">Speed</div>
+                <div class="mt-1 text-lg font-bold">1‑second Qs</div>
+              </div>
+              <div class="rounded-2xl border border-line bg-white/5 p-4">
+                <div class="text-[11px] font-mono uppercase tracking-widest text-dim">Output</div>
+                <div class="mt-1 text-lg font-bold">Vibe Card</div>
+              </div>
+              <div class="rounded-2xl border border-line bg-white/5 p-4">
+                <div class="text-[11px] font-mono uppercase tracking-widest text-dim">Playlists</div>
+                <div class="mt-1 text-lg font-bold">Spotify + YT</div>
+              </div>
+            </div>
+
+            <p class="mt-5 text-xs text-dim font-mono">
+              Tip: Turn sound on for a better feel. (Optional.)
+            </p>
+          </div>
+
+          <!-- Right panel: sample card + social hook -->
+          <div class="rounded-3xl border border-line bg-white/5 backdrop-blur-xl shadow-soft p-7 md:p-9 flex flex-col">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-[11px] font-mono tracking-widest uppercase text-dim">Built for sharing</div>
+                <div class="mt-1 text-xl font-bold">Vertical result card (9:16)</div>
+              </div>
+              <div class="text-[11px] font-mono tracking-widest uppercase text-dim">HD</div>
+            </div>
+
+            <div class="mt-5 rounded-2xl border border-line bg-gradient-to-b from-white/6 to-white/3 p-5 flex-1">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-[11px] font-mono uppercase tracking-widest text-dim">Your vibe</div>
+                  <div class="mt-1 text-2xl font-extrabold">Midnight Momentum</div>
+                </div>
+                <div class="px-3 py-1.5 rounded-full border border-line bg-white/5 text-[11px] font-mono uppercase tracking-widest text-dim">Share</div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-2 gap-3">
+                <div class="rounded-xl border border-line bg-white/5 p-3">
+                  <div class="text-[10px] font-mono uppercase tracking-widest text-dim">Energy</div>
+                  <div class="mt-1 font-bold">0.82</div>
+                </div>
+                <div class="rounded-xl border border-line bg-white/5 p-3">
+                  <div class="text-[10px] font-mono uppercase tracking-widest text-dim">Tempo</div>
+                  <div class="mt-1 font-bold">142 BPM</div>
+                </div>
+                <div class="rounded-xl border border-line bg-white/5 p-3">
+                  <div class="text-[10px] font-mono uppercase tracking-widest text-dim">Acoustic</div>
+                  <div class="mt-1 font-bold">0.18</div>
+                </div>
+                <div class="rounded-xl border border-line bg-white/5 p-3">
+                  <div class="text-[10px] font-mono uppercase tracking-widest text-dim">Valence</div>
+                  <div class="mt-1 font-bold">0.44</div>
+                </div>
+              </div>
+
+              <div class="mt-4 rounded-xl border border-line bg-white/5 p-3">
+                <div class="text-[10px] font-mono uppercase tracking-widest text-dim">Playlist output</div>
+                <div class="mt-1 text-sm text-white/80">Auto-builds 25–50 tracks on Spotify and YouTube.</div>
+              </div>
+            </div>
+
+            <div class="mt-5 flex items-center justify-between text-xs font-mono text-dim">
+              <span>Designed for Stories</span>
+              <span>Made to repost</span>
+              <span>Fast to finish</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- QUIZ -->
+      <section id="screen-quiz" class="hidden">
+        <div class="max-w-3xl mx-auto">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-xs font-mono tracking-widest uppercase text-dim">
+              <span id="q-counter">1/18</span>
+            </div>
+            <button id="btn-exit" class="tap-fast px-3 py-2 rounded-xl border border-line bg-white/5 text-xs font-mono tracking-widest uppercase text-dim hover:bg-white/8">
+              Exit
+            </button>
+          </div>
+
+          <div class="rounded-3xl border border-line bg-white/5 backdrop-blur-xl shadow-glow overflow-hidden">
+            <!-- Timer bar (1-second) -->
+            <div class="h-1.5 bg-white/5">
+              <div id="timer-bar" class="h-full origin-left bg-hot"></div>
+            </div>
+
+            <div class="p-7 md:p-9">
+              <div class="text-[11px] font-mono tracking-widest uppercase text-dim">Pick fast. Don’t overthink.</div>
+              <h2 id="q-text" class="mt-3 text-3xl md:text-4xl font-extrabold leading-[1.08]"></h2>
+
+              <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button id="btn-a" class="tap-fast text-left px-5 py-5 rounded-2xl border border-line bg-white/5 hover:bg-white/8 active:bg-white/10">
+                  <div class="text-xs font-mono tracking-widest uppercase text-dim">A</div>
+                  <div id="label-a" class="mt-1 text-xl font-bold"></div>
+                </button>
+                <button id="btn-b" class="tap-fast text-left px-5 py-5 rounded-2xl border border-line bg-white/5 hover:bg-white/8 active:bg-white/10">
+                  <div class="text-xs font-mono tracking-widest uppercase text-dim">B</div>
+                  <div id="label-b" class="mt-1 text-xl font-bold"></div>
+                </button>
+              </div>
+
+              <div class="mt-6 flex items-center justify-between">
+                <div class="text-xs font-mono text-dim">
+                  Latency: <span id="latency" class="text-white/80">warming up</span>
+                </div>
+                <div class="text-xs font-mono text-dim">
+                  Preloading: <span id="preload" class="text-white/80">0</span>/5
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="mt-4 text-xs text-dim font-mono text-center">One second per question. Missed taps auto-skip.</p>
+        </div>
+      </section>
+
+      <!-- RESULT (placeholder: wire to Spotify/YT later) -->
+      <section id="screen-result" class="hidden">
+        <div class="max-w-4xl mx-auto pop-in">
+          <div class="rounded-3xl border border-line bg-white/5 backdrop-blur-xl shadow-glow overflow-hidden">
+            <div class="p-7 md:p-9">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <div class="text-[11px] font-mono tracking-widest uppercase text-dim">Your result</div>
+                  <h2 id="r-title" class="mt-2 text-4xl font-extrabold leading-tight">—</h2>
+                  <p id="r-sub" class="mt-2 text-white/80">—</p>
+                </div>
+                <div class="flex gap-3">
+                  <button id="btn-share" class="tap-fast px-5 py-4 rounded-2xl bg-hot text-white font-semibold shadow-soft hover:opacity-95 active:opacity-90">Generate share card</button>
+                  <button id="btn-again" class="tap-fast px-5 py-4 rounded-2xl border border-line bg-white/5 text-white/90 font-semibold hover:bg-white/8 active:bg-white/10">Run it again</button>
+                </div>
+              </div>
+
+              <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="rounded-2xl border border-line bg-white/5 p-5">
+                  <div class="text-[11px] font-mono uppercase tracking-widest text-dim">Next</div>
+                  <div class="mt-2 text-sm text-white/80">Connect Spotify or YouTube to generate a full playlist from your taps.</div>
+                  <div class="mt-4 grid grid-cols-1 gap-3">
+                    <button class="tap-fast px-4 py-3 rounded-xl border border-line bg-white/5 text-sm font-semibold hover:bg-white/8">Connect Spotify (coming next)</button>
+                    <button class="tap-fast px-4 py-3 rounded-xl border border-line bg-white/5 text-sm font-semibold hover:bg-white/8">Connect YouTube (coming next)</button>
+                  </div>
+                </div>
+
+                <div class="lg:col-span-2 rounded-2xl border border-line bg-white/5 p-5">
+                  <div class="flex items-center justify-between">
+                    <div class="text-[11px] font-mono uppercase tracking-widest text-dim">Collected signals</div>
+                    <div class="text-[11px] font-mono uppercase tracking-widest text-dim">0.0 → 1.0</div>
+                  </div>
+                  <div id="r-metrics" class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                </div>
+              </div>
+
+              <p class="mt-5 text-xs text-dim font-mono">
+                Note: This build focuses on speed + data capture. Spotify/YouTube playlist generation plugs into these targets.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="relative z-10 max-w-6xl mx-auto px-5 pb-10">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-dim">
+        <div>© <span id="year"></span> The Vibe Lab™</div>
+        <div class="flex items-center gap-3">
+          <span class="hidden sm:inline">Privacy‑friendly. Consent-aware.</span>
+          <a class="hover:text-white" href="#" onclick="return false;">Privacy</a>
+          <a class="hover:text-white" href="#" onclick="return false;">Terms</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // ==============================
+    // VIBE LAB — SPEED-FIRST ENGINE
+    // ==============================
+
+    // --- Config ---
+    const TOTAL_QUESTIONS = 18;
+    const QUESTION_WINDOW_MS = 1100; // "1-second" feel (tune as needed)
+    const PRELOAD_AHEAD = 5;
+
+    // Data source strategy:
+    // 1) Preferred (FAST + cacheable): a manifest that points to per-question JSON files.
+    //    Example path: data/questions/manifest.json
+    // 2) Fallback: embedded demo questions (so the page runs immediately).
+    const MANIFEST_URL = 'data/questions/manifest.json';
+
+    const CACHE_NAME = 'vibelab-questions-v1';
+
+    // --- UI refs ---
+    const yearEl = document.getElementById('year');
+    const landing = document.getElementById('screen-landing');
+    const quiz = document.getElementById('screen-quiz');
+    const result = document.getElementById('screen-result');
+
+    const btnStart = document.getElementById('btn-start');
+    const btnPreview = document.getElementById('btn-preview');
+    const btnExit = document.getElementById('btn-exit');
+
+    const counterEl = document.getElementById('q-counter');
+    const qText = document.getElementById('q-text');
+    const labelA = document.getElementById('label-a');
+    const labelB = document.getElementById('label-b');
+    const btnA = document.getElementById('btn-a');
+    const btnB = document.getElementById('btn-b');
+    const timerBar = document.getElementById('timer-bar');
+    const latencyEl = document.getElementById('latency');
+    const preloadEl = document.getElementById('preload');
+
+    const rTitle = document.getElementById('r-title');
+    const rSub = document.getElementById('r-sub');
+    const rMetrics = document.getElementById('r-metrics');
+    const btnAgain = document.getElementById('btn-again');
+    const btnShare = document.getElementById('btn-share');
+
+    yearEl.textContent = new Date().getFullYear();
+
+    // --- Anchors (0..1 targets for Spotify later) ---
+    const anchors = {
+      valence: 0.5,
+      energy: 0.5,
+      danceability: 0.5,
+      acousticness: 0.5,
+      instrumentalness: 0.5,
+      tempo_norm: 0.5
+    };
+
+    // --- In-memory cache ---
+    const manifest = { questions: [] }; // {id,url}
+    const memory = new Map(); // url -> parsed question
+
+    // --- Demo fallback questions (replace with your real set) ---
+    const DEMO = [
+      { id: 'q01', prompt: 'Crowd rush — or solo focus?', choices: [
+        { id: 'A', label: 'Crowd rush', delta: { energy: +0.12, danceability: +0.08, acousticness: -0.10, tempo_norm: +0.06 } },
+        { id: 'B', label: 'Solo focus', delta: { energy: -0.08, danceability: -0.06, acousticness: +0.12, tempo_norm: -0.04 } }
+      ]},
+      { id: 'q02', prompt: 'Sharp edges — or soft glow?', choices: [
+        { id: 'A', label: 'Sharp edges', delta: { energy: +0.10, acousticness: -0.06, valence: -0.02 } },
+        { id: 'B', label: 'Soft glow', delta: { energy: -0.06, acousticness: +0.10, valence: +0.04 } }
+      ]},
+      { id: 'q03', prompt: 'Fast heartbeat — or slow pull?', choices: [
+        { id: 'A', label: 'Fast heartbeat', delta: { tempo_norm: +0.10, energy: +0.06 } },
+        { id: 'B', label: 'Slow pull', delta: { tempo_norm: -0.10, energy: -0.04 } }
+      ]}
+    ];
+
+    // Utility
+    const clamp01 = (x) => Math.max(0, Math.min(1, x));
+
+    function applyDelta(delta) {
+      for (const k of Object.keys(anchors)) {
+        if (typeof delta?.[k] === 'number') anchors[k] = clamp01(anchors[k] + delta[k]);
+      }
+    }
+
+    function softNormalize() {
+      for (const k of Object.keys(anchors)) anchors[k] = clamp01(0.88 * anchors[k] + 0.12 * 0.5);
+    }
+
+    // ==============================
+    // Cache-first preloading (next 5)
+    // ==============================
+
+    async function cacheGet(url) {
+      if (!('caches' in window)) return null;
+      const cache = await caches.open(CACHE_NAME);
+      return cache.match(url);
+    }
+
+    async function cachePut(url, res) {
+      if (!('caches' in window)) return;
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put(url, res);
+    }
+
+    async function loadQuestionFromUrl(url) {
+      if (memory.has(url)) return memory.get(url);
+
+      // Try cache storage first
+      const cached = await cacheGet(url);
+      if (cached) {
+        const data = await cached.json();
+        memory.set(url, data);
+        return data;
+      }
+
+      // Network fetch
+      const t0 = performance.now();
+      const res = await fetch(url, { cache: 'no-cache' });
+      const t1 = performance.now();
+      latencyEl.textContent = `${Math.round(t1 - t0)}ms`;
+
+      if (!res.ok) throw new Error(`Failed to fetch question: ${url}`);
+      await cachePut(url, res.clone());
+      const data = await res.json();
+      memory.set(url, data);
+      return data;
+    }
+
+    async function preloadNext(startIndex) {
+      // Preload upcoming PRELOAD_AHEAD question files into Cache Storage + memory
+      if (!manifest.questions.length) return;
+
+      const urls = [];
+      for (let i = 1; i <= PRELOAD_AHEAD; i++) {
+        const idx = startIndex + i;
+        if (idx < manifest.questions.length) urls.push(manifest.questions[idx].url);
+      }
+
+      let done = 0;
+      preloadEl.textContent = '0';
+
+      // Small concurrency to avoid blocking UI
+      const pool = 3;
+      const queue = urls.slice();
+
+      async function worker() {
+        while (queue.length) {
+          const url = queue.shift();
+          try {
+            await loadQuestionFromUrl(url);
+          } catch (_) {
+            // Silent: fallback question set can still run
+          }
+          done++;
+          preloadEl.textContent = String(done);
+        }
+      }
+
+      const workers = Array.from({ length: Math.min(pool, urls.length) }, () => worker());
+      await Promise.all(workers);
+    }
+
+    async function loadManifest() {
+      try {
+        const t0 = performance.now();
+        const res = await fetch(MANIFEST_URL, { cache: 'no-cache' });
+        const t1 = performance.now();
+        latencyEl.textContent = `${Math.round(t1 - t0)}ms`;
+
+        if (!res.ok) throw new Error('manifest fetch failed');
+        const data = await res.json();
+        if (!Array.isArray(data?.questions) || !data.questions.length) throw new Error('manifest invalid');
+        manifest.questions = data.questions;
+      } catch (_) {
+        // Fallback: build a manifest from DEMO (no external files)
+        manifest.questions = DEMO.map((q) => ({ id: q.id, url: `__demo__/${q.id}` }));
+        for (const q of DEMO) memory.set(`__demo__/${q.id}`, q);
+        latencyEl.textContent = 'offline';
+      }
+    }
+
+    // ==============================
+    // Quiz runner
+    // ==============================
+
+    let qIndex = 0;
+    let timer = null;
+    let locked = false;
+
+    function show(screen) {
+      landing.classList.add('hidden');
+      quiz.classList.add('hidden');
+      result.classList.add('hidden');
+      screen.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    function startTimer(onExpire) {
+      if (timer) clearTimeout(timer);
+
+      // Restart timer bar animation
+      timerBar.style.animation = 'none';
+      // Force reflow
+      void timerBar.offsetWidth;
+      timerBar.style.animation = `pulsebar ${QUESTION_WINDOW_MS}ms linear forwards`;
+
+      timer = setTimeout(() => {
+        if (!locked) onExpire();
+      }, QUESTION_WINDOW_MS);
+    }
+
+    function vibrate(ms = 10) {
+      // Light haptic feel on supported devices
+      if (navigator.vibrate) navigator.vibrate(ms);
+    }
+
+    function getCurrentEntry() {
+      return manifest.questions[qIndex];
+    }
+
+    async function renderQuestion() {
+      locked = false;
+      counterEl.textContent = `${Math.min(qIndex + 1, TOTAL_QUESTIONS)}/${TOTAL_QUESTIONS}`;
+
+      const entry = getCurrentEntry();
+      if (!entry) return finish();
+
+      const q = await loadQuestionFromUrl(entry.url);
+      qText.textContent = q.prompt;
+      labelA.textContent = q.choices?.[0]?.label ?? 'Option A';
+      labelB.textContent = q.choices?.[1]?.label ?? 'Option B';
+
+      // Preload the next 5 in idle time to protect UI
+      const kick = () => preloadNext(qIndex);
+      if ('requestIdleCallback' in window) requestIdleCallback(kick, { timeout: 400 });
+      else setTimeout(kick, 80);
+
+      startTimer(() => {
+        // Auto-skip (neutral) if no tap
+        locked = true;
+        qIndex++;
+        next();
+      });
+    }
+
+    function next() {
+      if (qIndex >= manifest.questions.length || qIndex >= TOTAL_QUESTIONS) return finish();
+      renderQuestion();
+    }
+
+    async function pick(which) {
+      if (locked) return;
+      locked = true;
+      vibrate(12);
+
+      const entry = getCurrentEntry();
+      const q = await loadQuestionFromUrl(entry.url);
+      const choice = which === 'A' ? q.choices?.[0] : q.choices?.[1];
+      applyDelta(choice?.delta);
+
+      qIndex++;
+      // Micro delay so taps feel responsive but fast
+      setTimeout(next, 60);
+    }
+
+    function archetypeLite() {
+      // Placeholder naming — replace with your real archetype map
+      const speed = (anchors.energy + anchors.tempo_norm) / 2;
+      const mood = anchors.valence;
+      const organic = anchors.acousticness;
+
+      if (speed > 0.72 && mood < 0.52 && organic < 0.35) return { title: 'Midnight Momentum', sub: 'Fast. Focused. A little dangerous.' };
+      if (speed > 0.72 && mood >= 0.52) return { title: 'Neon Euphoria', sub: 'High tempo. Bright payoff. Zero hesitation.' };
+      if (organic > 0.68 && speed < 0.55) return { title: 'Soft Gravity', sub: 'Warm textures. Slow pull. Clean headspace.' };
+      return { title: 'Balanced Voltage', sub: 'Switches lanes fast. Stays consistent.' };
+    }
+
+    function renderMetrics() {
+      rMetrics.innerHTML = '';
+      const list = [
+        ['valence', anchors.valence],
+        ['energy', anchors.energy],
+        ['danceability', anchors.danceability],
+        ['acousticness', anchors.acousticness],
+        ['instrumentalness', anchors.instrumentalness],
+        ['tempo_norm', anchors.tempo_norm]
+      ];
+
+      for (const [k, v] of list) {
+        const card = document.createElement('div');
+        card.className = 'rounded-xl border border-line bg-white/5 p-3';
+        card.innerHTML = `
+          <div class="text-[10px] font-mono uppercase tracking-widest text-dim">${k}</div>
+          <div class="mt-1 text-lg font-bold">${v.toFixed(2)}</div>
+        `;
+        rMetrics.appendChild(card);
+      }
+    }
+
+    function finish() {
+      if (timer) clearTimeout(timer);
+      softNormalize();
+
+      const a = archetypeLite();
+      rTitle.textContent = a.title;
+      rSub.textContent = a.sub;
+      renderMetrics();
+
+      show(result);
+    }
+
+    function reset() {
+      qIndex = 0;
+      locked = false;
+      for (const k of Object.keys(anchors)) anchors[k] = 0.5;
+      latencyEl.textContent = 'ready';
+      preloadEl.textContent = '0';
+      show(landing);
+    }
+
+    // ==============================
+    // Share card (placeholder)
+    // ==============================
+    btnShare.addEventListener('click', () => {
+      // Next step: generate a 9:16 canvas or SVG, then download/share.
+      // Keeping as placeholder because you asked to start with index + speed engine.
+      alert('Share card generator is the next file (canvas/SVG). The result vector is ready.');
+    });
+
+    // ==============================
+    // Events
+    // ==============================
+    btnA.addEventListener('click', () => pick('A'));
+    btnB.addEventListener('click', () => pick('B'));
+
+    btnExit.addEventListener('click', () => {
+      if (confirm('Exit the test?')) reset();
+    });
+
+    btnStart.addEventListener('click', async () => {
+      show(quiz);
+      latencyEl.textContent = 'loading…';
+      preloadEl.textContent = '0';
+
+      await loadManifest();
+
+      // Preload current + next 5 immediately
+      try {
+        await preloadNext(-1); // will preload first 5
+      } catch (_) {}
+
+      qIndex = 0;
+      renderQuestion();
+    });
+
+    btnPreview.addEventListener('click', () => {
+      // Quick preview jump (does not store anything)
+      const a = archetypeLite();
+      rTitle.textContent = a.title;
+      rSub.textContent = a.sub;
+      renderMetrics();
+      show(result);
+    });
+
+    btnAgain.addEventListener('click', () => reset());
+
+    // Initial
+    reset();
+  </script>
+</body>
+</html>
