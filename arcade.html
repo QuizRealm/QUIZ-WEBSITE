@@ -123,7 +123,7 @@
       padding: 1.2rem;
       background: linear-gradient(to top, rgba(0,0,0,0.86), rgba(0,0,0,0.10) 65%, transparent);
     }
-    .badge{
+    .badge badge-neon{
       align-self:flex-start;
       font-size:10px;
       text-transform:uppercase;
@@ -182,6 +182,125 @@
       text-transform: uppercase;
       letter-spacing: .14em;
     }
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:.38rem .78rem;
+  border-radius:999px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  font-size:.72rem;
+  line-height:1;
+  user-select:none;
+}
+
+/* OPAQUE + READABLE NEON */
+.badge-neon{
+  position:relative;
+  /* hard-opaque background (no transparency) */
+  background: #070b16;                 /* solid */
+  color:#eafcff;                        /* readable */
+  border:1px solid rgba(120,255,255,.65);
+
+  /* keep glow but reduce text washout */
+  text-shadow:
+    0 0 6px rgba(0,220,255,.45),
+    0 0 14px rgba(0,180,255,.28);
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.10) inset,
+    0 0 14px rgba(0,255,255,.45),
+    0 0 34px rgba(0,190,255,.28),
+    0 12px 26px rgba(0,0,0,.55);
+
+  overflow:hidden;
+  transform: translateZ(0);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+/* lit rim */
+.badge-neon::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:999px;
+  padding:1px;
+  background: linear-gradient(90deg,
+    rgba(0,255,255,.95),
+    rgba(140,255,255,.55),
+    rgba(0,170,255,.95)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events:none;
+  opacity:.85;
+}
+
+/* controlled shine (dimmer + sits ABOVE background but BELOW text) */
+.badge-neon::after{
+  content:"";
+  position:absolute;
+  inset:-60% -80%;
+  background: linear-gradient(120deg,
+    transparent 0%,
+    rgba(255,255,255,0) 40%,
+    rgba(255,255,255,.18) 50%,
+    rgba(0,220,255,.10) 58%,
+    rgba(255,255,255,0) 66%,
+    transparent 100%
+  );
+  transform: translateX(-80%) rotate(8deg);
+  animation: shineSweep2 2.1s ease-in-out infinite;
+  pointer-events:none;
+  /* IMPORTANT: keeps letters crisp */
+  z-index: 0;
+}
+
+/* keep text on top of shine */
+.badge-neon{
+  z-index: 0;
+}
+.badge-neon{ isolation:isolate; }
+.badge-neon{ }
+.badge-neon *{ position:relative; z-index:2; }
+/* If it's plain text (not wrapped), this ensures it stays above ::after */
+.badge-neon{ }
+.badge-neon{ }
+
+/* easiest: force text above pseudo elements */
+.badge-neon{ }
+.badge-neon{ }
+.badge-neon{
+  /* creates stacking context; text paints above ::after if ::after z-index:0 */
+}
+
+/* POP on card hover */
+.group:hover .badge-neon{
+  transform: translateY(-2px) scale(1.06);
+  border-color: rgba(150,255,255,.95);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.12) inset,
+    0 0 20px rgba(0,255,255,.62),
+    0 0 52px rgba(0,190,255,.38),
+    0 18px 40px rgba(0,0,0,.60);
+}
+.group:hover .badge-neon::after{
+  animation-duration: 1.35s;
+}
+
+@keyframes shineSweep2{
+  0%   { transform: translateX(-85%) rotate(8deg); opacity: .0; }
+  18%  { opacity: .65; }
+  55%  { opacity: .70; }
+  100% { transform: translateX(85%) rotate(8deg); opacity: .0; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .badge-neon::after{ animation:none; }
+}
+ 
   </style>
 </head>
 
@@ -232,30 +351,162 @@
 
           <!-- Featured image + micro highlights -->
           <div class="w-full lg:w-[520px]">
-            <div class="hero-shell rounded-3xl overflow-hidden relative">
-              <img src="assets/timeline.png" alt="History Timeline game" class="w-full aspect-video object-cover">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent"></div>
+            <a href="timeline-history.html" class="hero-shell qr-timeline-hero" aria-label="History Timeline">
+  <div class="qr-h-media">
+    <img src="assets/timeline.png" alt="History Timeline game">
+  </div>
 
-              <div class="absolute bottom-0 left-0 p-5 md:p-6 w-full">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <div class="badge border-accentCyan/40 text-accentCyan">Featured</div>
-                    <div class="mt-2 font-arcade text-2xl text-white">History Timeline</div>
-                    <div class="text-slate-300 text-sm mt-1">
-                      Put events in order — one wrong move can collapse the run.
-                    </div>
-                  </div>
-                  <div class="hidden sm:flex flex-col gap-2 min-w-[160px]">
-                    <div class="glass rounded-2xl px-3 py-2 border border-white/10">
-                      <div class="text-[10px] uppercase tracking-widest text-slate-400">Best for</div>
-                      <div class="text-sm font-bold text-white">Memory + Logic</div>
-                    </div>
-                    <div class="glass rounded-2xl px-3 py-2 border border-white/10">
-                      <div class="text-[10px] uppercase tracking-widest text-slate-400">Session</div>
-                      <div class="text-sm font-bold text-white">1–3 minutes</div>
-                    </div>
-                  </div>
-                </div>
+  <div class="qr-h-body">
+    <div class="qr-h-top">
+      <span class="qr-h-badge">History</span>
+      <span class="qr-h-pill">1–3 min</span>
+      <span class="qr-h-pill">Memory + Logic</span>
+    </div>
+
+    <div class="qr-h-title font-arcade">History Timeline</div>
+
+    <div class="qr-h-desc">
+      Put events in order under pressure. One mistake breaks the streak — learn fast, improve faster.
+    </div>
+
+    <div class="qr-h-sub">
+      Quick sessions. High replay value. Perfect for a daily brain warm-up.
+    </div>
+  </div>
+</a>
+
+<style>
+/* Scoped: only affects this card */
+.qr-timeline-hero{
+  --cardH: 240px;          /* bigger (adjust 230–260) */
+  --bg: #070b16;           /* solid */
+  --panel: #0b1224;        /* solid */
+  --text: #eafcff;
+  --muted: rgba(226,232,240,.80);
+
+  display:grid;
+  grid-template-columns: 1.35fr 1fr;
+  height: var(--cardH);
+  border-radius: 1.5rem;
+  overflow:hidden;
+  background: var(--bg);
+  border: 1px solid rgba(103,232,249,.18);
+  box-shadow: 0 14px 38px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04) inset;
+  text-decoration:none;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.qr-timeline-hero:hover{
+  transform: translateY(-3px);
+  border-color: rgba(103,232,249,.35);
+  box-shadow: 0 18px 46px rgba(0,0,0,.65), 0 0 32px rgba(103,232,249,.14), 0 0 0 1px rgba(255,255,255,.05) inset;
+}
+
+.qr-h-media{ position:relative; background:#050814; }
+.qr-h-media img{
+  width:100%; height:100%;
+  object-fit:cover; display:block;
+  transform: scale(1);
+  transition: transform .35s ease;
+}
+.qr-timeline-hero:hover .qr-h-media img{ transform: scale(1.04); }
+
+.qr-h-media::after{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  background: radial-gradient(120% 90% at 50% 10%, transparent 0%, rgba(0,0,0,.22) 70%, rgba(0,0,0,.42) 100%);
+  opacity:.55;
+}
+
+.qr-h-body{
+  background: var(--panel);
+  border-left: 1px solid rgba(255,255,255,.06);
+  padding: 16px 16px 14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.qr-h-top{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.qr-h-badge{
+  display:inline-flex;
+  padding:.34rem .66rem;
+  border-radius:999px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  font-size:.66rem;
+  color: #eafcff;
+  background:#061018; /* solid */
+  border:1px solid rgba(103,232,249,.55);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06) inset, 0 0 14px rgba(103,232,249,.14);
+  white-space:nowrap;
+}
+
+.qr-h-pill{
+  display:inline-flex;
+  padding:.30rem .58rem;
+  border-radius:999px;
+  font-weight:800;
+  font-size:.76rem;
+  color: rgba(234,252,255,.92);
+  background:#071018; /* solid */
+  border:1px solid rgba(255,255,255,.08);
+  white-space:nowrap;
+}
+
+.qr-h-title{
+  color: var(--text);
+  font-size: 1.28rem;
+  line-height: 1.12;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qr-h-desc{
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.32;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   /* keeps hero tidy */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.qr-h-sub{
+  color: rgba(226,232,240,.72);
+  font-size: .86rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Mobile: stack but still compact */
+@media (max-width: 640px){
+  .qr-timeline-hero{
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .qr-h-media img{ aspect-ratio: 16 / 9; height:auto; }
+  .qr-h-body{ border-left:0; border-top:1px solid rgba(255,255,255,.06); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .qr-timeline-hero, .qr-h-media img{ transition:none; }
+}
+</style>
 
                 <div class="mt-4">
                   <a href="timeline-history.html" class="cta">
@@ -280,157 +531,202 @@
           </h2>
         </div>
 
-        <div class="glass rounded-2xl px-4 py-3 border border-white/10">
-          <div class="text-[10px] uppercase tracking-widest text-slate-400">Tip</div>
-          <div class="text-sm text-slate-200">
-            Try <span class="text-white font-bold">Timeline</span> first — it’s the fastest “one more run” game.
-          </div>
-        </div>
+       
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
 
-        <!-- Timeline (still appears in grid, but featured above) -->
-        <a href="timeline-history.html" class="group arcade-card">
-          <img src="assets/Histim.webp" alt="History Timeline game">
-          <div class="arcade-overlay">
-            <span class="badge border-accentCyan/40 text-accentCyan">Memory</span>
-            <div class="mt-2 text-white font-arcade text-2xl uppercase tracking-wide">History Timeline</div>
-            <p class="text-slate-200 text-sm mt-1 leading-relaxed">
-              Order events correctly. The streak gets harder, faster.
-            </p>
-            <div class="mt-3">
-              <span class="text-slate-200 text-xs font-bold uppercase tracking-widest">
-                Ideal for quick sessions
-              </span>
-            </div>
-            <div class="mt-4">
-              <span class="cta"><i class="fas fa-hourglass-half"></i> Play</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- Logic League -->
-        <a href="fusion-core.html" class="group arcade-card">
-          <img src="assets/LOGIC.png" alt="Logic League puzzle">
-          <div class="arcade-overlay">
-            <span class="badge border-accentGreen/40 text-accentGreen">Logic</span>
-            <div class="mt-2 text-white font-arcade text-2xl uppercase tracking-wide">Logic League</div>
-            <p class="text-slate-200 text-sm mt-1 leading-relaxed">
-              Deduce the hidden pattern using exact and partial clues.
-            </p>
-            <div class="mt-4">
-              <span class="cta"><i class="fas fa-microchip"></i> Play</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- Hangman -->
-        <a href="hangman.html" class="group arcade-card">
-          <img src="assets/hangman.png" alt="Hangman word game">
-          <div class="arcade-overlay">
-            <span class="badge border-accentGold/40 text-accentGold">Words</span>
-            <div class="mt-2 text-white font-arcade text-2xl uppercase tracking-wide">Hangman</div>
-            <p class="text-slate-200 text-sm mt-1 leading-relaxed">
-              Clean, fast word rounds with a satisfying “perfect guess” feeling.
-            </p>
-            <div class="mt-4">
-              <span class="cta"><i class="fas fa-font"></i> Play</span>
-            </div>
-          </div>
-        </a>
-
-
-        <!-- CRYPTEX CARD -->
-<a href="cryptex.html"
-   class="group relative overflow-hidden rounded-3xl border border-white/10
-          bg-gradient-to-br from-indigo-900/30 via-slate-900 to-black
-          hover:border-indigo-400/40 transition-all
-          shadow-lg hover:shadow-indigo-900/40">
-
-  <!-- Image banner 16:9 -->
-  <div class="relative aspect-video overflow-hidden">
-    <img src="assets/cryptex.png"
-         alt="Cryptex Word Deduction Game"
-         class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500">
-    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-
-    <!-- Badge -->
-    <div class="absolute top-3 left-3 px-3 py-1 rounded-full
-                bg-indigo-500/20 border border-indigo-400/30
-                text-[10px] font-extrabold tracking-widest uppercase text-indigo-200">
-      New Puzzle
+  <!-- Timeline -->
+  <a href="timeline-history.html"
+     class="group arcade-card !relative !flex !flex-col !overflow-hidden !rounded-3xl !border !border-white/10
+            bg-gradient-to-br from-slate-900/60 via-slate-950 to-black
+            hover:!border-white/20 transition-all shadow-lg hover:shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+    <div class="relative aspect-video overflow-hidden">
+      <img src="assets/Histim.webp" alt="History Timeline game"
+           class="w-full h-full object-cover opacity-95 group-hover:scale-105 transition-transform duration-500">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"></div>
+      <div class="absolute top-3 left-3">
+        <span class="badge badge-neon border-accentCyan/40 text-accentCyan">Memory</span>
+      </div>
     </div>
-  </div>
 
-  <!-- Content -->
-  <div class="p-5">
-    <h3 class="text-white font-extrabold tracking-wide text-lg mb-2">
-      Cryptex
-    </h3>
-
-    <p class="text-slate-300 text-sm leading-relaxed">
-      Crack the hidden word letter by letter. Each guess reveals
-      <span class="text-white font-semibold">which letters are correct</span>
-      and <span class="text-white font-semibold">where they belong</span>.
-      Deduce the pattern, eliminate noise, and unlock the solution.
-    </p>
-
-    <!-- CTA -->
-    <div class="mt-4">
-              <span class="cta"><i class="fas fa-pencil-alt"></i> Play</span>
-            </div>
-          </div>
-        </a>
-
-
-
-        <!-- Rapid Fire -->
-        <a href="rapid.html" class="group arcade-card">
-          <img src="assets/rapid.png" alt="Rapid Fire quiz">
-          <div class="arcade-overlay">
-            <span class="badge border-accentRed/40 text-accentRed">Speed</span>
-            <div class="mt-2 text-white font-arcade text-2xl uppercase tracking-wide">Rapid Fire</div>
-            <p class="text-slate-200 text-sm mt-1 leading-relaxed">
-              Pure reaction trivia. No overthinking — just flow.
-            </p>
-            <div class="mt-4">
-              <span class="cta"><i class="fas fa-bolt"></i> Play</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- Pictionary (your minigames hub) -->
-        <a href="minigames.html" class="group arcade-card">
-          <img src="assets/pictionary.png" alt="Pictionary Live drawing game">
-          <div class="arcade-overlay">
-            <span class="badge border-pink-400/40 text-pink-300">Creative</span>
-            <div class="mt-2 text-white font-arcade text-2xl uppercase tracking-wide">Pictionary Live</div>
-            <p class="text-slate-200 text-sm mt-1 leading-relaxed">
-              Draw, guess, and discover how bad (or good) your friends are.
-            </p>
-            <div class="mt-4">
-              <span class="cta"><i class="fas fa-pencil-alt"></i> Play</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- “More coming” card -->
-        <a href="categories.html" class="group arcade-card">
-          <img src="/assets/Main.png" alt="Explore QuizRealm categories">
-          <div class="arcade-overlay">
-            <span class="badge border-white/20 text-slate-200">Explore</span>
-            <div class="mt-2 text-white font-arcade text-2xl uppercase tracking-wide">More Games Incoming</div>
-            <p class="text-slate-200 text-sm mt-1 leading-relaxed">
-              New categories and mini-games are added regularly. Explore topics and start a quiz run.
-            </p>
-            <div class="mt-4">
-              <span class="cta"><i class="fas fa-layer-group"></i> Browse Topics</span>
-            </div>
-          </div>
-        </a>
-
+    <div class="p-5 flex-1 flex flex-col">
+      <h3 class="text-white font-arcade text-2xl uppercase tracking-wide">
+        History Timeline
+      </h3>
+      <p class="text-slate-200 text-sm mt-2 leading-relaxed flex-1">
+        Order events correctly as the streak speeds up—perfect for quick sessions.
+      </p>
+      <div class="mt-4">
+        <span class="cta"><i class="fas fa-hourglass-half"></i> Play</span>
       </div>
+    </div>
+  </a>
+
+  <!-- Logic League -->
+  <a href="fusion-core.html"
+     class="group arcade-card !relative !flex !flex-col !overflow-hidden !rounded-3xl !border !border-white/10
+            bg-gradient-to-br from-slate-900/60 via-slate-950 to-black
+            hover:!border-white/20 transition-all shadow-lg hover:shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+    <div class="relative aspect-video overflow-hidden">
+      <img src="assets/LOGIC.png" alt="Logic League puzzle"
+           class="w-full h-full object-cover opacity-95 group-hover:scale-105 transition-transform duration-500">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"></div>
+      <div class="absolute top-3 left-3">
+        <span class="badge badge-neon border-accentGreen/40 text-accentGreen">Logic</span>
+      </div>
+    </div>
+
+    <div class="p-5 flex-1 flex flex-col">
+      <h3 class="text-white font-arcade text-2xl uppercase tracking-wide">
+        Logic League
+      </h3>
+      <p class="text-slate-200 text-sm mt-2 leading-relaxed flex-1">
+        Deduce the hidden pattern using exact clues and partial matches.
+      </p>
+      <div class="mt-4">
+        <span class="cta"><i class="fas fa-microchip"></i> Play</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Hangman -->
+  <a href="hangman.html"
+     class="group arcade-card !relative !flex !flex-col !overflow-hidden !rounded-3xl !border !border-white/10
+            bg-gradient-to-br from-slate-900/60 via-slate-950 to-black
+            hover:!border-white/20 transition-all shadow-lg hover:shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+    <div class="relative aspect-video overflow-hidden">
+      <img src="assets/hangman.png" alt="Hangman word game"
+           class="w-full h-full object-cover opacity-95 group-hover:scale-105 transition-transform duration-500">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"></div>
+      <div class="absolute top-3 left-3">
+        <span class="badge badge-neon border-accentGold/40 text-accentGold">Words</span>
+      </div>
+    </div>
+
+    <div class="p-5 flex-1 flex flex-col">
+      <h3 class="text-white font-arcade text-2xl uppercase tracking-wide">
+        Hangman
+      </h3>
+      <p class="text-slate-200 text-sm mt-2 leading-relaxed flex-1">
+        Fast word rounds with that satisfying “perfect guess” moment.
+      </p>
+      <div class="mt-4">
+        <span class="cta"><i class="fas fa-font"></i> Play</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- CRYPTEX -->
+  <a href="cryptex.html"
+     class="group arcade-card !relative !flex !flex-col !overflow-hidden !rounded-3xl !border !border-white/10
+            bg-gradient-to-br from-slate-900/60 via-slate-950 to-black
+            hover:!border-white/20 transition-all shadow-lg hover:shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+    <div class="relative aspect-video overflow-hidden">
+      <img src="assets/cryptex.png" alt="Cryptex Word Deduction Game"
+           class="w-full h-full object-cover opacity-95 group-hover:scale-105 transition-transform duration-500">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"></div>
+      <div class="absolute top-3 left-3">
+        <span class="badge badge-neon border-indigo-400/30 text-indigo-200">New Puzzle</span>
+      </div>
+    </div>
+
+    <div class="p-5 flex-1 flex flex-col">
+      <h3 class="text-white font-arcade text-2xl uppercase tracking-wide">
+        Cryptex
+      </h3>
+      <p class="text-slate-200 text-sm mt-2 leading-relaxed flex-1">
+        Crack the hidden word—each guess reveals correct letters and positions.
+      </p>
+      <div class="mt-4">
+        <span class="cta"><i class="fas fa-pencil-alt"></i> Play</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Rapid Fire -->
+  <a href="rapid.html"
+     class="group arcade-card !relative !flex !flex-col !overflow-hidden !rounded-3xl !border !border-white/10
+            bg-gradient-to-br from-slate-900/60 via-slate-950 to-black
+            hover:!border-white/20 transition-all shadow-lg hover:shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+    <div class="relative aspect-video overflow-hidden">
+      <img src="assets/rapid.png" alt="Rapid Fire quiz"
+           class="w-full h-full object-cover opacity-95 group-hover:scale-105 transition-transform duration-500">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"></div>
+      <div class="absolute top-3 left-3">
+        <span class="badge badge-neon border-accentRed/40 text-accentRed">Speed</span>
+      </div>
+    </div>
+
+    <div class="p-5 flex-1 flex flex-col">
+      <h3 class="text-white font-arcade text-2xl uppercase tracking-wide">
+        Rapid Fire
+      </h3>
+      <p class="text-slate-200 text-sm mt-2 leading-relaxed flex-1">
+        Pure reaction trivia—no overthinking, just speed and flow.
+      </p>
+      <div class="mt-4">
+        <span class="cta"><i class="fas fa-bolt"></i> Play</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Pictionary Live -->
+  <a href="minigames.html"
+     class="group arcade-card !relative !flex !flex-col !overflow-hidden !rounded-3xl !border !border-white/10
+            bg-gradient-to-br from-slate-900/60 via-slate-950 to-black
+            hover:!border-white/20 transition-all shadow-lg hover:shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+    <div class="relative aspect-video overflow-hidden">
+      <img src="assets/pictionary.png" alt="Pictionary Live drawing game"
+           class="w-full h-full object-cover opacity-95 group-hover:scale-105 transition-transform duration-500">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"></div>
+      <div class="absolute top-3 left-3">
+        <span class="badge badge-neon border-pink-400/40 text-pink-300">Creative</span>
+      </div>
+    </div>
+
+    <div class="p-5 flex-1 flex flex-col">
+      <h3 class="text-white font-arcade text-2xl uppercase tracking-wide">
+        Pictionary Live
+      </h3>
+      <p class="text-slate-200 text-sm mt-2 leading-relaxed flex-1">
+        Draw, guess, and find out how good (or terrible) your friends are.
+      </p>
+      <div class="mt-4">
+        <span class="cta"><i class="fas fa-pencil-alt"></i> Play</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- More coming -->
+  <a href="categories.html"
+     class="group arcade-card !relative !flex !flex-col !overflow-hidden !rounded-3xl !border !border-white/10
+            bg-gradient-to-br from-slate-900/60 via-slate-950 to-black
+            hover:!border-white/20 transition-all shadow-lg hover:shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+    <div class="relative aspect-video overflow-hidden">
+      <img src="/assets/Main.png" alt="Explore QuizRealm categories"
+           class="w-full h-full object-cover opacity-95 group-hover:scale-105 transition-transform duration-500">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"></div>
+      <div class="absolute top-3 left-3">
+        <span class="badge badge-neon border-white/20 text-slate-200">Explore</span>
+      </div>
+    </div>
+
+    <div class="p-5 flex-1 flex flex-col">
+      <h3 class="text-white font-arcade text-2xl uppercase tracking-wide">
+        More Games Incoming
+      </h3>
+      <p class="text-slate-200 text-sm mt-2 leading-relaxed flex-1">
+        New categories and mini-games drop regularly—browse topics and start a run.
+      </p>
+      <div class="mt-4">
+        <span class="cta"><i class="fas fa-layer-group"></i> Browse Topics</span>
+      </div>
+    </div>
+  </a>
+
+</div>
+
     </section>
 
     <!-- SEO + VALUE SECTION -->
@@ -491,13 +787,7 @@
             </a>
           </div>
 
-          <div class="mt-6 glass rounded-2xl p-4 border border-white/10">
-            <div class="text-[11px] uppercase tracking-widest text-slate-400 font-bold">Launch Tip</div>
-            <p class="text-slate-300 text-sm mt-2 leading-relaxed">
-              Put this Arcade page in your header and on the homepage hero.
-              It becomes your “always something to do” destination.
-            </p>
-          </div>
+          
         </div>
       </div>
 
