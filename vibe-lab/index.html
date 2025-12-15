@@ -4,10 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   
-  <!-- Content Security Policy -->
+  <!-- Security & SEO -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
-
-  <!-- Primary SEO -->
   <title>The Vibe Check™ — Ultimate Roast</title>
   <meta name="description" content="22 Questions. 1 Brutal Roast. Are you the Main Character or an NPC?" />
   <link rel="canonical" href="https://thequizrealm.com/" />
@@ -37,7 +35,7 @@
   <script src="data.js"></script>
   <script src="facts.js"></script>
 
-  <!-- Fonts (Combined Vibe Check + Your Site Fonts) -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Oswald:wght@500;700&family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
@@ -53,6 +51,8 @@
             brand: '#FF3B30', // Default Red
             toxic: '#CCFF00', // Acid Green (Adrenaline Mode)
             dark: '#050505',
+            spotify: '#1DB954',
+            youtube: '#FF0000'
           },
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
@@ -85,6 +85,10 @@
     .tap-fast { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     select, input { background: #111; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; width: 100%; font-family: 'Inter'; outline: none; }
     select:focus, input:focus { border-color: #FF3B30; }
+    
+    /* Social Icons */
+    .icon-spotify { color: #1DB954; }
+    .icon-youtube { color: #FF0000; }
   </style>
 </head>
 
@@ -140,8 +144,10 @@
 
     <!-- SCREEN 4: RESULTS -->
     <section id="screen-result" class="hidden absolute inset-0 bg-[#0a0a0a] overflow-y-auto">
-      <div class="min-h-full w-full flex flex-col items-center justify-center p-6">
-        <div id="result-card" class="w-full max-w-md bg-black border border-white/10 p-8 text-center space-y-6 relative overflow-hidden animate-pop">
+      <div class="min-h-full w-full flex flex-col items-center justify-center p-6 py-12">
+        
+        <!-- Result Card -->
+        <div id="result-card" class="w-full max-w-md bg-black border border-white/10 p-8 text-center space-y-6 relative overflow-hidden animate-pop shadow-2xl">
           <div class="absolute -top-20 -right-20 w-60 h-60 bg-brand/20 blur-[80px] rounded-full pointer-events-none"></div>
           <div class="relative z-10 space-y-6">
             <div class="inline-block border border-white/20 px-3 py-1 rounded-full"><span class="text-[10px] font-bold uppercase tracking-widest text-white/50">Official Diagnosis</span></div>
@@ -151,10 +157,69 @@
             <div class="pt-4 text-[10px] font-bold uppercase text-white/30 tracking-widest">vibecheck.app • 2025</div>
           </div>
         </div>
-        <div class="mt-8 w-full max-w-md space-y-3">
-          <button id="btn-share" class="w-full bg-brand text-white font-display text-xl uppercase py-4 hover:brightness-110 transition-all shadow-lg shadow-brand/20">Share Poster</button>
-          <div class="grid grid-cols-2 gap-3"><button onclick="alert('Redirecting to Spotify...')" class="bg-[#1DB954] text-white font-bold text-sm uppercase py-3 rounded hover:brightness-110">Listen</button><button id="btn-again" class="bg-white/10 text-white font-bold text-sm uppercase py-3 rounded hover:bg-white/20">Restart</button></div>
+
+        <!-- Professional Actions -->
+        <div class="mt-8 w-full max-w-md space-y-4">
+          
+          <!-- Share -->
+          <button id="btn-share" class="w-full bg-brand text-white font-display text-xl uppercase py-4 hover:brightness-110 transition-all shadow-lg shadow-brand/20 active:scale-[0.98]">
+            <i class="fa-brands fa-instagram mr-2"></i> Share Poster
+          </button>
+
+          <!-- Divider -->
+          <div class="relative flex py-2 items-center">
+             <div class="flex-grow border-t border-white/10"></div>
+             <span class="flex-shrink-0 mx-4 text-white/30 text-[10px] uppercase tracking-widest">Unlock Playlist</span>
+             <div class="flex-grow border-t border-white/10"></div>
+          </div>
+
+          <!-- Connect Buttons -->
+          <div class="grid grid-cols-2 gap-3">
+             <button onclick="handleConnect('spotify')" class="bg-[#191414] border border-white/10 text-white p-4 rounded-xl flex flex-col items-center justify-center hover:border-spotify transition-all group">
+                <i class="fa-brands fa-spotify text-2xl text-spotify mb-2 group-hover:scale-110 transition-transform"></i>
+                <span class="font-bold text-xs uppercase tracking-wide">Spotify</span>
+             </button>
+             <button onclick="handleConnect('youtube')" class="bg-[#191414] border border-white/10 text-white p-4 rounded-xl flex flex-col items-center justify-center hover:border-youtube transition-all group">
+                <i class="fa-brands fa-youtube text-2xl text-youtube mb-2 group-hover:scale-110 transition-transform"></i>
+                <span class="font-bold text-xs uppercase tracking-wide">YouTube</span>
+             </button>
+          </div>
+
+          <!-- Auth & Sync (Professional Style) -->
+          <div id="viewGuestAuth" class="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4 backdrop-blur-sm">
+             <div class="text-center text-[10px] text-white/50 uppercase tracking-widest mb-2">Save Your Results</div>
+             
+             <!-- Google Sign In -->
+             <button onclick="handleGoogleLogin()" class="w-full bg-white text-black font-bold py-3 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4" alt="Google">
+                <span class="text-xs uppercase tracking-wide">Sign in with Google</span>
+             </button>
+
+             <!-- Email Toggle -->
+             <div class="text-center">
+                <button onclick="document.getElementById('emailForm').classList.toggle('hidden')" class="text-[10px] text-white/40 hover:text-white underline">
+                   Or use email/password
+                </button>
+             </div>
+
+             <!-- Hidden Email Form -->
+             <div id="emailForm" class="hidden space-y-3 pt-1">
+                <input id="emailInput" type="email" placeholder="Email Address" class="bg-black/50 border border-white/10 text-white text-xs rounded p-3 focus:border-brand w-full">
+                <input id="passInput" type="password" placeholder="Password" class="bg-black/50 border border-white/10 text-white text-xs rounded p-3 focus:border-brand w-full">
+                <div class="flex gap-2">
+                   <button onclick="handleEmailLogin()" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded text-xs font-bold uppercase">Login</button>
+                   <button onclick="handleEmailSignup()" class="flex-1 bg-brand hover:bg-red-600 text-white py-2 rounded text-xs font-bold uppercase">Register</button>
+                </div>
+             </div>
+             <div id="authError" class="text-brand text-xs font-bold hidden text-center"></div>
+          </div>
+
+          <button id="btn-again" class="w-full text-white/30 text-xs font-mono py-2 hover:text-white transition-colors">
+             [ START OVER ]
+          </button>
+
         </div>
+        
         <div class="mt-8 w-full max-w-md"><button id="btn-debug" class="w-full text-center text-[10px] uppercase tracking-widest text-white/30 hover:text-brand transition-colors">[+] View Roast Data</button><div id="debug-view" class="hidden mt-4 p-4 bg-white/5 border border-white/10 rounded-lg text-left"><h4 class="text-brand font-bold text-xs uppercase mb-2">Vibe Metrics</h4><div id="score-table" class="space-y-1 text-xs font-mono text-white/70"></div></div></div>
       </div>
     </section>
@@ -162,15 +227,109 @@
 
   <canvas id="share-canvas" width="1080" height="1920" class="hidden"></canvas>
 
-  <!-- Module to Attach Firestore Tools to Window -->
+  <!-- Firebase Logic Module -->
   <script type="module">
-    import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    window.fsCollection = collection;
-    window.fsAddDoc = addDoc;
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    let db;
+    let auth;
+    let appId;
+    
+    // Auth Handlers (Exposed Globally)
+    window.handleGoogleLogin = async () => {
+      if(!auth) return;
+      const provider = new GoogleAuthProvider();
+      try {
+        await signInWithPopup(auth, provider);
+        // Resave data with new user ID
+        if(window.lastPersona) window.finish(window.lastPersona); // Re-trigger save
+      } catch (e) {
+        document.getElementById('authError').innerText = e.message;
+        document.getElementById('authError').classList.remove('hidden');
+      }
+    };
+
+    window.handleEmailLogin = async () => {
+      const email = document.getElementById('emailInput').value;
+      const pass = document.getElementById('passInput').value;
+      if(!email || !pass) return;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        document.getElementById('authError').innerText = e.message;
+        document.getElementById('authError').classList.remove('hidden');
+      }
+    };
+
+    window.handleEmailSignup = async () => {
+      const email = document.getElementById('emailInput').value;
+      const pass = document.getElementById('passInput').value;
+      if(!email || !pass) return;
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        document.getElementById('authError').innerText = e.message;
+        document.getElementById('authError').classList.remove('hidden');
+      }
+    };
+
+    window.handleConnect = (platform) => {
+        alert(`Connecting to ${platform.toUpperCase()} API... (Placeholder for Playlist Generation)`);
+    };
+
+    try {
+      if (typeof __firebase_config !== 'undefined') {
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        window.db = db;
+        window.auth = auth;
+        window.fsCollection = collection;
+        window.fsAddDoc = addDoc;
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            console.log("User signed in:", user.uid);
+            if(!user.isAnonymous) {
+               document.getElementById('viewGuestAuth').innerHTML = '<div class="text-center text-neon text-xs font-bold uppercase tracking-widest py-4">✓ Account Linked</div>';
+            }
+          } else {
+            signInAnonymously(auth).catch((error) => console.error("Guest login failed", error));
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("Firebase config missing or invalid.", e);
+    }
+
+    window.saveToFirebase = async (data) => {
+      if (!db || !auth.currentUser) return;
+      try {
+        let ip = 'unknown';
+        try { const res = await fetch('https://api.ipify.org?format=json'); const json = await res.json(); ip = json.ip; } catch(e) {}
+
+        const payload = {
+          ...data,
+          userId: auth.currentUser.uid,
+          isAnonymous: auth.currentUser.isAnonymous,
+          ip: ip,
+          timestamp: new Date().toISOString()
+        };
+
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'roast_results'), payload);
+        console.log("Data saved to Firebase!");
+      } catch (e) {
+        console.error("Error saving to Firebase: ", e);
+      }
+    };
   </script>
 
   <script>
-    // --- APP DATA ---
     const QUESTIONS = [
       { id: 1, prompt: "THE KING?", a: { label: "MJ", img: "https://images.unsplash.com/photo-1504593811423-6dd665756598?q=80&w=1000", score: { pop: 2, classic: 1 } }, b: { label: "PRINCE", img: "https://images.unsplash.com/photo-1549834125-9a69624c9c7c?q=80&w=1000", score: { music_snob: 2, funk: 1 } } },
       { id: 2, prompt: "THE VENUE?", a: { label: "THE CLUB", img: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?q=80&w=1000", score: { party: 2, chaos: 1 } }, b: { label: "COZY BAR", img: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1000", score: { indie: 2, chill: 1 } } },
@@ -292,37 +451,14 @@
       el('r-roast').innerText = `"${p.roast}"`;
       el('r-desc').innerText = p.desc;
       renderStats();
-      saveData(p);
-      showScreen('screen-result');
-    }
-
-    async function saveData(persona) {
-      if (!window.db || !window.auth || !window.fsCollection || !window.fsAddDoc) {
-        console.log("Firebase not fully loaded yet.");
-        return;
-      }
-      try {
-        let ip = 'unknown';
-        try { const res = await fetch('https://api.ipify.org?format=json'); const json = await res.json(); ip = json.ip; } catch(e) {}
-        
-        // Use global appId if defined in firebase-config.js (assuming it sets a global, or default)
-        // Since I cannot see the user's config file exports, I will assume a standard collection structure or a default.
-        // I will use a safe default if 'appId' isn't available globally.
-        const appIdSafe = typeof appId !== 'undefined' ? appId : (window.appId || 'default-app-id');
-
-        const payload = {
+      if (window.saveToFirebase) {
+        window.saveToFirebase({
           scores: state.scores,
-          gate: state.gateData,
-          result: persona,
-          timestamp: new Date().toISOString(),
-          ip: ip,
-          userId: window.auth.currentUser ? window.auth.currentUser.uid : 'anon'
-        };
-        
-        // Use the collection/addDoc we attached to window
-        await window.fsAddDoc(window.fsCollection(window.db, 'artifacts', appIdSafe, 'public', 'data', 'roast_results'), payload);
-        console.log("Data saved.");
-      } catch(e) { console.log("Save error", e); }
+          gateData: state.gateData,
+          result: p
+        });
+      }
+      showScreen('screen-result');
     }
 
     function generatePoster() {
