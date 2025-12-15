@@ -20,12 +20,12 @@
   <!-- End Google Tag Manager -->
 
   <!-- ROOT SOURCES (Your Infrastructure) -->
-  <script type="module" src="/firebase-config.js"></script>
-  <script src="/game-engine.js"></script> 
-  <script src="/components.js" defer></script>
-  <script src="/data.js"></script>
-  <script src="/facts.js"></script>
-  
+  <!-- Updated path to point to root folder -->
+  <script type="module" src="../firebase-config.js"></script>
+  <script src="game-engine.js"></script> 
+  <script src="components.js" defer></script>
+  <script src="data.js"></script>
+  <script src="facts.js"></script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -309,10 +309,13 @@
     window.collection = collection;
     window.addDoc = addDoc;
 
+    let authAttempts = 0;
+
     // Wait for window.auth to be ready from config file
     const checkAuth = setInterval(() => {
       if (window.auth) {
         clearInterval(checkAuth);
+        console.log("Auth initialized successfully.");
         
         onAuthStateChanged(window.auth, (user) => {
           if (user) {
@@ -336,13 +339,21 @@
             }
           }
         });
+      } else {
+        authAttempts++;
+        if (authAttempts > 30) { // ~3 seconds
+           console.error("Firebase Auth initialization timed out. Check '../firebase-config.js' path and contents.");
+           // Optional: You could show a UI error here if critical
+           clearInterval(checkAuth);
+        }
       }
     }, 100);
 
     // --- AUTH LOGIC (Globally Exposed) ---
     window.handleGoogleLogin = async () => {
       if (!window.auth) {
-         console.error("Auth not ready yet.");
+         console.error("Auth not ready yet. Check if firebase-config.js is loading correctly.");
+         alert("System Error: Cloud services not connected. Please refresh or check console.");
          return;
       }
       const provider = new GoogleAuthProvider();
@@ -363,6 +374,7 @@
       const email = document.getElementById('emailInput').value;
       const pass = document.getElementById('passInput').value;
       if(!email || !pass) return;
+      if (!window.auth) { alert("Auth system not ready"); return; }
       try {
         await signInWithEmailAndPassword(window.auth, email, pass);
       } catch (e) {
@@ -375,6 +387,7 @@
       const email = document.getElementById('emailInput').value;
       const pass = document.getElementById('passInput').value;
       if(!email || !pass) return;
+      if (!window.auth) { alert("Auth system not ready"); return; }
       try {
         await createUserWithEmailAndPassword(window.auth, email, pass);
       } catch (e) {
@@ -385,7 +398,11 @@
 
     // --- SAVE LOGIC ---
     window.saveToFirebase = async (data) => {
-      if (!window.db || !window.auth || !window.auth.currentUser) return;
+      // Added logging to help debug
+      if (!window.db) { console.error("Database not initialized (window.db is missing)"); return; }
+      if (!window.auth) { console.error("Auth not initialized (window.auth is missing)"); return; }
+      if (!window.auth.currentUser) { console.log("User not signed in yet, skipping save"); return; }
+      
       try {
         let ip = 'unknown';
         try { const res = await fetch('https://api.ipify.org?format=json'); const json = await res.json(); ip = json.ip; } catch(e) {}
