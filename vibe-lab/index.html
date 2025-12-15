@@ -9,16 +9,7 @@
   <title>The Vibe Check™ — Ultimate Roast</title>
   <meta name="description" content="22 Questions. 1 Brutal Roast. Are you the Main Character or an NPC?" />
   <link rel="canonical" href="https://thequizrealm.com/" />
-  
-  <!-- Theme & Icons -->
   <meta name="theme-color" content="#000000">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="shortcut icon" href="/assets/favicon.ico">
-  <meta name="msapplication-TileColor" content="#020617">
 
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -28,13 +19,13 @@
   })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
   <!-- End Google Tag Manager -->
 
-  <!-- YOUR PLATFORM SCRIPTS -->
-  <!-- This loads window.db and window.auth from your root folder -->
+  <!-- ROOT SOURCES (Your Infrastructure) -->
   <script type="module" src="/firebase-config.js"></script>
   <script src="/game-engine.js"></script> 
   <script src="/components.js" defer></script>
   <script src="/data.js"></script>
   <script src="/facts.js"></script>
+  
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -49,13 +40,12 @@
       theme: {
         extend: {
           colors: {
-            brand: '#FF3B30', // Default Red
-            toxic: '#CCFF00', // Acid Green (Adrenaline Mode)
+            brand: '#FF3B30', 
+            toxic: '#CCFF00', 
             dark: '#050505',
             spotify: '#1DB954',
             youtube: '#FF0000',
             gold: '#FFD700',
-            platinum: '#E5E4E2'
           },
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
@@ -308,17 +298,49 @@
 
   <!-- Firebase Logic Module -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    let db;
-    let auth;
-    let appId;
-    
+    // Re-attach to window to ensure global availability for inline onclicks
+    window.GoogleAuthProvider = GoogleAuthProvider;
+    window.signInWithPopup = signInWithPopup;
+    window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+    window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+    window.collection = collection;
+    window.addDoc = addDoc;
+
+    // Wait for window.auth to be ready from config file
+    const checkAuth = setInterval(() => {
+      if (window.auth) {
+        clearInterval(checkAuth);
+        
+        onAuthStateChanged(window.auth, (user) => {
+          if (user) {
+            window.currentUser = user;
+            if(!user.isAnonymous) {
+               // Update UI for Signed In User
+               const authBlock = document.getElementById('viewGuestAuth');
+               if(authBlock) authBlock.innerHTML = '<div class="text-center text-toxic text-xs font-bold uppercase tracking-widest py-4 border border-toxic/30 bg-toxic/5 rounded-lg">✓ Cloud Account Active</div>';
+               
+               // Unlock Playlist Button Visuals
+               const lockIcon = document.getElementById('pl-lock-icon');
+               if(lockIcon) lockIcon.innerHTML = '<i class="fa-solid fa-unlock text-toxic"></i>';
+               
+               const btnTitle = document.getElementById('pl-btn-title');
+               if(btnTitle) btnTitle.innerText = "Access Premium Playlist";
+               
+               // Re-save data
+               if(window.lastPersona && window.saveToFirebase) {
+                   window.saveToFirebase({...window.lastPersona});
+               }
+            }
+          }
+        });
+      }
+    }, 100);
+
     // --- AUTH LOGIC (Globally Exposed) ---
     window.handleGoogleLogin = async () => {
-      // Ensure auth exists
       if (!window.auth) {
          console.error("Auth not ready yet.");
          return;
@@ -361,78 +383,24 @@
       }
     };
 
-    // --- INITIALIZATION ---
-    try {
-      if (typeof __firebase_config !== 'undefined') {
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
-        appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        
-        // GLOBAL EXPORT
-        window.db = db;
-        window.auth = auth;
-        window.appId = appId;
-        window.fsCollection = collection;
-        window.fsAddDoc = addDoc;
-
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            window.currentUser = user;
-            if(!user.isAnonymous) {
-               // Update UI for Signed In User
-               const authBlock = document.getElementById('viewGuestAuth');
-               if(authBlock) authBlock.innerHTML = '<div class="text-center text-toxic text-xs font-bold uppercase tracking-widest py-4 border border-toxic/30 bg-toxic/5 rounded-lg">✓ Cloud Account Active</div>';
-               
-               // Unlock Playlist Button Visuals
-               const lockIcon = document.getElementById('pl-lock-icon');
-               if(lockIcon) lockIcon.innerHTML = '<i class="fa-solid fa-unlock text-toxic"></i>';
-               
-               const btnTitle = document.getElementById('pl-btn-title');
-               if(btnTitle) btnTitle.innerText = "Access Premium Playlist";
-               
-               // Re-save data
-               if(window.lastPersona && window.saveToFirebase) {
-                   window.saveToFirebase({...window.lastPersona});
-               }
-            }
-          } else {
-            signInAnonymously(auth).catch((error) => console.error("Guest login failed", error));
-          }
-        });
-      }
-    } catch (e) {
-      console.warn("Firebase config missing or invalid.", e);
-    }
-
     // --- SAVE LOGIC ---
     window.saveToFirebase = async (data) => {
-      // Check both local vars and window global vars
-      const dbInstance = window.db || db;
-      const authInstance = window.auth || auth;
-      const addDocFn = window.fsAddDoc || addDoc;
-      const collectionFn = window.fsCollection || collection;
-      
-      if (!dbInstance || !authInstance || !authInstance.currentUser) return;
+      if (!window.db || !window.auth || !window.auth.currentUser) return;
       try {
         let ip = 'unknown';
         try { const res = await fetch('https://api.ipify.org?format=json'); const json = await res.json(); ip = json.ip; } catch(e) {}
 
         const payload = {
           ...data,
-          userId: authInstance.currentUser.uid,
-          isAnonymous: authInstance.currentUser.isAnonymous,
-          email: authInstance.currentUser.email || null,
+          userId: window.auth.currentUser.uid,
+          isAnonymous: window.auth.currentUser.isAnonymous,
+          email: window.auth.currentUser.email || null,
           ip: ip,
           timestamp: new Date().toISOString()
         };
 
-        // Determine collection path
-        // Priority: Root collection (for user convenience) -> then fallback to artifacts if error
-        const colPath = ['roast_results']; 
-        
-        await addDocFn(collectionFn(dbInstance, ...colPath), payload);
+        // Use root collection 'roast_results'
+        await addDoc(collection(window.db, 'roast_results'), payload);
         console.log("Data saved to Firebase!");
       } catch (e) {
         console.error("Error saving to Firebase: ", e);
@@ -570,7 +538,6 @@
     function handlePlaylistGen() {
         const modal = document.getElementById('playlist-modal');
         const container = document.getElementById('playlist-tracks');
-        const btnAction = document.getElementById('playlist-actions');
         const isLoggedIn = window.auth && window.auth.currentUser && !window.auth.currentUser.isAnonymous;
         
         modal.classList.remove('hidden');
@@ -625,13 +592,11 @@
       el('r-roast').innerText = `"${p.roast}"`;
       el('r-desc').innerText = p.desc;
       
-      // Auto-save if possible
       if (window.saveToFirebase) window.saveToFirebase({ scores: state.scores, gateData: state.gateData, result: p });
       
       showScreen('screen-result');
     }
 
-    // Wiring up basic events
     el('btn-start').addEventListener('click', () => { showScreen('screen-quiz'); renderQuestion(); });
     el('btn-a').addEventListener('click', () => handleChoice('a'));
     el('btn-b').addEventListener('click', () => handleChoice('b'));
