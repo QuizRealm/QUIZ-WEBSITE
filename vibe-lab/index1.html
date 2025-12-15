@@ -1,0 +1,2315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>The Vibe Lab — 18 taps → playlist</title>
+  <meta name="description" content="18 taps. Your Vibe ID. A playlist you can actually use." />
+  <meta name="theme-color" content="#070707" />
+
+  <!-- Social preview -->
+  <meta property="og:title" content="The Vibe Lab — 18 taps → playlist" />
+  <meta property="og:description" content="Tap fast. Get your Vibe ID. Unlock your full playlist." />
+  <meta property="og:type" content="website" />
+
+  <!-- Keep these tags -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','YOUR_GTM_ID_HERE');
+  </script>
+
+  <!-- Fonts (premium + clean) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#070707;
+      --panel: rgba(255,255,255,.045);
+      --panel2: rgba(255,255,255,.030);
+      --line: rgba(255,255,255,.10);
+      --line2: rgba(255,255,255,.16);
+      --txt: rgba(255,255,255,.94);
+      --muted: rgba(255,255,255,.68);
+      --muted2: rgba(255,255,255,.52);
+
+      --lime:#69ff86;
+      --blue:#6aa6ff;
+      --gold:#ffcc66;
+
+      --r: 22px;
+      --shadow: 0 24px 90px rgba(0,0,0,.64);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--txt);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(1200px 680px at 70% -10%, rgba(106,166,255,.16), transparent 60%),
+        radial-gradient(900px 620px at 15% 10%, rgba(105,255,134,.12), transparent 60%),
+        radial-gradient(900px 620px at 30% 120%, rgba(255,204,102,.08), transparent 58%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+
+    /* subtle premium noise (NOT terminal) */
+    .noise{
+      position:fixed; inset:-20%;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");
+      opacity:.06;
+      pointer-events:none;
+      z-index:0;
+      animation: drift 8s linear infinite;
+    }
+    @keyframes drift{0%{transform:translate(-2%,-2%)}100%{transform:translate(2%,2%)}}
+
+    .app{
+      position:relative;
+      z-index:1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 18px 16px 40px;
+      min-height:100%;
+    }
+
+    /* top bar */
+    .top{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      padding: 8px 0 14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      user-select:none;
+    }
+    .logo{
+      width: 38px; height: 38px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(105,255,134,.42), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(106,166,255,.38), transparent 60%),
+        rgba(255,255,255,.06);
+      box-shadow: 0 18px 70px rgba(0,0,0,.50);
+    }
+    .brand h1{
+      margin:0;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 13px;
+      letter-spacing:.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.86);
+    }
+    .status{
+      display:flex; align-items:center; gap:8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.72);
+      font-size: 12px;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:999px;
+      background: var(--lime);
+      box-shadow: 0 0 18px rgba(105,255,134,.45);
+    }
+    .iconBtn{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.84);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .iconBtn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.05); }
+    .iconBtn:active{ transform: translateY(0px) scale(.99); }
+
+    /* cards */
+    .card{
+      border-radius: var(--r);
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    /* screens */
+    .screen{ display:none; }
+    .screen.active{ display:block; }
+
+    /* Landing */
+    .hero{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    @media (max-width: 980px){
+      .hero{ grid-template-columns: 1fr; }
+    }
+    .heroPad{ padding: 22px; }
+    .headline{
+      margin:0 0 10px;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: clamp(36px, 5.2vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -.03em;
+    }
+    .sub{
+      margin:0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+      max-width: 60ch;
+    }
+    .pills{
+      margin-top: 16px;
+      display:flex; flex-wrap:wrap; gap:10px;
+    }
+    .pill{
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      padding: 9px 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,.84);
+      backdrop-filter: blur(10px);
+    }
+    .pill strong{ font-weight:800; color: rgba(255,255,255,.92); }
+
+    .ctaBlock{
+      margin-top: 18px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .ctaPrimary{
+      width:100%;
+      border-radius: 18px;
+      border: 1px solid rgba(105,255,134,.58);
+      background: linear-gradient(180deg, rgba(105,255,134,.22), rgba(105,255,134,.08));
+      color: rgba(255,255,255,.96);
+      padding: 16px 18px;
+      cursor:pointer;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-weight: 700;
+      letter-spacing:.02em;
+      display:flex; align-items:center; justify-content:space-between;
+      transition: transform .12s ease, border-color .12s ease;
+      box-shadow: 0 0 0 1px rgba(105,255,134,.08) inset;
+    }
+    .ctaPrimary:hover{ transform: translateY(-1px); border-color: rgba(105,255,134,.90); }
+    .ctaPrimary:active{ transform: translateY(0px) scale(.995); }
+    .ctaPrimary em{
+      font-style:normal;
+      color: rgba(0,0,0,.78);
+      background: rgba(105,255,134,.96);
+      padding: 8px 10px;
+      border-radius: 14px;
+      font-size: 12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    .microRow{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      font-size: 12px;
+      color: var(--muted2);
+    }
+    .microRow a{
+      color: rgba(255,255,255,.80);
+      text-decoration:none;
+      border-bottom: 1px dashed rgba(255,255,255,.18);
+      padding-bottom:2px;
+    }
+    .microRow a:hover{ border-bottom-color: rgba(255,255,255,.34); }
+
+    .sideStack{ display:flex; flex-direction:column; gap: 12px; }
+    .mini{ border-radius: var(--r); border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow: 0 18px 70px rgba(0,0,0,.52);
+      overflow:hidden;
+    }
+    .miniPad{ padding: 16px; }
+    .label{
+      margin:0 0 10px;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color: rgba(255,255,255,.68);
+    }
+    .example{
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 12px;
+    }
+    .exTile{
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      padding: 12px;
+      display:flex; flex-direction:column; gap: 6px;
+    }
+    .exTile strong{
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 14px;
+      letter-spacing:-.01em;
+    }
+    .exTile small{ color: rgba(255,255,255,.62); font-size: 12px; line-height:1.4; }
+
+    /* Quiz */
+    .quizTop{
+      padding: 16px 18px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      display:flex; align-items:flex-end; justify-content:space-between; gap: 14px;
+    }
+    .qMeta{ display:flex; flex-direction:column; gap: 8px; min-width:0; }
+    .qCount{
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color: rgba(255,255,255,.62);
+    }
+    .qPrompt{
+      margin:0;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: clamp(22px, 2.3vw, 30px);
+      letter-spacing:-.02em;
+      line-height: 1.12;
+    }
+    .qSub{
+      margin:0;
+      color: rgba(255,255,255,.62);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .bar{
+      height: 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      overflow:hidden;
+      margin-top: 10px;
+    }
+    .bar i{
+      display:block; height:100%; width:0%;
+      background: linear-gradient(90deg, rgba(105,255,134,.92), rgba(106,166,255,.92));
+      transition: width .18s ease;
+    }
+    .timer{
+      width: 52px; height: 52px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.03);
+      display:grid; place-items:center;
+      position:relative;
+      overflow:hidden;
+      flex: 0 0 auto;
+    }
+    .timer b{
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,.82);
+    }
+    .timer svg{ position:absolute; inset:0; transform: rotate(-90deg); }
+    .timer circle{ fill:none; stroke: rgba(255,255,255,.10); stroke-width: 4; }
+    .timer circle.p{ stroke: rgba(105,255,134,.90); stroke-linecap:round; filter: drop-shadow(0 0 10px rgba(105,255,134,.20)); }
+
+    .quizBody{ padding: 14px; }
+    .choices{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 820px){
+      .choices{ grid-template-columns: 1fr; }
+    }
+
+    /* choice tiles: LESS WORDS, visually driven */
+    .choice{
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      background: rgba(255,255,255,.03);
+      min-height: 260px;
+      overflow:hidden;
+      cursor:pointer;
+      position:relative;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+    }
+    .choice:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.05); }
+    .choice:active{ transform: translateY(0px) scale(.992); }
+
+    .choice .img{
+      position:absolute; inset:0;
+      background-size:cover; background-position:center;
+      filter: saturate(1.05) contrast(1.05);
+      opacity: .95;
+    }
+    .choice .shade{
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.88));
+    }
+
+    .choice .cap{
+      position:relative;
+      padding: 16px 16px 14px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .choice .cap strong{
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 20px;
+      letter-spacing:-.01em;
+      line-height:1.1;
+      max-width: 18ch;
+    }
+    .choice .cap small{
+      display:block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: rgba(255,255,255,.64);
+      line-height: 1.3;
+      max-width: 34ch;
+    }
+    .tapBadge{
+      flex: 0 0 auto;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      padding: 8px 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,.80);
+      backdrop-filter: blur(10px);
+    }
+
+    .quizFoot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.14);
+    }
+    .btn{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.90);
+      padding: 12px 14px;
+      border-radius: 16px;
+      cursor:pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+      font-weight: 600;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.20); background: rgba(255,255,255,.06); }
+    .btn:active{ transform: translateY(0px) scale(.99); }
+    .btn.primary{
+      border-color: rgba(105,255,134,.58);
+      background: linear-gradient(180deg, rgba(105,255,134,.18), rgba(105,255,134,.07));
+      box-shadow: 0 0 0 1px rgba(105,255,134,.07) inset;
+    }
+    .btn.blue{
+      border-color: rgba(106,166,255,.55);
+      background: linear-gradient(180deg, rgba(106,166,255,.18), rgba(106,166,255,.07));
+    }
+    .btn.ghost{
+      background: transparent;
+      border-color: rgba(255,255,255,.12);
+      color: rgba(255,255,255,.78);
+    }
+
+    /* Result */
+    .resultTop{
+      padding: 18px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      flex-wrap:wrap;
+    }
+    .rid{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      min-width: 260px;
+    }
+    .rid .small{
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color: rgba(255,255,255,.62);
+    }
+    .rid h2{
+      margin:0;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 30px;
+      letter-spacing:-.02em;
+      line-height:1.05;
+    }
+    .rid p{
+      margin:0;
+      color: rgba(255,255,255,.70);
+      font-size: 14px;
+      line-height: 1.45;
+      max-width: 70ch;
+    }
+
+    .resultGrid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 16px;
+      padding: 16px;
+    }
+    @media (max-width: 980px){
+      .resultGrid{ grid-template-columns: 1fr; }
+    }
+
+    .panel{
+      border-radius: var(--r);
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow: 0 18px 70px rgba(0,0,0,.50);
+      overflow:hidden;
+    }
+    .panelPad{ padding: 16px; }
+
+    .chips{
+      display:flex; flex-wrap:wrap; gap: 8px;
+      margin-top: 10px;
+    }
+    .chip{
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      padding: 8px 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,.82);
+      backdrop-filter: blur(10px);
+    }
+
+    .ctaRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    /* Playlist teaser */
+    .plistHead{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+      padding: 14px 16px;
+    }
+    .plistHead h3{
+      margin:0;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color: rgba(255,255,255,.70);
+    }
+    .plistHead p{
+      margin: 8px 0 0;
+      color: rgba(255,255,255,.62);
+      font-size: 13px;
+      line-height:1.45;
+      max-width: 70ch;
+    }
+
+    .tracks{
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .track{
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.14);
+      padding: 10px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+    .art{
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      overflow:hidden;
+      flex: 0 0 auto;
+    }
+    .art img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .tmeta{ flex: 1 1 auto; min-width:0; }
+    .tmeta .n{
+      font-size: 13px;
+      color: rgba(255,255,255,.92);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .tmeta .a{
+      font-size: 12px;
+      color: rgba(255,255,255,.62);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      margin-top: 2px;
+    }
+    .tlinks{ display:flex; gap:8px; flex:0 0 auto; }
+    .tlinks a{
+      text-decoration:none;
+      color: rgba(255,255,255,.84);
+      font-size: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      padding: 9px 10px;
+    }
+    .tlinks a:hover{ border-color: rgba(255,255,255,.20); background: rgba(255,255,255,.05); }
+
+    .lockedBox{
+      padding: 14px 16px 16px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.14);
+    }
+    .lockedBox .lockCard{
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(12px);
+      padding: 14px;
+    }
+    .lockedBox h4{
+      margin:0 0 6px;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 18px;
+      letter-spacing:-.01em;
+    }
+    .lockedBox p{
+      margin:0 0 12px;
+      color: rgba(255,255,255,.68);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    /* Details drawer (advanced graphs + 50 params) */
+    .drawer{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.62);
+      backdrop-filter: blur(10px);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding: 16px;
+      z-index: 2000;
+    }
+    .drawer.show{ display:flex; }
+    .drawerCard{
+      width: min(980px, 100%);
+      max-height: 88vh;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow: 0 30px 110px rgba(0,0,0,.70);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    .drawerHead{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .drawerHead h3{
+      margin:0;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 14px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color: rgba(255,255,255,.78);
+    }
+    .drawerBody{
+      padding: 16px;
+      overflow:auto;
+    }
+    .tabs{ display:flex; flex-wrap:wrap; gap: 8px; }
+    .tab{
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.84);
+      padding: 9px 12px;
+      font-size: 12px;
+      cursor:pointer;
+    }
+    .tab.active{
+      border-color: rgba(105,255,134,.58);
+      background: linear-gradient(180deg, rgba(105,255,134,.14), rgba(105,255,134,.06));
+    }
+
+    .rows{ margin-top: 12px; display:grid; gap: 10px; }
+    .row{
+      display:grid;
+      grid-template-columns: 160px 1fr 54px;
+      gap: 10px;
+      align-items:center;
+    }
+    @media (max-width: 560px){
+      .row{ grid-template-columns: 1fr; gap: 8px; }
+    }
+    .row label{ font-size: 12px; color: rgba(255,255,255,.78); }
+    .meter{
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      overflow:hidden;
+    }
+    .meter i{
+      display:block; height:100%; width:0%;
+      background: linear-gradient(90deg, rgba(106,166,255,.88), rgba(105,255,134,.88));
+      transition: width .35s ease;
+    }
+    .row .v{
+      text-align:right;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,.84);
+    }
+
+    /* Auth modal */
+    .modal{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.68);
+      backdrop-filter: blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
+      z-index: 3000;
+    }
+    .modal.show{ display:flex; }
+    .modalCard{
+      width: min(640px, 100%);
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow: 0 30px 110px rgba(0,0,0,.72);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .modalHead h3{
+      margin:0;
+      font-family:"Space Grotesk", Inter, sans-serif;
+      font-size: 14px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color: rgba(255,255,255,.78);
+    }
+    .modalBody{ padding: 16px; }
+
+    /* Toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.78);
+      border: 1px solid rgba(255,255,255,.18);
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: rgba(255,255,255,.88);
+      font-size: 12px;
+      display:none;
+      z-index: 9999;
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+    }
+    .toast.show{ display:block; }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .noise{ animation:none !important; }
+      .choice, .btn, .iconBtn, .ctaPrimary{ transition:none !important; }
+      .meter i, .bar i{ transition:none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=YOUR_GTM_ID_HERE"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+
+  <div class="noise"></div>
+
+  <div class="app">
+    <div class="top">
+      <div class="brand">
+        <div class="logo"></div>
+        <div><h1>The Vibe Lab</h1></div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <div class="status"><span class="dot"></span><span id="statusTxt">Ready</span></div>
+        <button class="iconBtn" id="btnReset" title="Reset">Reset</button>
+      </div>
+    </div>
+
+    <!-- LANDING -->
+    <section id="scrLanding" class="screen active">
+      <div class="hero">
+        <div class="card">
+          <div class="heroPad">
+            <h2 class="headline">18 taps.<br>Instant playlist.</h2>
+            <p class="sub">Fast choices. Real music. Get your Vibe ID and unlock a full 20-track playlist (Spotify + YouTube links).</p>
+
+            <div class="pills">
+              <div class="pill"><strong>18</strong> taps</div>
+              <div class="pill"><strong>50</strong> signals</div>
+              <div class="pill"><strong>20</strong> tracks</div>
+              <div class="pill">Made for <strong>Stories</strong></div>
+            </div>
+
+            <div class="ctaBlock">
+              <button class="ctaPrimary" id="btnStart">
+                <span>Start</span>
+                <em>GO</em>
+              </button>
+              <div class="microRow">
+                <span>Tap instinctively. No forms. No essays.</span>
+                <a href="#" id="lnkRestore">Got a share link?</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sideStack">
+          <div class="mini">
+            <div class="miniPad">
+              <p class="label">How it works</p>
+              <div class="example">
+                <div class="exTile">
+                  <strong>Tap fast</strong>
+                  <small>2 choices per question</small>
+                </div>
+                <div class="exTile">
+                  <strong>Get teased</strong>
+                  <small>First 4 tracks shown</small>
+                </div>
+                <div class="exTile">
+                  <strong>Unlock</strong>
+                  <small>Share or connect Spotify</small>
+                </div>
+                <div class="exTile">
+                  <strong>Optional</strong>
+                  <small>Sync to Cloud</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mini">
+            <div class="miniPad">
+              <p class="label">Pro tip</p>
+              <p class="sub" style="max-width:none;">
+                Your result link carries your Vibe ID. If you leave to share, you can return and unlock instantly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="scrQuiz" class="screen">
+      <div class="card">
+        <div class="quizTop">
+          <div class="qMeta">
+            <div class="qCount" id="qCount">Tap 1 / 18</div>
+            <p class="qPrompt" id="qPrompt">Loading…</p>
+            <p class="qSub" id="qSub">—</p>
+            <div class="bar"><i id="qProg"></i></div>
+          </div>
+
+          <div class="timer" title="timer">
+            <svg viewBox="0 0 52 52" aria-hidden="true">
+              <circle cx="26" cy="26" r="21"></circle>
+              <circle class="p" id="ring" cx="26" cy="26" r="21" stroke-dasharray="131.95" stroke-dashoffset="0"></circle>
+            </svg>
+            <b id="tLeft">1.1</b>
+          </div>
+        </div>
+
+        <div class="quizBody">
+          <div class="choices">
+            <button class="choice" id="btnA" aria-label="Option 1">
+              <div class="img" id="imgA"></div>
+              <div class="shade"></div>
+              <div class="cap">
+                <div>
+                  <strong id="labA">—</strong>
+                  <small id="microA">—</small>
+                </div>
+                <div class="tapBadge">tap</div>
+              </div>
+            </button>
+
+            <button class="choice" id="btnB" aria-label="Option 2">
+              <div class="img" id="imgB"></div>
+              <div class="shade"></div>
+              <div class="cap">
+                <div>
+                  <strong id="labB">—</strong>
+                  <small id="microB">—</small>
+                </div>
+                <div class="tapBadge">tap</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="quizFoot">
+          <button class="btn ghost" id="btnBack">Back</button>
+          <button class="btn ghost" id="btnQuit">Quit</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="scrResult" class="screen">
+      <div class="card">
+        <div class="resultTop">
+          <div class="rid">
+            <div class="small">Your Vibe ID</div>
+            <h2 id="rName">—</h2>
+            <p id="rTag">—</p>
+            <div class="chips" id="rChips"></div>
+          </div>
+
+          <div class="ctaRow">
+            <button class="btn primary" id="btnGetPlaylist">Get playlist</button>
+            <button class="btn blue" id="btnShare">Share</button>
+            <button class="btn ghost" id="btnDetails">Details</button>
+            <button class="btn ghost" id="btnCloud">Sync to Cloud</button>
+          </div>
+        </div>
+
+        <div class="resultGrid">
+          <div class="panel">
+            <div class="panelPad">
+              <canvas id="radar" width="680" height="380" style="width:100%;height:auto;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.14);"></canvas>
+              <div class="chips" id="kpis"></div>
+              <div style="margin-top:10px;color:rgba(255,255,255,.62);font-size:12px;line-height:1.45;">
+                You’re seeing the teaser view. Tap <strong>Details</strong> for the full 50-signal breakdown.
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="plistHead">
+              <div>
+                <h3>Playlist teaser</h3>
+                <p id="plistNote">Connect Spotify to generate a real playlist. You’ll see 4 tracks instantly.</p>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn primary" id="btnConnectSpotify">Connect Spotify</button>
+                <button class="btn ghost" id="btnBuild">Build</button>
+              </div>
+            </div>
+
+            <div class="tracks" id="tracks"></div>
+
+            <div class="lockedBox" id="lockBox" style="display:none;">
+              <div class="lockCard">
+                <h4>16 tracks locked</h4>
+                <p>Unlock the full 20 by sharing your Vibe ID or saving the playlist to Spotify. No email gate.</p>
+                <div class="ctaRow">
+                  <button class="btn blue" id="btnUnlockShare">Share to unlock</button>
+                  <button class="btn primary" id="btnUnlockSave">Save to Spotify</button>
+                  <button class="btn ghost" id="btnCopyLink">Copy link</button>
+                </div>
+                <a class="btn ghost" id="btnOpenPlaylist" href="#" target="_blank" rel="noopener" style="display:none; margin-top:10px;">Open Spotify playlist</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <canvas id="shareCard" width="1080" height="1920" style="display:none;"></canvas>
+    </section>
+  </div>
+
+  <!-- DETAILS DRAWER -->
+  <div class="drawer" id="drawer">
+    <div class="drawerCard">
+      <div class="drawerHead">
+        <h3>Full breakdown</h3>
+        <button class="iconBtn" id="btnCloseDrawer">Close</button>
+      </div>
+      <div class="drawerBody">
+        <div class="tabs" id="tabs"></div>
+        <div class="rows" id="rows"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL (your same settings/IDs/onclick; not same card layout) -->
+  <div class="modal" id="authModal">
+    <div class="modalCard">
+      <div class="modalHead">
+        <h3>Sync to Cloud</h3>
+        <button class="iconBtn" id="btnCloseAuth">Close</button>
+      </div>
+      <div class="modalBody">
+        <!-- Keep the same IDs and onclick handlers exactly -->
+        <div id="viewGuestAuth" class="space-y-4" style="display:block;">
+          <div class="relative flex py-2 items-center" style="display:flex;align-items:center;gap:12px;">
+            <div class="flex-grow border-t border-white/10" style="height:1px;background:rgba(255,255,255,.10);flex:1;"></div>
+            <span class="flex-shrink-0 mx-4 text-slate-500 text-[10px] uppercase"
+              style="color:rgba(255,255,255,.48);font-size:10px;letter-spacing:.18em;text-transform:uppercase;">
+              Sync to Cloud
+            </span>
+            <div class="flex-grow border-t border-white/10" style="height:1px;background:rgba(255,255,255,.10);flex:1;"></div>
+          </div>
+
+          <button onclick="handleGoogleLogin()"
+            style="width:100%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.92);color:#111;font-weight:800;padding:12px 14px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google" style="width:18px;height:18px;">
+            Sign in with Google
+          </button>
+
+          <div class="text-center" style="text-align:center;margin-top:10px;">
+            <button onclick="document.getElementById('emailForm').classList.toggle('hidden')"
+              style="border:none;background:transparent;color:rgba(255,255,255,.62);font-size:12px;text-decoration:underline;cursor:pointer;">
+              Or use email/password
+            </button>
+          </div>
+
+          <div id="emailForm" class="hidden space-y-3 pt-2" style="margin-top:12px;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <input id="emailInput" type="email" placeholder="Email"
+                style="background:rgba(0,0,0,.30);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:14px;padding:12px;font-size:14px;outline:none;">
+              <input id="passInput" type="password" placeholder="Password"
+                style="background:rgba(0,0,0,.30);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:14px;padding:12px;font-size:14px;outline:none;">
+            </div>
+
+            <div class="flex gap-3" style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button onclick="handleEmailLogin()"
+                style="flex:1;min-width:160px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;padding:10px;border-radius:14px;font-weight:800;cursor:pointer;">
+                Sign In
+              </button>
+              <button onclick="handleEmailSignup()"
+                style="flex:1;min-width:160px;border:1px solid rgba(106,166,255,.45);background:rgba(106,166,255,.14);color:rgba(210,230,255,.95);padding:10px;border-radius:14px;font-weight:800;cursor:pointer;">
+                Register
+              </button>
+            </div>
+          </div>
+
+          <div id="authError" class="text-red-400 text-xs font-bold hidden text-center"
+            style="display:none;color:#ff6b6b;font-size:12px;font-weight:800;text-align:center;margin-top:10px;">
+          </div>
+
+          <div style="margin-top:12px;color:rgba(255,255,255,.56);font-size:12px;line-height:1.45;">
+            After successful login, call <code style="background:rgba(0,0,0,.25);padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.10);">vibeLabAuthSuccess()</code> once to unlock + sync.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied</div>
+
+<script>
+/* =========================================================
+   VIBE LAB — Premium fast quiz + teaser results
+   - 18 questions
+   - 50 signals (not 50 genres)
+   - Spotify PKCE + fallback playlist mining
+   - Teaser: show 4 tracks, lock remaining 16 with CTA
+   - Full breakdown behind Details drawer
+========================================================= */
+
+const $ = (id)=>document.getElementById(id);
+const toastEl = $("toast");
+
+const CONFIG = {
+  TOTAL_Q: 18,
+  TIMER_SEC: 1.10,          // “1-second questions” feel; still human-possible
+  PRELOAD_AHEAD: 5,
+
+  SPOTIFY_CLIENT_ID: "SPOTIFY_CLIENT_ID_HERE",
+  SPOTIFY_REDIRECT_URI: "SPOTIFY_REDIRECT_URI_HERE",
+  SPOTIFY_SCOPES: [
+    "user-read-private",
+    "user-top-read",
+    "playlist-modify-public",
+    "playlist-modify-private"
+  ]
+};
+
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+  setTimeout(()=>toastEl.classList.remove("show"), 1200);
+}
+function vib(){ try{ navigator.vibrate?.(10);}catch(e){} }
+function clamp(n,a,b){ return Math.max(a, Math.min(b, n)); }
+function clamp01(n){ return clamp(n,0,1); }
+function now(){ return performance.now(); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
+
+/* Tiny click tick */
+function clickTick(freq=520, ms=26){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type="square";
+    o.frequency.value = freq;
+    g.gain.value = 0.035;
+    o.connect(g); g.connect(ctx.destination);
+    o.start();
+    setTimeout(()=>{ o.stop(); ctx.close(); }, ms);
+  }catch(e){}
+}
+
+/* =========================
+   50 SIGNALS (universal, not “50 genres”)
+========================= */
+const PARAMS = [
+  // Core audio proxies (10)
+  "valence","energy","danceability","acousticness","instrumentalness","tempo","loudness","speechiness","liveness","brightness",
+
+  // Emotion / personality (15)
+  "sadness","joy","aggression","anxiety","calm","confidence","romance","nostalgia","focus","escapism","toughness","sensitivity","swagger","empathy","intensity",
+
+  // Texture / production (10)
+  "warmth","sharpness","bass","treble","clean","raw","groove","swing","minimal","dense",
+
+  // Context / use-case (10)
+  "party","solo","night","day","driving","studying","workout","chill","hype","cinematic",
+
+  // Taste references (5)
+  "era_retro","era_modern","vocal_front","beat_heavy","melody_heavy"
+];
+
+/* =========================
+   QUESTIONS (18)
+   - Anyone can answer
+   - Mix of psychology + famous TITANS
+   - Each option modifies >= 7 signals
+   Replace images with premium visuals (posters, artist silhouettes, textures).
+========================= */
+const Q = [
+  // Titans (name-only = universally understandable)
+  {
+    id:1,
+    prompt:"Pick a titan.",
+    sub:"No wrong answer. Pure instinct.",
+    A:{ label:"Michael Jackson", micro:"Clean, iconic, high replay.", img:"assets/q01_mj.png",
+      scores:{ joy:+3, danceability:+4, clean:+3, melody_heavy:+3, confidence:+2, era_retro:+4, valence:+3, party:+2, vocal_front:+2 } },
+    B:{ label:"The Weeknd", micro:"Night energy, dark-pop pull.", img:"assets/q01_weeknd.png",
+      scores:{ night:+4, nostalgia:+1, bass:+2, brightness:+1, valence:-1, sadness:+2, swagger:+3, era_modern:+4, hype:+2, beat_heavy:+2 } }
+  },
+  {
+    id:2,
+    prompt:"Pick a titan.",
+    sub:"Classic band vs modern hitmaker.",
+    A:{ label:"The Beatles", micro:"Timeless melody + warmth.", img:"assets/q02_beatles.webp",
+      scores:{ warmth:+3, melody_heavy:+4, era_retro:+4, acousticness:+2, joy:+2, nostalgia:+3, clean:+1, day:+2, valence:+2 } },
+    B:{ label:"Drake", micro:"Smooth bounce + late-night vibes.", img:"assets/q02_drake.png",
+      scores:{ beat_heavy:+3, bass:+3, swagger:+4, night:+2, speechiness:+2, era_modern:+4, groove:+3, chill:+2, confidence:+2 } }
+  },
+  {
+    id:3,
+    prompt:"Pick a titan.",
+    sub:"Lyrics-first vs performance-first.",
+    A:{ label:"Kendrick Lamar", micro:"Sharp, intense, meaning-packed.", img:"assets/q03_kendrick.webp",
+      scores:{ focus:+3, speechiness:+4, intensity:+3, confidence:+2, empathy:+2, aggression:+1, beat_heavy:+2, era_modern:+3, raw:+1 } },
+    B:{ label:"Beyoncé", micro:"Big energy, big presence.", img:"assets/q03_beyonce.webp",
+      scores:{ confidence:+4, party:+3, joy:+2, intensity:+3, vocal_front:+4, clean:+2, danceability:+2, hype:+2, valence:+2 } }
+  },
+  {
+    id:4,
+    prompt:"Pick a titan.",
+    sub:"Polished pop writing vs raw rock identity.",
+    A:{ label:"Taylor Swift", micro:"Story + melody + emotion.", img:"assets/q04_taylor.webp",
+      scores:{ romance:+3, nostalgia:+2, melody_heavy:+4, vocal_front:+3, valence:+2, sensitivity:+2, clean:+2, day:+2, joy:+1 } },
+    B:{ label:"Nirvana", micro:"Raw edge + release.", img:"assets/q04_nirvana.webp",
+      scores:{ raw:+4, aggression:+3, loudness:+2, intensity:+3, toughness:+3, valence:-1, sadness:+1, night:+1, hype:+2 } }
+  },
+
+  // Universal psychology / listening behavior (no jargon)
+  {
+    id:5,
+    prompt:"When you press play, you want…",
+    sub:"Pick the feeling your body wants.",
+    A:{ label:"A hug", micro:"Soft + safe + close.", img:"assets/q05_hug.webp",
+      scores:{ calm:+4, warmth:+3, chill:+3, solo:+2, sadness:+1, acousticness:+2, minimal:+1, valence:-1, sensitivity:+2 } },
+    B:{ label:"A push", micro:"Move + focus + power.", img:"assets/q05_push.webp",
+      scores:{ energy:+4, workout:+3, hype:+3, tempo:+3, confidence:+2, loudness:+2, intensity:+2, valence:+1, toughness:+2 } }
+  },
+  {
+    id:6,
+    prompt:"Your best music moment is…",
+    sub:"Choose the scene.",
+    A:{ label:"Headphones alone", micro:"Private world.", img:"assets/q06_headphones.webp",
+      scores:{ solo:+4, focus:+3, chill:+2, instrumentalness:+1, sadness:+1, minimal:+1, acousticness:+1, night:+1, introspective:+0 } },
+    B:{ label:"Crowd screaming", micro:"Shared adrenaline.", img:"assets/q06_crowd.webp",
+      scores:{ party:+4, liveness:+4, loudness:+2, energy:+3, hype:+3, joy:+2, confidence:+1, night:+1, intensity:+2 } }
+  },
+  {
+    id:7,
+    prompt:"Your taste leans toward…",
+    sub:"What hits harder?",
+    A:{ label:"Big chorus", micro:"Sing-along payoff.", img:"assets/q07_chorus.webp",
+      scores:{ melody_heavy:+4, joy:+2, valence:+2, clean:+2, party:+2, confidence:+1, day:+1, danceability:+1, vocal_front:+2 } },
+    B:{ label:"Heavy beat", micro:"Bounce + bass.", img:"assets/q07_beat.webp",
+      scores:{ beat_heavy:+4, bass:+4, groove:+3, swagger:+2, night:+2, energy:+2, danceability:+2, tempo:+2, hype:+1 } }
+  },
+  {
+    id:8,
+    prompt:"Pick your tempo.",
+    sub:"No thinking.",
+    A:{ label:"Slow burn", micro:"Deep + steady.", img:"assets/q08_slow.webp",
+      scores:{ tempo:-3, calm:+2, sadness:+2, cinematic:+1, warmth:+2, acousticness:+1, nostalgia:+2, chill:+2, valence:-1 } },
+    B:{ label:"Fast rush", micro:"Bright + forward.", img:"assets/q08_fast.webp",
+      scores:{ tempo:+4, energy:+3, hype:+3, joy:+2, brightness:+2, workout:+2, danceability:+2, valence:+2, intensity:+2 } }
+  },
+  {
+    id:9,
+    prompt:"You respect music that is…",
+    sub:"Pick your type.",
+    A:{ label:"Clean", micro:"Crisp, controlled.", img:"assets/q09_clean.webp",
+      scores:{ clean:+5, brightness:+2, confidence:+2, danceability:+2, focus:+1, minimal:+1, valence:+1, era_modern:+1, sharpness:+1 } },
+    B:{ label:"Raw", micro:"Human, imperfect.", img:"assets/q09_raw.webp",
+      scores:{ raw:+5, warmth:+2, empathy:+2, intensity:+2, sadness:+1, acousticness:+1, nostalgia:+1, toughness:+1, era_retro:+1 } }
+  },
+  {
+    id:10,
+    prompt:"Mood check: today you want…",
+    sub:"Be honest.",
+    A:{ label:"Light", micro:"Up + open.", img:"assets/q10_light.webp",
+      scores:{ joy:+4, valence:+4, day:+2, danceability:+1, clean:+1, confidence:+2, romance:+1, brightness:+2, chill:+1 } },
+    B:{ label:"Deep", micro:"Real + heavy.", img:"assets/q10_deep.webp",
+      scores:{ sadness:+4, valence:-4, night:+2, warmth:+2, nostalgia:+2, cinematic:+1, solo:+1, calm:+1, sensitivity:+2 } }
+  },
+  {
+    id:11,
+    prompt:"Your favorite detail is…",
+    sub:"What you notice first.",
+    A:{ label:"The voice", micro:"Personality upfront.", img:"assets/q11_voice.webp",
+      scores:{ vocal_front:+4, romance:+2, empathy:+2, speechiness:+2, melody_heavy:+2, confidence:+1, valence:+1, clean:+1, joy:+1 } },
+    B:{ label:"The vibe", micro:"Atmosphere + space.", img:"assets/q11_vibe.webp",
+      scores:{ cinematic:+3, instrumentalness:+3, chill:+2, minimal:+2, focus:+2, acousticness:+1, night:+1, calm:+2, valence:-1 } }
+  },
+  {
+    id:12,
+    prompt:"If life is chaotic, you play…",
+    sub:"Pick your coping style.",
+    A:{ label:"Calm", micro:"Lower the noise.", img:"assets/q12_calm.webp",
+      scores:{ calm:+5, chill:+3, minimal:+2, tempo:-2, acousticness:+1, studying:+1, anxiety:-2, sensitivity:+1, valence:-1 } },
+    B:{ label:"Power", micro:"Push through.", img:"assets/q12_power.webp",
+      scores:{ confidence:+3, toughness:+3, energy:+4, hype:+3, tempo:+2, workout:+2, loudness:+1, intensity:+2, anxiety:+1 } }
+  },
+  {
+    id:13,
+    prompt:"Where does your music live?",
+    sub:"Pick the place.",
+    A:{ label:"Car at night", micro:"Moving + moody.", img:"assets/q13_drive.webp",
+      scores:{ driving:+4, night:+3, groove:+2, bass:+2, nostalgia:+1, valence:-1, chill:+1, tempo:+1, cinematic:+1 } },
+    B:{ label:"Morning sun", micro:"Clean reset.", img:"assets/q13_morning.webp",
+      scores:{ day:+4, joy:+2, valence:+2, clean:+2, focus:+1, danceability:+1, brightness:+2, chill:+1, tempo:+1 } }
+  },
+  {
+    id:14,
+    prompt:"How do you like rhythm?",
+    sub:"Pick your bounce.",
+    A:{ label:"Straight", micro:"Tight + locked.", img:"assets/q14_straight.webp",
+      scores:{ danceability:+3, groove:+2, clean:+2, sharpness:+1, focus:+2, era_modern:+1, beat_heavy:+1, tempo:+1, minimal:+1 } },
+    B:{ label:"Swingy", micro:"Loose + alive.", img:"assets/q14_swing.webp",
+      scores:{ swing:+5, groove:+2, warmth:+2, empathy:+1, era_retro:+1, acousticness:+1, joy:+1, party:+1, clean:-1 } }
+  },
+  {
+    id:15,
+    prompt:"What should music do to you?",
+    sub:"Choose the effect.",
+    A:{ label:"Motivate", micro:"Get up. Go.", img:"assets/q15_motivate.webp",
+      scores:{ workout:+4, hype:+3, energy:+4, tempo:+2, confidence:+2, loudness:+1, intensity:+2, valence:+1, joy:+1 } },
+    B:{ label:"Transport", micro:"Disappear for a bit.", img:"assets/q15_transport.webp",
+      scores:{ escapism:+4, cinematic:+3, instrumentalness:+2, chill:+2, night:+1, calm:+1, valence:-1, focus:+1, minimal:+1 } }
+  },
+  {
+    id:16,
+    prompt:"You prefer your songs to be…",
+    sub:"Pick the structure you love.",
+    A:{ label:"Simple", micro:"Instant hit.", img:"assets/q16_simple.webp",
+      scores:{ melody_heavy:+3, clean:+2, joy:+2, danceability:+2, minimal:+2, valence:+1, confidence:+1, party:+1, era_modern:+1 } },
+    B:{ label:"Complex", micro:"New layers every time.", img:"assets/q16_complex.webp",
+      scores:{ focus:+3, dense:+3, intensity:+2, sharpness:+1, cinematic:+1, instrumentalness:+1, anxiety:+1, valence:-1, studying:+1 } }
+  },
+  {
+    id:17,
+    prompt:"Final taste check:",
+    sub:"Which feels more like you?",
+    A:{ label:"Warm", micro:"Human + rich.", img:"assets/q17_warm.webp",
+      scores:{ warmth:+4, bass:+2, acousticness:+1, nostalgia:+2, calm:+1, sadness:+1, empathy:+1, era_retro:+1, chill:+1 } },
+    B:{ label:"Bright", micro:"Clean + crisp.", img:"assets/q17_bright.webp",
+      scores:{ brightness:+4, treble:+2, clean:+2, joy:+1, valence:+2, sharpness:+2, era_modern:+1, hype:+1, danceability:+1 } }
+  },
+  {
+    id:18,
+    prompt:"Lock it in:",
+    sub:"What should your playlist be?",
+    A:{ label:"Up", micro:"Lift me.", img:"assets/q18_up.webp",
+      scores:{ joy:+4, valence:+4, energy:+3, hype:+2, tempo:+2, party:+1, confidence:+2, brightness:+2, workout:+1 } },
+    B:{ label:"True", micro:"Reflect me.", img:"assets/q18_true.webp",
+      scores:{ sadness:+3, valence:-3, nostalgia:+3, calm:+2, solo:+2, cinematic:+1, warmth:+2, sensitivity:+2, night:+1 } }
+  }
+];
+
+/* Ensure rule: >=7 signal touches per option */
+(function validate(){
+  for(const q of Q){
+    const a = Object.keys(q.A.scores||{}).length;
+    const b = Object.keys(q.B.scores||{}).length;
+    if(a < 7 || b < 7) console.warn("Needs >=7 params:", q.id, a, b);
+  }
+})();
+
+/* =========================
+   Normalization (dataset-based)
+========================= */
+let maxAbs = Object.fromEntries(PARAMS.map(p=>[p,1]));
+function computeMaxAbs(){
+  const m = Object.fromEntries(PARAMS.map(p=>[p,0]));
+  for(const q of Q){
+    for(const p of PARAMS){
+      const a = Math.abs(q.A.scores?.[p] ?? 0);
+      const b = Math.abs(q.B.scores?.[p] ?? 0);
+      m[p] += Math.max(a,b);
+    }
+  }
+  for(const p of PARAMS) m[p] = Math.max(1, m[p]);
+  maxAbs = m;
+}
+computeMaxAbs();
+
+/* =========================
+   State
+========================= */
+const screens = { landing:$("scrLanding"), quiz:$("scrQuiz"), result:$("scrResult") };
+function show(name){
+  Object.values(screens).forEach(s=>s.classList.remove("active"));
+  screens[name].classList.add("active");
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+let idx = 0;
+let answers = [];
+let scores = Object.fromEntries(PARAMS.map(p=>[p,0]));
+let timer = null;
+let timerStart = 0;
+let result = null;
+let tracks = [];
+
+function applyScore(delta){
+  for(const [k,v] of Object.entries(delta||{})){
+    if(scores[k] === undefined) continue;
+    scores[k] += v;
+  }
+}
+function normSigned(p){ return clamp(scores[p] / (maxAbs[p]||1), -1, 1); }
+function n01(p){ return (normSigned(p)+1)/2; }
+
+/* =========================
+   Image preload (next 5)
+========================= */
+async function preload(fromIdx, n=CONFIG.PRELOAD_AHEAD){
+  const urls = [];
+  for(let i=fromIdx;i<Math.min(Q.length, fromIdx+n);i++){
+    if(Q[i]?.A?.img) urls.push(Q[i].A.img);
+    if(Q[i]?.B?.img) urls.push(Q[i].B.img);
+  }
+  urls.forEach(u=>{ const im=new Image(); im.decoding="async"; im.loading="eager"; im.src=u; });
+
+  if(!("caches" in window)) return;
+  try{
+    const cache = await caches.open("vibelab-assets-premium-v1");
+    await Promise.all(urls.map(async u=>{
+      const hit = await cache.match(u);
+      if(hit) return;
+      const res = await fetch(u, { cache:"force-cache" }).catch(()=>null);
+      if(res && res.ok) await cache.put(u, res.clone());
+    }));
+  }catch(_){}
+}
+
+/* =========================
+   Timer ring
+========================= */
+function setRing(frac){
+  const C = 2*Math.PI*21;
+  $("ring").style.strokeDasharray = `${C}`;
+  $("ring").style.strokeDashoffset = `${C*(1-frac)}`;
+}
+function startTimer(){
+  if(timer) clearInterval(timer);
+  timerStart = now();
+  tickTimer();
+  timer = setInterval(tickTimer, 16);
+}
+function tickTimer(){
+  const t = (now()-timerStart)/10000;
+  const left = CONFIG.TIMER_SEC - t;
+  $("tLeft").textContent = left.toFixed(1);
+  setRing(clamp01(left / CONFIG.TIMER_SEC));
+  if(left <= 0){
+    clearInterval(timer);
+    timer = null;
+    // Auto-pick based on current mood/energy direction
+    const drift = normSigned("energy") + normSigned("joy") - normSigned("sadness") + normSigned("hype") - normSigned("calm");
+    onPick(drift >= 0 ? "B" : "A", true);
+  }
+}
+
+/* =========================
+   Quiz render
+========================= */
+function renderQuestion(){
+  const q = Q[idx];
+  $("qCount").textContent = `Tap ${idx+1} / ${Q.length}`;
+  $("qPrompt").textContent = q.prompt;
+  $("qSub").textContent = q.sub;
+
+  $("labA").textContent = q.A.label;
+  $("microA").textContent = q.A.micro;
+  $("imgA").style.backgroundImage = `url('${q.A.img}')`;
+
+  $("labB").textContent = q.B.label;
+  $("microB").textContent = q.B.micro;
+  $("imgB").style.backgroundImage = `url('${q.B.img}')`;
+
+  $("qProg").style.width = `${(idx / Q.length)*100}%`;
+
+  preload(idx+1, CONFIG.PRELOAD_AHEAD);
+  startTimer();
+}
+
+/* =========================
+   Persistence
+========================= */
+function persistProgress(){
+  localStorage.setItem("vl_progress_premium_v1", JSON.stringify({ idx, answers, scores }));
+}
+function loadProgress(){
+  try{
+    const p = JSON.parse(localStorage.getItem("vl_progress_premium_v1")||"null");
+    if(!p) return false;
+    idx = p.idx || 0;
+    answers = p.answers || [];
+    scores = p.scores || Object.fromEntries(PARAMS.map(p=>[p,0]));
+    return true;
+  }catch(_){ return false; }
+}
+function clearProgress(){ localStorage.removeItem("vl_progress_premium_v1"); }
+
+/* =========================
+   Pick handling
+========================= */
+function onPick(pick, auto=false){
+  const q = Q[idx];
+  clickTick(auto ? 240 : 520, auto ? 18 : 26);
+  vib();
+
+  answers[idx] = { id:q.id, pick };
+  applyScore(pick==="A" ? q.A.scores : q.B.scores);
+
+  idx++;
+  persistProgress();
+
+  if(idx >= Q.length) finish();
+  else renderQuestion();
+}
+
+function goBack(){
+  if(idx <= 0) return;
+  idx = Math.max(0, idx-1);
+
+  // rebuild for correctness
+  scores = Object.fromEntries(PARAMS.map(p=>[p,0]));
+  const saved = [...answers];
+  answers = [];
+  for(let i=0;i<idx;i++){
+    const pick = saved[i]?.pick;
+    if(!pick) continue;
+    answers[i] = saved[i];
+    const q = Q[i];
+    applyScore(pick==="A" ? q.A.scores : q.B.scores);
+  }
+  persistProgress();
+  renderQuestion();
+}
+
+/* =========================
+   Archetypes (shareable + mainstream-friendly)
+========================= */
+const ARCH = [
+  { id:"GLOWRUN", name:"Glow-Run", tag:"Fast, bright, addictive. You like momentum.",
+    w:{ joy:1.2, valence:1.1, energy:1.0, tempo:1.0, hype:0.8, calm:-0.7 } },
+  { id:"NIGHTCINEMA", name:"Night-Cinema", tag:"Moody, immersive, replayable. You like atmosphere.",
+    w:{ cinematic:1.2, night:0.9, sadness:0.7, calm:0.6, instrumentalness:0.5, joy:-0.6 } },
+  { id:"BASSCONF", name:"Bass-Confidence", tag:"Groove-first. You like bounce and control.",
+    w:{ bass:1.0, beat_heavy:1.0, swagger:1.0, groove:0.9, confidence:0.7 } },
+  { id:"SOFTFOCUS", name:"Soft-Focus", tag:"Warm, calm, human. You like comfort.",
+    w:{ calm:1.2, warmth:1.0, chill:0.9, solo:0.6, sadness:0.4, hype:-0.7 } },
+  { id:"EDGEPOWER", name:"Edge-Power", tag:"Raw release. You like intensity.",
+    w:{ aggression:1.0, intensity:1.0, loudness:0.8, raw:0.8, toughness:0.7, valence:-0.5 } },
+  { id:"CLEANHOOK", name:"Clean-Hook", tag:"Polished hits. You like instant payoff.",
+    w:{ clean:1.1, melody_heavy:0.9, joy:0.7, danceability:0.7, confidence:0.6 } }
+];
+function pickArchetype(){
+  let best = null;
+  for(const a of ARCH){
+    let s = 0;
+    for(const [k,w] of Object.entries(a.w)){
+      s += normSigned(k) * w;
+    }
+    if(!best || s > best.score) best = { ...a, score:s };
+  }
+  return best;
+}
+
+/* =========================
+   Chips + KPI text
+========================= */
+function topSignals(){
+  const ignore = new Set(["era_retro","era_modern","beat_heavy","melody_heavy","vocal_front"]);
+  return PARAMS
+    .filter(p=>!ignore.has(p))
+    .map(p=>({ p, v: Math.abs(normSigned(p)) }))
+    .sort((a,b)=>b.v-a.v)
+    .slice(0,5)
+    .map(x=>x.p);
+}
+function prettySignal(p){
+  const map = {
+    energy:"Energy", tempo:"Speed", danceability:"Dance", bass:"Bass", groove:"Groove",
+    joy:"Lift", sadness:"Depth", calm:"Calm", hype:"Hype", cinematic:"Cinematic",
+    warmth:"Warmth", clean:"Clean", raw:"Raw", vocal_front:"Voice", beat_heavy:"Beat",
+    nostalgia:"Nostalgia", confidence:"Confidence"
+  };
+  return map[p] || p.replace(/_/g," ");
+}
+
+/* =========================
+   Share token (restore)
+========================= */
+function b64urlEncode(str){
+  return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function b64urlDecode(tok){
+  const pad = tok.replace(/-/g,"+").replace(/_/g,"/");
+  return decodeURIComponent(escape(atob(pad)));
+}
+function makeToken(payload){ return b64urlEncode(JSON.stringify(payload)); }
+function readToken(tok){ return JSON.parse(b64urlDecode(tok)); }
+
+/* =========================
+   Finish
+========================= */
+function finish(){
+  if(timer) clearInterval(timer);
+  timer = null;
+
+  const archetype = pickArchetype();
+  const norm = Object.fromEntries(PARAMS.map(p=>[p, normSigned(p)]));
+
+  const payload = {
+    v: 1,
+    a: archetype.id,
+    n: {
+      energy:norm.energy, tempo:norm.tempo, danceability:norm.danceability,
+      joy:norm.joy, sadness:norm.sadness, calm:norm.calm,
+      bass:norm.bass, groove:norm.groove, clean:norm.clean, raw:norm.raw,
+      cinematic:norm.cinematic, vocal_front:norm.vocal_front, beat_heavy:norm.beat_heavy, melody_heavy:norm.melody_heavy
+    }
+  };
+
+  const token = makeToken(payload);
+  const url = new URL(location.href);
+  url.searchParams.set("r", token);
+  history.replaceState({}, "", url.toString());
+
+  result = {
+    archetype,
+    token,
+    unlockKey: "vl_unlock_" + token,
+    norm
+  };
+
+  localStorage.setItem("vl_last_result_premium_v1", JSON.stringify(result));
+  clearProgress();
+
+  renderResult();
+  show("result");
+  $("statusTxt").textContent = "Result ready";
+}
+
+/* =========================
+   Radar (teaser view)
+========================= */
+function drawRadar(vals){
+  const c = $("radar");
+  const ctx = c.getContext("2d");
+  const W=c.width, H=c.height;
+  ctx.clearRect(0,0,W,H);
+
+  ctx.fillStyle="rgba(0,0,0,.14)";
+  ctx.fillRect(0,0,W,H);
+
+  const cx=W*0.5, cy=H*0.56;
+  const R=Math.min(W,H)*0.33;
+
+  ctx.strokeStyle="rgba(255,255,255,.10)";
+  ctx.lineWidth=1.2;
+
+  for(let r=1;r<=4;r++){
+    ctx.beginPath();
+    const rr=R*r/4;
+    for(let i=0;i<vals.length;i++){
+      const a=(Math.PI*2*i/vals.length) - Math.PI/2;
+      const x=cx+Math.cos(a)*rr;
+      const y=cy+Math.sin(a)*rr;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.closePath(); ctx.stroke();
+  }
+
+  ctx.beginPath();
+  vals.forEach((p,i)=>{
+    const a=(Math.PI*2*i/vals.length) - Math.PI/2;
+    const rr=R*clamp01(p.value);
+    const x=cx+Math.cos(a)*rr;
+    const y=cy+Math.sin(a)*rr;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.fillStyle="rgba(105,255,134,.14)";
+  ctx.strokeStyle="rgba(105,255,134,.90)";
+  ctx.lineWidth=2.4;
+  ctx.fill(); ctx.stroke();
+
+  ctx.fillStyle="rgba(255,255,255,.70)";
+  ctx.font="14px Inter, sans-serif";
+  vals.forEach((p,i)=>{
+    const a=(Math.PI*2*i/vals.length) - Math.PI/2;
+    const x=cx+Math.cos(a)*(R+22);
+    const y=cy+Math.sin(a)*(R+22);
+    ctx.fillText(p.label, x - (p.label.length*4), y + 5);
+  });
+}
+
+/* =========================
+   Details drawer (50 signals)
+========================= */
+const GROUPS = {
+  "Core":[["Energy","energy"],["Speed","tempo"],["Dance","danceability"],["Mood","valence"],["Brightness","brightness"],["Loudness","loudness"],["Voice","vocal_front"],["Beat","beat_heavy"],["Melody","melody_heavy"],["Atmosphere","cinematic"]],
+  "Emotion":[["Joy","joy"],["Sadness","sadness"],["Calm","calm"],["Anxiety","anxiety"],["Aggression","aggression"],["Confidence","confidence"],["Romance","romance"],["Nostalgia","nostalgia"],["Focus","focus"],["Escapism","escapism"],["Empathy","empathy"],["Swagger","swagger"],["Toughness","toughness"],["Sensitivity","sensitivity"],["Intensity","intensity"]],
+  "Texture":[["Warmth","warmth"],["Sharpness","sharpness"],["Bass","bass"],["Treble","treble"],["Clean","clean"],["Raw","raw"],["Groove","groove"],["Swing","swing"],["Minimal","minimal"],["Dense","dense"]],
+  "Context":[["Party","party"],["Solo","solo"],["Night","night"],["Day","day"],["Driving","driving"],["Studying","studying"],["Workout","workout"],["Chill","chill"],["Hype","hype"],["Live feel","liveness"]],
+  "Taste":[["Retro","era_retro"],["Modern","era_modern"],["Instrumental","instrumentalness"],["Acoustic","acousticness"],["Speech","speechiness"]]
+};
+let activeTab = "Core";
+
+function renderTabs(){
+  const tabs = $("tabs");
+  tabs.innerHTML = "";
+  Object.keys(GROUPS).forEach(k=>{
+    const b=document.createElement("button");
+    b.className="tab"+(k===activeTab?" active":"");
+    b.textContent=k;
+    b.onclick=()=>{ activeTab=k; renderTabs(); renderRows(); clickTick(560,18); };
+    tabs.appendChild(b);
+  });
+}
+function fmtPct01(x){ return `${Math.round(clamp01(x)*100)}%`; }
+function bpmFromTempoSigned(n){
+  const t = clamp01((n+1)/2);
+  return `${Math.round(60 + t*120)} BPM`;
+}
+function renderRows(){
+  const box=$("rows");
+  box.innerHTML="";
+  for(const [label,key] of GROUPS[activeTab]){
+    const v = result.norm[key] ?? 0;
+    const pct = clamp01((v+1)/2);
+    const row=document.createElement("div");
+    row.className="row";
+    row.innerHTML = `
+      <label>${esc(label)}</label>
+      <div class="meter"><i style="width:${(pct*100).toFixed(1)}%"></i></div>
+      <div class="v">${esc(key==="tempo" ? bpmFromTempoSigned(v) : fmtPct01(pct))}</div>
+    `;
+    box.appendChild(row);
+  }
+}
+
+/* =========================
+   Result render (teaser first)
+========================= */
+function renderResult(){
+  const a = result.archetype;
+  $("rName").textContent = a.name;
+  $("rTag").textContent = a.tag;
+
+  const ts = topSignals();
+  $("rChips").innerHTML = ts.map(s=>`<span class="chip">${esc(prettySignal(s))}</span>`).join("");
+
+  // KPIs (simple, readable)
+  const k = [
+    ["Energy", fmtPct01(n01("energy"))],
+    ["Mood", (normSigned("joy") - normSigned("sadness")) >= 0 ? "Lift" : "Depth"],
+    ["Speed", bpmFromTempoSigned(normSigned("tempo"))]
+  ];
+  $("kpis").innerHTML = k.map(x=>`<span class="chip"><strong style="font-family:'Space Grotesk',Inter,sans-serif;">${esc(x[0])}:</strong> ${esc(x[1])}</span>`).join("");
+
+  drawRadar([
+    {label:"Energy", value:n01("energy")},
+    {label:"Speed", value:n01("tempo")},
+    {label:"Dance", value:n01("danceability")},
+    {label:"Mood", value:n01("valence")},
+    {label:"Bass", value:n01("bass")},
+    {label:"Calm", value:n01("calm")}
+  ]);
+
+  // details drawer
+  activeTab = "Core";
+  renderTabs();
+  renderRows();
+
+  // reset playlist view
+  tracks = [];
+  renderTracks([]);
+  $("lockBox").style.display = "none";
+  $("btnOpenPlaylist").style.display = "none";
+  updatePlaylistButtons();
+}
+
+/* =========================
+   Unlock logic (share OR save OR cloud)
+========================= */
+function isUnlocked(){ return localStorage.getItem(result.unlockKey)==="1"; }
+function setUnlocked(reason){
+  localStorage.setItem(result.unlockKey,"1");
+  toast(`${reason} — unlocked`);
+  renderTracks(tracks);
+}
+
+/* =========================
+   Share (image preferred, fallback link)
+========================= */
+function drawShareCard(){
+  const c = $("shareCard");
+  const ctx = c.getContext("2d");
+  const W=c.width, H=c.height;
+  ctx.fillStyle="#070707";
+  ctx.fillRect(0,0,W,H);
+
+  const g1=ctx.createRadialGradient(W*0.72,H*0.08,0,W*0.72,H*0.08,W*0.95);
+  g1.addColorStop(0,"rgba(106,166,255,.28)");
+  g1.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle=g1; ctx.fillRect(0,0,W,H);
+
+  const g2=ctx.createRadialGradient(W*0.22,H*0.18,0,W*0.22,H*0.18,W*0.80);
+  g2.addColorStop(0,"rgba(105,255,134,.22)");
+  g2.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle=g2; ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle="rgba(255,255,255,.92)";
+  ctx.font="60px Space Grotesk, Inter, sans-serif";
+  ctx.fillText("THE VIBE LAB", 90, 170);
+
+  ctx.fillStyle="rgba(255,255,255,.64)";
+  ctx.font="26px Inter, sans-serif";
+  ctx.fillText("Vibe ID • 18 taps", 90, 220);
+
+  ctx.fillStyle="rgba(105,255,134,.92)";
+  ctx.font="78px Space Grotesk, Inter, sans-serif";
+  ctx.fillText(result.archetype.name.toUpperCase(), 90, 335);
+
+  ctx.fillStyle="rgba(255,255,255,.76)";
+  ctx.font="30px Inter, sans-serif";
+  wrapText(ctx, result.archetype.tag, 90, 395, W-180, 40);
+
+  // link
+  const link = location.origin + location.pathname + "?r=" + result.token;
+  ctx.fillStyle="rgba(255,255,255,.70)";
+  ctx.font="26px Space Grotesk, Inter, sans-serif";
+  ctx.fillText("Take it:", 90, H-120);
+
+  ctx.fillStyle="rgba(106,166,255,.92)";
+  ctx.font="24px Inter, sans-serif";
+  wrapText(ctx, link, 90, H-80, W-180, 30);
+}
+function wrapText(ctx, text, x, y, maxW, lineH){
+  const words=String(text).split(" ");
+  let line="";
+  for(let i=0;i<words.length;i++){
+    const test=line+words[i]+" ";
+    if(ctx.measureText(test).width>maxW && i>0){
+      ctx.fillText(line,x,y);
+      line=words[i]+" ";
+      y+=lineH;
+    }else line=test;
+  }
+  ctx.fillText(line,x,y);
+}
+async function shareResult(unlockToo=true){
+  drawShareCard();
+  const url = location.href;
+
+  try{
+    const blob = await new Promise(res => $("shareCard").toBlob(res, "image/png", 0.92));
+    if(blob && navigator.canShare){
+      const file = new File([blob], "vibelab.png", { type:"image/png" });
+      if(navigator.canShare({ files:[file] })){
+        await navigator.share({ title:"The Vibe Lab", text:"My Vibe ID", files:[file], url });
+        if(unlockToo) setUnlocked("Shared");
+        return;
+      }
+    }
+  }catch(_){}
+
+  try{
+    if(navigator.share){
+      await navigator.share({ title:"The Vibe Lab", text:"My Vibe ID", url });
+      if(unlockToo) setUnlocked("Shared");
+      return;
+    }
+  }catch(_){}
+
+  await copyLink(unlockToo);
+}
+async function copyLink(unlockToo=false){
+  try{
+    await navigator.clipboard.writeText(location.href);
+    toast("Link copied");
+    if(unlockToo) setUnlocked("Copied");
+  }catch(_){ toast("Copy failed"); }
+}
+
+/* =========================
+   Spotify PKCE auth
+========================= */
+let spotify = { token:null, exp:0, me:null };
+function hasToken(){ return spotify.token && Date.now() < (spotify.exp - 10_000); }
+function randomString(len=64){
+  const b=new Uint8Array(len);
+  crypto.getRandomValues(b);
+  return [...b].map(x=>("0"+x.toString(16)).slice(-2)).join("");
+}
+async function sha256(plain){
+  const enc=new TextEncoder().encode(plain);
+  return crypto.subtle.digest("SHA-256", enc);
+}
+function base64url(buffer){
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+async function spotifyAuth(){
+  if(!CONFIG.SPOTIFY_CLIENT_ID || CONFIG.SPOTIFY_CLIENT_ID.includes("HERE")){
+    toast("Set Spotify Client ID");
+    return;
+  }
+  if(!CONFIG.SPOTIFY_REDIRECT_URI || CONFIG.SPOTIFY_REDIRECT_URI.includes("HERE")){
+    toast("Set Redirect URI");
+    return;
+  }
+  const verifier=randomString(64);
+  const challenge=base64url(await sha256(verifier));
+  sessionStorage.setItem("vl_pkce_verifier", verifier);
+
+  const params=new URLSearchParams({
+    client_id: CONFIG.SPOTIFY_CLIENT_ID,
+    response_type:"code",
+    redirect_uri: CONFIG.SPOTIFY_REDIRECT_URI,
+    code_challenge_method:"S256",
+    code_challenge: challenge,
+    scope: CONFIG.SPOTIFY_SCOPES.join(" "),
+    state: result?.token || "start"
+  });
+
+  location.href="https://accounts.spotify.com/authorize?" + params.toString();
+}
+async function handleSpotifyRedirect(){
+  const url=new URL(location.href);
+  const code=url.searchParams.get("code");
+  const err=url.searchParams.get("error");
+  if(err){ toast("Spotify auth denied"); return; }
+  if(!code) return;
+
+  const verifier=sessionStorage.getItem("vl_pkce_verifier");
+  sessionStorage.removeItem("vl_pkce_verifier");
+  if(!verifier){ toast("Auth verifier missing"); return; }
+
+  const body=new URLSearchParams({
+    client_id: CONFIG.SPOTIFY_CLIENT_ID,
+    grant_type:"authorization_code",
+    code,
+    redirect_uri: CONFIG.SPOTIFY_REDIRECT_URI,
+    code_verifier: verifier
+  });
+
+  const res=await fetch("https://accounts.spotify.com/api/token",{
+    method:"POST",
+    headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+    body
+  }).catch(()=>null);
+
+  if(!res || !res.ok){ toast("Token exchange failed"); return; }
+
+  const data=await res.json();
+  spotify.token=data.access_token;
+  spotify.exp=Date.now() + (data.expires_in*1000);
+  localStorage.setItem("vl_spotify_token_premium_v1", JSON.stringify({ token: spotify.token, exp: spotify.exp }));
+
+  url.searchParams.delete("code");
+  url.searchParams.delete("state");
+  url.searchParams.delete("error");
+  history.replaceState({}, "", url.toString());
+
+  $("statusTxt").textContent="Spotify connected";
+  toast("Spotify connected");
+  updatePlaylistButtons();
+
+  // auto-build teaser immediately after connect
+  if(result) await buildPlaylist();
+}
+function loadSpotifyToken(){
+  try{
+    const t=JSON.parse(localStorage.getItem("vl_spotify_token_premium_v1")||"null");
+    if(t?.token && t?.exp){
+      spotify.token=t.token;
+      spotify.exp=t.exp;
+      if(hasToken()) $("statusTxt").textContent="Spotify connected";
+    }
+  }catch(_){}
+}
+async function spFetch(path, opts={}){
+  if(!hasToken()) throw new Error("No token");
+  const res=await fetch("https://api.spotify.com/v1"+path, {
+    ...opts,
+    headers:{ ...(opts.headers||{}), Authorization:"Bearer "+spotify.token }
+  });
+  if(!res.ok){
+    const txt=await res.text().catch(()=> "");
+    throw new Error(`Spotify ${res.status}: ${txt.slice(0,160)}`);
+  }
+  return res.json();
+}
+
+/* =========================
+   Playlist generation (niche coverage via keywords)
+========================= */
+function vibeKeywords(){
+  // Build a rich keyword pack (covers niche styles without “50 genre params”)
+  const kw = [];
+
+  // Mood
+  if(normSigned("joy") > 0.25) kw.push("uplifting","feel good");
+  if(normSigned("sadness") > 0.25) kw.push("sad","melancholy");
+  if(normSigned("calm") > 0.25) kw.push("chill","ambient");
+  if(normSigned("aggression") > 0.25) kw.push("hard","heavy");
+
+  // Energy / context
+  if(normSigned("energy") > 0.30) kw.push("workout","bangers");
+  if(normSigned("danceability") > 0.20) kw.push("dance","club");
+  if(normSigned("cinematic") > 0.25) kw.push("cinematic","soundtrack");
+  if(normSigned("night") > 0.20) kw.push("late night");
+
+  // Texture cues (niche pulls)
+  if(normSigned("bass") > 0.25) kw.push("bass","808","trap");
+  if(normSigned("groove") > 0.20) kw.push("funk","groove");
+  if(normSigned("clean") > 0.25) kw.push("pop","electropop");
+  if(normSigned("raw") > 0.25) kw.push("indie","garage","alt rock");
+  if(normSigned("swing") > 0.25) kw.push("jazz","swing");
+  if(normSigned("acousticness") > 0.25) kw.push("acoustic","singer songwriter");
+
+  // Titan reference (soft influence)
+  if(normSigned("era_retro") > normSigned("era_modern")) kw.push("classic hits");
+  else kw.push("new hits");
+
+  // de-dup + prioritize
+  const seen = new Set();
+  const out = [];
+  for(const x of kw){
+    const k = x.toLowerCase();
+    if(seen.has(k)) continue;
+    seen.add(k);
+    out.push(x);
+  }
+  return out.slice(0,8);
+}
+
+function normalizeTrack(t){
+  if(!t) return null;
+  const artists = (t.artists||[]).map(a=>a.name).join(", ");
+  const artUrl = t.album?.images?.[2]?.url || t.album?.images?.[0]?.url || "";
+  const spUrl = t.external_urls?.spotify || "#";
+  return { name:t.name, artists, artUrl, spUrl, uri:t.uri };
+}
+
+async function minePlaylistsFallback(){
+  const kw = vibeKeywords();
+  const q = `${kw.slice(0,4).join(" ")} playlist`;
+  const res = await spFetch("/search?" + new URLSearchParams({ type:"playlist", limit:"8", q }).toString());
+
+  const playlists = (res.playlists?.items||[]).filter(Boolean).slice(0,6);
+  const picked = [];
+
+  for(const pl of playlists){
+    if(picked.length >= 20) break;
+    const items = await spFetch(`/playlists/${encodeURIComponent(pl.id)}/tracks?` + new URLSearchParams({ limit:"100", market:"from_token" }).toString())
+      .catch(()=>null);
+
+    const tracksIn = (items?.items||[])
+      .map(x=>x?.track)
+      .filter(t=>t && !t.is_local && t.uri)
+      .map(normalizeTrack)
+      .filter(Boolean);
+
+    for(const t of tracksIn){
+      if(picked.length >= 20) break;
+      if(picked.some(x=>x.uri===t.uri)) continue;
+      picked.push(t);
+    }
+  }
+  return picked.slice(0,20);
+}
+
+async function buildPlaylist(){
+  if(!result){ toast("No result yet"); return; }
+  if(!hasToken()){ toast("Connect Spotify first"); return; }
+
+  $("statusTxt").textContent="Building…";
+  $("btnBuild").textContent="Building…";
+  $("btnBuild").disabled=true;
+
+  try{
+    spotify.me = spotify.me || await spFetch("/me").catch(()=>null);
+    tracks = await minePlaylistsFallback();
+
+    renderTracks(tracks);
+
+    $("statusTxt").textContent="Ready";
+    $("btnBuild").textContent="Build";
+    $("btnBuild").disabled=false;
+
+    $("plistNote").textContent = tracks.length
+      ? "Showing 4 tracks. Unlock the full 20 below."
+      : "Couldn’t assemble tracks. Try again.";
+
+    $("lockBox").style.display = tracks.length ? (isUnlocked() ? "none" : "block") : "none";
+
+  }catch(e){
+    console.error(e);
+    toast("Build failed");
+    $("statusTxt").textContent="Ready";
+    $("btnBuild").textContent="Build";
+    $("btnBuild").disabled=false;
+  }
+}
+
+function renderTracks(list){
+  const box = $("tracks");
+  box.innerHTML = "";
+
+  if(!list || list.length===0){
+    box.innerHTML = `<div style="color:rgba(255,255,255,.62);font-size:13px;">No tracks yet. Connect Spotify → Build.</div>`;
+    return;
+  }
+
+  const unlocked = isUnlocked();
+  const shown = unlocked ? list : list.slice(0,4);
+
+  for(const t of shown){
+    const ytQ = encodeURIComponent(`${t.name} ${t.artists}`);
+    const ytUrl = `https://www.youtube.com/results?search_query=${ytQ}`;
+    const el = document.createElement("div");
+    el.className="track";
+    el.innerHTML = `
+      <div class="art">${t.artUrl ? `<img alt="" src="${esc(t.artUrl)}">` : ""}</div>
+      <div class="tmeta">
+        <div class="n">${esc(t.name)}</div>
+        <div class="a">${esc(t.artists)}</div>
+      </div>
+      <div class="tlinks">
+        <a href="${esc(t.spUrl)}" target="_blank" rel="noopener">Spotify</a>
+        <a href="${esc(ytUrl)}" target="_blank" rel="noopener">YouTube</a>
+      </div>
+    `;
+    box.appendChild(el);
+  }
+
+  if(!unlocked){
+    const el=document.createElement("div");
+    el.className="track";
+    el.style.opacity="0.92";
+    el.innerHTML = `
+      <div style="color:rgba(255,255,255,.78);font-size:13px;line-height:1.45;">
+        <strong style="font-family:'Space Grotesk', Inter, sans-serif;">Locked:</strong> 16 more tracks
+      </div>
+    `;
+    box.appendChild(el);
+  }else{
+    $("lockBox").style.display="none";
+  }
+}
+
+/* Save to Spotify (creates a real playlist + unlocks) */
+async function saveToSpotify(){
+  if(!hasToken()){ toast("Connect Spotify first"); return; }
+  if(!tracks || tracks.length===0){ toast("Build first"); return; }
+
+  $("statusTxt").textContent="Saving…";
+
+  const me = spotify.me || await spFetch("/me");
+  const userId = me.id;
+
+  const name = `Vibe Lab — ${result.archetype.name}`;
+  const pl = await spFetch(`/users/${encodeURIComponent(userId)}/playlists`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      name,
+      description: "Generated by The Vibe Lab (18 taps).",
+      public: true
+    })
+  });
+
+  const uris = tracks.map(t=>t.uri).filter(Boolean);
+  await spFetch(`/playlists/${encodeURIComponent(pl.id)}/tracks`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ uris })
+  });
+
+  $("btnOpenPlaylist").href = pl.external_urls?.spotify || "#";
+  $("btnOpenPlaylist").style.display="inline-flex";
+
+  setUnlocked("Saved");
+  $("statusTxt").textContent="Saved";
+  toast("Saved to Spotify");
+}
+
+/* =========================
+   Buttons state
+========================= */
+function updatePlaylistButtons(){
+  $("btnConnectSpotify").textContent = hasToken() ? "Spotify connected" : "Connect Spotify";
+  $("btnConnectSpotify").disabled = hasToken();
+  $("btnBuild").disabled = !hasToken();
+  if(!hasToken()){
+    $("plistNote").textContent = "Connect Spotify to generate a real playlist. You’ll see 4 tracks instantly.";
+  }
+}
+
+/* =========================
+   Restore via token
+========================= */
+function restoreFromToken(tok){
+  try{
+    const payload = readToken(tok);
+    const archetype = ARCH.find(x=>x.id===payload.a) || ARCH[0];
+    const norm = Object.fromEntries(PARAMS.map(p=>[p,0]));
+    for(const [k,v] of Object.entries(payload.n||{})){
+      if(norm[k] !== undefined) norm[k] = v;
+    }
+    result = { archetype, token: tok, unlockKey: "vl_unlock_"+tok, norm };
+    localStorage.setItem("vl_last_result_premium_v1", JSON.stringify(result));
+    renderResult();
+    show("result");
+    return true;
+  }catch(_){ return false; }
+}
+
+/* =========================
+   Cloud auth hook (call this after successful login)
+========================= */
+window.vibeLabAuthSuccess = function(){
+  toast("Synced");
+  // Unlock as a benefit, but you can change this logic if you want.
+  if(result) setUnlocked("Synced");
+  $("authModal").classList.remove("show");
+};
+
+/* If your auth handlers don’t exist on this page, keep it from erroring */
+window.handleGoogleLogin = window.handleGoogleLogin || function(){
+  $("authError").style.display="block";
+  $("authError").textContent="handleGoogleLogin() is not defined on this page.";
+};
+window.handleEmailLogin = window.handleEmailLogin || function(){
+  $("authError").style.display="block";
+  $("authError").textContent="handleEmailLogin() is not defined on this page.";
+};
+window.handleEmailSignup = window.handleEmailSignup || function(){
+  $("authError").style.display="block";
+  $("authError").textContent="handleEmailSignup() is not defined on this page.";
+};
+
+/* =========================
+   Boot
+========================= */
+async function boot(){
+  loadSpotifyToken();
+  await handleSpotifyRedirect();
+
+  // If URL has token, restore
+  const url = new URL(location.href);
+  const tok = url.searchParams.get("r");
+  if(tok && restoreFromToken(tok)){
+    updatePlaylistButtons();
+    return;
+  }
+
+  // Restore last result (optional)
+  try{
+    const last = JSON.parse(localStorage.getItem("vl_last_result_premium_v1")||"null");
+    if(last?.token && last?.norm && last?.archetype){
+      result = last;
+      renderResult();
+      show("result");
+      updatePlaylistButtons();
+      return;
+    }
+  }catch(_){}
+
+  // Restore progress (keep funnel on landing)
+  loadProgress();
+  updatePlaylistButtons();
+}
+boot();
+
+/* =========================
+   UI Events
+========================= */
+$("btnStart").addEventListener("click", ()=>{
+  clickTick(620,26); vib();
+  $("statusTxt").textContent="Testing";
+  show("quiz");
+  if(localStorage.getItem("vl_progress_premium_v1")) loadProgress();
+  renderQuestion();
+});
+
+$("lnkRestore").addEventListener("click",(e)=>{
+  e.preventDefault();
+  const url = new URL(location.href);
+  const tok = url.searchParams.get("r");
+  if(tok && restoreFromToken(tok)) toast("Restored");
+  else toast("Open a link with ?r=...");
+});
+
+$("btnA").addEventListener("click", ()=>onPick("A"));
+$("btnB").addEventListener("click", ()=>onPick("B"));
+
+$("btnBack").addEventListener("click", ()=>{ clickTick(420,18); goBack(); });
+$("btnQuit").addEventListener("click", ()=>{ clickTick(220,22); persistProgress(); $("statusTxt").textContent="Paused"; show("landing"); });
+
+$("btnReset").addEventListener("click", ()=>{
+  if(timer) clearInterval(timer);
+  timer = null;
+  idx=0; answers=[]; scores=Object.fromEntries(PARAMS.map(p=>[p,0]));
+  tracks=[];
+  result=null;
+  localStorage.removeItem("vl_last_result_premium_v1");
+  localStorage.removeItem("vl_progress_premium_v1");
+  const url = new URL(location.href); url.searchParams.delete("r"); history.replaceState({}, "", url.toString());
+  $("statusTxt").textContent="Ready";
+  show("landing");
+  toast("Reset");
+});
+
+$("btnShare").addEventListener("click", ()=>shareResult(true));
+$("btnCopyLink").addEventListener("click", ()=>copyLink(true));
+
+$("btnDetails").addEventListener("click", ()=>{
+  $("drawer").classList.add("show");
+  renderTabs(); renderRows();
+});
+$("btnCloseDrawer").addEventListener("click", ()=>$("drawer").classList.remove("show"));
+$("drawer").addEventListener("click",(e)=>{ if(e.target.id==="drawer") $("drawer").classList.remove("show"); });
+
+$("btnCloud").addEventListener("click", ()=>$("authModal").classList.add("show"));
+$("btnCloseAuth").addEventListener("click", ()=>$("authModal").classList.remove("show"));
+$("authModal").addEventListener("click",(e)=>{ if(e.target.id==="authModal") $("authModal").classList.remove("show"); });
+
+$("btnConnectSpotify").addEventListener("click", ()=>spotifyAuth());
+$("btnBuild").addEventListener("click", ()=>buildPlaylist());
+
+$("btnGetPlaylist").addEventListener("click", async ()=>{
+  if(!hasToken()){
+    await spotifyAuth();
+    return;
+  }
+  if(!tracks.length) await buildPlaylist();
+  // if already unlocked, nothing else; else guide user to unlock
+  if(!isUnlocked()){
+    toast("Unlock to reveal full 20");
+    $("lockBox").scrollIntoView({behavior:"smooth", block:"center"});
+  }
+});
+
+$("btnUnlockShare").addEventListener("click", ()=>shareResult(true));
+$("btnUnlockSave").addEventListener("click", async ()=>{
+  if(!hasToken()){ toast("Connect Spotify first"); await spotifyAuth(); return; }
+  try{ await saveToSpotify(); }catch(e){ console.error(e); toast("Save failed"); $("statusTxt").textContent="Ready"; }
+});
+</script>
+</body>
+</html>
