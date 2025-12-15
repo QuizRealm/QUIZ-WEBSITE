@@ -93,6 +93,7 @@
     
     /* Premium Lock Effect */
     .premium-lock { filter: grayscale(100%) opacity(0.5); pointer-events: none; }
+    .blur-content { filter: blur(4px); user-select: none; }
   </style>
 </head>
 
@@ -169,16 +170,18 @@
               <p id="pl-sub" class="text-xs text-white/60">Based on your 50 metrics</p>
            </div>
            
-           <!-- The 10 Songs List (Premium View) -->
-           <div id="playlist-tracks" class="space-y-3 mb-6 h-64 overflow-y-auto pr-2">
+           <!-- The 10 Songs List Area -->
+           <div id="playlist-tracks" class="space-y-3 mb-6 h-64 overflow-y-auto pr-2 relative">
               <div class="animate-pulse text-white/50 text-center text-sm font-mono mt-10">Accessing Music Database...</div>
            </div>
            
-           <div class="flex flex-col gap-3">
-             <button id="btn-action-main" class="w-full bg-[#FF0000] text-white font-bold py-3 rounded text-xs uppercase hover:brightness-110 flex items-center justify-center gap-2 shadow-lg">
-                <i class="fa-brands fa-youtube text-lg"></i> Open Mix
-             </button>
-             <button onclick="document.getElementById('playlist-modal').classList.add('hidden')" class="w-full bg-white/5 text-white/50 hover:text-white font-bold py-2 rounded text-xs uppercase transition-colors">Close</button>
+           <!-- Action Area -->
+           <div class="flex flex-col gap-3" id="playlist-actions">
+             <!-- Buttons Injected via JS -->
+           </div>
+           
+           <div class="mt-2 text-center">
+             <button onclick="document.getElementById('playlist-modal').classList.add('hidden')" class="text-xs text-white/40 hover:text-white uppercase">Close Window</button>
            </div>
         </div>
 
@@ -216,13 +219,21 @@
           <!-- Auth & Sync (Professional Style) -->
           <div id="viewGuestAuth" class="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4 backdrop-blur-sm">
              <div class="text-center text-[10px] text-white/50 uppercase tracking-widest mb-2">Save Your Results</div>
+             
+             <!-- Google Sign In -->
              <button onclick="handleGoogleLogin()" class="w-full bg-white text-black font-bold py-3 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4" alt="Google">
                 <span class="text-xs uppercase tracking-wide">Sign in with Google</span>
              </button>
+
+             <!-- Email Toggle -->
              <div class="text-center">
-                <button onclick="document.getElementById('emailForm').classList.toggle('hidden')" class="text-[10px] text-white/40 hover:text-white underline">Or use email/password</button>
+                <button onclick="document.getElementById('emailForm').classList.toggle('hidden')" class="text-[10px] text-white/40 hover:text-white underline">
+                   Or use email/password
+                </button>
              </div>
+
+             <!-- Hidden Email Form -->
              <div id="emailForm" class="hidden space-y-3 pt-1">
                 <input id="emailInput" type="email" placeholder="Email Address" class="bg-black/50 border border-white/10 text-white text-xs rounded p-3 focus:border-brand w-full">
                 <input id="passInput" type="password" placeholder="Password" class="bg-black/50 border border-white/10 text-white text-xs rounded p-3 focus:border-brand w-full">
@@ -257,25 +268,38 @@
     let auth;
     let appId;
     
-    // Auth Handlers
+    // Auth Handlers (Exposed Globally)
     window.handleGoogleLogin = async () => {
-      if(!auth) return;
+      // Use window.auth first (from config), fallback to module auth
+      const authInstance = window.auth || auth;
+      if(!authInstance) {
+          console.error("Auth not ready");
+          return;
+      }
+      
       const provider = new GoogleAuthProvider();
       try {
-        await signInWithPopup(auth, provider);
-        // UI updates happen in onAuthStateChanged
+        await signInWithPopup(authInstance, provider);
+        // Resave data with new user ID if persona exists
+        if(window.lastPersona && window.finish) {
+             // Optional: re-trigger save logic or UI update
+        }
       } catch (e) {
-        document.getElementById('authError').innerText = e.message;
-        document.getElementById('authError').classList.remove('hidden');
+        const errDiv = document.getElementById('authError');
+        if(errDiv) {
+            errDiv.innerText = "Login Failed: " + e.message;
+            errDiv.classList.remove('hidden');
+        }
       }
     };
 
     window.handleEmailLogin = async () => {
+      const authInstance = window.auth || auth;
       const email = document.getElementById('emailInput').value;
       const pass = document.getElementById('passInput').value;
       if(!email || !pass) return;
       try {
-        await signInWithEmailAndPassword(auth, email, pass);
+        await signInWithEmailAndPassword(authInstance, email, pass);
       } catch (e) {
         document.getElementById('authError').innerText = e.message;
         document.getElementById('authError').classList.remove('hidden');
@@ -283,11 +307,12 @@
     };
 
     window.handleEmailSignup = async () => {
+      const authInstance = window.auth || auth;
       const email = document.getElementById('emailInput').value;
       const pass = document.getElementById('passInput').value;
       if(!email || !pass) return;
       try {
-        await createUserWithEmailAndPassword(auth, email, pass);
+        await createUserWithEmailAndPassword(authInstance, email, pass);
       } catch (e) {
         document.getElementById('authError').innerText = e.message;
         document.getElementById('authError').classList.remove('hidden');
@@ -312,16 +337,29 @@
             window.currentUser = user;
             if(!user.isAnonymous) {
                // Update UI for Signed In User
-               document.getElementById('viewGuestAuth').innerHTML = '<div class="text-center text-neon text-xs font-bold uppercase tracking-widest py-4 border border-neon/30 bg-neon/5 rounded-lg">✓ Account Connected</div>';
+               const authBlock = document.getElementById('viewGuestAuth');
+               if(authBlock) authBlock.innerHTML = '<div class="text-center text-neon text-xs font-bold uppercase tracking-widest py-4 border border-neon/30 bg-neon/5 rounded-lg">✓ Account Connected</div>';
+               
                // Unlock Playlist Button
-               document.getElementById('pl-lock-icon').innerHTML = '<i class="fa-solid fa-unlock text-neon"></i>';
-               document.getElementById('pl-btn-title').innerText = "View Curated Playlist";
-               document.getElementById('pl-btn-sub').innerText = "10 Songs • Ready for You";
-               document.getElementById('pl-shine').classList.remove('hidden');
-               document.getElementById('pl-shine').classList.add('animate-pulse');
+               const lockIcon = document.getElementById('pl-lock-icon');
+               if(lockIcon) lockIcon.innerHTML = '<i class="fa-solid fa-unlock text-neon"></i>';
+               
+               const btnTitle = document.getElementById('pl-btn-title');
+               if(btnTitle) btnTitle.innerText = "View Curated Playlist";
+               
+               const btnSub = document.getElementById('pl-btn-sub');
+               if(btnSub) btnSub.innerText = "10 Songs • Ready for You";
+               
+               const shine = document.getElementById('pl-shine');
+               if(shine) {
+                   shine.classList.remove('hidden');
+                   shine.classList.add('animate-pulse');
+               }
                
                // Re-save data to link it to real user
-               if(window.lastPersona) window.saveToFirebase({...window.lastPersona});
+               if(window.lastPersona && window.saveToFirebase) {
+                   window.saveToFirebase({...window.lastPersona});
+               }
             }
           } else {
             signInAnonymously(auth).catch((error) => console.error("Guest login failed", error));
@@ -333,20 +371,26 @@
     }
 
     window.saveToFirebase = async (data) => {
-      if (!db || !auth.currentUser) return;
+      const dbInstance = window.db || db;
+      const authInstance = window.auth || auth;
+      
+      if (!dbInstance || !authInstance.currentUser) return;
       try {
         let ip = 'unknown';
         try { const res = await fetch('https://api.ipify.org?format=json'); const json = await res.json(); ip = json.ip; } catch(e) {}
 
         const payload = {
           ...data,
-          userId: auth.currentUser.uid,
-          isAnonymous: auth.currentUser.isAnonymous,
+          userId: authInstance.currentUser.uid,
+          isAnonymous: authInstance.currentUser.isAnonymous,
           ip: ip,
           timestamp: new Date().toISOString()
         };
 
-        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'roast_results'), payload);
+        const colRef = window.fsCollection ? window.fsCollection(dbInstance, 'artifacts', appId, 'public', 'data', 'roast_results') : collection(dbInstance, 'artifacts', appId, 'public', 'data', 'roast_results');
+        const addDocFn = window.fsAddDoc || addDoc;
+        
+        await addDocFn(colRef, payload);
         console.log("Data saved to Firebase!");
       } catch (e) {
         console.error("Error saving to Firebase: ", e);
@@ -463,7 +507,6 @@
     }
 
     function generateLocalPlaylist(scores) {
-        // Advanced mapping of traits to songs
         const library = {
             toxic: ["The Weeknd - The Hills", "Drake - Marvins Room", "Future - Mask Off", "SZA - Kill Bill", "Brent Faiyaz - Poison", "Jhene Aiko - The Worst", "Doja Cat - Streets", "Chase Atlantic - Swim", "Arctic Monkeys - Do I Wanna Know?", "Gnarls Barkley - Crazy"],
             sad: ["Lana Del Rey - Video Games", "Mitski - Washing Machine Heart", "Joji - Glimpse of Us", "Phoebe Bridgers - Motion Sickness", "Frank Ocean - White Ferrari", "Bon Iver - Holocene", "Billie Eilish - when the party's over", "Radiohead - Creep", "Olivia Rodrigo - Traitor", "Conan Gray - Heather"],
@@ -476,9 +519,7 @@
 
         const sortedTraits = Object.entries(scores).sort((a,b) => b[1] - a[1]);
         const primaryTrait = sortedTraits[0][0];
-        // Mix 70% primary, 30% secondary if available, else 100% primary
         let playlist = [...(library[primaryTrait] || library.party)];
-        // Shuffle (Fisher-Yates)
         for (let i = playlist.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
@@ -489,58 +530,61 @@
     function handlePlaylistGen() {
         const modal = document.getElementById('playlist-modal');
         const container = document.getElementById('playlist-tracks');
-        const btnAction = document.getElementById('btn-action-main');
+        const btnAction = document.getElementById('playlist-actions');
         const isLoggedIn = window.auth && window.auth.currentUser && !window.auth.currentUser.isAnonymous;
         
         modal.classList.remove('hidden');
-        container.innerHTML = '<div class="animate-pulse text-toxic">GENERATING VIBE MIX...</div>';
         
-        // Logic Branch: Guest vs Premium
-        setTimeout(() => {
-            if (isLoggedIn) {
-               // PREMIUM PATH
-               const tracks = generateLocalPlaylist(state.scores);
-               const playlistId = "#VIBE-" + Math.floor(Math.random()*10000);
-               
-               // Show List
-               container.innerHTML = `
-                 <div class="text-center text-xs text-gold mb-2 font-bold uppercase tracking-widest">★ Premium Access Unlocked</div>
-                 <div class="text-center text-[10px] text-white/40 mb-4 font-mono">ID: ${playlistId}</div>
-                 ${tracks.map((t, i) => `<div class="flex justify-between border-b border-white/10 pb-2">
-                    <span class="text-white">${i+1}. ${t}</span>
-                 </div>`).join('')}
-               `;
-               
-               // Save to Profile
-               if(window.saveToFirebase) {
-                  window.saveToFirebase({ type: 'playlist', id: playlistId, tracks: tracks });
-               }
-               
-               btnAction.innerHTML = '<i class="fa-brands fa-youtube text-lg"></i> Open Mix';
-               btnAction.onclick = () => {
-                  const query = `${getPersona().title} Vibe ${tracks[0].split('-')[0]} ${tracks[1].split('-')[0]} Playlist`;
-                  window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
-               }
-               
-            } else {
-               // GUEST PATH
-               container.innerHTML = `
-                 <div class="flex flex-col items-center justify-center h-full space-y-4">
+        // GUEST STATE
+        if (!isLoggedIn) {
+            container.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center space-y-4">
                     <div class="text-4xl">🔒</div>
-                    <div class="text-center">
-                       <p class="text-white font-bold uppercase text-sm">Playlist Locked</p>
-                       <p class="text-white/50 text-xs mt-1 px-4">Sign in to unlock your specific 10-song tracklist and save it forever.</p>
+                    <div class="text-center space-y-2">
+                        <div class="text-white font-bold uppercase text-sm tracking-wide">Playlist Locked</div>
+                        <div class="text-white/50 text-xs px-6">
+                           <div class="blur-content">1. The Weeknd - Hills</div>
+                           <div class="blur-content">2. Drake - Marvins Room</div>
+                           <div class="blur-content">3. ??? - ???</div>
+                        </div>
                     </div>
+                </div>
+            `;
+            
+            btnAction.innerHTML = `
+                <button onclick="handleGoogleLogin()" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-4 rounded text-sm uppercase hover:scale-[1.02] transition-transform shadow-[0_0_20px_rgba(255,215,0,0.4)] flex items-center justify-center gap-2">
+                   <span class="text-lg">🔓</span> Unlock My 10 Songs
+                </button>
+                <div class="text-[10px] text-center text-white/30 uppercase tracking-widest mt-1">Free Forever • Instantly generated</div>
+            `;
+        } 
+        // PREMIUM STATE
+        else {
+            container.innerHTML = '<div class="animate-pulse text-toxic text-center mt-10">GENERATING VIBE MIX...</div>';
+            const tracks = generateLocalPlaylist(state.scores);
+            const playlistId = "#VIBE-" + Math.floor(Math.random()*10000);
+            
+            setTimeout(() => {
+                container.innerHTML = `
+                 <div class="text-center text-xs text-gold mb-4 font-bold uppercase tracking-widest border border-gold/30 bg-gold/10 py-2 rounded">★ Premium Access Unlocked</div>
+                 <div class="space-y-3">
+                     ${tracks.map((t, i) => `<div class="flex justify-between border-b border-white/10 pb-2">
+                        <span class="text-white text-xs font-mono"><span class="text-white/30 mr-2">${String(i+1).padStart(2,'0')}</span> ${t}</span>
+                     </div>`).join('')}
                  </div>
                `;
                
-               btnAction.innerHTML = 'Generate Quick Search (Guest)';
-               btnAction.onclick = () => {
-                  const query = `${getPersona().title} Aesthetic Playlist`;
-                  window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
+               btnAction.innerHTML = `
+                 <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(getPersona().title + " Vibe Playlist")}', '_blank')" class="w-full bg-[#FF0000] text-white font-bold py-3 rounded text-xs uppercase hover:brightness-110 flex items-center justify-center gap-2 shadow-lg">
+                    <i class="fa-brands fa-youtube text-lg"></i> Open Mix on YouTube
+                 </button>
+               `;
+               
+               if(window.saveToFirebase) {
+                  window.saveToFirebase({ type: 'playlist', id: playlistId, tracks: tracks });
                }
-            }
-        }, 800);
+            }, 800);
+        }
     }
 
     el('btn-gen-playlist').addEventListener('click', handlePlaylistGen);
@@ -555,7 +599,7 @@
 
     function finish() {
       const p = getPersona();
-      window.lastPersona = p; // Store for re-save on login
+      window.lastPersona = p; 
       el('r-title').innerText = p.title;
       el('r-roast').innerText = `"${p.roast}"`;
       el('r-desc').innerText = p.desc;
@@ -565,7 +609,6 @@
           scores: state.scores,
           gateData: state.gateData,
           result: p,
-          // Don't save full playlist here to save space, generated on demand
         });
       }
       showScreen('screen-result');
