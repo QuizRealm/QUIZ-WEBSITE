@@ -12,12 +12,12 @@
   
   <!-- Theme & Icons -->
   <meta name="theme-color" content="#000000">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
-  <link rel="manifest" href="site.webmanifest">
-  <link rel="shortcut icon" href="assets/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
   <meta name="msapplication-TileColor" content="#020617">
 
   <!-- Google Tag Manager -->
@@ -29,11 +29,12 @@
   <!-- End Google Tag Manager -->
 
   <!-- YOUR PLATFORM SCRIPTS -->
-  <script type="module" src="firebase-config.js"></script>
-  <script src="game-engine.js"></script> 
-  <script src="components.js" defer></script>
-  <script src="data.js"></script>
-  <script src="facts.js"></script>
+  <!-- This loads window.db and window.auth from your root folder -->
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/game-engine.js"></script> 
+  <script src="/components.js" defer></script>
+  <script src="/data.js"></script>
+  <script src="/facts.js"></script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -49,7 +50,7 @@
         extend: {
           colors: {
             brand: '#FF3B30', // Default Red
-            toxic: '#CCFF00', // Acid Green
+            toxic: '#CCFF00', // Acid Green (Adrenaline Mode)
             dark: '#050505',
             spotify: '#1DB954',
             youtube: '#FF0000',
@@ -82,13 +83,11 @@
 
   <style>
     body { background-color: #000; color: white; overflow-x: hidden; transition: background-color 0.5s ease; }
-    
-    /* Backgrounds */
     .mode-normal .bg-dynamic { background: radial-gradient(circle at 50% 10%, #1a1a1a 0%, #000000 80%); }
     .mode-adrenaline { background-color: #000; }
     .mode-adrenaline .bg-dynamic { background: repeating-linear-gradient(45deg, #111, #111 10px, #000 10px, #000 20px); }
-    
-    /* Utility */
+    .mode-adrenaline button { border-color: #FF3B30 !important; }
+    .mode-adrenaline h2 { color: #FF3B30; text-shadow: 2px 2px 0px #fff; }
     .tap-fast { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     select, input { background: #111; border: 1px solid #333; color: white; padding: 14px; border-radius: 8px; width: 100%; font-family: 'Inter'; outline: none; transition: border-color 0.3s; }
     select:focus, input:focus { border-color: #FF3B30; }
@@ -309,9 +308,9 @@
 
   <!-- Firebase Logic Module -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     let db;
     let auth;
@@ -409,21 +408,31 @@
 
     // --- SAVE LOGIC ---
     window.saveToFirebase = async (data) => {
-      if (!window.db || !window.auth || !window.auth.currentUser) return;
+      // Check both local vars and window global vars
+      const dbInstance = window.db || db;
+      const authInstance = window.auth || auth;
+      const addDocFn = window.fsAddDoc || addDoc;
+      const collectionFn = window.fsCollection || collection;
+      
+      if (!dbInstance || !authInstance || !authInstance.currentUser) return;
       try {
         let ip = 'unknown';
         try { const res = await fetch('https://api.ipify.org?format=json'); const json = await res.json(); ip = json.ip; } catch(e) {}
 
         const payload = {
           ...data,
-          userId: window.auth.currentUser.uid,
-          isAnonymous: window.auth.currentUser.isAnonymous,
-          email: window.auth.currentUser.email || null,
+          userId: authInstance.currentUser.uid,
+          isAnonymous: authInstance.currentUser.isAnonymous,
+          email: authInstance.currentUser.email || null,
           ip: ip,
           timestamp: new Date().toISOString()
         };
 
-        await window.fsAddDoc(window.fsCollection(window.db, 'artifacts', window.appId, 'public', 'data', 'roast_results'), payload);
+        // Determine collection path
+        // Priority: Root collection (for user convenience) -> then fallback to artifacts if error
+        const colPath = ['roast_results']; 
+        
+        await addDocFn(collectionFn(dbInstance, ...colPath), payload);
         console.log("Data saved to Firebase!");
       } catch (e) {
         console.error("Error saving to Firebase: ", e);
@@ -475,7 +484,6 @@
       el('vs-badge').style.backgroundColor = "white";
       el('vs-badge').style.color = "black";
       el('vs-badge').innerText = "VS";
-      el('debug-view').classList.add('hidden');
       showScreen('screen-landing');
     }
 
@@ -533,23 +541,36 @@
       if (s.ego > 4) return { title: "Main Character", roast: "The world does not revolve around you.", desc: "You walk around listening to music pretending you're in a movie edit. You aren't. Please stop looking at yourself in store windows." };
       if (s.sad > 5) return { title: "Sad Girl", roast: "Go to therapy.", desc: "You romanticize your own suffering for the aesthetic. Crying in an Uber isn't a personality trait, it's a cry for help." };
       if (s.music_snob > 4) return { title: "Vinyl Snob", roast: "Nobody cares about your vinyls.", desc: "You hate popular things just because they're popular. You probably talk over people to explain why Tame Impala is actually just one guy." };
-      return { title: "The NPC", roast: "You have default settings.", desc: "Your taste is incredibly safe. You probably think drinking water is 'self-care' and your favorite artist is 'whoever is on the radio'." };
+      if (s.party > 5 || s.chaos > 5) return { title: "The Bender", roast: "Your liver hates you.", desc: "You chose every chaotic option. You treat every weekend like it's your last on earth. Drink some water." };
+      if (s.wholesome > 5 && s.order > 3) return { title: "The NPC", roast: "You have default settings.", desc: "Your taste is incredibly safe. You probably think drinking water is 'self-care' and your favorite artist is 'whoever is on the radio'." };
+      return { title: "The Chaos Agent", roast: "You make no sense.", desc: "Your vibe is all over the place. One second you're crying, the next you're raging. Pick a struggle." };
     }
 
     function generateLocalPlaylist(scores) {
-        // Simple playlist mapping
         const library = {
             toxic: ["The Weeknd - The Hills", "Drake - Marvins Room", "Future - Mask Off", "SZA - Kill Bill", "Brent Faiyaz - Poison", "Jhene Aiko - The Worst", "Doja Cat - Streets", "Chase Atlantic - Swim", "Arctic Monkeys - Do I Wanna Know?", "Gnarls Barkley - Crazy"],
             sad: ["Lana Del Rey - Video Games", "Mitski - Washing Machine Heart", "Joji - Glimpse of Us", "Phoebe Bridgers - Motion Sickness", "Frank Ocean - White Ferrari", "Bon Iver - Holocene", "Billie Eilish - when the party's over", "Radiohead - Creep", "Olivia Rodrigo - Traitor", "Conan Gray - Heather"],
-            party: ["Fred again.. - Marea", "Fisher - Losing It", "Dom Dolla - Rhyme Dust", "Calvin Harris - Miracle", "Peggy Gou - It Goes Like Nanana", "Dua Lipa - Levitating", "Disclosure - Latch", "Tiësto - The Business", "David Guetta - I'm Good", "Skrillex - Rumble"]
+            party: ["Fred again.. - Marea", "Fisher - Losing It", "Dom Dolla - Rhyme Dust", "Calvin Harris - Miracle", "Peggy Gou - It Goes Like Nanana", "Dua Lipa - Levitating", "Disclosure - Latch", "Tiësto - The Business", "David Guetta - I'm Good", "Skrillex - Rumble"],
+            chaos: ["100 gecs - money machine", "Charli XCX - Vroom Vroom", "Playboi Carti - Sky", "Crystal Castles - Crimewave", "SOPHIE - Ponyboy", "Death Grips - Get Got", "Rico Nasty - Smack A Bitch", "Grimes - Kill V. Maim", "Yeat - Money So Big", "JPEGMAFIA - 1539 N. Calvert"],
+            music_snob: ["Tame Impala - Let It Happen", "Radiohead - Weird Fishes", "Aphex Twin - Avril 14th", "Beach House - Space Song", "Thundercat - Them Changes", "MF DOOM - Doomsday", "Neutral Milk Hotel - In the Aeroplane Over the Sea", "Gorillaz - Empire Ants", "Daft Punk - Veridis Quo", "Pink Floyd - Time"],
+            main_character: ["Harry Styles - As It Was", "The Neighbourhood - Sweater Weather", "Måneskin - I Wanna Be Your Slave", "Steve Lacy - Bad Habit", "Glass Animals - Heat Waves", "MGMT - Kids", "Empire of the Sun - Walking On A Dream", "Capital Cities - Safe And Sound", "Foster The People - Pumped Up Kicks", "The Killers - Mr. Brightside"],
+            chill: ["Mac DeMarco - Chamber of Reflection", "Tyler, The Creator - See You Again", "Clairo - Sofia", "Men I Trust - Show Me How", "Kali Uchis - Telepatía", "Childish Gambino - Redbone", "SZA - Good Days", "Rex Orange County - Best Friend", "Daniel Caesar - Best Part", "H.E.R. - Focus"]
         };
-        const topTrait = Object.entries(scores).sort((a,b) => b[1] - a[1])[0][0];
-        return (library[topTrait] || library.party).slice(0, 10);
+
+        const sortedTraits = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+        const primaryTrait = sortedTraits[0][0];
+        let playlist = [...(library[primaryTrait] || library.party)];
+        for (let i = playlist.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
+        }
+        return playlist.slice(0, 10);
     }
 
     function handlePlaylistGen() {
         const modal = document.getElementById('playlist-modal');
         const container = document.getElementById('playlist-tracks');
+        const btnAction = document.getElementById('playlist-actions');
         const isLoggedIn = window.auth && window.auth.currentUser && !window.auth.currentUser.isAnonymous;
         
         modal.classList.remove('hidden');
@@ -574,7 +595,6 @@
                     </button>
                  </div>
             `;
-            // Remove the login buttons from modal if logged in
             document.getElementById('playlist-actions').classList.add('hidden');
         } else {
             // GUEST STATE - LOCKED VIEW
@@ -592,7 +612,6 @@
                     </div>
                 </div>
             `;
-            // Show login buttons
             document.getElementById('playlist-actions').classList.remove('hidden');
         }
     }
@@ -618,8 +637,7 @@
     el('btn-b').addEventListener('click', () => handleChoice('b'));
     el('btn-reveal').addEventListener('click', revealResult);
     el('btn-again').addEventListener('click', init);
-    el('btn-share').addEventListener('click', () => alert("Share feature implementation needed (Canvas/Image gen)"));
-    el('btn-debug').addEventListener('click', () => { el('debug-view').classList.toggle('hidden'); });
+    el('btn-share').addEventListener('click', generatePoster);
 
   </script>
 </body>
