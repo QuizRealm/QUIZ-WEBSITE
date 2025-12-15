@@ -52,7 +52,8 @@
             toxic: '#CCFF00', // Acid Green (Adrenaline Mode)
             dark: '#050505',
             spotify: '#1DB954',
-            youtube: '#FF0000'
+            youtube: '#FF0000',
+            gold: '#FFD700'
           },
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
@@ -90,8 +91,8 @@
     .icon-spotify { color: #1DB954; }
     .icon-youtube { color: #FF0000; }
     
-    /* Loading Glitch Text */
-    .glitch-text { animation: glitch 0.3s infinite; }
+    /* Premium Lock Effect */
+    .premium-lock { filter: grayscale(100%) opacity(0.5); pointer-events: none; }
   </style>
 </head>
 
@@ -153,34 +154,31 @@
         <div id="result-card" class="w-full max-w-md bg-black border border-white/10 p-8 text-center space-y-6 relative overflow-hidden animate-pop shadow-2xl">
           <div class="absolute -top-20 -right-20 w-60 h-60 bg-brand/20 blur-[80px] rounded-full pointer-events-none"></div>
           <div class="relative z-10 space-y-6">
-            <div class="inline-block border border-white/20 px-3 py-1 rounded-full"><span class="text-[10px] font-bold uppercase tracking-widest text-white/50">Analysis Complete</span></div>
-            
-            <!-- Content Area -->
-            <div>
-              <h2 id="r-title" class="font-display text-6xl md:text-7xl uppercase leading-[0.9] text-white mb-4">CALCULATING</h2>
-              <p id="r-roast" class="text-xl md:text-2xl text-brand font-bold leading-tight font-display uppercase italic">"Analyzing your choices..."</p>
-            </div>
-
+            <div class="inline-block border border-white/20 px-3 py-1 rounded-full"><span class="text-[10px] font-bold uppercase tracking-widest text-white/50">Official Diagnosis</span></div>
+            <div><h2 id="r-title" class="font-display text-6xl md:text-7xl uppercase leading-[0.9] text-white mb-4">UNKNOWN</h2><p id="r-roast" class="text-xl md:text-2xl text-brand font-bold leading-tight font-display uppercase italic">"Calculating..."</p></div>
             <div class="h-px w-full bg-white/10"></div>
-            <p id="r-desc" class="text-sm text-white/70 leading-relaxed font-medium">Please wait while we judge your life choices...</p>
+            <p id="r-desc" class="text-sm text-white/70 leading-relaxed font-medium">...</p>
             <div class="pt-4 text-[10px] font-bold uppercase text-white/30 tracking-widest">vibecheck.app • 2025</div>
           </div>
         </div>
 
         <!-- Playlist Modal (Hidden by default) -->
-        <div id="playlist-modal" class="hidden w-full max-w-md bg-black/90 border border-white/20 p-6 rounded-xl backdrop-blur-md fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 shadow-2xl">
-           <div class="text-center mb-4">
-              <h3 class="font-display text-2xl text-white uppercase">Your Vibe Playlist</h3>
-              <p class="text-xs text-white/60">Curated based on your score</p>
-           </div>
-           <div id="playlist-tracks" class="space-y-3 mb-6 text-sm text-white/80 font-mono">
-              <!-- Tracks injected here -->
-              <div class="animate-pulse">Generating tracks...</div>
+        <div id="playlist-modal" class="hidden w-full max-w-md bg-black/95 border border-white/20 p-6 rounded-xl backdrop-blur-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 shadow-2xl">
+           <div class="text-center mb-6">
+              <h3 id="pl-title" class="font-display text-2xl text-white uppercase">Your Vibe Playlist</h3>
+              <p id="pl-sub" class="text-xs text-white/60">Based on your 50 metrics</p>
            </div>
            
-           <div class="flex gap-2">
-             <button id="btn-open-external" class="flex-1 bg-brand text-white font-bold py-2 rounded text-xs uppercase hover:bg-white hover:text-brand transition-colors">Open in App</button>
-             <button onclick="document.getElementById('playlist-modal').classList.add('hidden')" class="flex-1 bg-white text-black font-bold py-2 rounded text-xs uppercase">Close</button>
+           <!-- The 10 Songs List (Premium View) -->
+           <div id="playlist-tracks" class="space-y-3 mb-6 h-64 overflow-y-auto pr-2">
+              <div class="animate-pulse text-white/50 text-center text-sm font-mono mt-10">Accessing Music Database...</div>
+           </div>
+           
+           <div class="flex flex-col gap-3">
+             <button id="btn-action-main" class="w-full bg-[#FF0000] text-white font-bold py-3 rounded text-xs uppercase hover:brightness-110 flex items-center justify-center gap-2 shadow-lg">
+                <i class="fa-brands fa-youtube text-lg"></i> Open Mix
+             </button>
+             <button onclick="document.getElementById('playlist-modal').classList.add('hidden')" class="w-full bg-white/5 text-white/50 hover:text-white font-bold py-2 rounded text-xs uppercase transition-colors">Close</button>
            </div>
         </div>
 
@@ -195,40 +193,36 @@
           <!-- Divider -->
           <div class="relative flex py-2 items-center">
              <div class="flex-grow border-t border-white/10"></div>
-             <span class="flex-shrink-0 mx-4 text-white/30 text-[10px] uppercase tracking-widest">✨ Get The Music</span>
+             <span class="flex-shrink-0 mx-4 text-white/30 text-[10px] uppercase tracking-widest">✨ Get The 10-Song Playlist</span>
              <div class="flex-grow border-t border-white/10"></div>
           </div>
 
-          <!-- Connect Buttons (Now Generate Playlist Links) -->
-          <div class="grid grid-cols-2 gap-3">
-             <button onclick="handlePlaylistGen('spotify')" class="bg-[#191414] border border-white/10 text-white p-4 rounded-xl flex flex-col items-center justify-center hover:border-spotify transition-all group">
-                <i class="fa-brands fa-spotify text-2xl text-spotify mb-2 group-hover:scale-110 transition-transform"></i>
-                <span class="font-bold text-xs uppercase tracking-wide">Spotify</span>
-             </button>
-             <button onclick="handlePlaylistGen('youtube')" class="bg-[#191414] border border-white/10 text-white p-4 rounded-xl flex flex-col items-center justify-center hover:border-youtube transition-all group">
-                <i class="fa-brands fa-youtube text-2xl text-youtube mb-2 group-hover:scale-110 transition-transform"></i>
-                <span class="font-bold text-xs uppercase tracking-wide">YouTube</span>
-             </button>
-          </div>
+          <!-- Playlist Generator Button (Premium Logic) -->
+          <button id="btn-gen-playlist" class="w-full bg-[#191414] border border-white/10 text-white p-4 rounded-xl flex items-center justify-between hover:border-brand/50 transition-all group relative overflow-hidden">
+             <div class="flex items-center gap-4 z-10">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand to-purple-600 flex items-center justify-center text-lg">🎵</div>
+                <div class="text-left">
+                   <div id="pl-btn-title" class="font-bold text-sm uppercase tracking-wide">Generate Playlist</div>
+                   <div id="pl-btn-sub" class="text-[10px] text-white/50">Unlock your 10-song vibe mix</div>
+                </div>
+             </div>
+             <div id="pl-lock-icon" class="text-white/20 group-hover:text-brand transition-colors z-10">
+                <i class="fa-solid fa-lock"></i>
+             </div>
+             <!-- Gold Shine if Unlocked -->
+             <div id="pl-shine" class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full hidden"></div>
+          </button>
 
           <!-- Auth & Sync (Professional Style) -->
           <div id="viewGuestAuth" class="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4 backdrop-blur-sm">
              <div class="text-center text-[10px] text-white/50 uppercase tracking-widest mb-2">Save Your Results</div>
-             
-             <!-- Google Sign In -->
              <button onclick="handleGoogleLogin()" class="w-full bg-white text-black font-bold py-3 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4" alt="Google">
                 <span class="text-xs uppercase tracking-wide">Sign in with Google</span>
              </button>
-
-             <!-- Email Toggle -->
              <div class="text-center">
-                <button onclick="document.getElementById('emailForm').classList.toggle('hidden')" class="text-[10px] text-white/40 hover:text-white underline">
-                   Or use email/password
-                </button>
+                <button onclick="document.getElementById('emailForm').classList.toggle('hidden')" class="text-[10px] text-white/40 hover:text-white underline">Or use email/password</button>
              </div>
-
-             <!-- Hidden Email Form -->
              <div id="emailForm" class="hidden space-y-3 pt-1">
                 <input id="emailInput" type="email" placeholder="Email Address" class="bg-black/50 border border-white/10 text-white text-xs rounded p-3 focus:border-brand w-full">
                 <input id="passInput" type="password" placeholder="Password" class="bg-black/50 border border-white/10 text-white text-xs rounded p-3 focus:border-brand w-full">
@@ -263,13 +257,13 @@
     let auth;
     let appId;
     
-    // Auth Handlers (Exposed Globally)
+    // Auth Handlers
     window.handleGoogleLogin = async () => {
       if(!auth) return;
       const provider = new GoogleAuthProvider();
       try {
         await signInWithPopup(auth, provider);
-        if(window.lastPersona) window.finish(window.lastPersona); // Re-trigger save
+        // UI updates happen in onAuthStateChanged
       } catch (e) {
         document.getElementById('authError').innerText = e.message;
         document.getElementById('authError').classList.remove('hidden');
@@ -315,9 +309,19 @@
 
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            console.log("User signed in:", user.uid);
+            window.currentUser = user;
             if(!user.isAnonymous) {
-               document.getElementById('viewGuestAuth').innerHTML = '<div class="text-center text-neon text-xs font-bold uppercase tracking-widest py-4">✓ Account Linked</div>';
+               // Update UI for Signed In User
+               document.getElementById('viewGuestAuth').innerHTML = '<div class="text-center text-neon text-xs font-bold uppercase tracking-widest py-4 border border-neon/30 bg-neon/5 rounded-lg">✓ Account Connected</div>';
+               // Unlock Playlist Button
+               document.getElementById('pl-lock-icon').innerHTML = '<i class="fa-solid fa-unlock text-neon"></i>';
+               document.getElementById('pl-btn-title').innerText = "View Curated Playlist";
+               document.getElementById('pl-btn-sub').innerText = "10 Songs • Ready for You";
+               document.getElementById('pl-shine').classList.remove('hidden');
+               document.getElementById('pl-shine').classList.add('animate-pulse');
+               
+               // Re-save data to link it to real user
+               if(window.lastPersona) window.saveToFirebase({...window.lastPersona});
             }
           } else {
             signInAnonymously(auth).catch((error) => console.error("Guest login failed", error));
@@ -459,49 +463,87 @@
     }
 
     function generateLocalPlaylist(scores) {
-        // Logic: Return curated list based on top trait
-        const topTrait = Object.entries(scores).sort((a,b) => b[1] - a[1])[0][0];
-        const playlists = {
-            toxic: ["The Weeknd - The Hills", "Drake - Marvins Room", "Future - Mask Off", "SZA - Kill Bill", "Brent Faiyaz - Poison"],
-            sad: ["Lana Del Rey - Video Games", "Mitski - Washing Machine Heart", "Joji - Glimpse of Us", "Phoebe Bridgers - Motion Sickness", "Frank Ocean - White Ferrari"],
-            party: ["Fred again.. - Marea (We've Lost Dancing)", "Fisher - Losing It", "Dom Dolla - Rhyme Dust", "Calvin Harris - Miracle", "Peggy Gou - It Goes Like Nanana"],
-            chaos: ["100 gecs - money machine", "Charli XCX - Vroom Vroom", "Playboi Carti - Sky", "Crystal Castles - Crimewave", "SOPHIE - Ponyboy"],
-            music_snob: ["Tame Impala - Let It Happen", "Radiohead - Weird Fishes", "Aphex Twin - Avril 14th", "Beach House - Space Song", "Thundercat - Them Changes"],
-            main_character: ["Harry Styles - As It Was", "Arctic Monkeys - Do I Wanna Know?", "The Neighbourhood - Sweater Weather", "Måneskin - I Wanna Be Your Slave", "Steve Lacy - Bad Habit"]
+        // Advanced mapping of traits to songs
+        const library = {
+            toxic: ["The Weeknd - The Hills", "Drake - Marvins Room", "Future - Mask Off", "SZA - Kill Bill", "Brent Faiyaz - Poison", "Jhene Aiko - The Worst", "Doja Cat - Streets", "Chase Atlantic - Swim", "Arctic Monkeys - Do I Wanna Know?", "Gnarls Barkley - Crazy"],
+            sad: ["Lana Del Rey - Video Games", "Mitski - Washing Machine Heart", "Joji - Glimpse of Us", "Phoebe Bridgers - Motion Sickness", "Frank Ocean - White Ferrari", "Bon Iver - Holocene", "Billie Eilish - when the party's over", "Radiohead - Creep", "Olivia Rodrigo - Traitor", "Conan Gray - Heather"],
+            party: ["Fred again.. - Marea (We've Lost Dancing)", "Fisher - Losing It", "Dom Dolla - Rhyme Dust", "Calvin Harris - Miracle", "Peggy Gou - It Goes Like Nanana", "Dua Lipa - Levitating", "Disclosure - Latch", "Tiësto - The Business", "David Guetta - I'm Good (Blue)", "Skrillex - Rumble"],
+            chaos: ["100 gecs - money machine", "Charli XCX - Vroom Vroom", "Playboi Carti - Sky", "Crystal Castles - Crimewave", "SOPHIE - Ponyboy", "Death Grips - Get Got", "Rico Nasty - Smack A Bitch", "Grimes - Kill V. Maim", "Yeat - Money So Big", "JPEGMAFIA - 1539 N. Calvert"],
+            music_snob: ["Tame Impala - Let It Happen", "Radiohead - Weird Fishes", "Aphex Twin - Avril 14th", "Beach House - Space Song", "Thundercat - Them Changes", "MF DOOM - Doomsday", "Neutral Milk Hotel - In the Aeroplane Over the Sea", "Gorillaz - Empire Ants", "Daft Punk - Veridis Quo", "Pink Floyd - Time"],
+            main_character: ["Harry Styles - As It Was", "The Neighbourhood - Sweater Weather", "Måneskin - I Wanna Be Your Slave", "Steve Lacy - Bad Habit", "Glass Animals - Heat Waves", "MGMT - Kids", "Empire of the Sun - Walking On A Dream", "Capital Cities - Safe And Sound", "Foster The People - Pumped Up Kicks", "The Killers - Mr. Brightside"],
+            chill: ["Mac DeMarco - Chamber of Reflection", "Tyler, The Creator - See You Again", "Clairo - Sofia", "Men I Trust - Show Me How", "Kali Uchis - Telepatía", "Childish Gambino - Redbone", "SZA - Good Days", "Rex Orange County - Best Friend", "Daniel Caesar - Best Part", "H.E.R. - Focus"]
         };
-        return playlists[topTrait] || playlists.party;
+
+        const sortedTraits = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+        const primaryTrait = sortedTraits[0][0];
+        // Mix 70% primary, 30% secondary if available, else 100% primary
+        let playlist = [...(library[primaryTrait] || library.party)];
+        // Shuffle (Fisher-Yates)
+        for (let i = playlist.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
+        }
+        return playlist.slice(0, 10);
     }
 
-    function handlePlaylistGen(platform) {
+    function handlePlaylistGen() {
         const modal = document.getElementById('playlist-modal');
         const container = document.getElementById('playlist-tracks');
-        const btnOpen = document.getElementById('btn-open-external');
+        const btnAction = document.getElementById('btn-action-main');
+        const isLoggedIn = window.auth && window.auth.currentUser && !window.auth.currentUser.isAnonymous;
         
         modal.classList.remove('hidden');
-        container.innerHTML = '<div class="animate-pulse text-neon">CALCULATING VIBE...</div>';
+        container.innerHTML = '<div class="animate-pulse text-toxic">GENERATING VIBE MIX...</div>';
         
-        // Use Local Logic
-        const tracks = generateLocalPlaylist(state.scores);
-        
-        // Simulate "Thinking" time
+        // Logic Branch: Guest vs Premium
         setTimeout(() => {
-            container.innerHTML = tracks.map((t, i) => 
-              `<div class="flex justify-between border-b border-white/10 pb-1"><span>${i+1}. ${t}</span></div>`
-            ).join('');
-            
-            // Set External Link
-            const searchQuery = tracks.map(t => t.split('-')[0].trim()).join(' '); // Search Artists
-            const vibeName = getPersona().title;
-            
-            if (platform === 'spotify') {
-                btnOpen.onclick = () => window.open(`https://open.spotify.com/search/${encodeURIComponent(vibeName + " Mix")}`, '_blank');
+            if (isLoggedIn) {
+               // PREMIUM PATH
+               const tracks = generateLocalPlaylist(state.scores);
+               const playlistId = "#VIBE-" + Math.floor(Math.random()*10000);
+               
+               // Show List
+               container.innerHTML = `
+                 <div class="text-center text-xs text-gold mb-2 font-bold uppercase tracking-widest">★ Premium Access Unlocked</div>
+                 <div class="text-center text-[10px] text-white/40 mb-4 font-mono">ID: ${playlistId}</div>
+                 ${tracks.map((t, i) => `<div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-white">${i+1}. ${t}</span>
+                 </div>`).join('')}
+               `;
+               
+               // Save to Profile
+               if(window.saveToFirebase) {
+                  window.saveToFirebase({ type: 'playlist', id: playlistId, tracks: tracks });
+               }
+               
+               btnAction.innerHTML = '<i class="fa-brands fa-youtube text-lg"></i> Open Mix';
+               btnAction.onclick = () => {
+                  const query = `${getPersona().title} Vibe ${tracks[0].split('-')[0]} ${tracks[1].split('-')[0]} Playlist`;
+                  window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
+               }
+               
             } else {
-                btnOpen.onclick = () => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(vibeName + " Playlist")}`, '_blank');
+               // GUEST PATH
+               container.innerHTML = `
+                 <div class="flex flex-col items-center justify-center h-full space-y-4">
+                    <div class="text-4xl">🔒</div>
+                    <div class="text-center">
+                       <p class="text-white font-bold uppercase text-sm">Playlist Locked</p>
+                       <p class="text-white/50 text-xs mt-1 px-4">Sign in to unlock your specific 10-song tracklist and save it forever.</p>
+                    </div>
+                 </div>
+               `;
+               
+               btnAction.innerHTML = 'Generate Quick Search (Guest)';
+               btnAction.onclick = () => {
+                  const query = `${getPersona().title} Aesthetic Playlist`;
+                  window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
+               }
             }
-            btnOpen.innerText = `OPEN ${platform.toUpperCase()}`;
-            
         }, 800);
     }
+
+    el('btn-gen-playlist').addEventListener('click', handlePlaylistGen);
 
     function renderStats() {
       const container = el('score-table');
@@ -513,6 +555,7 @@
 
     function finish() {
       const p = getPersona();
+      window.lastPersona = p; // Store for re-save on login
       el('r-title').innerText = p.title;
       el('r-roast').innerText = `"${p.roast}"`;
       el('r-desc').innerText = p.desc;
@@ -522,7 +565,7 @@
           scores: state.scores,
           gateData: state.gateData,
           result: p,
-          music_profile: generateLocalPlaylist(state.scores)
+          // Don't save full playlist here to save space, generated on demand
         });
       }
       showScreen('screen-result');
