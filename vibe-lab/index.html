@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   
-  <!-- Content Security Policy (From your main site) -->
+  <!-- Content Security Policy -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
 
   <!-- Primary SEO -->
@@ -17,7 +17,10 @@
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
   <link rel="manifest" href="site.webmanifest">
+  <link rel="shortcut icon" href="assets/favicon.ico">
+  <meta name="msapplication-TileColor" content="#020617">
 
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -27,10 +30,18 @@
   })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
   <!-- End Google Tag Manager -->
 
-  <!-- Fonts -->
+  <!-- YOUR PLATFORM SCRIPTS -->
+  <script type="module" src="firebase-config.js"></script>
+  <script src="game-engine.js"></script> 
+  <script src="components.js" defer></script>
+  <script src="data.js"></script>
+  <script src="facts.js"></script>
+
+  <!-- Fonts (Combined Vibe Check + Your Site Fonts) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Oswald:wght@500;700&family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -66,19 +77,12 @@
 
   <style>
     body { background-color: #000; color: white; overflow-x: hidden; transition: background-color 0.5s ease; }
-    
-    /* Mode 1: Clean Pop Culture */
     .mode-normal .bg-dynamic { background: radial-gradient(circle at 50% 10%, #1a1a1a 0%, #000000 80%); }
-    
-    /* Mode 2: Adrenaline (Triggered at Q13) */
     .mode-adrenaline { background-color: #000; }
     .mode-adrenaline .bg-dynamic { background: repeating-linear-gradient(45deg, #111, #111 10px, #000 10px, #000 20px); }
     .mode-adrenaline button { border-color: #FF3B30 !important; }
     .mode-adrenaline h2 { color: #FF3B30; text-shadow: 2px 2px 0px #fff; }
-    
     .tap-fast { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-    
-    /* Input Styling */
     select, input { background: #111; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; width: 100%; font-family: 'Inter'; outline: none; }
     select:focus, input:focus { border-color: #FF3B30; }
   </style>
@@ -102,273 +106,72 @@
     <!-- SCREEN 1: LANDING -->
     <section id="screen-landing" class="absolute inset-0 flex flex-col items-center justify-center p-6">
       <div class="relative z-10 w-full max-w-md text-center space-y-8 animate-pop">
-        
-        <div class="inline-block bg-brand text-white text-xs font-bold px-4 py-1.5 uppercase tracking-widest transform -rotate-2 shadow-[0_0_20px_rgba(255,59,48,0.4)]">
-          ⚠️ Brutally Honest
-        </div>
-
-        <h1 class="font-display text-7xl md:text-9xl uppercase leading-[0.85] text-white">
-          Who<br>Are<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-yellow-500">You?</span>
-        </h1>
-
-        <p class="text-lg text-white/70 font-medium max-w-xs mx-auto leading-relaxed">
-          22 Scenarios. 1 Result. <br>We're going to roast your taste, your habits, and your soul.
-        </p>
-
-        <button id="btn-start" class="w-full bg-white text-black font-display text-3xl uppercase py-5 hover:bg-brand hover:text-white transition-colors duration-300 shadow-2xl transform hover:scale-[1.02]">
-          GET ROASTED
-        </button>
-
-        <div class="flex justify-center gap-6 text-[10px] uppercase tracking-widest text-white/30 pt-4">
-          <span>📸 Visual</span>
-          <span>🔥 Adrenaline</span>
-          <span>🧪 50 Metrics</span>
-        </div>
+        <div class="inline-block bg-brand text-white text-xs font-bold px-4 py-1.5 uppercase tracking-widest transform -rotate-2 shadow-[0_0_20px_rgba(255,59,48,0.4)]">⚠️ Brutally Honest</div>
+        <h1 class="font-display text-7xl md:text-9xl uppercase leading-[0.85] text-white">Who<br>Are<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-yellow-500">You?</span></h1>
+        <p class="text-lg text-white/70 font-medium max-w-xs mx-auto leading-relaxed">22 Scenarios. 1 Result. <br>We're going to roast your taste, your habits, and your soul.</p>
+        <button id="btn-start" class="w-full bg-white text-black font-display text-3xl uppercase py-5 hover:bg-brand hover:text-white transition-colors duration-300 shadow-2xl transform hover:scale-[1.02]">GET ROASTED</button>
+        <div class="flex justify-center gap-6 text-[10px] uppercase tracking-widest text-white/30 pt-4"><span>📸 Visual</span><span>🔥 Adrenaline</span><span>🧪 50 Metrics</span></div>
       </div>
     </section>
-
 
     <!-- SCREEN 2: QUIZ -->
     <section id="screen-quiz" class="hidden absolute inset-0 flex flex-col">
-      
-      <!-- Progress -->
-      <div class="absolute top-0 left-0 w-full h-1 bg-white/10 z-50">
-        <div id="progress-fill" class="h-full bg-brand transition-all duration-300 w-0"></div>
-      </div>
-
-      <!-- Question Text -->
-      <div class="absolute top-24 left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
-        <div class="bg-black/80 backdrop-blur-xl px-8 py-4 border border-white/10 shadow-2xl transform rotate-1">
-          <h2 id="q-prompt" class="font-display text-4xl md:text-6xl text-white uppercase tracking-wide text-center leading-none">
-            LOADING...
-          </h2>
-        </div>
-      </div>
-
-      <!-- VS Badge -->
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
-        <div id="vs-badge" class="bg-white text-black font-display font-bold text-4xl px-4 py-2 rotate-[-5deg] shadow-[0_0_50px_rgba(255,255,255,0.5)] transition-all duration-300">
-          VS
-        </div>
-      </div>
-
-      <!-- Options -->
+      <div class="absolute top-0 left-0 w-full h-1 bg-white/10 z-50"><div id="progress-fill" class="h-full bg-brand transition-all duration-300 w-0"></div></div>
+      <div class="absolute top-24 left-0 right-0 z-40 flex justify-center pointer-events-none px-4"><div class="bg-black/80 backdrop-blur-xl px-8 py-4 border border-white/10 shadow-2xl transform rotate-1"><h2 id="q-prompt" class="font-display text-4xl md:text-6xl text-white uppercase tracking-wide text-center leading-none">LOADING...</h2></div></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none"><div id="vs-badge" class="bg-white text-black font-display font-bold text-4xl px-4 py-2 rotate-[-5deg] shadow-[0_0_50px_rgba(255,255,255,0.5)] transition-all duration-300">VS</div></div>
       <div class="flex flex-col md:flex-row h-full w-full">
-        <!-- A -->
-        <button id="btn-a" class="relative flex-1 group h-1/2 md:h-full overflow-hidden focus:outline-none border-b-2 md:border-b-0 md:border-r-2 border-black">
-          <img id="img-a" src="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-60 group-hover:opacity-100" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50"></div>
-          <div class="absolute bottom-8 left-8 text-left z-20">
-            <span id="label-a" class="font-display text-5xl md:text-7xl uppercase text-white leading-none shadow-black drop-shadow-lg transition-transform duration-100">...</span>
-          </div>
-        </button>
-        <!-- B -->
-        <button id="btn-b" class="relative flex-1 group h-1/2 md:h-full overflow-hidden focus:outline-none">
-          <img id="img-b" src="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-60 group-hover:opacity-100" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50"></div>
-          <div class="absolute bottom-8 right-8 text-right z-20">
-            <span id="label-b" class="font-display text-5xl md:text-7xl uppercase text-white leading-none shadow-black drop-shadow-lg transition-transform duration-100">...</span>
-          </div>
-        </button>
+        <button id="btn-a" class="relative flex-1 group h-1/2 md:h-full overflow-hidden focus:outline-none border-b-2 md:border-b-0 md:border-r-2 border-black"><img id="img-a" src="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-60 group-hover:opacity-100" /><div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50"></div><div class="absolute bottom-8 left-8 text-left z-20"><span id="label-a" class="font-display text-5xl md:text-7xl uppercase text-white leading-none shadow-black drop-shadow-lg transition-transform duration-100">...</span></div></button>
+        <button id="btn-b" class="relative flex-1 group h-1/2 md:h-full overflow-hidden focus:outline-none"><img id="img-b" src="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-60 group-hover:opacity-100" /><div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50"></div><div class="absolute bottom-8 right-8 text-right z-20"><span id="label-b" class="font-display text-5xl md:text-7xl uppercase text-white leading-none shadow-black drop-shadow-lg transition-transform duration-100">...</span></div></button>
       </div>
     </section>
 
-    <!-- SCREEN 3: THE GATE (Age + Toxic Trait) -->
+    <!-- SCREEN 3: THE GATE -->
     <section id="screen-gate" class="hidden absolute inset-0 bg-black z-50 flex items-center justify-center p-6">
       <div class="w-full max-w-md space-y-8 animate-pop">
-        
-        <div class="text-center">
-          <h2 class="font-display text-5xl text-white uppercase mb-2">Almost There</h2>
-          <p class="text-white/60">We need to verify your identity to calculate the final roast.</p>
-        </div>
-
+        <div class="text-center"><h2 class="font-display text-5xl text-white uppercase mb-2">Almost There</h2><p class="text-white/60">We need to verify your identity to calculate the final roast.</p></div>
         <div class="space-y-4">
-          <!-- Age -->
-          <div>
-            <label class="text-[10px] font-bold uppercase text-brand tracking-widest mb-1 block">Your Era</label>
-            <select id="input-age">
-              <option value="" disabled selected>Select your age...</option>
-              <option value="genz">"I'm a literal child" (<18)</option>
-              <option value="prime">"Prime of my life" (18-29)</option>
-              <option value="backpain">"My back hurts" (30-45)</option>
-              <option value="nirvana">"I saw Nirvana live" (45+)</option>
-            </select>
-          </div>
-
-          <!-- Toxic Trait -->
-          <div>
-            <label class="text-[10px] font-bold uppercase text-brand tracking-widest mb-1 block">Your Toxic Trait</label>
-            <select id="input-toxic">
-              <option value="" disabled selected>Be honest...</option>
-              <option value="location">I check their location on Snap maps</option>
-              <option value="ex">I text my ex when I'm drunk</option>
-              <option value="judge">I judge people's Spotify Wrapped</option>
-              <option value="gatekeep">I gatekeep bands I found yesterday</option>
-              <option value="main">I think I'm the Main Character</option>
-            </select>
-          </div>
-
-          <!-- Concert (Optional) -->
-          <div>
-            <label class="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-1 block">First Concert (Optional)</label>
-            <input type="text" id="input-concert" placeholder="e.g. One Direction 2013">
-          </div>
+          <div><label class="text-[10px] font-bold uppercase text-brand tracking-widest mb-1 block">Your Era</label><select id="input-age"><option value="" disabled selected>Select your age...</option><option value="genz">"I'm a literal child" (<18)</option><option value="prime">"Prime of my life" (18-29)</option><option value="backpain">"My back hurts" (30-45)</option><option value="nirvana">"I saw Nirvana live" (45+)</option></select></div>
+          <div><label class="text-[10px] font-bold uppercase text-brand tracking-widest mb-1 block">Your Toxic Trait</label><select id="input-toxic"><option value="" disabled selected>Be honest...</option><option value="location">I check their location on Snap maps</option><option value="ex">I text my ex when I'm drunk</option><option value="judge">I judge people's Spotify Wrapped</option><option value="gatekeep">I gatekeep bands I found yesterday</option><option value="main">I think I'm the Main Character</option></select></div>
+          <div><label class="text-[10px] font-bold uppercase text-white/50 tracking-widest mb-1 block">First Concert (Optional)</label><input type="text" id="input-concert" placeholder="e.g. One Direction 2013"></div>
         </div>
-
-        <button id="btn-reveal" class="w-full bg-white text-black font-display text-2xl uppercase py-4 hover:bg-brand hover:text-white transition-colors">
-          REVEAL MY ROAST
-        </button>
+        <button id="btn-reveal" class="w-full bg-white text-black font-display text-2xl uppercase py-4 hover:bg-brand hover:text-white transition-colors">REVEAL MY ROAST</button>
       </div>
     </section>
-
 
     <!-- SCREEN 4: RESULTS -->
     <section id="screen-result" class="hidden absolute inset-0 bg-[#0a0a0a] overflow-y-auto">
       <div class="min-h-full w-full flex flex-col items-center justify-center p-6">
-        
         <div id="result-card" class="w-full max-w-md bg-black border border-white/10 p-8 text-center space-y-6 relative overflow-hidden animate-pop">
-          <!-- Decorative Background Blob -->
           <div class="absolute -top-20 -right-20 w-60 h-60 bg-brand/20 blur-[80px] rounded-full pointer-events-none"></div>
-
           <div class="relative z-10 space-y-6">
-            <div class="inline-block border border-white/20 px-3 py-1 rounded-full">
-              <span class="text-[10px] font-bold uppercase tracking-widest text-white/50">Official Diagnosis</span>
-            </div>
-
-            <div>
-              <h2 id="r-title" class="font-display text-6xl md:text-7xl uppercase leading-[0.9] text-white mb-4">
-                UNKNOWN
-              </h2>
-              <p id="r-roast" class="text-xl md:text-2xl text-brand font-bold leading-tight font-display uppercase italic">
-                "Calculating..."
-              </p>
-            </div>
-
+            <div class="inline-block border border-white/20 px-3 py-1 rounded-full"><span class="text-[10px] font-bold uppercase tracking-widest text-white/50">Official Diagnosis</span></div>
+            <div><h2 id="r-title" class="font-display text-6xl md:text-7xl uppercase leading-[0.9] text-white mb-4">UNKNOWN</h2><p id="r-roast" class="text-xl md:text-2xl text-brand font-bold leading-tight font-display uppercase italic">"Calculating..."</p></div>
             <div class="h-px w-full bg-white/10"></div>
-
-            <p id="r-desc" class="text-sm text-white/70 leading-relaxed font-medium">
-              ...
-            </p>
-            
-            <div class="pt-4 text-[10px] font-bold uppercase text-white/30 tracking-widest">
-              vibecheck.app • 2025
-            </div>
+            <p id="r-desc" class="text-sm text-white/70 leading-relaxed font-medium">...</p>
+            <div class="pt-4 text-[10px] font-bold uppercase text-white/30 tracking-widest">vibecheck.app • 2025</div>
           </div>
         </div>
-
-        <!-- Action Buttons -->
         <div class="mt-8 w-full max-w-md space-y-3">
-          <button id="btn-share" class="w-full bg-brand text-white font-display text-xl uppercase py-4 hover:brightness-110 transition-all shadow-lg shadow-brand/20">
-            Share Poster
-          </button>
-          
-          <div class="grid grid-cols-2 gap-3">
-            <button onclick="alert('Redirecting to Spotify...')" class="bg-[#1DB954] text-white font-bold text-sm uppercase py-3 rounded hover:brightness-110">
-              Listen
-            </button>
-            <button id="btn-again" class="bg-white/10 text-white font-bold text-sm uppercase py-3 rounded hover:bg-white/20">
-              Restart
-            </button>
-          </div>
+          <button id="btn-share" class="w-full bg-brand text-white font-display text-xl uppercase py-4 hover:brightness-110 transition-all shadow-lg shadow-brand/20">Share Poster</button>
+          <div class="grid grid-cols-2 gap-3"><button onclick="alert('Redirecting to Spotify...')" class="bg-[#1DB954] text-white font-bold text-sm uppercase py-3 rounded hover:brightness-110">Listen</button><button id="btn-again" class="bg-white/10 text-white font-bold text-sm uppercase py-3 rounded hover:bg-white/20">Restart</button></div>
         </div>
-
-        <!-- Debug Toggle -->
-        <div class="mt-8 w-full max-w-md">
-            <button id="btn-debug" class="w-full text-center text-[10px] uppercase tracking-widest text-white/30 hover:text-brand transition-colors">
-                [+] View Roast Data
-            </button>
-            <div id="debug-view" class="hidden mt-4 p-4 bg-white/5 border border-white/10 rounded-lg text-left">
-                <h4 class="text-brand font-bold text-xs uppercase mb-2">Vibe Metrics</h4>
-                <div id="score-table" class="space-y-1 text-xs font-mono text-white/70">
-                    <!-- JS Injected -->
-                </div>
-            </div>
-        </div>
-
+        <div class="mt-8 w-full max-w-md"><button id="btn-debug" class="w-full text-center text-[10px] uppercase tracking-widest text-white/30 hover:text-brand transition-colors">[+] View Roast Data</button><div id="debug-view" class="hidden mt-4 p-4 bg-white/5 border border-white/10 rounded-lg text-left"><h4 class="text-brand font-bold text-xs uppercase mb-2">Vibe Metrics</h4><div id="score-table" class="space-y-1 text-xs font-mono text-white/70"></div></div></div>
       </div>
     </section>
-
   </main>
 
-  <!-- HIDDEN CANVAS -->
   <canvas id="share-canvas" width="1080" height="1920" class="hidden"></canvas>
 
-  <!-- Firebase Integration with Smart Login -->
+  <!-- Module to Attach Firestore Tools to Window -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    // Initialize Firebase
-    let db;
-    let auth;
-    let appId;
-    
-    try {
-      const firebaseConfig = JSON.parse(__firebase_config);
-      const app = initializeApp(firebaseConfig);
-      auth = getAuth(app);
-      db = getFirestore(app);
-      appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-      
-      // Expose globally as requested
-      window.db = db;
-      window.auth = auth;
-      window.doc = doc;
-      window.setDoc = setDoc;
-      window.getDoc = getDoc;
-
-      // Smart Login (Your logic)
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          console.log("Existing user found:", user.uid);
-        } else {
-          console.log("No user found. Creating Guest Session...");
-          signInAnonymously(auth).catch((error) => {
-            console.error("Guest login failed", error);
-          });
-        }
-      });
-
-    } catch (e) {
-      console.warn("Firebase not configured in this environment. Data will not save.", e);
-    }
-
-    // Expose DB saving to global scope
-    window.saveToFirebase = async (data) => {
-      if (!db || !auth.currentUser) return;
-      
-      try {
-        // Fetch IP (Client Side)
-        let ip = 'unknown';
-        try {
-          const res = await fetch('https://api.ipify.org?format=json');
-          const json = await res.json();
-          ip = json.ip;
-        } catch(e) { console.log('IP fetch failed'); }
-
-        const payload = {
-          ...data,
-          userId: auth.currentUser.uid,
-          ip: ip,
-          email: auth.currentUser.email || null, // Will be null for anonymous
-          timestamp: new Date().toISOString()
-        };
-
-        // Use correct public path per instructions
-        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'roast_results'), payload);
-        console.log("Data saved to Firebase!");
-      } catch (e) {
-        console.error("Error saving to Firebase: ", e);
-      }
-    };
+    import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    window.fsCollection = collection;
+    window.fsAddDoc = addDoc;
   </script>
 
   <script>
-    // --- 1. THE VIRAL QUESTION SET (22 TOTAL) ---
-    // Images are generic placeholders. Replace with Unsplash/Assets later.
+    // --- APP DATA ---
     const QUESTIONS = [
-      // --- PART 1: THE WARM UP ---
       { id: 1, prompt: "THE KING?", a: { label: "MJ", img: "https://images.unsplash.com/photo-1504593811423-6dd665756598?q=80&w=1000", score: { pop: 2, classic: 1 } }, b: { label: "PRINCE", img: "https://images.unsplash.com/photo-1549834125-9a69624c9c7c?q=80&w=1000", score: { music_snob: 2, funk: 1 } } },
       { id: 2, prompt: "THE VENUE?", a: { label: "THE CLUB", img: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?q=80&w=1000", score: { party: 2, chaos: 1 } }, b: { label: "COZY BAR", img: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1000", score: { indie: 2, chill: 1 } } },
       { id: 3, prompt: "THE BEEF?", a: { label: "KANYE", img: "https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=1000", score: { chaos: 2, ego: 2 } }, b: { label: "TAYLOR", img: "https://images.unsplash.com/photo-1621360841013-c768371e93cf?q=80&w=1000", score: { pop: 2, order: 1 } } },
@@ -381,9 +184,6 @@
       { id: 10, prompt: "FLAGS?", a: { label: "RED FLAGS", img: "https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?q=80&w=1000", score: { toxic: 2, chaos: 1 } }, b: { label: "GREEN FLAGS", img: "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=1000", score: { wholesome: 2, order: 1 } } },
       { id: 11, prompt: "HABIT?", a: { label: "TEXT FIRST", img: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?q=80&w=1000", score: { confidence: 1, anxiety: 1 } }, b: { label: "WAIT FOR THEM", img: "https://images.unsplash.com/photo-1515023115689-589c33041697?q=80&w=1000", score: { ego: 2, toxic: 1 } } },
       { id: 12, prompt: "PRIORITY?", a: { label: "LYRICS", img: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=1000", score: { emotional: 2, sad: 1 } }, b: { label: "BEAT", img: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1000", score: { dance: 2, party: 1 } } },
-      
-      // --- PART 2: ADRENALINE MODE (Q13-Q22) ---
-      // These images need to be intense/glitchy style
       { id: 13, prompt: "SPEED?", a: { label: "FAST", img: "https://images.unsplash.com/photo-1535581652167-3d6b98636db2?q=80&w=1000", score: { energy: 3, chaos: 1 }, anim: "shake" }, b: { label: "SLOW", img: "https://images.unsplash.com/photo-1504198458649-3128b932f49e?q=80&w=1000", score: { chill: 2, sad: 1 }, anim: "breathe" } },
       { id: 14, prompt: "VIBE?", a: { label: "CHAOS", img: "https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?q=80&w=1000", score: { chaos: 3 } }, b: { label: "ORDER", img: "https://images.unsplash.com/photo-1487215078519-e24265f1d896?q=80&w=1000", score: { order: 2 } } },
       { id: 15, prompt: "VOLUME?", a: { label: "SCREAM", img: "https://images.unsplash.com/photo-1545959570-a94770252b6d?q=80&w=1000", score: { energy: 2, rock: 2 } }, b: { label: "WHISPER", img: "https://images.unsplash.com/photo-1476994230281-1448088947db?q=80&w=1000", score: { intimacy: 2, asmr: 1 } } },
@@ -409,16 +209,13 @@
     function init() {
       state.idx = 0;
       for(let k in state.scores) state.scores[k] = 0;
-      // UI Reset
       document.body.className = "mode-normal font-sans antialiased h-screen flex flex-col";
       el('mode-badge').innerHTML = '<span class="text-[10px] font-bold uppercase tracking-widest text-white/80">Culture Roast</span>';
       el('vs-badge').style.backgroundColor = "white";
       el('vs-badge').style.color = "black";
       el('vs-badge').innerText = "VS";
-      el('debug-view').classList.add('hidden'); // Hide logs on restart
-      
-      showScreen('screen-quiz');
-      renderQuestion();
+      el('debug-view').classList.add('hidden');
+      showScreen('screen-landing');
     }
 
     function showScreen(id) {
@@ -427,45 +224,25 @@
     }
 
     function renderQuestion() {
-      // 1. Trigger Adrenaline Mode at Q13
-      if (state.idx === 12) { 
-        triggerAdrenalineMode();
-      }
-
-      // 2. Check Finish
-      if (state.idx >= QUESTIONS.length) {
-        showScreen('screen-gate'); // Go to Gate instead of Result
-        return;
-      }
-      
+      if (state.idx === 12) triggerAdrenalineMode();
+      if (state.idx >= QUESTIONS.length) { showScreen('screen-gate'); return; }
       const q = QUESTIONS[state.idx];
       el('q-prompt').innerText = q.prompt;
-      
-      // Update Buttons
       updateBtn('a', q.a);
       updateBtn('b', q.b);
-
-      // Progress
-      const pct = ((state.idx + 1) / QUESTIONS.length) * 100;
-      el('progress-fill').style.width = `${pct}%`;
+      el('progress-fill').style.width = `${((state.idx + 1) / QUESTIONS.length) * 100}%`;
     }
 
     function updateBtn(side, data) {
       el(`label-${side}`).innerText = data.label;
       el(`img-${side}`).src = data.img;
-      
-      // Apply Animation if specific
-      const label = el(`label-${side}`);
-      label.className = `font-display text-5xl md:text-7xl uppercase text-white leading-none shadow-black drop-shadow-lg transition-transform duration-100 ${data.anim ? 'animate-' + data.anim : ''}`;
+      el(`label-${side}`).className = `font-display text-5xl md:text-7xl uppercase text-white leading-none shadow-black drop-shadow-lg transition-transform duration-100 ${data.anim ? 'animate-' + data.anim : ''}`;
     }
 
     function triggerAdrenalineMode() {
       document.body.className = "mode-adrenaline font-sans antialiased h-screen flex flex-col";
-      // Visual Glitch Effect on Badge
       el('mode-badge').innerHTML = '<span class="text-[10px] font-bold uppercase tracking-widest text-brand animate-pulse">⚠️ ADRENALINE MODE</span>';
       el('mode-badge').classList.add('bg-black', 'border', 'border-brand');
-      
-      // Change VS Badge
       el('vs-badge').style.backgroundColor = "#FF3B30";
       el('vs-badge').style.color = "white";
       el('vs-badge').innerText = "⚡️";
@@ -481,83 +258,31 @@
       renderQuestion();
     }
 
-    // --- GATE LOGIC ---
     function revealResult() {
       const age = el('input-age').value;
       const toxic = el('input-toxic').value;
-      
-      if(!age || !toxic) {
-        alert("We need to know who we're roasting. Fill in the info.");
-        return;
-      }
-      
+      if(!age || !toxic) { alert("We need to know who we're roasting. Fill in the info."); return; }
       state.gateData = { age, toxic };
       finish();
     }
 
-    // --- ROAST CALCULATOR ---
     function getPersona() {
       const s = state.scores;
       const g = state.gateData;
-
-      // Logic Hierarchy
-      if (s.toxic > 5 || g.toxic === 'ex') return { 
-        title: "The Red Flag", 
-        roast: "You are the problem.", 
-        desc: "You chose toxicity every time. You text your ex, you listen to Drake, and you probably think gaslighting is a love language." 
-      };
-      if (s.ego > 4 || g.toxic === 'main') return {
-        title: "The Main Character",
-        roast: "The world does not revolve around you.",
-        desc: "You walk around listening to music pretending you're in a movie edit. You aren't. Please stop looking at yourself in store windows."
-      };
-      if (s.sad > 5) return {
-        title: "The Sad Girl",
-        roast: "Go to therapy.",
-        desc: "You romanticize your own suffering for the aesthetic. Crying in an Uber isn't a personality trait, it's a cry for help."
-      };
-      if (s.music_snob > 4 || g.toxic === 'gatekeep') return {
-        title: "The Gatekeeper",
-        roast: "Nobody cares about your vinyls.",
-        desc: "You hate popular things just because they're popular. You probably talk over people to explain why Tame Impala is actually just one guy."
-      };
-      if (s.party > 5 || s.chaos > 5) return {
-        title: "The Bender",
-        roast: "Your liver hates you.",
-        desc: "You chose every chaotic option. You treat every weekend like it's your last on earth. Drink some water."
-      };
-      if (s.wholesome > 5 && s.order > 3) return {
-        title: "The NPC",
-        roast: "You have default settings.",
-        desc: "Your taste is incredibly safe. You probably think drinking water is 'self-care' and your favorite artist is 'whoever is on the radio'."
-      };
-
-      // Default
-      return { 
-        title: "The Chaos Agent", 
-        roast: "You make no sense.", 
-        desc: "Your vibe is all over the place. One second you're crying, the next you're raging. Pick a struggle." 
-      };
+      if (s.toxic > 5 || g.toxic === 'ex') return { title: "The Red Flag", roast: "You are the problem.", desc: "You chose toxicity every time. You text your ex, you listen to Drake, and you probably think gaslighting is a love language." };
+      if (s.ego > 4 || g.toxic === 'main') return { title: "The Main Character", roast: "The world does not revolve around you.", desc: "You walk around listening to music pretending you're in a movie edit. You aren't. Please stop looking at yourself in store windows." };
+      if (s.sad > 5) return { title: "The Sad Girl", roast: "Go to therapy.", desc: "You romanticize your own suffering for the aesthetic. Crying in an Uber isn't a personality trait, it's a cry for help." };
+      if (s.music_snob > 4 || g.toxic === 'gatekeep') return { title: "The Gatekeeper", roast: "Nobody cares about your vinyls.", desc: "You hate popular things just because they're popular. You probably talk over people to explain why Tame Impala is actually just one guy." };
+      if (s.party > 5 || s.chaos > 5) return { title: "The Bender", roast: "Your liver hates you.", desc: "You chose every chaotic option. You treat every weekend like it's your last on earth. Drink some water." };
+      if (s.wholesome > 5 && s.order > 3) return { title: "The NPC", roast: "You have default settings.", desc: "Your taste is incredibly safe. You probably think drinking water is 'self-care' and your favorite artist is 'whoever is on the radio'." };
+      return { title: "The Chaos Agent", roast: "You make no sense.", desc: "Your vibe is all over the place. One second you're crying, the next you're raging. Pick a struggle." };
     }
 
     function renderStats() {
       const container = el('score-table');
-      container.innerHTML = '';
-      
-      // Gate Data
-      container.innerHTML += `<div class="mb-2 pb-2 border-b border-white/10"><span class="text-white">AGE:</span> ${state.gateData.age} <br> <span class="text-white">TOXIC:</span> ${state.gateData.toxic}</div>`;
-
-      // Scores sorted by value
-      const sorted = Object.entries(state.scores).sort((a,b) => b[1] - a[1]);
-      
-      sorted.forEach(([key, val]) => {
-          if (val > 0) {
-              container.innerHTML += `
-              <div class="flex justify-between">
-                  <span class="uppercase">${key.replace('_', ' ')}</span>
-                  <span class="text-white">${val}</span>
-              </div>`;
-          }
+      container.innerHTML = `<div class="mb-2 pb-2 border-b border-white/10"><span class="text-white">AGE:</span> ${state.gateData.age} <br> <span class="text-white">TOXIC:</span> ${state.gateData.toxic}</div>`;
+      Object.entries(state.scores).sort((a,b) => b[1] - a[1]).forEach(([key, val]) => {
+          if (val > 0) container.innerHTML += `<div class="flex justify-between"><span class="uppercase">${key.replace('_', ' ')}</span><span class="text-white">${val}</span></div>`;
       });
     }
 
@@ -566,101 +291,75 @@
       el('r-title').innerText = p.title;
       el('r-roast').innerText = `"${p.roast}"`;
       el('r-desc').innerText = p.desc;
-      
       renderStats();
-      
-      // Auto-save to Firebase
-      if (window.saveToFirebase) {
-        window.saveToFirebase({
-          scores: state.scores,
-          gateData: state.gateData,
-          result: p
-        });
-      }
-      
+      saveData(p);
       showScreen('screen-result');
     }
 
-    // --- CANVAS ---
+    async function saveData(persona) {
+      if (!window.db || !window.auth || !window.fsCollection || !window.fsAddDoc) {
+        console.log("Firebase not fully loaded yet.");
+        return;
+      }
+      try {
+        let ip = 'unknown';
+        try { const res = await fetch('https://api.ipify.org?format=json'); const json = await res.json(); ip = json.ip; } catch(e) {}
+        
+        // Use global appId if defined in firebase-config.js (assuming it sets a global, or default)
+        // Since I cannot see the user's config file exports, I will assume a standard collection structure or a default.
+        // I will use a safe default if 'appId' isn't available globally.
+        const appIdSafe = typeof appId !== 'undefined' ? appId : (window.appId || 'default-app-id');
+
+        const payload = {
+          scores: state.scores,
+          gate: state.gateData,
+          result: persona,
+          timestamp: new Date().toISOString(),
+          ip: ip,
+          userId: window.auth.currentUser ? window.auth.currentUser.uid : 'anon'
+        };
+        
+        // Use the collection/addDoc we attached to window
+        await window.fsAddDoc(window.fsCollection(window.db, 'artifacts', appIdSafe, 'public', 'data', 'roast_results'), payload);
+        console.log("Data saved.");
+      } catch(e) { console.log("Save error", e); }
+    }
+
     function generatePoster() {
       const ctx = el('share-canvas').getContext('2d');
-      const w = 1080;
-      const h = 1920;
-      
-      // Black BG
-      ctx.fillStyle = '#050505';
-      ctx.fillRect(0,0,w,h);
-      
-      // Blob
+      const w = 1080; const h = 1920;
+      ctx.fillStyle = '#050505'; ctx.fillRect(0,0,w,h);
       const grad = ctx.createRadialGradient(w/2, h/2, 100, w/2, h/2, 800);
-      grad.addColorStop(0, '#2a1a1a');
-      grad.addColorStop(1, '#000000');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0,0,w,h);
-
+      grad.addColorStop(0, '#2a1a1a'); grad.addColorStop(1, '#000000');
+      ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
       const p = getPersona();
       ctx.textAlign = 'center';
-      
-      // Title
-      ctx.font = 'bold 130px "Oswald"'; 
-      ctx.fillStyle = 'white';
-      ctx.fillText(p.title.toUpperCase(), w/2, 500);
-      
-      // Roast
-      ctx.font = 'italic 70px Inter';
-      ctx.fillStyle = '#FF3B30';
-      wrapText(ctx, `"${p.roast}"`, w/2, 700, 900, 80);
-
-      // Desc
-      ctx.font = '40px Inter';
-      ctx.fillStyle = '#999';
-      wrapText(ctx, p.desc, w/2, 1000, 800, 60);
-
-      // Gate Data Stamp
-      ctx.fillStyle = '#222';
-      ctx.fillRect(w/2 - 300, 1300, 600, 100);
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 30px Inter';
-      ctx.fillText(`TOXIC TRAIT: ${state.gateData.toxic.toUpperCase()}`, w/2, 1360);
-
-      // Footer
-      ctx.fillStyle = '#333';
-      ctx.font = '40px Inter';
-      ctx.fillText("CHECK YOUR VIBE @ VIBECHECK.APP", w/2, 1700);
-
-      const link = document.createElement('a');
-      link.download = `vibe-roast.png`;
-      link.href = el('share-canvas').toDataURL();
-      link.click();
+      ctx.font = 'bold 130px "Oswald"'; ctx.fillStyle = 'white'; ctx.fillText(p.title.toUpperCase(), w/2, 500);
+      ctx.font = 'italic 70px Inter'; ctx.fillStyle = '#FF3B30'; wrapText(ctx, `"${p.roast}"`, w/2, 700, 900, 80);
+      ctx.font = '40px Inter'; ctx.fillStyle = '#999'; wrapText(ctx, p.desc, w/2, 1000, 800, 60);
+      ctx.fillStyle = '#222'; ctx.fillRect(w/2 - 300, 1300, 600, 100);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 30px Inter'; ctx.fillText(`TOXIC TRAIT: ${state.gateData.toxic.toUpperCase()}`, w/2, 1360);
+      ctx.fillStyle = '#333'; ctx.font = '40px Inter'; ctx.fillText("CHECK YOUR VIBE @ VIBECHECK.APP", w/2, 1700);
+      const link = document.createElement('a'); link.download = `vibe-roast.png`; link.href = el('share-canvas').toDataURL(); link.click();
     }
 
     function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-      let words = text.split(' ');
-      let line = '';
+      let words = text.split(' '); let line = '';
       for(let n = 0; n < words.length; n++) {
         let testLine = line + words[n] + ' ';
         let metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && n > 0) {
-          ctx.fillText(line, x, y);
-          line = words[n] + ' ';
-          y += lineHeight;
-        } else {
-          line = testLine;
-        }
+        if (metrics.width > maxWidth && n > 0) { ctx.fillText(line, x, y); line = words[n] + ' '; y += lineHeight; } else { line = testLine; }
       }
       ctx.fillText(line, x, y);
     }
 
-    // --- EVENTS ---
-    el('btn-start').addEventListener('click', init);
+    el('btn-start').addEventListener('click', () => { showScreen('screen-quiz'); renderQuestion(); });
     el('btn-a').addEventListener('click', () => handleChoice('a'));
     el('btn-b').addEventListener('click', () => handleChoice('b'));
     el('btn-reveal').addEventListener('click', revealResult);
     el('btn-again').addEventListener('click', init);
     el('btn-share').addEventListener('click', generatePoster);
-    el('btn-debug').addEventListener('click', () => {
-        el('debug-view').classList.toggle('hidden');
-    });
+    el('btn-debug').addEventListener('click', () => { el('debug-view').classList.toggle('hidden'); });
 
   </script>
 </body>
