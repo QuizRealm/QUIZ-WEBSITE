@@ -1,27 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
-  <!-- End Google Tag Manager -->
-<link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="firebase-config.js"></script> 
+  <script type="module" src="game-engine.js"></script> 
+  <script src="components.js" defer></script>
+
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Logic League • Pattern & Deduction Puzzle | QuizRealm</title>
   <meta name="theme-color" content="#050505" />
-  <meta name="description" content="Play a fast deduction puzzle: choose colors, make a guess, and use exact/partial clues to find the hidden pattern. Mobile-friendly, quick rounds, clean UI." />
-  <meta name="keywords" content="logic puzzle, mastermind, deduction puzzle, pattern game, brain game, color code game, mobile puzzle" />
+  <meta name="description" content="Play a fast deduction puzzle: choose colors, make a guess, and use exact/partial clues to find the hidden pattern." />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script type="module" src="game-engine.js"></script> 
-
-  <script src="components.js" defer></script>
 
   <script>
     tailwind.config = {
@@ -35,6 +43,15 @@
             eaRed: '#ff4747',
             eaBlue: '#47a3ff',
             eaGold: '#fbbf24'
+          },
+          animation: {
+            'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+          },
+          keyframes: {
+             popIn: {
+                '0%': { opacity: '0', transform: 'scale(0.5)' },
+                '100%': { opacity: '1', transform: 'scale(1)' }
+            }
           }
         }
       }
@@ -61,252 +78,132 @@
       min-height:100vh;
       overflow-x:hidden;
     }
-    @media (max-width: 767px){
-      body{ padding-bottom: 120px; }
-    }
+    @media (max-width: 767px){ body{ padding-bottom: 120px; } }
 
     .panel{
-      background: var(--panel);
-      border: 1px solid var(--stroke);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 22px 70px -55px rgba(0,0,0,0.95);
-      border-radius: 18px;
+      background: var(--panel); border: 1px solid var(--stroke);
+      backdrop-filter: blur(14px); box-shadow: 0 22px 70px -55px rgba(0,0,0,0.95); border-radius: 18px;
     }
-    .soft{
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--stroke2);
-      border-radius: 16px;
-    }
+    .soft{ background: rgba(255,255,255,0.03); border: 1px solid var(--stroke2); border-radius: 16px; }
 
     .ea-btn{
       clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-      transition: transform .15s ease, filter .15s ease, border-color .15s ease, background .15s ease;
-      text-transform: uppercase;
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 800;
-      letter-spacing: 2px;
+      transition: transform .15s ease, filter .15s ease; text-transform: uppercase;
+      font-family: 'Rajdhani', sans-serif; font-weight: 800; letter-spacing: 2px;
     }
-    .ea-btn:active{ transform: scale(0.985); }
-    .ea-btn:hover{ filter: brightness(1.05); }
+    .ea-btn:active{ transform: scale(0.985); } .ea-btn:hover{ filter: brightness(1.05); }
 
     .token{
-      width:100%; height:100%;
-      border-radius:50%;
-      box-shadow:
-        inset -3px -3px 8px rgba(0,0,0,0.8),
-        inset 2px 2px 6px rgba(255,255,255,0.35),
-        0 10px 18px rgba(0,0,0,0.35);
+      width:100%; height:100%; border-radius:50%;
+      box-shadow: inset -3px -3px 8px rgba(0,0,0,0.8), inset 2px 2px 6px rgba(255,255,255,0.35), 0 10px 18px rgba(0,0,0,0.35);
       border:1px solid rgba(255,255,255,0.12);
     }
     .token.placed{ animation: popIn 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     @keyframes popIn{ 0%{ transform: scale(0); opacity:0; } 100%{ transform: scale(1); opacity:1; } }
 
-    .c-red    { background: radial-gradient(circle at 30% 30%, #ff5e5e, #c2af7b); }
-    .c-blue   { background: radial-gradient(circle at 30% 30%, #5e9aff, #004499); }
-    .c-green  { background: radial-gradient(circle at 30% 30%, #5eff8e, #008833); }
+    .c-red { background: radial-gradient(circle at 30% 30%, #ff5e5e, #c2af7b); }
+    .c-blue { background: radial-gradient(circle at 30% 30%, #5e9aff, #004499); }
+    .c-green { background: radial-gradient(circle at 30% 30%, #5eff8e, #008833); }
     .c-yellow { background: radial-gradient(circle at 30% 30%, #fff05e, #b39900); }
     .c-purple { background: radial-gradient(circle at 30% 30%, #d45eff, #550088); }
     .c-orange { background: radial-gradient(circle at 30% 30%, #6b531e, #52472a); }
-    .c-white  { background: radial-gradient(circle at 30% 30%, #ffffff, #888888); }
+    .c-white { background: radial-gradient(circle at 30% 30%, #ffffff, #888888); }
 
     .board-shell{
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,0.10);
-      background:
-        radial-gradient(circle at 50% 0%, rgba(59,255,134,0.06), transparent 60%),
-        rgba(15,15,15,0.95);
+      border-radius: 18px; overflow:hidden; border: 1px solid rgba(255,255,255,0.10);
+      background: radial-gradient(circle at 50% 0%, rgba(59,255,134,0.06), transparent 60%), rgba(15,15,15,0.95);
       box-shadow: var(--shadow);
     }
 
     .game-row{
-      min-height: 66px;
-      display:flex;
-      align-items:center;
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      transition: background .18s ease, border-color .18s ease;
+      min-height: 66px; display:flex; align-items:center; padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06); transition: background .18s ease;
     }
-    .game-row.active{
-      background: rgba(255,255,255,0.05);
-      border-left: 3px solid var(--accent);
-    }
-    .game-row.locked{
-      opacity: 0.99;
-      filter: grayscale(0.01);
-      pointer-events:none;
-    }
+    .game-row.active{ background: rgba(255,255,255,0.05); border-left: 3px solid var(--accent); }
+    .game-row.locked{ opacity: 0.99; filter: grayscale(0.01); pointer-events:none; }
 
     .slot{
-      width: 44px; height: 44px;
-      border-radius:50%;
-      background: rgba(0,0,0,0.35);
-      border: 2px dashed rgba(255,255,255,0.16);
-      display:flex; align-items:center; justify-content:center;
+      width: 44px; height: 44px; border-radius:50%; background: rgba(0,0,0,0.35);
+      border: 2px dashed rgba(255,255,255,0.16); display:flex; align-items:center; justify-content:center;
       transition: transform .12s ease, border-color .12s ease;
     }
     .slot:hover{ transform: translateY(-1px); border-color: rgba(59,255,134,0.35); }
-    @media (min-width: 768px){
-      .slot{ width: 56px; height: 56px; }
-    }
+    @media (min-width: 768px){ .slot{ width: 56px; height: 56px; } }
 
-    .led-grid{
-      display:grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-      margin-left:auto;
-      align-content:center;
-      padding-left: 10px;
-    }
+    .led-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-left:auto; align-content:center; padding-left: 10px; }
     .led{
-      width: 14px;
-      height: 14px;
-      border-radius: 6px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
+      width: 14px; height: 14px; border-radius: 6px; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
     }
-    .led.exact{
-      background: rgba(59,255,134,0.22);
-      border-color: rgba(59,255,134,0.65);
-      box-shadow: 0 0 14px rgba(59,255,134,0.22);
-    }
-    .led.partial{
-      background: rgba(251,191,36,0.20);
-      border-color: rgba(251,191,36,0.70);
-      box-shadow: 0 0 14px rgba(251,191,36,0.18);
-    }
+    .led.exact{ background: rgba(59,255,134,0.22); border-color: rgba(59,255,134,0.65); box-shadow: 0 0 14px rgba(59,255,134,0.22); }
+    .led.partial{ background: rgba(251,191,36,0.20); border-color: rgba(251,191,36,0.70); box-shadow: 0 0 14px rgba(251,191,36,0.18); }
 
     @keyframes scanline{ 0%{ transform: translateX(-100%); } 100%{ transform: translateX(200%); } }
     .scanning{ position:relative; overflow:hidden; }
     .scanning::after{
-      content:'';
-      position:absolute; top:0; left:0; width:100%; height:100%;
+      content:''; position:absolute; top:0; left:0; width:100%; height:100%;
       background: linear-gradient(90deg, transparent, rgba(59,255,134,0.14), transparent);
       animation: scanline 1.35s infinite;
     }
 
     .mini-token{
-      width: 44px; height: 44px;
-      border-radius:50%;
-      cursor:pointer;
-      border: 2px solid transparent;
-      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-      flex: 0 0 auto;
+      width: 44px; height: 44px; border-radius:50%; cursor:pointer; border: 2px solid transparent;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; flex: 0 0 auto;
     }
     .mini-token:hover{ transform: translateY(-2px); }
-    .mini-token.selected{
-      transform: scale(1.12);
-      border-color:#fff;
-      box-shadow: 0 0 18px rgba(255,255,255,0.25), 0 0 18px rgba(59,255,134,0.18);
-    }
+    .mini-token.selected{ transform: scale(1.12); border-color:#fff; box-shadow: 0 0 18px rgba(255,255,255,0.25), 0 0 18px rgba(59,255,134,0.18); }
 
     @media (min-width: 768px){
       #controls-container{
-        position:absolute;
-        left: -86px;
-        top: 0;
-        width: 66px;
-        display:flex;
-        flex-direction:column;
-        gap: 12px;
-        padding: 12px 0;
-        align-items:center;
-        justify-content:flex-start;
-        background: rgba(10,10,10,0.86);
-        border: 1px solid rgba(255,255,255,0.14);
-        border-radius: 14px;
-        backdrop-filter: blur(12px);
-        transition: top 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        z-index: 20;
+        position:absolute; left: -86px; top: 0; width: 66px; display:flex; flex-direction:column;
+        gap: 12px; padding: 12px 0; align-items:center; background: rgba(10,10,10,0.86);
+        border: 1px solid rgba(255,255,255,0.14); border-radius: 14px; backdrop-filter: blur(12px);
+        transition: top 0.5s cubic-bezier(0.25, 1, 0.5, 1); z-index: 20;
       }
       #controls-container::after{
-        content:'';
-        position:absolute;
-        right:-20px;
-        top: 30px;
-        width:20px;
-        height:2px;
-        background: var(--accent);
-        box-shadow: 0 0 10px rgba(59,255,134,0.65);
+        content:''; position:absolute; right:-20px; top: 30px; width:20px; height:2px;
+        background: var(--accent); box-shadow: 0 0 10px rgba(59,255,134,0.65);
       }
     }
 
     @media (max-width: 767px){
       .mobile-dock{
-        position: fixed;
-        left: 0; right: 0; bottom: 0;
-        z-index: 9999;
-        padding: 10px 12px 14px;
-        background: rgba(7,7,7,0.95);
-        border-top: 1px solid rgba(255,255,255,0.12);
-        backdrop-filter: blur(14px);
-        box-shadow: 0 -20px 60px -45px rgba(0,0,0,0.95);
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999; padding: 10px 12px 14px;
+        background: rgba(7,7,7,0.95); border-top: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(14px);
       }
-      .mobile-dock-inner{
-        max-width: 980px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .mobile-palette-zone{ width: 100%; }
-      .mobile-actions{
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-      }
-
+      .mobile-dock-inner{ max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+      .mobile-actions{ display: flex; gap: 10px; justify-content: center; }
       #controls-container{
-        position: static !important;
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        overflow: visible !important;
-        padding: 4px 2px;
+        position: static !important; width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px; overflow: visible !important; padding: 4px 2px;
       }
-      .mini-token{
-        width: 40px;
-        height: 40px;
-        justify-self: center;
-      }
-      #controls-container.palette-3{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      #controls-container.palette-4{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      #controls-container.palette-5,
-      #controls-container.palette-6,
-      #controls-container.palette-7{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .mini-token{ width: 40px; height: 40px; justify-self: center; }
     }
 
     .dock-btn{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      padding:10px 10px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.10);
-      transition: transform .15s ease, background .15s ease, border-color .15s ease;
-      min-width: 84px;
-      flex: 0 0 auto;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 10px;
+      border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.10);
+      transition: transform .15s ease, background .15s ease; min-width: 84px; flex: 0 0 auto;
     }
-    .dock-btn:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(59,255,134,0.22);
+    .dock-btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.05); }
+    
+    /* Result Stat Box */
+    .stat-box {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
     }
   </style>
 </head>
 
 <body class="flex flex-col antialiased">
-  <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <quiz-header></quiz-header>
 
-  <!-- START SCREEN -->
   <div id="start-screen" class="flex-grow flex flex-col items-center justify-center p-4 min-h-[80vh]">
     <div class="panel w-full max-w-xl p-6 md:p-10">
       <div class="text-center">
@@ -325,29 +222,23 @@
       <div class="grid gap-4 w-full max-w-md mx-auto mt-10">
         <button onclick="startGame('ROOKIE')" class="ea-btn bg-white text-black py-5 text-xl">
           <span class="flex items-center justify-between px-6">
-            <span>ROOKIE</span>
-            <span class="text-[10px] opacity-60">3 SLOTS</span>
+            <span>ROOKIE</span><span class="text-[10px] opacity-60">3 SLOTS</span>
           </span>
         </button>
-
         <button onclick="startGame('AGENT')" class="ea-btn bg-eaPaper border border-white/20 text-white py-5 text-xl hover:border-eaBlue">
           <span class="flex items-center justify-between px-6">
-            <span>AGENT</span>
-            <span class="text-[10px] opacity-60">4 SLOTS</span>
+            <span>AGENT</span><span class="text-[10px] opacity-60">4 SLOTS</span>
           </span>
         </button>
-
         <button onclick="startGame('LEGEND')" class="ea-btn bg-eaPaper border border-white/20 text-white py-5 text-xl hover:border-eaRed">
           <span class="flex items-center justify-between px-6">
-            <span>LEGEND</span>
-            <span class="text-[10px] opacity-60">5 SLOTS</span>
+            <span>LEGEND</span><span class="text-[10px] opacity-60">5 SLOTS</span>
           </span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- GAME UI -->
   <div id="game-ui" class="hidden flex-grow w-full max-w-[980px] mx-auto px-3 md:px-6 py-4 md:py-6 relative">
     <div class="panel p-4 md:p-5 mb-4 md:mb-6">
       <div class="flex items-center justify-between gap-3">
@@ -363,7 +254,6 @@
               Hint <span id="hint-count-desktop">2</span>
             </span>
           </button>
-
           <button onclick="showStartScreen()" class="dock-btn">
             <i class="fas fa-times text-gray-200 text-lg"></i>
             <span class="text-[10px] text-gray-400 mt-1 font-black tracking-[0.18em] uppercase">Exit</span>
@@ -384,18 +274,15 @@
 
     <div class="relative md:pl-24">
       <div id="palette-anchor"></div>
-
       <div class="board-shell">
         <div id="game-board"></div>
       </div>
     </div>
   </div>
 
-  <!-- MOBILE DOCK -->
   <div class="mobile-dock md:hidden">
     <div class="mobile-dock-inner">
       <div id="mobile-palette-anchor" class="mobile-palette-zone"></div>
-
       <div class="mobile-actions">
         <button onclick="useHint()" class="dock-btn" id="hint-btn">
           <i class="fas fa-lightbulb text-eaGold text-lg"></i>
@@ -403,7 +290,6 @@
             Hint <span id="hint-count-mobile">2</span>
           </span>
         </button>
-
         <button onclick="showStartScreen()" class="dock-btn">
           <i class="fas fa-times text-gray-200 text-lg"></i>
           <span class="text-[10px] text-gray-400 mt-1 font-black tracking-[0.18em] uppercase">Exit</span>
@@ -412,16 +298,27 @@
     </div>
   </div>
 
-  <!-- RESULT MODAL (THIS IS WHAT YOU WERE MISSING) -->
   <div id="result-modal" class="hidden fixed inset-0 z-[99999] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4">
-    <div class="panel w-full max-w-md p-6 md:p-8 text-center">
+    <div class="panel w-full max-w-md p-6 md:p-8 text-center animate-pop-in">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 bg-eaAccent/10 rounded-full blur-[60px] -z-10"></div>
+
       <i id="res-icon" class="fas fa-trophy text-6xl mb-5 text-eaAccent"></i>
       <h2 id="res-title" class="font-display font-black text-4xl md:text-5xl uppercase italic text-white mb-2">Nice!</h2>
       <p id="res-desc" class="text-gray-300 text-sm mb-6">Solved.</p>
 
-      <div class="soft p-4 mb-6">
-        <div class="text-[10px] uppercase tracking-[0.35em] text-gray-400 font-bold">XP Awarded</div>
-        <div id="xp-awarded" class="font-display font-black text-4xl text-eaAccent mt-2">+0</div>
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="stat-box">
+            <div class="text-[9px] uppercase font-bold text-gray-500">Rows</div>
+            <div id="resRows" class="text-xl text-white font-mono">0</div>
+        </div>
+        <div class="stat-box">
+            <div class="text-[9px] uppercase font-bold text-gray-500">Time</div>
+            <div id="resTime" class="text-xl text-white font-mono">0s</div>
+        </div>
+        <div class="stat-box">
+            <div class="text-[9px] uppercase font-bold text-gray-500">XP</div>
+            <div id="resXP" class="text-xl text-eaAccent font-mono">+0</div>
+        </div>
       </div>
 
       <button onclick="restartGame()" class="ea-btn bg-white text-black w-full py-4 text-lg mb-3">Play Again</button>
@@ -449,6 +346,20 @@
     let isProcessing = false;
     let activeColors = [];
     let lastAutoScrollRow = -1;
+    
+    // --- NEW: TRACKING VARS ---
+    let startTime = 0;
+    let ghostClickCount = 0;
+    let validClickCount = 0;
+
+    // --- NEW: GHOST CLICK TRACKER ---
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('button') || e.target.closest('.slot') || e.target.closest('.mini-token')) {
+            validClickCount++;
+        } else {
+            ghostClickCount++;
+        }
+    });
 
     function closeResult(){
       document.getElementById('result-modal').classList.add('hidden');
@@ -470,17 +381,23 @@
       currentConfig = DIFFICULTY[diffKey];
       activeColors = PALETTE.slice(0, currentConfig.colors);
 
+      // Initialize Secret Code
       secretCode = [];
       for (let i = 0; i < currentConfig.slots; i++) {
         secretCode.push(activeColors[Math.floor(Math.random() * activeColors.length)]);
       }
 
+      // Reset State
       currentRow = 0;
       currentGuess = new Array(currentConfig.slots).fill(null);
       hintsLeft = 2;
       isProcessing = false;
       selectedColor = activeColors[0];
       lastAutoScrollRow = -1;
+      
+      // Tracking Init
+      startTime = Date.now();
+      ghostClickCount = 0;
 
       buildSidebar();
       buildBoard();
@@ -500,17 +417,13 @@
         bar.id = 'controls-container';
       }
       bar.innerHTML = '';
-
       activeColors.forEach(color => {
         bar.innerHTML += `<div class="mini-token ${color}" onclick="selectColor('${color}')"></div>`;
       });
-
       bar.classList.remove('palette-3','palette-4','palette-5','palette-6','palette-7');
       bar.classList.add(`palette-${activeColors.length}`);
-
       const desktopAnchor = document.getElementById('palette-anchor');
       if (desktopAnchor && !desktopAnchor.contains(bar)) desktopAnchor.appendChild(bar);
-
       selectColor(activeColors[0]);
     }
 
@@ -519,7 +432,6 @@
       const desktopAnchor = document.getElementById('palette-anchor');
       const mobileAnchor = document.getElementById('mobile-palette-anchor');
       if (!palette || !desktopAnchor || !mobileAnchor) return;
-
       if (window.innerWidth < 768) {
         if (!mobileAnchor.contains(palette)) mobileAnchor.prepend(palette);
       } else {
@@ -527,36 +439,25 @@
       }
     }
 
-    window.addEventListener('resize', () => {
-      relocatePalette();
-      updateUI();
-    });
+    window.addEventListener('resize', () => { relocatePalette(); updateUI(); });
 
     function buildBoard() {
       const board = document.getElementById('game-board');
       board.innerHTML = '';
-
       for (let i = 0; i < currentConfig.rows; i++) {
         let slotsHTML = '';
         for (let j = 0; j < currentConfig.slots; j++) {
           slotsHTML += `<div class="slot" id="slot-${i}-${j}" onclick="clickSlot(${i}, ${j})"></div>`;
         }
-
         let gridStyle = (currentConfig.slots > 3) ? "grid-template-columns: repeat(2, 1fr);" : "grid-template-columns: repeat(3, 1fr);";
         let ledsHTML = '';
         for (let k = 0; k < currentConfig.slots; k++) ledsHTML += `<div class="led"></div>`;
-
         board.innerHTML += `
           <div class="game-row" id="row-${i}">
             <div class="font-mono text-[10px] text-gray-600 w-5 text-center mr-2">${i + 1}</div>
-            <div class="flex-grow flex justify-start gap-2 md:gap-4">
-              ${slotsHTML}
-            </div>
-            <div class="led-grid" id="leds-${i}" style="${gridStyle}">
-              ${ledsHTML}
-            </div>
-          </div>
-        `;
+            <div class="flex-grow flex justify-start gap-2 md:gap-4">${slotsHTML}</div>
+            <div class="led-grid" id="leds-${i}" style="${gridStyle}">${ledsHTML}</div>
+          </div>`;
       }
     }
 
@@ -569,25 +470,21 @@
 
     function clickSlot(r, c) {
       if (r !== currentRow || isProcessing) return;
-
       currentGuess[c] = selectedColor;
       const slot = document.getElementById(`slot-${r}-${c}`);
       slot.innerHTML = `<div class="token ${selectedColor} placed"></div>`;
       slot.style.border = "none";
       slot.style.background = "transparent";
-
       if (!currentGuess.includes(null)) startAutoCheck();
     }
 
     function useHint() {
       if (hintsLeft <= 0 || isProcessing) return;
-
       let targetIndex = -1;
       for (let i = 0; i < currentConfig.slots; i++) {
         if (currentGuess[i] !== secretCode[i]) { targetIndex = i; break; }
       }
       if (targetIndex === -1) return;
-
       hintsLeft--;
       selectedColor = secretCode[targetIndex];
       clickSlot(currentRow, targetIndex);
@@ -603,7 +500,6 @@
 
     function evaluateRow() {
       document.getElementById(`row-${currentRow}`).classList.remove('scanning');
-
       let codeCopy = [...secretCode];
       let guessCopy = [...currentGuess];
       let exact = 0;
@@ -611,9 +507,7 @@
 
       for (let i = 0; i < currentConfig.slots; i++) {
         if (guessCopy[i] === codeCopy[i]) {
-          exact++;
-          guessCopy[i] = null;
-          codeCopy[i] = null;
+          exact++; guessCopy[i] = null; codeCopy[i] = null;
         }
       }
       for (let i = 0; i < currentConfig.slots; i++) {
@@ -629,7 +523,6 @@
       for (let x = 0; x < exact; x++) { leds[ledIdx].classList.add('exact'); ledIdx++; }
       for (let y = 0; y < partial; y++) { leds[ledIdx].classList.add('partial'); ledIdx++; }
 
-      // ✅ WIN PATH (FIXED)
       if (exact === currentConfig.slots) {
         showResult(true);
         return;
@@ -638,7 +531,6 @@
       document.getElementById(`row-${currentRow}`).classList.add('locked');
       currentRow++;
 
-      // ✅ LOSS PATH (FIXED)
       if (currentRow >= currentConfig.rows) {
         showResult(false);
         return;
@@ -650,30 +542,22 @@
     }
 
     function updateUI() {
-      // hint button opacity + counters
       const hintBtnMobile = document.getElementById('hint-btn');
       const hintBtnDesktop = document.getElementById('hint-btn-desktop');
-
       if (hintBtnMobile) hintBtnMobile.style.opacity = hintsLeft === 0 ? "0.5" : "1";
       if (hintBtnDesktop) hintBtnDesktop.style.opacity = hintsLeft === 0 ? "0.5" : "1";
+      document.getElementById('hint-count-mobile').textContent = hintsLeft;
+      document.getElementById('hint-count-desktop').textContent = hintsLeft;
 
-      const hcM = document.getElementById('hint-count-mobile');
-      const hcD = document.getElementById('hint-count-desktop');
-      if (hcM) hcM.textContent = hintsLeft;
-      if (hcD) hcD.textContent = hintsLeft;
-
-      // highlight row
       document.querySelectorAll('.game-row').forEach(r => r.classList.remove('active'));
       const ar = document.getElementById(`row-${currentRow}`);
       if (ar) ar.classList.add('active');
 
-      // scroll only once per row change
       if (window.innerWidth < 768 && ar && lastAutoScrollRow !== currentRow) {
         lastAutoScrollRow = currentRow;
         ar.scrollIntoView({ behavior: "smooth", block: "center" });
       }
 
-      // desktop rail follow
       if (window.innerWidth >= 768) {
         const controls = document.getElementById('controls-container');
         const topPos = (currentRow * 60) + 10;
@@ -681,44 +565,65 @@
       }
     }
 
+    // --- NEW: END GAME LOGIC & SAVING ---
     function showResult(win) {
       const modal = document.getElementById('result-modal');
       const icon = document.getElementById('res-icon');
       const title = document.getElementById('res-title');
       const desc = document.getElementById('res-desc');
-      const xpDisplay = document.getElementById('xp-awarded');
+      const xpDisplay = document.getElementById('resXP');
+      
+      const timeTaken = Math.round((Date.now() - startTime) / 1000);
 
       modal.classList.remove('hidden');
+      isProcessing = true;
 
-      isProcessing = true; // freeze board input on results
-// Example usage inside your End Game function
-saveGameResult(
-    "Superhero Quiz", // Game Name
-    8,                // Score
-    10,               // Total
-    {                 // The extra tracking data
-        avgTime: 1200,    // (Example: 1.2 seconds)
-        ghostClicks: 2    // (Example: clicked background twice)
-    }
-);
+      // Update UI
+      document.getElementById('resRows').textContent = currentRow + 1;
+      document.getElementById('resTime').textContent = timeTaken + "s";
+
       if (win) {
         const xpAmount = currentConfig.xp;
         icon.className = "fas fa-trophy text-6xl mb-5 text-eaAccent";
         title.textContent = "Solved!";
         title.className = "font-display font-black text-4xl md:text-5xl uppercase italic text-eaAccent mb-2";
-        desc.textContent = `You solved it in ${currentRow + 1} attempts.`;
-
+        desc.textContent = `You cracked the code in ${currentRow + 1} attempts.`;
         xpDisplay.textContent = `+${xpAmount}`;
-        xpDisplay.className = "font-display font-black text-4xl text-eaAccent mt-2";
+        xpDisplay.className = "text-xl text-eaAccent font-mono";
+        
+        // --- SAVE TO ENGINE ---
+        if(window.GameEngine) {
+            window.GameEngine.addXP(xpAmount);
+            window.GameEngine.saveGameResult("Logic League", xpAmount, 1, {
+                difficulty: currentConfig.name,
+                rowsUsed: currentRow + 1,
+                timeSpent: timeTaken,
+                won: true,
+                ghostClicks: ghostClickCount
+            });
+            // Achievements
+            if(timeTaken < 60) window.GameEngine.unlockAchievement("speed_demon");
+            if(currentConfig.name === 'Legend') window.GameEngine.unlockAchievement("mastermind");
+        }
 
       } else {
         icon.className = "fas fa-circle-xmark text-6xl mb-5 text-eaRed";
-        title.textContent = "No more attempts";
+        title.textContent = "Locked Out";
         title.className = "font-display font-black text-4xl md:text-5xl uppercase italic text-eaRed mb-2";
-        desc.textContent = "Try again with a new pattern.";
-
+        desc.textContent = "Pattern security engaged. Try again.";
         xpDisplay.textContent = "+0";
-        xpDisplay.className = "font-display font-black text-4xl text-gray-400 mt-2";
+        xpDisplay.className = "text-xl text-gray-400 font-mono";
+        
+        // Save Loss
+        if(window.GameEngine) {
+            window.GameEngine.saveGameResult("Logic League", 0, 1, {
+                difficulty: currentConfig.name,
+                rowsUsed: currentConfig.rows,
+                timeSpent: timeTaken,
+                won: false,
+                ghostClicks: ghostClickCount
+            });
+        }
       }
     }
   </script>
