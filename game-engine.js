@@ -373,6 +373,7 @@ const db = getFirestore();
                 }
             } catch (e) {}
         },
+ 
 
         _updateSimpleUI() { try { document.getElementById("user-xp").innerText = this.state.xp || 0; } catch (e) {} },
 
@@ -388,6 +389,10 @@ const db = getFirestore();
 
         getUserSnapshot() { return { ...this.state }; }
     };
+
+    // ------------------------------------------------------------
+    // BACKWARD COMPATIBILITY
+    // ------------------------------------------------------------
 
     // ------------------------------------------------------------
     // BACKWARD COMPATIBILITY
