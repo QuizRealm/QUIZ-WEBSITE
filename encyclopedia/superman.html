@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script type="module" src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+
+  <title>Marvel Cinematic Universe Explained: Movies, Heroes & Trivia | QuizRealm</title>
+  <meta name="description" content="Explore the MCU: from Iron Man to Endgame. Dive into the Infinity Saga, Multiverse, and character lore. Then test yourself with QuizRealm trivia.">
+
+  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+  <meta name="msapplication-TileColor" content="#020617">
+  <meta name="theme-color" content="#020617">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arcade: ['Bungee', 'cursive'],
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace']
+          },
+          colors: {
+            bgDarker: '#050810',
+            accentBlue: '#3b82f6',
+            accentCyan: '#06b6d4',
+            accentGreen: '#10b981',
+            accentOrange: '#f97316',
+            accentGold: '#fbbf24',
+            marvelRed: '#e23636' /* Added specific red for Marvel vibe */
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body{
+      background-color:#050810;
+      background-image: radial-gradient(circle at 50% 0%, #3a0e0e, #050810 80%); /* Red tint for Marvel */
+      color:#e2e8f0;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    .grid-bg{
+      background-size:60px 60px;
+      background-image:
+        linear-gradient(to right, rgba(226, 54, 54, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(226, 54, 54, 0.03) 1px, transparent 1px);
+      mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
+    }
+    .glass{
+      background: rgba(30,41,59,0.60);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 60px -40px rgba(0,0,0,0.9);
+    }
+
+    /* 9:16 box */
+    .ratio-9-16{ position:relative; width:100%; padding-top:177.7778%; }
+    .ratio-9-16 > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    
+    /* 16:9 box */
+    .ratio-16-9{ position:relative; width:100%; padding-top:56.25%; }
+    .ratio-16-9 > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+
+    /* Promo Cards */
+    .qr-card-container{ width:100%; }
+    .qr-promo-card{
+      position:relative;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(2,6,23,0.55);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 24px 70px -50px rgba(0,0,0,0.95);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .qr-promo-card:hover{
+      transform: translateY(-4px);
+      border-color: rgba(226, 54, 54, 0.55);
+      background: rgba(2,6,23,0.62);
+    }
+    .qr-badge{
+      position:absolute;
+      top:14px; left:14px;
+      z-index:5;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      padding:7px 10px;
+      border-radius:999px;
+      color:#0b1220;
+      background: linear-gradient(90deg, #fbbf24, #e23636);
+      border:1px solid rgba(255,255,255,0.18);
+    }
+    .qr-card-image{
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      background: radial-gradient(circle at top, rgba(226, 54, 54, 0.18), rgba(2,6,23,0.9));
+    }
+    .qr-img-fill{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .qr-card-content{ padding:18px 18px 20px; }
+    .qr-card-title{
+      font-family:'Bungee', cursive;
+      font-size:18px;
+      line-height:1.1;
+      color:#fff;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+    .qr-card-desc{
+      font-size:13px;
+      color: rgba(226,232,240,0.85);
+      line-height:1.5;
+      margin-bottom:14px;
+    }
+    .qr-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      font-size:12px;
+      color:#fff;
+      background: linear-gradient(90deg, #e23636, #b91c1c);
+      border:1px solid rgba(255,255,255,0.14);
+      transition: transform .18s ease, filter .18s ease;
+      text-decoration:none;
+    }
+    .qr-btn:hover{ transform: translateY(-2px); filter: brightness(1.1); }
+
+    .pill-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(226,232,240,0.92);
+      transition: background .15s ease, border-color .15s ease, transform .15s ease;
+      text-decoration:none;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .pill-link:hover{
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(226, 54, 54, 0.55);
+      transform: translateY(-1px);
+      color:#fff;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased selection:bg-marvelRed selection:text-white">
+
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-10 md:py-14 space-y-10">
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <a class="pill-link" href="/index.html"><i class="fas fa-house"></i> Home</a>
+        <a class="pill-link" href="/categories.html"><i class="fas fa-layer-group"></i> Categories</a>
+        <a class="pill-link" href="/mode.html?category=marvel"><i class="fas fa-play"></i> Play Marvel</a>
+      </div>
+      <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+        Encyclopedia • MCU
+      </div>
+    </div>
+
+    <section class="glass rounded-2xl p-6 md:p-8 overflow-hidden">
+      <div class="flex flex-col lg:flex-row gap-8 lg:items-center">
+
+        <div class="flex-1 space-y-4">
+
+          <div class="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-marvelRed">
+            <i class="fas fa-shield-alt"></i>
+            Superhero Cinema • The Infinity Saga & Beyond
+          </div>
+
+          <h1 class="font-arcade text-3xl md:text-5xl text-white leading-tight">
+            Marvel Cinematic Universe
+          </h1>
+
+          <p class="text-slate-300 leading-relaxed max-w-2xl">
+            From <strong class="text-white">Iron Man's</strong> first flight to the snap that changed the universe, the <strong class="text-white">MCU</strong> is the most expansive storytelling experiment in cinema history.
+            This guide covers the heroes, the villains, the Infinity Stones, and the Multiverse — giving you the intel you need to dominate our quizzes.
+          </p>
+
+          <p class="text-slate-400 text-sm leading-relaxed max-w-2xl">
+            Think you know every cameo, every post-credits scene, and exactly what happened in Budapest? 
+            Test your knowledge with QuizRealm’s deep-dive trivia and timeline challenges.
+          </p>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+
+            <a href="/mode.html?category=marvel"
+               class="px-6 py-3 rounded-xl bg-marvelRed text-white font-bold hover:scale-105 transition inline-flex items-center gap-2 shadow-[0_0_20px_rgba(226,54,54,0.4)]">
+              <i class="fas fa-play"></i>
+              Start Marvel Quiz
+            </a>
+
+            <a href="/minigames.html?category=marvel"
+               class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition inline-flex items-center gap-2">
+              <i class="fas fa-mask"></i>
+              Pictionary
+            </a>
+
+            <a href="/timeline-history.html?category=marvel"
+               class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition inline-flex items-center gap-2">
+              <i class="fas fa-stream"></i>
+              Timeline Game
+            </a>
+
+          </div>
+
+          <div class="flex flex-wrap gap-3 pt-1">
+            <a href="/index.html"
+               class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition inline-flex items-center gap-2">
+              <i class="fas fa-house"></i>
+              Home
+            </a>
+
+            <a href="/categories.html"
+               class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition inline-flex items-center gap-2">
+              <i class="fas fa-layer-group"></i>
+              All Categories
+            </a>
+
+            <a href="/encyclopedia.html"
+               class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition inline-flex items-center gap-2">
+              <i class="fas fa-book-open"></i>
+              Encyclopedia Hub
+            </a>
+          </div>
+
+        </div>
+
+        <div class="w-full lg:w-[340px] lg:flex-shrink-0">
+          <div class="rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(226,54,54,0.15)]">
+            <div class="ratio-9-16">
+              <img src="/assets/superman.webp" alt="Marvel Cinematic Universe Poster" class="qr-img-fill" 
+                   onerror="this.src='https://via.placeholder.com/400x700/1a0505/e23636?text=MARVEL+ART'">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <div class="lg:col-span-8 space-y-8">
+
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">33+</div>
+            <div class="text-xs text-slate-400 uppercase">Movies</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">5</div>
+            <div class="text-xs text-slate-400 uppercase">Phases (So Far)</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">$29B+</div>
+            <div class="text-xs text-slate-400 uppercase">Box Office</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">Kevin Feige</div>
+            <div class="text-xs text-slate-400 uppercase">Architect</div>
+          </div>
+        </section>
+
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">What is the MCU?</h2>
+          <p class="text-slate-300 leading-relaxed">
+            The <strong class="text-white">Marvel Cinematic Universe (MCU)</strong> is an American media franchise and shared universe centered on a series of superhero films produced by Marvel Studios. It isn't just a series of movies; it's a serialized narrative told on the biggest screen possible.
+          </p>
+          <p class="text-slate-300 leading-relaxed">
+            Starting with <em>Iron Man</em> in 2008, the saga weaves together individual hero stories into massive crossover events like <em>The Avengers</em> and <em>Infinity War</em>. If you miss a detail in one movie, it might be the key to understanding another one three years later.
+          </p>
+        </section>
+
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">Key Figures</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-marvelRed">Tony Stark / Iron Man</div>
+              <div class="text-sm text-slate-300">Genius, billionaire, playboy, philanthropist. The godfather of the MCU.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-blue-400">Steve Rogers / Captain America</div>
+              <div class="text-sm text-slate-300">The man out of time. The moral compass and tactical leader of the Avengers.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-yellow-400">Thor Odinson</div>
+              <div class="text-sm text-slate-300">God of Thunder. Strongest Avenger (debatable). Tragically hilarious.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-purple-400">Thanos</div>
+              <div class="text-sm text-slate-300">The Mad Titan. He proved that a villain can be the main character of a movie.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-red-500">Wanda Maximoff</div>
+              <div class="text-sm text-slate-300">The Scarlet Witch. Reality-warping power fueled by immense grief.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-red-600">Peter Parker / Spider-Man</div>
+              <div class="text-sm text-slate-300">Your friendly neighborhood hero who learned great responsibility the hard way.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">Why Marvel trivia is uniquely fun</h2>
+          <ul class="space-y-3 text-slate-300">
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Easter Eggs:</span> Every frame might hide a reference to a comic book issue or future villain.</div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Cameos:</span> From Stan Lee to subtle character drops, spotting them is a sport.</div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Post-Credits:</span> The movie isn't over until the lights come up. Knowing what happened in which credits scene is true fan knowledge.</div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="glass rounded-2xl p-6">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-white">Assemble your knowledge</h2>
+              <p class="text-slate-400 text-sm">Choose difficulty and prove you aren't a Skrull.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <a href="/mode.html?category=marvel" class="px-6 py-3 rounded-xl bg-marvelRed text-white font-bold hover:scale-105 transition shadow-lg shadow-red-900/40">
+                Play Marvel Quiz
+              </a>
+              <a href="/categories.html" class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition">
+                Browse Categories
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">Frequently asked questions</h2>
+
+          <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div class="font-bold text-white">What is the "Sacred Timeline"?</div>
+            <div class="text-sm text-slate-300 mt-1">
+              It refers to the main flow of time in the MCU (Earth-616). Deviations from this create the Multiverse, which is the focus of Phases 4, 5, and 6.
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div class="font-bold text-white">What order should I watch them in?</div>
+            <div class="text-sm text-slate-300 mt-1">
+              You can watch by <strong class="text-white">Release Order</strong> (how audiences saw them) or <strong class="text-white">Chronological Order</strong> (Captain America first, Captain Marvel second, etc.).
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-24 h-fit">
+
+        <div class="qr-card-container">
+          <div class="qr-promo-card">
+            <div class="qr-badge">Persona Test</div>
+
+            <div class="qr-card-image">
+              <div class="ratio-16-9">
+                <img src="/assets/marvel-.png" alt="Marvel Persona Quiz cover" class="qr-img-fill"
+                     onerror="this.src='https://via.placeholder.com/400x225/1a0505/e23636?text=AVENGER+TEST'">
+              </div>
+            </div>
+
+            <div class="qr-card-content">
+              <h3 class="qr-card-title">WHICH AVENGER ARE YOU?</h3>
+              <p class="qr-card-desc">
+                Tactical leader like Cap? Tech genius like Stark? Or a wildcard like Loki? Find your place in the team.
+              </p>
+              <a href="/quiz-gotham-villain.html" class="qr-btn">
+                Find Your Hero <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-2xl p-6 border-l-4 border-l-accentGreen">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="fas fa-gamepad text-accentGreen"></i>
+            <div class="text-sm font-bold text-white uppercase tracking-widest">Mini-games</div>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Can you put the MCU movies in the correct order? Try the Timeline Challenge.
+          </p>
+          <a href="/timeline-history.html?category=marvel"
+             class="mt-4 inline-flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl border border-white/15 text-white hover:bg-white/5 transition font-bold">
+            Fix the Timeline <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="glass rounded-2xl p-6">
+          <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-3">Quick navigation</div>
+          <div class="grid grid-cols-1 gap-3">
+            <a class="pill-link w-full justify-center" href="/index.html"><i class="fas fa-house"></i> Home</a>
+            <a class="pill-link w-full justify-center" href="/categories.html"><i class="fas fa-layer-group"></i> Categories</a>
+            <a class="pill-link w-full justify-center" href="/mode.html?category=marvel"><i class="fas fa-play"></i> Play Marvel</a>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>
