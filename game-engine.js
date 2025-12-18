@@ -1,19 +1,9 @@
 /* ============================================================
-   QUIZREALM • UNIVERSAL GAME ENGINE (HYBRID V5 - Ghost Edition)
-   - Core Logic: Level Up & XP System
-   - New: Anonymous Tracking (Ghost Profiles)
-   - New: Silent Data Collection (Legal/Tech stats)
+   QUIZREALM • UNIVERSAL GAME ENGINE (HYBRID V6 - GLOBAL FIX)
+   - Solves "No Firebase App" error
+   - Solves "Module Specifier" error
+   - Includes Ghost Tracking & XP System
    ============================================================ */
-
-// --- FIX: USE FULL URL IMPORTS FOR BROWSER ---
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// Initialize Firebase services
-// We assume firebase-config.js has already initialized the App, 
-// so we just grab the Auth and DB instances here.
-const auth = getAuth();
-const db = getFirestore();
 
 (function () {
     // 1. CONFIGURATION
@@ -21,17 +11,17 @@ const db = getFirestore();
     
     // Ranks (Every 10 levels)
     const RANK_TITLES = [
-        { lvl: 1,  title: "The Drifter" },        // 1-9
-        { lvl: 10, title: "Neon Runner" },        // 10-19
-        { lvl: 20, title: "Cyber Vanguard" },     // 20-29
-        { lvl: 30, title: "Data Hunter" },        // 30-39
-        { lvl: 40, title: "Void Walker" },        // 40-49
-        { lvl: 50, title: "System Lord" },        // 50-59
-        { lvl: 60, title: "Galaxy Sentinel" },    // 60-69
-        { lvl: 70, title: "Reality Bender" },     // 70-79
-        { lvl: 80, title: "Time Weaver" },        // 80-89
-        { lvl: 90, title: "Cosmic Entity" },      // 90-99
-        { lvl: 100, title: "The Singularity" }    // 100+
+        { lvl: 1,  title: "The Drifter" },
+        { lvl: 10, title: "Neon Runner" },
+        { lvl: 20, title: "Cyber Vanguard" },
+        { lvl: 30, title: "Data Hunter" },
+        { lvl: 40, title: "Void Walker" },
+        { lvl: 50, title: "System Lord" },
+        { lvl: 60, title: "Galaxy Sentinel" },
+        { lvl: 70, title: "Reality Bender" },
+        { lvl: 80, title: "Time Weaver" },
+        { lvl: 90, title: "Cosmic Entity" },
+        { lvl: 100, title: "The Singularity" }
     ];
 
     // 2. INTERNAL ENGINE STATE
@@ -50,91 +40,106 @@ const db = getFirestore();
             coins: 0
         },
 
-        // 3. INITIALIZATION
+        // 3. INITIALIZATION LOOP
         init() {
             this._loadLocal();
-            this._recalculateLevel(false); // Calc stats without animation on load
-            this._setupAuth(); // Start the Ghost/User tracking immediately
-            
+            this._recalculateLevel(false); 
+
+            // FIX: Don't import Firebase. Wait for the Config file to load it.
+            this._waitForFirebase();
+
             this.updateHeaderUI();
             this.updateProfileUI();
-            this._updateSimpleUI();
+            this._updateSimpleUI(); // Backward compatibility
 
             window.GameEngine = Engine;
-            console.log("✅ GameEngine Active. Tracking Mode: Hybrid");
+            console.log("✅ GameEngine Active. Waiting for Firebase...");
         },
 
-        // --- NEW: AUTH & GHOST TRACKING LOGIC ---
-        _setupAuth() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    // --- CASE A: USER IS LOGGED IN (OR JUST BECAME A GHOST) ---
-                    console.log("User detected:", user.uid);
-                    this.state.uid = user.uid;
-
-                    // 1. Sync Game Progress
-                    await this._syncWithCloud(user);
-
-                    // 2. Check/Create Ghost Profile (The Legal Data Step)
-                    const userRef = doc(db, "users", user.uid);
-                    const userSnap = await getDoc(userRef);
-
-                    if (!userSnap.exists()) {
-                        console.log("Creating new Ghost Profile...");
-                        await setDoc(userRef, {
-                            uid: user.uid,
-                            isAnonymous: user.isAnonymous,
-                            joinedAt: new Date(),
-                            nickname: user.isAnonymous ? "Ghost Guest" : "New Hero",
-                            // --- LEGAL / TECH DATA COLLECTION ---
-                            deviceModel: navigator.userAgent, 
-                            connectionType: navigator.connection ? navigator.connection.effectiveType : 'unknown',
-                            platform: navigator.platform,
-                            language: navigator.language,
-                            screenRes: `${window.screen.width}x${window.screen.height}`
-                        });
-                    }
-                } else {
-                    // --- CASE B: NO USER? MAKE THEM A GHOST IMMEDIATELY ---
-                    console.log("No user found. initiating Ghost Sequence...");
-                    signInAnonymously(auth).catch((e) => console.error("Ghost login failed:", e));
+        _waitForFirebase() {
+            // Check every 100ms if firebase-config.js has finished
+            const check = setInterval(() => {
+                if (window.auth && window.db) {
+                    clearInterval(check);
+                    console.log("✅ Firebase Detected. Attaching Auth Listener...");
+                    this._attachAuthListener();
                 }
-            });
+            }, 100);
         },
 
-        // --- NEW: SAVE GAME RESULTS ---
-        async saveGameResult(gameName, score, totalQuestions, extraStats = {}) {
-            if (!this.state.uid) {
-                console.warn("Save failed: No User ID yet");
-                return; 
-            }
-
+        _attachAuthListener() {
             try {
-                // Save to: users/{uid}/history
-                await addDoc(collection(db, "users", this.state.uid, "history"), {
+                // Use the auth instance from window (set by config file)
+                window.auth.onAuthStateChanged(async (firebaseUser) => {
+                    if (firebaseUser) {
+                        console.log("👤 User Connected:", firebaseUser.uid);
+                        this.state.uid = firebaseUser.uid;
+                        
+                        // 1. Sync Stats
+                        await this._syncWithCloud(firebaseUser);
+                        
+                        // 2. Ensure Ghost Profile Exists (Legal/Tracking Data)
+                        this._checkGhostProfile(firebaseUser);
+                    } else {
+                        // User logged out? Update UI only.
+                        this.updateHeaderUI();
+                        this.updateProfileUI();
+                    }
+                });
+            } catch (err) { console.error("Auth Listener Error:", err); }
+        },
+
+        async _checkGhostProfile(user) {
+            // Safety check
+            if (!window.doc || !window.getDoc || !window.setDoc) return;
+
+            const userRef = window.doc(window.db, "users", user.uid);
+            try {
+                const snap = await window.getDoc(userRef);
+                if (!snap.exists()) {
+                    console.log("👻 Creating Ghost Profile...");
+                    await window.setDoc(userRef, {
+                        uid: user.uid,
+                        isAnonymous: user.isAnonymous,
+                        joinedAt: new Date(),
+                        nickname: user.isAnonymous ? "Ghost Guest" : "Hero",
+                        deviceModel: navigator.userAgent, 
+                        platform: navigator.platform,
+                        screenRes: `${window.screen.width}x${window.screen.height}`
+                    });
+                }
+            } catch (e) { console.warn("Ghost profile check skipped:", e); }
+        },
+
+        // 4. DATA SAVING (The Helper Function)
+        async saveGameResult(gameName, score, totalQuestions, extraStats = {}) {
+            if (!this.state.uid) { console.warn("Save skipped: No User ID"); return; }
+
+            // DYNAMIC IMPORT: Load these only when needed to avoid "Module Specifier" crashes at startup
+            try {
+                const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                
+                await addDoc(collection(window.db, "users", this.state.uid, "history"), {
                     game: gameName,
                     score: score,
                     total: totalQuestions,
-                    xpEarned: this.state.xp, // Snapshot of XP at this moment
+                    xpEarned: this.state.xp,
                     timestamp: serverTimestamp(),
-                    
-                    // Specifics for personalization
                     avgReactionTime: extraStats.avgTime || 0,
                     ghostClicks: extraStats.ghostClicks || 0,
                     deviceModel: navigator.userAgent,
-                    connectionType: navigator.connection ? navigator.connection.effectiveType : 'unknown',
-                    timeOfDay: new Date().getHours()
+                    difficulty: extraStats.difficulty || 'Normal'
                 });
-                console.log(`Saved result for ${gameName}`);
+                console.log(`💾 Saved result for ${gameName}`);
                 
-                // Also give XP locally
+                // Give local XP reward
                 this.addXP(score * 10); 
             } catch (error) {
-                console.error("Error saving game data:", error);
+                console.error("Save Error:", error);
             }
         },
 
-        // 4. DATA PERSISTENCE
+        // 5. DATA PERSISTENCE
         _loadLocal() {
             const raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) return;
@@ -149,17 +154,18 @@ const db = getFirestore();
         },
 
         async _syncWithCloud(firebaseUser) {
+            if (!window.doc || !window.getDoc) return;
+
             const uid = firebaseUser.uid;
-            const ref = doc(db, "heroes", uid); // Keeping your 'heroes' collection for Game Stats
+            const ref = window.doc(window.db, "heroes", uid);
 
             let cloudData = null;
             try {
-                const snap = await getDoc(ref);
+                const snap = await window.getDoc(ref);
                 if (snap.exists()) cloudData = snap.data();
             } catch (e) {}
 
             if (cloudData) {
-                // Merge Cloud + Local
                 this.state = {
                     ...this.state,
                     ...cloudData,
@@ -170,17 +176,20 @@ const db = getFirestore();
             }
             this._recalculateLevel(false); 
             this._saveLocal();
-            // Write back to cloud to ensure latest sync
-            try { await setDoc(ref, this.state, { merge: true }); } catch (e) {}
             
+            // Write back to ensure cloud is current
+            if (window.setDoc) {
+                try { await window.setDoc(ref, this.state, { merge: true }); } catch (e) {}
+            }
+
             this.updateHeaderUI();
             this.updateProfileUI();
         },
 
         async _saveCloudSafe() {
-            if (!this.state.uid) return;
-            const ref = doc(db, "heroes", this.state.uid);
-            try { await setDoc(ref, this.state, { merge: true }); } catch (e) {}
+            if (!this.state.uid || !window.setDoc) return;
+            const ref = window.doc(window.db, "heroes", this.state.uid);
+            try { await window.setDoc(ref, this.state, { merge: true }); } catch (e) {}
         },
 
         // --------------------------------------------------------
@@ -222,46 +231,18 @@ const db = getFirestore();
             overlay.onclick = () => overlay.remove();
 
             overlay.innerHTML = `
-                <div class="relative w-full max-w-md p-8 text-center">
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accentCyan/20 rounded-full blur-[100px] animate-pulse"></div>
-                    <div class="relative z-10 mb-4">
-                        <div class="text-[10px] font-bold text-accentGold uppercase tracking-[0.5em] mb-2 animate-slide-down">Level Up!</div>
-                        <div class="text-9xl font-black text-white leading-none drop-shadow-[0_0_30px_rgba(6,182,212,0.8)] animate-scale-bounce">${level}</div>
+                <div class="relative w-full max-w-md p-8 text-center text-white">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-[100px] animate-pulse"></div>
+                    <div class="relative z-10">
+                        <div class="text-xs font-bold text-yellow-400 uppercase tracking-[0.5em] mb-2">Level Up!</div>
+                        <div class="text-9xl font-black leading-none mb-4">${level}</div>
+                        <div class="text-2xl font-bold text-cyan-400 uppercase tracking-widest">${rank}</div>
+                        <button class="mt-8 bg-white text-black font-bold py-3 px-8 rounded-full hover:scale-105 transition">CONTINUE</button>
                     </div>
-                    <div class="relative z-10 mb-8 animate-slide-up" style="animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards;">
-                        <div class="text-slate-400 text-sm font-mono mb-1">New Rank Achieved</div>
-                        <div class="text-3xl font-bold text-accentCyan font-arcade uppercase tracking-wider">${rank}</div>
-                    </div>
-                    <div class="relative z-10 mt-10 animate-slide-up" style="animation-delay: 0.6s; opacity: 0; animation-fill-mode: forwards;">
-                        <button class="bg-white text-black font-black py-3 px-8 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105 transition">CLAIM REWARDS</button>
-                    </div>
-                    <div class="confetti-container absolute inset-0 pointer-events-none"></div>
                 </div>
-                <style>
-                    @keyframes scaleBounce { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); } }
-                    @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-                    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-                    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-                    .animate-scale-bounce { animation: scaleBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-                    .animate-slide-down { animation: slideDown 0.5s ease-out forwards; }
-                    .animate-slide-up { animation: slideUp 0.5s ease-out forwards; }
-                    .animate-fade-in { animation: fadeIn 0.3s ease-out; }
-                </style>
+                <style>@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .animate-fade-in { animation: fadeIn 0.3s ease-out; }</style>
             `;
-            this._spawnConfetti(overlay);
             document.body.appendChild(overlay);
-        },
-
-        _spawnConfetti(container) {
-            const colors = ['#06b6d4', '#eab308', '#a855f7', '#ffffff'];
-            for(let i=0; i<30; i++) {
-                const el = document.createElement('div');
-                el.style.cssText = `position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; background: ${colors[Math.floor(Math.random()*colors.length)]}; transform: translate(-50%, -50%); border-radius: 50%; animation: explode 1s ease-out forwards; animation-delay: ${Math.random() * 0.2}s; --x: ${(Math.random() - 0.5) * 600}px; --y: ${(Math.random() - 0.5) * 600}px;`;
-                container.querySelector('.confetti-container').appendChild(el);
-            }
-            const style = document.createElement('style');
-            style.innerHTML = `@keyframes explode { to { transform: translate(var(--x), var(--y)); opacity: 0; } }`;
-            container.appendChild(style);
         },
 
         // --------------------------------------------------------
@@ -281,7 +262,7 @@ const db = getFirestore();
                 this.updateProfileUI();
                 this._updateSimpleUI();
                 this._notifyUserUpdate();
-                this.showToast(`+${add} XP`, `Total XP: ${this.state.xp.toLocaleString()}`, "text-blue-400");
+                this.showToast(`+${add} XP`, `Total XP: ${this.state.xp.toLocaleString()}`);
             } catch (e) { console.error("addXP error:", e); }
         },
 
@@ -296,7 +277,7 @@ const db = getFirestore();
                     this.updateHeaderUI();
                     this.updateProfileUI();
                     this._notifyUserUpdate();
-                    this.showToast("Achievement Unlocked", id, "text-purple-400");
+                    this.showToast("Achievement Unlocked", id);
                 }
             } catch (e) {}
         },
@@ -356,7 +337,8 @@ const db = getFirestore();
                 const map = {
                     "profileLevel": s.level, "profileRank": s.rank, "profileXP": `${(s.xp || 0).toLocaleString()} XP`,
                     "profileName": s.nickname || "QuizRealm Hero", "statScore": (s.xp || 0).toLocaleString(),
-                    "statStreak": s.streak || 0, "statBadges": s.badges?.length || 0
+                    "statStreak": s.streak || 0, "statBadges": s.badges?.length || 0,
+                    "resScore": s.xp // Updates result screens too
                 };
                 for(const [id, val] of Object.entries(map)){
                     const el = document.getElementById(id);
@@ -373,15 +355,14 @@ const db = getFirestore();
                 }
             } catch (e) {}
         },
- 
 
         _updateSimpleUI() { try { document.getElementById("user-xp").innerText = this.state.xp || 0; } catch (e) {} },
 
-        showToast(title, msg, colorClass = "text-blue-400") {
+        showToast(title, msg) {
             try {
                 const toast = document.createElement("div");
                 toast.className = `fixed bottom-4 right-4 bg-slate-900 border border-white/10 p-4 rounded-xl shadow-2xl flex items-center gap-4 z-[9999] animate-bounce`;
-                toast.innerHTML = `<div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center ${colorClass}"><i class="fas fa-star"></i></div><div><h4 class="font-bold text-white text-sm">${title}</h4><p class="text-xs text-slate-400">${msg}</p></div>`;
+                toast.innerHTML = `<div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-blue-400"><i class="fas fa-star"></i></div><div><h4 class="font-bold text-white text-sm">${title}</h4><p class="text-xs text-slate-400">${msg}</p></div>`;
                 document.body.appendChild(toast);
                 setTimeout(() => toast.remove(), 4000);
             } catch (e) {}
@@ -391,11 +372,7 @@ const db = getFirestore();
     };
 
     // ------------------------------------------------------------
-    // BACKWARD COMPATIBILITY
-    // ------------------------------------------------------------
-
-    // ------------------------------------------------------------
-    // BACKWARD COMPATIBILITY
+    // BACKWARD COMPATIBILITY & EXPORT
     // ------------------------------------------------------------
     Object.defineProperty(Engine, "xp", {
         get() { return Engine.state.xp || 0; },
