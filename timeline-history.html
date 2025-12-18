@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
-  <!-- End Google Tag Manager -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
 
   <script type="module" src="firebase-config.js"></script>
-  <script src="game-engine.js"></script>
+  <script type="module" src="game-engine.js"></script>
   <script src="components.js" defer></script>
-<link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
+
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>QuizRealm • History Timeline</title>
 
   <meta name="theme-color" content="#020617" />
   <meta name="description" content="Reconstruct the timeline. Drag and drop historical events into their correct chronological order." />
-
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;" />
-
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
-  <link rel="manifest" href="assets/site.webmanifest">
-  <link rel="shortcut icon" href="assets/favicon.ico">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -58,10 +58,7 @@
       --bgDarker:#050810;
       --glass: rgba(30, 41, 59, 0.70);
       --stroke: rgba(255,255,255,0.08);
-      --stroke2: rgba(255,255,255,0.05);
       --gold:#fbbf24;
-      --blue:#3b82f6;
-      --cyan:#06b6d4;
     }
 
     body{
@@ -84,284 +81,61 @@
       box-shadow: 0 18px 50px -40px rgba(0,0,0,0.8);
     }
 
-    /* App-like layout: reduce body scrolling; panels scroll internally */
-    .app-shell{
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px;
-    }
+    .app-shell{ width: 100%; max-width: 1200px; margin: 0 auto; padding: 16px; }
+    @media (min-width: 768px){ .app-shell{ padding: 28px; } }
 
-    @media (min-width: 768px){
-      .app-shell{ padding: 28px; }
-    }
+    .app-main{ display: grid; gap: 14px; grid-template-columns: 1fr; }
+    @media (min-width: 900px){ .app-main{ grid-template-columns: 1.5fr 0.9fr; gap: 18px; } }
 
-    /* Make the main area “app height” on mobile */
-    .app-main{
-      display: grid;
-      gap: 14px;
-      grid-template-columns: 1fr;
-    }
-
-    @media (min-width: 900px){
-      .app-main{
-        grid-template-columns: 1.5fr 0.9fr;
-        gap: 18px;
-      }
-    }
-
-    .panel-head{
-      background: rgba(0,0,0,0.35);
-      border-bottom: 1px solid var(--stroke);
-    }
-
-    .panel-foot{
-      background: rgba(0,0,0,0.35);
-      border-top: 1px solid var(--stroke);
-    }
+    .panel-head{ background: rgba(0,0,0,0.35); border-bottom: 1px solid var(--stroke); }
+    .panel-foot{ background: rgba(0,0,0,0.35); border-top: 1px solid var(--stroke); }
 
     /* Timeline spine */
-    .timeline-wrap{
-      position: relative;
-      padding: 18px 16px 8px;
-    }
-
+    .timeline-wrap{ position: relative; padding: 18px 16px 8px; }
     .timeline-wrap::before{
-      content:'';
-      position:absolute;
-      top: 22px;
-      bottom: 18px;
-      left: 32px;
-      width: 3px;
-      background: linear-gradient(180deg, rgba(59,130,246,0.95), rgba(59,130,246,0.10));
-      opacity: 0.9;
+      content:''; position:absolute; top: 22px; bottom: 18px; left: 32px; width: 3px;
+      background: linear-gradient(180deg, rgba(59,130,246,0.95), rgba(59,130,246,0.10)); opacity: 0.9;
     }
+    @media (min-width: 768px){ .timeline-wrap{ padding: 22px 22px 10px; } .timeline-wrap::before{ left: 40px; width: 4px; } }
 
-    @media (min-width: 768px){
-      .timeline-wrap{ padding: 22px 22px 10px; }
-      .timeline-wrap::before{ left: 40px; width: 4px; }
-    }
-
-    /* Year marker: professional badge */
+    /* Year badge */
     .year-badge{
-      width: 70px;
-      height: 70px;
-      border-radius: 18px;
-      background:
-        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.16), rgba(255,255,255,0.02) 55%),
-        rgba(10,15,30,0.9);
+      width: 70px; height: 70px; border-radius: 18px;
+      background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.16), rgba(255,255,255,0.02) 55%), rgba(10,15,30,0.9);
       border: 1px solid rgba(59,130,246,0.55);
       box-shadow: 0 0 0 1px rgba(59,130,246,0.15), 0 18px 38px -30px rgba(59,130,246,0.7);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction: column;
-      text-align:center;
-      z-index: 2;
+      display:flex; align-items:center; justify-content:center; flex-direction: column; text-align:center; z-index: 2;
     }
-
-    .year-badge .y{
-      font-family: 'Share Tech Mono', monospace;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      line-height: 1;
-      font-size: 18px;
-      color: #eaf2ff;
-      text-shadow: 0 0 10px rgba(59,130,246,0.25);
-    }
-
-    .year-badge .era{
-      margin-top: 6px;
-      font-size: 10px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: rgba(147,197,253,0.85);
-      font-weight: 900;
-    }
-
-    @media (min-width: 768px){
-      .year-badge{ width: 84px; height: 84px; border-radius: 22px; }
-      .year-badge .y{ font-size: 22px; }
-      .year-badge .era{ font-size: 10px; }
-    }
+    .year-badge .y{ font-family: 'Share Tech Mono', monospace; font-weight: 800; line-height: 1; font-size: 18px; color: #eaf2ff; }
+    .year-badge .era{ margin-top: 6px; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(147,197,253,0.85); font-weight: 900; }
+    @media (min-width: 768px){ .year-badge{ width: 84px; height: 84px; border-radius: 22px; } .year-badge .y{ font-size: 22px; } }
 
     /* Slot styling */
     .timeline-slot{
-      background: rgba(0,0,0,0.26);
-      border: 1px dashed rgba(255,255,255,0.18);
-      transition: transform .15s ease, border-color .15s ease, background .15s ease;
-      min-height: 78px;
+      background: rgba(0,0,0,0.26); border: 1px dashed rgba(255,255,255,0.18);
+      transition: transform .15s ease, border-color .15s ease, background .15s ease; min-height: 78px;
     }
-    .timeline-slot:hover{
-      border-color: rgba(251,191,36,0.55);
-      background: rgba(255,255,255,0.04);
-      transform: translateY(-1px);
-    }
-    .timeline-slot.drag-over{
-      background: rgba(59,130,246,0.16);
-      border-color: rgba(59,130,246,0.85);
-      border-style: solid;
-      transform: scale(1.01);
-    }
-    .timeline-slot.correct{
-      border-color: rgba(16,185,129,0.85);
-      border-style: solid;
-      background: rgba(16,185,129,0.08);
-    }
-    .timeline-slot.incorrect{
-      border-color: rgba(239,68,68,0.85);
-      border-style: solid;
-      background: rgba(239,68,68,0.08);
-    }
+    .timeline-slot:hover{ border-color: rgba(251,191,36,0.55); background: rgba(255,255,255,0.04); transform: translateY(-1px); }
+    .timeline-slot.correct{ border-color: rgba(16,185,129,0.85); border-style: solid; background: rgba(16,185,129,0.08); }
+    .timeline-slot.incorrect{ border-color: rgba(239,68,68,0.85); border-style: solid; background: rgba(239,68,68,0.08); }
 
-    .event-card{
-      transition: transform .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
-      touch-action: manipulation;
-      user-select: none;
-    }
-    .event-card:hover{ transform: translateY(-1px); }
     .event-card.selected{
       border-color: rgba(251,191,36,0.75) !important;
       box-shadow: 0 0 0 1px rgba(251,191,36,0.15), 0 14px 30px -22px rgba(251,191,36,0.8);
       background: linear-gradient(135deg, rgba(30,41,59,0.96), rgba(15,23,42,0.96));
     }
 
-    .pool-scroll::-webkit-scrollbar { width: 6px; }
-    .pool-scroll::-webkit-scrollbar-track { background: rgba(2,6,23,0.55); }
-    .pool-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.35); border-radius: 8px; }
-    .pool-scroll::-webkit-scrollbar-thumb:hover { background: rgba(251,191,36,0.55); }
-
-    /* Sticky “selected event” helper on mobile */
-    .selected-bar{
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      background: rgba(2,6,23,0.88);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    /* Tighten vertical rhythm on mobile (less scroll) */
-    @media (max-width: 899px){
-      .timeline-row{ margin-bottom: 14px !important; }
-      .timeline-wrap{ padding: 14px 12px 6px; }
-      .timeline-wrap::before{ left: 28px; }
-    }
-
-
-
-/* Reset for the banner area to ensure full width */
-  .history-banner-container {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Georgia', 'Times New Roman', serif; /* Serif font for history vibe */
-  }
-
-  .history-banner {
-    position: relative;
-    width: 100%;
-    min-height: 300px; /* Adjust height as needed */
-    background-image: url('https://images.unsplash.com/photo-1461360370896-922624d12aa1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); /* Old Book/Map Vibe */
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed; /* Parallax effect */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  /* Dark Overlay to make text readable */
-  .history-banner::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 100%);
-    z-index: 1;
-  }
-
-  .banner-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    color: #ffffff;
-    max-width: 800px;
-    padding: 20px;
-  }
-
-  .banner-content h2 {
-    font-size: 3rem;
-    margin: 0 0 10px 0;
-    color: #f1c40f; /* Gold text */
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-  }
-
-  .banner-content p {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 1.2rem;
-    line-height: 1.6;
-    margin-bottom: 30px;
-    color: #ecf0f1;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-  }
-
-  /* The Call to Action Button */
-  .history-cta-btn {
-    display: inline-block;
-    padding: 16px 40px;
-    background-color: #f1c40f; /* Gold Background */
-    color: #1a1a1a; /* Dark text */
-    font-family: 'Segoe UI', sans-serif;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
-    border: 2px solid #f1c40f;
-  }
-
-  .history-cta-btn:hover {
-    background-color: transparent;
-    color: #f1c40f;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(241, 196, 15, 0.6);
-  }
-
-  /* Mobile Responsiveness */
-  @media (max-width: 768px) {
-    .banner-content h2 {
-      font-size: 2rem;
-    }
-    .banner-content p {
-      font-size: 1rem;
-    }
-    .history-cta-btn {
-      width: 100%;
-      padding: 15px 0;
-    }
-  }
-
+    /* Result Modal Stats */
+    .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
   </style>
 </head>
 
 <body class="flex flex-col antialiased selection:bg-accentGold selection:text-black">
-  <!-- GTM noscript -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <quiz-header></quiz-header>
 
   <div class="app-shell">
-    <!-- HERO -->
     <section class="glass-panel rounded-2xl overflow-hidden border border-white/10">
       <div class="grid grid-cols-1 md:grid-cols-2">
         <div class="p-6 md:p-8">
@@ -372,32 +146,13 @@
             HISTORY <span class="text-accentGold">TIMELINE</span>
           </h1>
           <p class="text-slate-300/90 mt-3 text-sm md:text-base leading-relaxed max-w-xl">
-            Place events into the correct year. Drag & drop on desktop, or tap an event then tap the slot on mobile.
+            Place events into the correct year. Complete the timeline to earn XP.
           </p>
-
-          <div class="mt-5 flex flex-wrap gap-2">
-            <span class="px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-200 text-[11px] font-bold uppercase tracking-wider">Drag & Drop</span>
-            <span class="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-400/20 text-emerald-200 text-[11px] font-bold uppercase tracking-wider">Tap to Place</span>
-            <span class="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-400/20 text-amber-200 text-[11px] font-bold uppercase tracking-wider">BC Support</span>
-          </div>
-        </div>
-
-        <!-- Banner (16:9) -->
-        <div class="relative bg-black/40">
-          <img
-            src="assets/timeline.png"
-            alt="History Timeline banner"
-            class="w-full h-full object-cover aspect-video opacity-95"
-            onerror="this.style.display='none'; this.parentElement.classList.add('flex','items-center','justify-center'); this.parentElement.innerHTML='<div class=&quot;p-8 text-center text-slate-400&quot;><i class=&quot;fas fa-image text-3xl mb-3 opacity-50&quot;></i><div class=&quot;font-bold&quot;>Add your 16:9 banner</div><div class=&quot;text-xs opacity-70 mt-1&quot;>assets/banners/timeline-1.png</div></div>';"
-          />
-          <div class="absolute inset-0 bg-gradient-to-r from-[#050810] via-transparent to-transparent"></div>
         </div>
       </div>
     </section>
 
-    <!-- MAIN APP -->
     <main class="app-main mt-4">
-      <!-- TIMELINE PANEL -->
       <section class="glass-panel rounded-2xl overflow-hidden border border-white/10 flex flex-col">
         <div class="panel-head px-4 md:px-6 py-4 flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
@@ -412,7 +167,6 @@
           </div>
         </div>
 
-        <!-- Internal scroll area: reduces page scroll on mobile -->
         <div id="timelineScroll" class="flex-1 overflow-y-auto">
           <div class="timeline-wrap" id="timelineContainer"></div>
         </div>
@@ -428,22 +182,19 @@
         </div>
       </section>
 
-      <!-- EVENT POOL PANEL -->
       <aside class="glass-panel rounded-2xl overflow-hidden border border-white/10 flex flex-col min-h-[420px]">
         <div class="panel-head px-4 md:px-5 py-4">
           <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-3">
               <div class="w-9 h-9 rounded-xl bg-slate-500/15 border border-white/10 text-slate-200 flex items-center justify-center font-black">2</div>
               <div>
-                <div class="text-white font-extrabold tracking-wide">Events to Place</div>
-                <div class="text-[11px] text-slate-400 uppercase tracking-widest">Pick one, then place it</div>
+                <div class="text-white font-extrabold tracking-wide">Events</div>
+                <div class="text-[11px] text-slate-400 uppercase tracking-widest">Select Difficulty</div>
               </div>
             </div>
           </div>
 
-          <!-- Difficulty -->
           <div class="mt-4">
-            <div class="text-[11px] text-slate-400 font-black uppercase tracking-widest mb-2">Difficulty</div>
             <div class="flex bg-black/35 p-1.5 rounded-xl border border-white/10">
               <button onclick="setDifficulty('easy')" id="btnEasy" class="diff-btn flex-1 px-3 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition bg-accentGold text-black shadow-lg">Easy</button>
               <button onclick="setDifficulty('medium')" id="btnMedium" class="diff-btn flex-1 px-3 py-3 rounded-lg text-xs font-black uppercase tracking-widest text-slate-300 hover:text-white transition">Medium</button>
@@ -452,8 +203,7 @@
           </div>
         </div>
 
-        <!-- Sticky selected bar (helps mobile clarity) -->
-        <div id="selectedBar" class="selected-bar hidden px-4 py-3">
+        <div id="selectedBar" class="selected-bar hidden px-4 py-3 bg-slate-900 border-b border-white/10">
           <div class="flex items-center justify-between gap-2">
             <div class="text-[11px] uppercase tracking-widest font-black text-slate-300">
               Selected: <span id="selectedLabel" class="text-accentGold">—</span>
@@ -464,59 +214,45 @@
           </div>
         </div>
 
-        <!-- Internal scroll area -->
         <div class="flex-1 overflow-y-auto pool-scroll bg-black/20 p-4" id="eventPool"></div>
-
-        <div class="panel-foot px-4 py-4">
-          <div class="text-xs text-slate-300/80 leading-relaxed">
-            <span class="font-black text-white">Mobile tip:</span> tap an event (it highlights), then tap the correct year slot.
-          </div>
-        </div>
       </aside>
     </main>
-<div class="history-banner-container">
-  <div class="history-banner">
-    <div class="banner-content">
-      <h2>Travel Through Time</h2>
-      <p>From the fall of Rome to the moon landing. Do you have the knowledge to conquer the past? Prove your mastery of history now.</p>
-      <a href="mode.html?category=history" class="history-cta-btn">Start History Trivia</a>
-    </div>
-  </div>
-</div>
-    <!-- SUCCESS MODAL -->
+
     <div id="resultModal" class="fixed inset-0 bg-bgDarker/95 z-[100] hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
-      <div class="w-full max-w-lg text-center space-y-7 relative">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-green-500/15 blur-[110px] rounded-full -z-10"></div>
+      <div class="w-full max-w-md bg-[#0f1219] border border-white/10 p-8 rounded-3xl text-center relative overflow-hidden animate-pop-in">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-accentGold/20 rounded-full blur-[80px] -z-10"></div>
 
-        <div class="w-24 h-24 bg-green-500 rounded-2xl flex items-center justify-center mx-auto shadow-[0_0_50px_rgba(34,197,94,0.45)] border border-white/25">
-          <i class="fas fa-check text-5xl text-white"></i>
+        <i class="fas fa-check-circle text-5xl text-accentGold mb-4 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]"></i>
+        
+        <h2 class="text-3xl font-arcade text-white mb-1">TIMELINE RESTORED</h2>
+        <p class="text-slate-400 text-xs uppercase tracking-[0.2em] mb-6">Historical Sequence Verified</p>
+
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="stat-box">
+                <div class="text-[9px] text-slate-500 font-bold uppercase">Attempts</div>
+                <div class="text-xl text-white font-mono" id="resAttempts">1</div>
+            </div>
+            <div class="stat-box">
+                <div class="text-[9px] text-slate-500 font-bold uppercase">Time</div>
+                <div class="text-xl text-white font-mono" id="resTime">0s</div>
+            </div>
+            <div class="stat-box">
+                <div class="text-[9px] text-slate-500 font-bold uppercase">XP Earned</div>
+                <div class="text-xl text-accentGold font-mono" id="resXP">+0</div>
+            </div>
         </div>
 
-        <div>
-          <h2 class="text-3xl md:text-4xl font-arcade text-white">SEQUENCE CORRECT</h2>
-          <p class="text-green-300 font-mono text-xs tracking-[0.35em] uppercase mt-2">Timeline Integrity Restored</p>
-        </div>
-
-        <div class="bg-white/10 border border-white/10 backdrop-blur-md p-6 rounded-2xl max-w-md mx-auto">
-          <i class="fas fa-quote-left text-accentGold text-xl mb-2 block opacity-60"></i>
-          <p class="text-white text-base md:text-lg italic" id="rewardText">
-            "History is the version of past events that people have decided to agree upon."
-          </p>
-          <p class="text-right text-slate-400 text-sm mt-3">— Napoleon Bonaparte</p>
-        </div>
-
-        <button onclick="closeModalAndReset()" class="w-full md:w-auto mx-auto px-8 py-4 bg-white text-black font-black text-xs uppercase tracking-[0.35em] rounded-2xl hover:bg-slate-200 transition shadow-[0_0_22px_rgba(255,255,255,0.22)] hover:shadow-[0_0_32px_rgba(255,255,255,0.32)]">
-          Start Next Mission
+        <button onclick="closeModalAndReset()" class="w-full py-4 bg-white text-black font-black text-sm uppercase tracking-widest rounded-xl hover:bg-slate-200 transition shadow-lg">
+          Next Mission
         </button>
       </div>
     </div>
   </div>
 
-  <quiz-seo-content></quiz-seo-content>
   <quiz-footer></quiz-footer>
 
   <script>
-    // --- FALLBACK DATA LAYER (If HistoryTimeline.js fails) ---
+    // --- FALLBACK DATA ---
     const FALLBACK_DB = [
       { id: 'e1', year: 1945, label: 'End of World War II' },
       { id: 'e2', year: 1969, label: 'Apollo 11 Moon Landing' },
@@ -542,11 +278,26 @@
       selectedEventId: null
     };
 
+    // --- TRACKING VARIABLES ---
+    let startTime = 0;
+    let verifyAttempts = 0;
+    let ghostClickCount = 0;
+    let validClickCount = 0;
+
+    // --- CLICK TRACKER ---
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('button') || e.target.closest('.event-card') || e.target.closest('.timeline-slot')) {
+            validClickCount++;
+        } else {
+            ghostClickCount++;
+        }
+    });
+
     // --- YEAR FORMAT ---
     function formatYear(y){
       if (typeof y !== 'number') return { main: String(y), era: '' };
       if (y < 0) return { main: String(Math.abs(y)), era: 'BC' };
-      return { main: String(y), era: '' }; // Keep AD hidden (cleaner)
+      return { main: String(y), era: '' }; 
     }
 
     // --- INIT ---
@@ -554,23 +305,19 @@
 
     function initGame() {
       setDifficultyStyle(state.difficulty);
-
       const count = state.difficulty === 'easy' ? 6 : (state.difficulty === 'medium' ? 8 : 10);
 
+      // Reset Tracking
+      startTime = Date.now();
+      verifyAttempts = 0;
       state.placements = {};
       state.selectedEventId = null;
       state.events = [];
 
-      // Prefer external HistoryTimeline.js
+      // Load Data
       if (typeof HistoryTimeline !== 'undefined' && typeof HistoryTimeline.getRandomSet === 'function') {
-        try {
-          state.events = HistoryTimeline.getRandomSet(state.difficulty, count);
-        } catch (e) {
-          console.error("Error loading from HistoryTimeline.js", e);
-        }
+        try { state.events = HistoryTimeline.getRandomSet(state.difficulty, count); } catch (e) {}
       }
-
-      // Fallback if needed
       if (!state.events || state.events.length === 0) {
         const shuffled = [...FALLBACK_DB].sort(() => Math.random() - 0.5);
         state.events = shuffled.slice(0, count);
@@ -582,77 +329,49 @@
       updateSelectedBar();
     }
 
-    // --- RENDERING ---
+    // --- RENDERING LOGIC ---
     function renderTimeline() {
       const container = document.getElementById('timelineContainer');
       container.innerHTML = '';
-
       const sortedEvents = [...state.events].sort((a,b) => a.year - b.year);
 
       sortedEvents.forEach((ev, index) => {
         const placedId = state.placements[index];
         const placedEvent = placedId ? state.events.find(e => e.id === placedId) : null;
-
         const row = document.createElement('div');
         row.className = "timeline-row flex gap-4 md:gap-6 items-stretch mb-5 md:mb-7 relative z-10";
 
         const year = formatYear(ev.year);
         const badge = document.createElement('div');
         badge.className = 'year-badge shrink-0';
-        badge.innerHTML = `
-          <div class="y">${year.main}</div>
-          <div class="era">${year.era}</div>
-        `;
+        badge.innerHTML = `<div class="y">${year.main}</div><div class="era">${year.era}</div>`;
 
         const slot = document.createElement('div');
-        slot.className =
-          `timeline-slot flex-1 rounded-2xl p-4 md:p-5 cursor-pointer select-none relative overflow-hidden
-           ${placedEvent ? 'border-solid border-white/10 bg-slate-900/35' : ''}`;
-
+        slot.className = `timeline-slot flex-1 rounded-2xl p-4 md:p-5 cursor-pointer select-none relative overflow-hidden ${placedEvent ? 'border-solid border-white/10 bg-slate-900/35' : ''}`;
         slot.dataset.index = index;
-
         slot.onclick = () => handleSlotClick(index);
-        slot.ondragover = (e) => handleDragOver(e);
-        slot.ondragleave = (e) => handleDragLeave(e);
-        slot.ondrop = (e) => handleDrop(e, index);
-
+        
         if (placedEvent) {
           slot.innerHTML = `
             <div class="flex items-start gap-3 w-full">
               <div class="w-1.5 h-12 bg-accentGold rounded-full mt-1"></div>
               <div class="flex-1">
-                <div class="text-white font-extrabold tracking-wide text-sm md:text-base">${escapeHtml(placedEvent.label)}</div>
+                <div class="text-white font-extrabold tracking-wide text-sm md:text-base">${placedEvent.label}</div>
                 <div class="text-slate-400 text-xs mt-1 font-mono tracking-wider uppercase">Placed</div>
               </div>
-              <button
-                class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 hover:bg-red-500/15 hover:border-red-400/30 text-slate-200 hover:text-red-300 transition flex items-center justify-center"
-                onclick="event.stopPropagation(); removeEvent(${index})"
-                aria-label="Remove event"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-          `;
+              <button class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 hover:bg-red-500/15 hover:text-red-300 transition flex items-center justify-center" onclick="event.stopPropagation(); removeEvent(${index})"><i class="fas fa-times"></i></button>
+            </div>`;
         } else {
           const selected = state.selectedEventId ? state.events.find(e => e.id === state.selectedEventId) : null;
-
           slot.innerHTML = `
             <div class="flex items-center justify-between gap-3">
               <div class="text-slate-300/90">
-                <div class="text-xs font-black uppercase tracking-[0.25em] ${selected ? 'text-accentGold' : 'text-slate-400'}">
-                  ${selected ? 'Tap to place here' : 'Drop event here'}
-                </div>
-                <div class="mt-2 text-slate-400 text-sm">
-                  ${selected ? escapeHtml(selected.label) : '<span class="opacity-70">Choose an event from the list</span>'}
-                </div>
+                <div class="text-xs font-black uppercase tracking-[0.25em] ${selected ? 'text-accentGold' : 'text-slate-400'}">${selected ? 'Tap to place here' : 'Drop event here'}</div>
+                <div class="mt-2 text-slate-400 text-sm">${selected ? selected.label : '<span class="opacity-70">Choose an event from the list</span>'}</div>
               </div>
-              <div class="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                <i class="fas ${selected ? 'fa-bullseye text-accentGold' : 'fa-arrow-down text-slate-300'}"></i>
-              </div>
-            </div>
-          `;
+              <div class="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center"><i class="fas ${selected ? 'fa-bullseye text-accentGold' : 'fa-arrow-down text-slate-300'}"></i></div>
+            </div>`;
         }
-
         row.appendChild(badge);
         row.appendChild(slot);
         container.appendChild(row);
@@ -662,56 +381,56 @@
     function renderEventPool() {
       const pool = document.getElementById('eventPool');
       pool.innerHTML = '';
-
       const unplaced = state.events.filter(ev => !Object.values(state.placements).includes(ev.id));
 
       if (unplaced.length === 0) {
-        pool.innerHTML = `
-          <div class="flex flex-col items-center justify-center h-full text-center py-10 opacity-80">
-            <i class="fas fa-check-circle text-4xl text-green-400 mb-3"></i>
-            <div class="text-white font-black tracking-wide">All events placed</div>
-            <div class="text-slate-400 text-xs mt-1">Press “Verify Timeline” to check.</div>
-          </div>
-        `;
+        pool.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center py-10 opacity-80"><i class="fas fa-check-circle text-4xl text-green-400 mb-3"></i><div class="text-white font-black tracking-wide">All events placed</div></div>`;
         return;
       }
 
       unplaced.forEach(ev => {
         const card = document.createElement('div');
-        card.className =
-          `event-card rounded-2xl p-4 border border-white/10 bg-slate-900/35 hover:bg-slate-800/50
-           flex items-start gap-3 cursor-grab ${state.selectedEventId === ev.id ? 'selected' : ''}`;
-
-        card.draggable = true;
+        card.className = `event-card rounded-2xl p-4 border border-white/10 bg-slate-900/35 hover:bg-slate-800/50 flex items-start gap-3 cursor-pointer ${state.selectedEventId === ev.id ? 'selected' : ''}`;
         card.onclick = () => handleCardClick(ev.id);
-        card.ondragstart = (e) => handleDragStart(e, ev.id);
-        card.ondragend = (e) => e.currentTarget.classList.remove('opacity-60');
-
-        card.innerHTML = `
-          <div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-400/20 flex items-center justify-center shrink-0 mt-0.5">
-            <i class="fas fa-scroll text-blue-200"></i>
-          </div>
-          <div class="flex-1">
-            <div class="text-white font-extrabold text-sm md:text-base leading-snug">${escapeHtml(ev.label)}</div>
-            <div class="text-slate-400 text-xs mt-2 font-mono uppercase tracking-wider">
-              ${state.selectedEventId === ev.id ? '<span class="text-accentGold">Selected • tap a slot</span>' : 'Tap to select • drag to place'}
-            </div>
-          </div>
-          <div class="text-slate-500 flex items-center gap-2 pt-1">
-            <i class="fas fa-grip-vertical"></i>
-          </div>
-        `;
-
+        card.innerHTML = `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-400/20 flex items-center justify-center shrink-0 mt-0.5"><i class="fas fa-scroll text-blue-200"></i></div><div class="flex-1"><div class="text-white font-extrabold text-sm md:text-base leading-snug">${ev.label}</div><div class="text-slate-400 text-xs mt-2 font-mono uppercase tracking-wider">${state.selectedEventId === ev.id ? '<span class="text-accentGold">Selected • tap a slot</span>' : 'Tap to select'}</div></div>`;
         pool.appendChild(card);
       });
     }
 
-    // --- INTERACTION LOGIC ---
+    // --- INTERACTION ---
     function handleCardClick(eventId) {
       state.selectedEventId = (state.selectedEventId === eventId) ? null : eventId;
       updateSelectedBar();
       renderEventPool();
       renderTimeline();
+    }
+
+    function handleSlotClick(index) {
+      if (state.selectedEventId) placeEvent(state.selectedEventId, index);
+    }
+
+    function placeEvent(eventId, slotIndex) {
+      const existingSlot = Object.keys(state.placements).find(k => state.placements[k] === eventId);
+      if (existingSlot !== undefined) delete state.placements[existingSlot];
+      state.placements[slotIndex] = eventId;
+      state.selectedEventId = null;
+      updateSelectedBar();
+      renderTimeline();
+      renderEventPool();
+      updateStats();
+    }
+
+    function removeEvent(slotIndex) {
+      delete state.placements[slotIndex];
+      renderTimeline();
+      renderEventPool();
+      updateStats();
+    }
+
+    function updateStats() {
+      const total = state.events.length;
+      const placed = Object.keys(state.placements).length;
+      document.getElementById('scoreDisplay').innerText = `${placed}/${total} PLACED`;
     }
 
     function clearSelected(){
@@ -724,75 +443,10 @@
     function updateSelectedBar(){
       const bar = document.getElementById('selectedBar');
       const label = document.getElementById('selectedLabel');
-      if (!bar || !label) return;
-
-      if (!state.selectedEventId){
-        bar.classList.add('hidden');
-        label.textContent = '—';
-        return;
-      }
+      if (!state.selectedEventId){ bar.classList.add('hidden'); return; }
       const ev = state.events.find(e => e.id === state.selectedEventId);
       label.textContent = ev ? ev.label : '—';
       bar.classList.remove('hidden');
-    }
-
-    function handleSlotClick(index) {
-      if (state.selectedEventId) placeEvent(state.selectedEventId, index);
-    }
-
-    function handleDragStart(e, eventId) {
-      e.dataTransfer.setData('text/plain', eventId);
-      e.dataTransfer.effectAllowed = 'move';
-      e.currentTarget.classList.add('opacity-60');
-    }
-
-    function handleDragOver(e) {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      e.currentTarget.classList.add('drag-over');
-    }
-
-    function handleDragLeave(e) {
-      e.currentTarget.classList.remove('drag-over');
-    }
-
-    function handleDrop(e, index) {
-      e.preventDefault();
-      e.currentTarget.classList.remove('drag-over');
-      const eventId = e.dataTransfer.getData('text/plain');
-      if (eventId) placeEvent(eventId, index);
-    }
-
-    // --- CORE ACTIONS ---
-    function placeEvent(eventId, slotIndex) {
-      const existingSlot = Object.keys(state.placements).find(k => state.placements[k] === eventId);
-      if (existingSlot !== undefined) delete state.placements[existingSlot];
-
-      state.placements[slotIndex] = eventId;
-      state.selectedEventId = null;
-
-      updateSelectedBar();
-      renderTimeline();
-      renderEventPool();
-      updateStats();
-
-      // Helpful: keep the slot visible on mobile after placing
-      const slotEl = document.querySelector(`.timeline-slot[data-index="${slotIndex}"]`);
-      if (slotEl && window.innerWidth < 900) slotEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    function removeEvent(slotIndex) {
-      delete state.placements[slotIndex];
-      renderTimeline();
-      renderEventPool();
-      updateStats();
-      updateSelectedBar();
-    }
-
-    function updateStats() {
-      const total = state.events.length;
-      const placed = Object.keys(state.placements).length;
-      document.getElementById('scoreDisplay').innerText = `${placed}/${total} PLACED`;
     }
 
     function setDifficulty(level) {
@@ -801,37 +455,23 @@
     }
 
     function setDifficultyStyle(level) {
-      document.querySelectorAll('.diff-btn').forEach(btn => {
-        btn.className = "diff-btn flex-1 px-3 py-3 rounded-lg text-xs font-black uppercase tracking-widest text-slate-300 hover:text-white transition";
-      });
-      const activeId = `btn${level.charAt(0).toUpperCase() + level.slice(1)}`;
-      const activeBtn = document.getElementById(activeId);
-      if (activeBtn) {
-        activeBtn.className = "diff-btn flex-1 px-3 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition bg-accentGold text-black shadow-lg";
-      }
+      document.querySelectorAll('.diff-btn').forEach(btn => btn.className = "diff-btn flex-1 px-3 py-3 rounded-lg text-xs font-black uppercase tracking-widest text-slate-300 hover:text-white transition");
+      const activeBtn = document.getElementById(`btn${level.charAt(0).toUpperCase() + level.slice(1)}`);
+      if (activeBtn) activeBtn.className = "diff-btn flex-1 px-3 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition bg-accentGold text-black shadow-lg";
     }
 
     function resetRound() {
-      state.placements = {};
-      state.selectedEventId = null;
-      updateSelectedBar();
-      renderTimeline();
-      renderEventPool();
-      updateStats();
-      setTimeout(() => {
-        location.reload(); 
-    }, 20);
+      if(confirm("Reset the timeline?")) initGame();
     }
 
+    // --- GAME LOGIC & SAVING ---
     function checkAnswers() {
       const total = state.events.length;
       const placed = Object.keys(state.placements).length;
 
-      if (placed < total) {
-        alert("Place all events before verifying.");
-        return;
-      }
+      if (placed < total) { alert("Place all events before verifying."); return; }
 
+      verifyAttempts++;
       let correctCount = 0;
       const correctOrder = [...state.events].sort((a,b) => a.year - b.year);
 
@@ -839,9 +479,7 @@
         const placedId = state.placements[index];
         const slotEl = document.querySelector(`.timeline-slot[data-index="${index}"]`);
         if (!slotEl) return;
-
         slotEl.classList.remove('correct', 'incorrect');
-
         if (placedId === correctEvent.id) {
           slotEl.classList.add('correct');
           correctCount++;
@@ -850,7 +488,36 @@
         }
       });
 
+      // WIN CONDITION
       if (correctCount === total) {
+        const timeTaken = (Date.now() - startTime) / 1000;
+        
+        // Calculate Score & XP
+        // Base XP: Easy(300), Medium(500), Hard(800)
+        let baseXP = state.difficulty === 'easy' ? 300 : (state.difficulty === 'medium' ? 500 : 800);
+        
+        // Penalty: Lose 50 XP per extra attempt (min 50)
+        let finalXP = Math.max(50, baseXP - ((verifyAttempts - 1) * 50));
+
+        // Display Stats in Modal
+        document.getElementById('resAttempts').textContent = verifyAttempts;
+        document.getElementById('resTime').textContent = Math.round(timeTaken) + "s";
+        document.getElementById('resXP').textContent = "+" + finalXP;
+
+        // SAVE TO DB
+        if (window.GameEngine) {
+            window.GameEngine.addXP(finalXP);
+            window.GameEngine.saveGameResult("History Timeline", finalXP, 1, {
+                difficulty: state.difficulty,
+                attempts: verifyAttempts,
+                timeSpent: timeTaken,
+                ghostClicks: ghostClickCount
+            });
+            
+            // Achievement Check
+            if(verifyAttempts === 1) window.GameEngine.unlockAchievement("time_traveler");
+        }
+
         setTimeout(() => document.getElementById('resultModal').classList.remove('hidden'), 450);
       }
     }
@@ -858,18 +525,6 @@
     function closeModalAndReset() {
       document.getElementById('resultModal').classList.add('hidden');
       initGame();
-      setTimeout(() => {
-        location.reload(); 
-    }, 20);
-    }
-
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
     }
   </script>
 </body>
