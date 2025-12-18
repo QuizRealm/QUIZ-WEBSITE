@@ -4,10 +4,14 @@
    - New: Anonymous Tracking (Ghost Profiles)
    - New: Silent Data Collection (Legal/Tech stats)
    ============================================================ */
-import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-// Initialize Firebase services immediately from imports
+// --- FIX: USE FULL URL IMPORTS FOR BROWSER ---
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Initialize Firebase services
+// We assume firebase-config.js has already initialized the App, 
+// so we just grab the Auth and DB instances here.
 const auth = getAuth();
 const db = getFirestore();
 
@@ -100,7 +104,10 @@ const db = getFirestore();
 
         // --- NEW: SAVE GAME RESULTS ---
         async saveGameResult(gameName, score, totalQuestions, extraStats = {}) {
-            if (!this.state.uid) return; // Wait for auth
+            if (!this.state.uid) {
+                console.warn("Save failed: No User ID yet");
+                return; 
+            }
 
             try {
                 // Save to: users/{uid}/history
