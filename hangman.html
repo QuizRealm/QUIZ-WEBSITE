@@ -80,6 +80,10 @@
         .hang line, .hang circle{ filter: drop-shadow(0 0 6px rgba(255,255,255,.07)); }
         .draw{ stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw 1s ease forwards; }
         @keyframes draw{ to{ stroke-dashoffset:0 } }
+
+        /* ================== PREMIUM KEYBOARD (NEW) ================== */
+        .kb-btn{ -webkit-tap-highlight-color: transparent; }
+        .kb-btn:focus-visible{ outline:none; }
     </style>
 </head>
 <body class="flex flex-col antialiased selection:bg-white selection:text-black">
@@ -209,8 +213,9 @@
                 <div id="instruction-text" class="mt-6 text-slate-500 text-xs font-mono">Select a letter to guess…</div>
             </div>
 
+            <!-- PREMIUM KEYBOARD CARD (UPDATED MARKUP) -->
             <div class="glass rounded-2xl p-4 md:p-6">
-                <div id="keyboard-container" class="grid grid-cols-10 gap-1.5 md:gap-2 max-w-3xl mx-auto"></div>
+                <div id="keyboard-container" class="mx-auto max-w-3xl w-full"></div>
             </div>
         </div>
     </section>
@@ -381,10 +386,124 @@
             buildCategoryUI();
         }
 
+        // ===================== PREMIUM KEYBOARD ENGINE (NEW) =====================
+        function initPremiumHangmanKeyboard({
+            containerId = "keyboard-container",
+            onPress,
+            isLocked = () => false,
+            isUsed = () => false
+        } = {}) {
+            const container = document.getElementById(containerId);
+            if (!container) return null;
+
+            const rows = [
+                ["Q","W","E","R","T","Y","U","I","O","P"],
+                ["A","S","D","F","G","H","J","K","L"],
+                ["Z","X","C","V","B","N","M"]
+            ];
+
+            container.innerHTML = "";
+            container.className = "mx-auto max-w-3xl w-full";
+
+            const wrap = document.createElement("div");
+            wrap.className = "flex flex-col gap-2 md:gap-3";
+            container.appendChild(wrap);
+
+            function makeKey(letter) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.dataset.key = letter;
+                btn.setAttribute("aria-label", `Letter ${letter}`);
+
+                btn.className =
+                    "kb-btn relative select-none rounded-xl md:rounded-2xl " +
+                    "border border-white/10 bg-gradient-to-b from-white/10 to-white/5 " +
+                    "text-white/90 font-semibold tracking-wide " +
+                    "shadow-[0_10px_24px_rgba(0,0,0,0.35)] " +
+                    "transition will-change-transform " +
+                    "hover:from-white/14 hover:to-white/7 hover:border-white/15 " +
+                    "active:scale-[0.98] active:translate-y-[1px] " +
+                    "focus-visible:ring-2 focus-visible:ring-white/25 " +
+                    "h-11 md:h-12 min-w-[2.4rem] md:min-w-[2.8rem] px-2 md:px-3 text-sm md:text-base";
+
+                btn.textContent = letter;
+
+                btn.addEventListener("click", () => {
+                    if (typeof onPress !== "function") return;
+                    if (isLocked()) return;
+                    if (isUsed(letter)) return;
+                    onPress(letter);
+                    refreshKeyStates();
+                });
+
+                return btn;
+            }
+
+            function makeRow(letters, variant = "center") {
+                const row = document.createElement("div");
+                row.className =
+                    "flex w-full gap-1.5 md:gap-2 " +
+                    (variant === "full" ? "justify-between" : "justify-center");
+
+                letters.forEach(l => row.appendChild(makeKey(l)));
+                return row;
+            }
+
+            wrap.appendChild(makeRow(rows[0], "full"));
+            wrap.appendChild(makeRow(rows[1], "center"));
+            wrap.appendChild(makeRow(rows[2], "center"));
+
+            function refreshKeyStates() {
+                const keys = container.querySelectorAll("[data-key]");
+                keys.forEach(btn => {
+                    const k = btn.dataset.key;
+                    const used = isUsed(k);
+                    const locked = isLocked();
+
+                    btn.disabled = used || locked;
+                    btn.setAttribute("aria-disabled", String(btn.disabled));
+
+                    // Used / Locked: subtle premium dim
+                    if (btn.disabled) {
+                        btn.classList.add("opacity-40", "cursor-not-allowed", "shadow-none", "from-white/6", "to-white/3");
+                        btn.classList.remove("hover:from-white/14", "hover:to-white/7", "hover:border-white/15");
+                    } else {
+                        btn.classList.remove("opacity-40", "cursor-not-allowed", "shadow-none", "from-white/6", "to-white/3");
+                        btn.classList.add("hover:from-white/14", "hover:to-white/7", "hover:border-white/15");
+                    }
+                });
+            }
+
+            // Physical keyboard support
+            window.addEventListener("keydown", (e) => {
+                if (isLocked()) return;
+
+                const key = (e.key || "").toUpperCase();
+                if (!/^[A-Z]$/.test(key)) return;
+
+                if (typeof onPress === "function" && !isUsed(key)) {
+                    onPress(key);
+                    refreshKeyStates();
+
+                    // Light tap feedback on the virtual key
+                    const btn = container.querySelector(`[data-key="${key}"]`);
+                    if (btn) {
+                        btn.classList.add("ring-2", "ring-white/20");
+                        setTimeout(() => btn.classList.remove("ring-2", "ring-white/20"), 120);
+                    }
+                }
+            }, { passive: true });
+
+            refreshKeyStates();
+            return { refresh: refreshKeyStates };
+        }
+
         // =============================== GAME LOGIC ===============================
         const Game = {
             state: { currentWordObj:null, guessed:new Set(), mistakes:0, maxMistakes:6, isGameOver:false, streak:0, xp:0, level:1, unlocked:[] },
             el: { word: null, keys:null, lives:null, bar:null, hint:null, modal:null, parts:[], about:null, instruction:null, hintBtn:null, hintContainer:null, hintContent:null, catBadge:null },
+            keyboard: null, // NEW: premium keyboard instance
+
             init(){
                 this.el.word = document.getElementById('word-container');
                 this.el.keys = document.getElementById('keyboard-container');
@@ -406,6 +525,14 @@
                     this.el.hintContainer.classList.remove('hidden');
                     this.el.hintBtn.classList.add('opacity-50', 'cursor-not-allowed');
                     this.el.hintBtn.disabled = true;
+                });
+
+                // NEW: Initialize premium keyboard (mouse + physical keyboard)
+                this.keyboard = initPremiumHangmanKeyboard({
+                    containerId: "keyboard-container",
+                    onPress: (letter) => this.handleGuess(letter),
+                    isUsed: (letter) => this.state.guessed.has(letter),
+                    isLocked: () => this.state.isGameOver
                 });
 
                 this.loadProfile();
@@ -477,7 +604,9 @@
                 this.el.hintBtn.disabled = false;
 
                 if(this.el.about) this.el.about.textContent = `Guess names, places, and objects from the "${getPrettyCategoryName(catKey)}" category—or mix them all.`;
-                this.renderBoard(); this.renderKeyboard();
+
+                this.renderBoard();
+                this.renderKeyboard(); // now just refreshes premium keyboard states
             },
             renderBoard(){
                 const w = this.state.currentWordObj.word; this.el.word.innerHTML='';
@@ -490,29 +619,17 @@
                 });
             },
             renderKeyboard(){
-                this.el.keys.innerHTML='';
-                const rows=["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"];
-                rows.forEach(row=>{
-                    const rowDiv=document.createElement('div'); rowDiv.className='col-span-10 flex justify-center gap-1.5 md:gap-2';
-                    row.split('').forEach(ch=>{
-                        const used=this.state.guessed.has(ch);
-                        const btn=document.createElement('button');
-                        btn.textContent=ch; btn.disabled=used || this.state.isGameOver; btn.className='key w-8 h-10 md:w-10 md:h-12 rounded border font-mono font-bold text-sm md:text-base';
-                        if(used){
-                            if(this.state.currentWordObj.word.includes(ch)){ btn.style.cssText='background:color-mix(in oklab, var(--accent) 90%, white 10%); color:black; border-color:transparent; box-shadow:0 0 14px color-mix(in oklab, var(--accent) 50%, transparent)'; }
-                            else{ btn.style.cssText='background:#0b1020; color:#64748b; border-color:#0f172a; opacity:.6'; }
-                        } else { btn.style.cssText='background:rgba(255,255,255,.06); color:#cbd5e1; border-color:rgba(255,255,255,.08)'; }
-                        btn.addEventListener('click', ()=>this.handleGuess(ch));
-                        rowDiv.appendChild(btn);
-                    }); this.el.keys.appendChild(rowDiv);
-                })
+                // NEW: Premium keyboard already rendered; we just sync states.
+                if(this.keyboard && typeof this.keyboard.refresh === 'function') this.keyboard.refresh();
             },
             handleGuess(ch){
                 if(this.state.isGameOver || this.state.guessed.has(ch)) return;
                 this.state.guessed.add(ch);
                 const hit = this.state.currentWordObj.word.includes(ch);
                 if(hit){ this.state.xp += 5; this.saveProfile(); } else { this.addMistake(); }
-                this.renderBoard(); this.renderKeyboard(); this.checkState();
+                this.renderBoard();
+                this.renderKeyboard();
+                this.checkState();
             },
             addMistake(){
                 const idx=this.state.mistakes; const part=this.el.parts[idx]; if(part){ part.classList.remove('hidden'); part.style.animation='none'; part.offsetHeight; part.style.animation=null; }
@@ -538,22 +655,35 @@
                 if(this.state.xp >= this.state.level*100){ this.state.level++; this.toast('Level Up!', `Reached Rank ${this.state.level}`); }
                 if(this.state.streak===3) this.toast('On Fire', '3 Win Streak');
                 this.saveProfile(); this.showModal(true, earned);
+                this.renderKeyboard();
             },
             handleLoss(){ 
                 this.state.isGameOver=true; this.state.streak=0; this.saveProfile(); 
                 document.getElementById('rope').classList.add('cut'); document.getElementById('figure').classList.add('fall');
                 Particles.burst(130, 50);
-                setTimeout(()=>{ this.showModal(false, 0); }, 550);
+                setTimeout(()=>{ this.showModal(false, 0); this.renderKeyboard(); }, 550);
             },
             toast(title,desc){
                 const t=document.getElementById('achievement-toast');
                 document.getElementById('ach-name').innerText=title; document.getElementById('ach-desc').innerText=desc;
                 t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'), 3500);
+                // Example usage inside your End Game function
+saveGameResult(
+    "Superhero Quiz", // Game Name
+    8,                // Score
+    10,               // Total
+    {                 // The extra tracking data
+        avgTime: 1200,    // (Example: 1.2 seconds)
+        ghostClicks: 2    // (Example: clicked background twice)
+    }
+);
             }
         };
 
         // =============================== BOOT ===============================
-        document.addEventListener('keydown', (e)=>{ const ch=e.key?.toUpperCase(); if(/^[A-Z]$/.test(ch)) Game.handleGuess(ch); });
+        // NOTE: Removed the old global keydown listener to prevent double-input.
+        // Physical keyboard is handled inside initPremiumHangmanKeyboard.
+
         document.addEventListener('DOMContentLoaded', async ()=>{
             const instruction=document.getElementById('instruction-text'); if(instruction) instruction.textContent='> Loading words…';
             await loadWordBank(); if(instruction) instruction.textContent='Select a letter to guess…';

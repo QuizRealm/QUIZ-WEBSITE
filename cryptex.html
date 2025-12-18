@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l]=w[l]||[];w[l].push({'gtm.start':
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
-  <!-- End Google Tag Manager -->
-<link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
+  <script type="module" src="firebase-config.js"></script>
+  <script src="game-engine.js"></script> 
+  <script src="components.js" defer></script>
+
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
   <title>CryptEx • Word Decryption Puzzle | QuizRealm</title>
-  <meta name="description" content="Play CryptEx: a fast word decryption puzzle. Guess letters, lock correct positions, and solve the hidden word in limited attempts. Mobile-friendly and quick to learn." />
+  <meta name="description" content="Play CryptEx: a fast word decryption puzzle. Guess letters, lock correct positions, and solve the hidden word." />
   <meta name="theme-color" content="#020202" />
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&family=Bungee&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-  <script src="components.js" defer></script>
 
   <script>
     tailwind.config = {
@@ -28,12 +28,22 @@
         extend: {
           fontFamily: {
             display: ['Rajdhani', 'sans-serif'],
-            mono: ['Share Tech Mono', 'monospace']
+            mono: ['Share Tech Mono', 'monospace'],
+            arcade: ['Bungee', 'cursive']
           },
           colors: {
             ctxGreen: '#00ff41',
             ctxOrange: '#ff9c00',
             ctxRed: '#ff2a2a'
+          },
+          animation: {
+            'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+          },
+          keyframes: {
+             popIn: {
+                '0%': { opacity: '0', transform: 'scale(0.5)' },
+                '100%': { opacity: '1', transform: 'scale(1)' }
+            }
           }
         }
       }
@@ -226,11 +236,18 @@
       box-shadow: 0 0 24px rgba(0,255,65,0.12);
       transform: translateY(-1px);
     }
+    
+    /* Utility for Results Modal */
+    .result-stat-box {
+        background: rgba(0,0,0,0.4);
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
   </style>
 </head>
 
 <body class="flex flex-col antialiased">
-  <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
@@ -238,7 +255,6 @@
   <quiz-header></quiz-header>
 
   <main class="flex-grow w-full max-w-[980px] mx-auto px-4 py-6 md:py-10">
-    <!-- HERO -->
     <section class="panel p-5 md:p-8 mb-5 md:mb-8">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -277,7 +293,7 @@
         <div class="flex items-center gap-2">
           <button id="undoBtn"
                   class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold uppercase tracking-wider text-xs transition">
-            <i class="fas fa-rotate-left mr-2"></i> Undo
+            <i class="fas fa-backspace mr-2"></i> Backspace
           </button>
           <button id="resetBtn"
                   class="px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold uppercase tracking-wider text-xs transition">
@@ -287,7 +303,6 @@
       </div>
     </section>
 
-    <!-- GAME CARD -->
     <section class="panel p-5 md:p-8">
       <div id="game-board" class="w-full flex flex-col items-center"></div>
 
@@ -299,7 +314,6 @@
       </div>
     </section>
 
-    <!-- SEO / RESOURCEFUL CONTENT -->
     <section class="mt-8 panel p-6 md:p-8">
       <div class="text-[10px] uppercase tracking-[0.35em] text-slate-400 font-bold mb-2">How to get better</div>
       <h2 class="font-display font-black uppercase tracking-wide text-white text-2xl md:text-3xl mb-3">
@@ -313,9 +327,6 @@
         <p>
           When a letter turns <strong class="text-ctxGreen">green</strong>, treat it as locked and build around it.
           If a letter turns <strong class="text-ctxOrange">orange</strong>, keep it but move it—use it to test positions methodically.
-        </p>
-        <p class="text-slate-400">
-          CryptEx is a quick logic puzzle designed for mobile play—ideal for short sessions, daily streaks, and improving pattern recognition.
         </p>
       </div>
 
@@ -338,19 +349,37 @@
 
   <quiz-footer></quiz-footer>
 
-  <!-- RESULT MODAL -->
   <div id="result-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-    <div class="panel border border-white/10 p-8 rounded-2xl max-w-sm w-full text-center">
+    <div class="panel border border-white/10 p-8 rounded-2xl max-w-sm w-full text-center relative overflow-hidden animate-pop-in">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-ctxGreen/10 rounded-full blur-[60px] -z-10"></div>
+
       <h2 id="modal-title" class="font-display font-black text-4xl md:text-5xl text-white mb-2 uppercase">ACCESS GRANTED</h2>
+      
       <div class="text-slate-400 font-mono text-sm mb-6">
         WORD: <span id="modal-word" class="text-ctxGreen font-bold text-xl tracking-widest">-----</span>
       </div>
 
-      <p id="modal-msg" class="text-white mb-8">Complete.</p>
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="result-stat-box">
+            <div class="text-[10px] uppercase font-bold text-slate-500">Score</div>
+            <div id="resScore" class="text-2xl font-mono text-ctxGreen font-bold">0</div>
+        </div>
+        <div class="result-stat-box">
+             <div class="text-[10px] uppercase font-bold text-slate-500">XP Earned</div>
+            <div id="resXP" class="text-2xl font-mono text-ctxGreen font-bold">+0</div>
+        </div>
+      </div>
 
-      <button onclick="location.reload()" class="neon-btn">
-        <i class="fas fa-rotate mr-2"></i> Play Again
-      </button>
+      <p id="modal-msg" class="text-white mb-8 text-sm">Sequence decrypted successfully.</p>
+
+      <div class="space-y-3">
+        <button onclick="location.reload()" class="neon-btn">
+            <i class="fas fa-rotate mr-2"></i> Play Again
+        </button>
+        <button onclick="location.href='index.html'" class="w-full py-3 bg-white/5 hover:bg-white/10 text-slate-300 font-mono text-xs rounded-xl border border-white/10 transition uppercase tracking-widest">
+            Exit to Hub
+        </button>
+      </div>
     </div>
   </div>
 
@@ -379,6 +408,11 @@
     let lockedLetters = Array(WORD_LENGTH).fill(null);
     let isGameOver = false;
     let isProcessing = false;
+    
+    // --- NEW: TRACKING VARIABLES ---
+    let startTime = 0;
+    let ghostClickCount = 0;
+    let validClickCount = 0;
 
     const els = {
       board: document.getElementById('game-board'),
@@ -389,18 +423,31 @@
       modal: document.getElementById('result-modal'),
       modalTitle: document.getElementById('modal-title'),
       modalWord: document.getElementById('modal-word'),
-      modalMsg: document.getElementById('modal-msg')
+      modalMsg: document.getElementById('modal-msg'),
+      resScore: document.getElementById('resScore'),
+      resXP: document.getElementById('resXP')
     };
+
+    // --- NEW: GHOST CLICK TRACKER ---
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('button') || e.target.closest('.key') || e.target.closest('a')) {
+            validClickCount++;
+        } else {
+            ghostClickCount++;
+        }
+    });
 
     function initGame() {
       secretWord = WORD_BANK[Math.floor(Math.random() * WORD_BANK.length)];
-      // console.log("Target:", secretWord);
+      // console.log("Target:", secretWord); // Debug
 
       currentRow = 0;
       currentGuess = Array(WORD_LENGTH).fill(null);
       lockedLetters = Array(WORD_LENGTH).fill(null);
       isGameOver = false;
       isProcessing = false;
+      startTime = Date.now(); // Start timer
+      ghostClickCount = 0;
 
       buildBoard();
       buildKeyboard();
@@ -499,7 +546,6 @@
     }
 
     function maybeAutoSubmit() {
-      // full when all are either locked or guessed
       for (let i = 0; i < WORD_LENGTH; i++) {
         if (lockedLetters[i] === null && currentGuess[i] === null) return;
       }
@@ -603,7 +649,6 @@
       const el = document.querySelector(`.key[data-key="${char}"]`);
       if (!el) return;
 
-      // do not downgrade correct
       if (el.classList.contains('used-correct')) return;
       if (state === 'used-wrong' && el.classList.contains('used-partial')) return;
 
@@ -611,14 +656,24 @@
       el.classList.add(state);
     }
 
+    // --- NEW: END GAME LOGIC & SAVING ---
     function showResult(win) {
       isGameOver = true;
       isProcessing = false;
+      
+      const timeTaken = (Date.now() - startTime) / 1000;
+      let score = 0;
+      let xp = 0;
 
       els.modal.classList.remove('hidden');
       els.modalWord.textContent = secretWord;
 
       if (win) {
+        // Scoring: More points for fewer rows used
+        const rowsUsed = currentRow + 1;
+        score = (MAX_ROWS - rowsUsed + 1) * 100; // 600 max, 100 min
+        xp = score / 2; // XP is half of score
+
         els.modalTitle.textContent = "DECRYPTED";
         els.modalTitle.className = "font-display font-black text-4xl md:text-5xl text-ctxGreen mb-2 uppercase";
         els.modalMsg.textContent = "Access granted. Pattern confirmed.";
@@ -626,6 +681,31 @@
         els.modalTitle.textContent = "LOCKED OUT";
         els.modalTitle.className = "font-display font-black text-4xl md:text-5xl text-ctxRed mb-2 uppercase";
         els.modalMsg.textContent = "No attempts left. Try a new word.";
+        score = 0;
+        xp = 10; // Consolation XP
+      }
+
+      // Update UI
+      els.resScore.textContent = score;
+      els.resXP.textContent = `+${xp}`;
+      
+      // SAVE TO ENGINE
+      if (window.GameEngine) {
+        window.GameEngine.addXP(xp);
+        window.GameEngine.saveGameResult(
+            "Cryptex (Wordle)",
+            score,
+            1, // 1 game played
+            {
+                won: win,
+                attempts: currentRow + 1,
+                timeSpent: timeTaken,
+                ghostClicks: ghostClickCount
+            }
+        );
+        
+        // Unlock Achievement check
+        if(win && currentRow === 0) window.GameEngine.unlockAchievement("hacker_genius"); // Win in 1
       }
     }
 

@@ -1,14 +1,21 @@
 /* ============================================================
-   QUIZREALM • UNIVERSAL GAME ENGINE (HYBRID V4)
-   - Core Logic: Preserved from your stable version
-   - New Logic: Added Level-Up Animations & Doubling XP Curve
+   QUIZREALM • UNIVERSAL GAME ENGINE (HYBRID V5 - Ghost Edition)
+   - Core Logic: Level Up & XP System
+   - New: Anonymous Tracking (Ghost Profiles)
+   - New: Silent Data Collection (Legal/Tech stats)
    ============================================================ */
+import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+// Initialize Firebase services immediately from imports
+const auth = getAuth();
+const db = getFirestore();
 
 (function () {
     // 1. CONFIGURATION
     const STORAGE_KEY = "QR_PROFILE";
     
-    // NEW: Creative Ranks (Every 10 levels)
+    // Ranks (Every 10 levels)
     const RANK_TITLES = [
         { lvl: 1,  title: "The Drifter" },        // 1-9
         { lvl: 10, title: "Neon Runner" },        // 10-19
@@ -39,38 +46,85 @@
             coins: 0
         },
 
-        // 3. INITIALIZATION LOOP
+        // 3. INITIALIZATION
         init() {
             this._loadLocal();
-            // Don't animate on first load, just calc numbers
-            this._recalculateLevel(false); 
-
-            const checkFirebase = setInterval(() => {
-                if (window.auth && window.db && window.doc) {
-                    clearInterval(checkFirebase);
-                    this._attachAuthListener();
-                }
-            }, 150);
-
+            this._recalculateLevel(false); // Calc stats without animation on load
+            this._setupAuth(); // Start the Ghost/User tracking immediately
+            
             this.updateHeaderUI();
             this.updateProfileUI();
-            this._updateSimpleUI(); // Backward compatibility
+            this._updateSimpleUI();
 
             window.GameEngine = Engine;
-            console.log("✅ GameEngine Ready (Level Up Edition). XP:", Engine.state.xp);
+            console.log("✅ GameEngine Active. Tracking Mode: Hybrid");
         },
 
-        _attachAuthListener() {
-            try {
-                window.auth.onAuthStateChanged(async (firebaseUser) => {
-                    if (firebaseUser && !firebaseUser.isAnonymous) {
-                        await Engine._syncWithCloud(firebaseUser);
-                    } else {
-                        Engine.updateHeaderUI();
-                        Engine.updateProfileUI();
+        // --- NEW: AUTH & GHOST TRACKING LOGIC ---
+        _setupAuth() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // --- CASE A: USER IS LOGGED IN (OR JUST BECAME A GHOST) ---
+                    console.log("User detected:", user.uid);
+                    this.state.uid = user.uid;
+
+                    // 1. Sync Game Progress
+                    await this._syncWithCloud(user);
+
+                    // 2. Check/Create Ghost Profile (The Legal Data Step)
+                    const userRef = doc(db, "users", user.uid);
+                    const userSnap = await getDoc(userRef);
+
+                    if (!userSnap.exists()) {
+                        console.log("Creating new Ghost Profile...");
+                        await setDoc(userRef, {
+                            uid: user.uid,
+                            isAnonymous: user.isAnonymous,
+                            joinedAt: new Date(),
+                            nickname: user.isAnonymous ? "Ghost Guest" : "New Hero",
+                            // --- LEGAL / TECH DATA COLLECTION ---
+                            deviceModel: navigator.userAgent, 
+                            connectionType: navigator.connection ? navigator.connection.effectiveType : 'unknown',
+                            platform: navigator.platform,
+                            language: navigator.language,
+                            screenRes: `${window.screen.width}x${window.screen.height}`
+                        });
                     }
+                } else {
+                    // --- CASE B: NO USER? MAKE THEM A GHOST IMMEDIATELY ---
+                    console.log("No user found. initiating Ghost Sequence...");
+                    signInAnonymously(auth).catch((e) => console.error("Ghost login failed:", e));
+                }
+            });
+        },
+
+        // --- NEW: SAVE GAME RESULTS ---
+        async saveGameResult(gameName, score, totalQuestions, extraStats = {}) {
+            if (!this.state.uid) return; // Wait for auth
+
+            try {
+                // Save to: users/{uid}/history
+                await addDoc(collection(db, "users", this.state.uid, "history"), {
+                    game: gameName,
+                    score: score,
+                    total: totalQuestions,
+                    xpEarned: this.state.xp, // Snapshot of XP at this moment
+                    timestamp: serverTimestamp(),
+                    
+                    // Specifics for personalization
+                    avgReactionTime: extraStats.avgTime || 0,
+                    ghostClicks: extraStats.ghostClicks || 0,
+                    deviceModel: navigator.userAgent,
+                    connectionType: navigator.connection ? navigator.connection.effectiveType : 'unknown',
+                    timeOfDay: new Date().getHours()
                 });
-            } catch (err) {}
+                console.log(`Saved result for ${gameName}`);
+                
+                // Also give XP locally
+                this.addXP(score * 10); 
+            } catch (error) {
+                console.error("Error saving game data:", error);
+            }
         },
 
         // 4. DATA PERSISTENCE
@@ -87,25 +141,18 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
         },
 
-        _getHeroDocRef(uid) {
-            if (!window.db || !window.doc || !uid) return null;
-            return window.doc(window.db, "heroes", uid);
-        },
-
         async _syncWithCloud(firebaseUser) {
-            // ... (Keeping your existing sync logic exactly as is is fine, simplified here for brevity but assuming it works)
             const uid = firebaseUser.uid;
-            this.state.uid = uid;
-            const ref = this._getHeroDocRef(uid);
-            if (!ref) return;
+            const ref = doc(db, "heroes", uid); // Keeping your 'heroes' collection for Game Stats
 
             let cloudData = null;
             try {
-                const snap = await window.getDoc(ref);
+                const snap = await getDoc(ref);
                 if (snap.exists()) cloudData = snap.data();
             } catch (e) {}
 
             if (cloudData) {
+                // Merge Cloud + Local
                 this.state = {
                     ...this.state,
                     ...cloudData,
@@ -116,27 +163,23 @@
             }
             this._recalculateLevel(false); 
             this._saveLocal();
-            try { await window.setDoc(ref, this.state, { merge: true }); } catch (e) {}
+            // Write back to cloud to ensure latest sync
+            try { await setDoc(ref, this.state, { merge: true }); } catch (e) {}
+            
             this.updateHeaderUI();
             this.updateProfileUI();
         },
 
         async _saveCloudSafe() {
             if (!this.state.uid) return;
-            const ref = this._getHeroDocRef(this.state.uid);
-            if (!ref) return;
-            try { await window.setDoc(ref, this.state, { merge: true }); } catch (e) {}
+            const ref = doc(db, "heroes", this.state.uid);
+            try { await setDoc(ref, this.state, { merge: true }); } catch (e) {}
         },
 
         // --------------------------------------------------------
-        // NEW LEVELING LOGIC (The Upgrade)
+        // LEVELING LOGIC
         // --------------------------------------------------------
         _getLevelFromXP(xp) {
-            // Quadratic Curve: Level = sqrt(XP / 100)
-            // 100 XP = Lvl 1
-            // 400 XP = Lvl 2 (Double effort)
-            // 900 XP = Lvl 3
-            // 1,000,000 XP = Lvl 100
             let level = Math.floor(Math.sqrt(xp / 100));
             if (level < 1) level = 1;
             return level;
@@ -152,23 +195,19 @@
 
         _recalculateLevel(animate = true) {
             const oldLevel = this.state.level;
-            
-            // Calculate new stats based on current XP
             const newLevel = this._getLevelFromXP(this.state.xp);
             const newRank = this._getRankTitle(newLevel);
 
-            // Update State
             this.state.level = newLevel;
             this.state.rank = newRank;
 
-            // Trigger Animation ONLY if we actually leveled up AND animation is allowed
             if (animate && newLevel > oldLevel) {
                 this._triggerLevelUpAnimation(newLevel, newRank);
             }
         },
 
         // --------------------------------------------------------
-        // ANIMATION SYSTEM (The Visual Upgrade)
+        // ANIMATION SYSTEM
         // --------------------------------------------------------
         _triggerLevelUpAnimation(level, rank) {
             const overlay = document.createElement('div');
@@ -178,25 +217,16 @@
             overlay.innerHTML = `
                 <div class="relative w-full max-w-md p-8 text-center">
                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accentCyan/20 rounded-full blur-[100px] animate-pulse"></div>
-                    
                     <div class="relative z-10 mb-4">
                         <div class="text-[10px] font-bold text-accentGold uppercase tracking-[0.5em] mb-2 animate-slide-down">Level Up!</div>
-                        <div class="text-9xl font-black text-white leading-none drop-shadow-[0_0_30px_rgba(6,182,212,0.8)] animate-scale-bounce">
-                            ${level}
-                        </div>
+                        <div class="text-9xl font-black text-white leading-none drop-shadow-[0_0_30px_rgba(6,182,212,0.8)] animate-scale-bounce">${level}</div>
                     </div>
-
                     <div class="relative z-10 mb-8 animate-slide-up" style="animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards;">
                         <div class="text-slate-400 text-sm font-mono mb-1">New Rank Achieved</div>
-                        <div class="text-3xl font-bold text-accentCyan font-arcade uppercase tracking-wider">
-                            ${rank}
-                        </div>
+                        <div class="text-3xl font-bold text-accentCyan font-arcade uppercase tracking-wider">${rank}</div>
                     </div>
-
                     <div class="relative z-10 mt-10 animate-slide-up" style="animation-delay: 0.6s; opacity: 0; animation-fill-mode: forwards;">
-                        <button class="bg-white text-black font-black py-3 px-8 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105 transition">
-                            CLAIM REWARDS
-                        </button>
+                        <button class="bg-white text-black font-black py-3 px-8 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105 transition">CLAIM REWARDS</button>
                     </div>
                     <div class="confetti-container absolute inset-0 pointer-events-none"></div>
                 </div>
@@ -211,7 +241,6 @@
                     .animate-fade-in { animation: fadeIn 0.3s ease-out; }
                 </style>
             `;
-
             this._spawnConfetti(overlay);
             document.body.appendChild(overlay);
         },
@@ -238,10 +267,7 @@
 
                 this.state.xp += add;
                 this.state.coins = Math.floor(this.state.xp / 10);
-
-                // KEY CHANGE: Pass 'true' to animate if level changes
                 this._recalculateLevel(true);
-                
                 this._saveLocal();
                 this._saveCloudSafe();
                 this.updateHeaderUI();
@@ -269,7 +295,6 @@
         },
 
         completeDailyChallenge() {
-            // (Same as before)
             try {
                 const todayStr = new Date().toDateString();
                 if (this.state.lastDailyDate === todayStr) return { success: false, msg: "ALREADY_COMPLETED" };
@@ -296,38 +321,29 @@
         // --------------------------------------------------------
         // UI UPDATES
         // --------------------------------------------------------
-
-
-
         _notifyUserUpdate() {
-  if (this._notifyScheduled) return;
-  this._notifyScheduled = true;
-
-  queueMicrotask(() => {
-    this._notifyScheduled = false;
-    window.dispatchEvent(new CustomEvent("userUpdate", { detail: this.getUserSnapshot() }));
-  });
-},
+            if (this._notifyScheduled) return;
+            this._notifyScheduled = true;
+            queueMicrotask(() => {
+                this._notifyScheduled = false;
+                window.dispatchEvent(new CustomEvent("userUpdate", { detail: this.getUserSnapshot() }));
+            });
+        },
 
         updateHeaderUI() {
-  try {
-    const lvlEl = document.getElementById("headerLevel");
-    if (lvlEl) lvlEl.textContent = this.state.level || 1;
-
-    const xpEl = document.getElementById("headerXP");
-    if (xpEl) xpEl.textContent = this.state.xp || 0;
-
-    const coinEl = document.getElementById("headerCoins");
-    if (coinEl) coinEl.textContent = (this.state.coins || 0).toLocaleString();
-
-    const avatarEl = document.getElementById("headerAvatar");
-    if (avatarEl) avatarEl.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${this.state.avatarSeed}`;
-  } catch (e) {}
-},
-
+            try {
+                const lvlEl = document.getElementById("headerLevel");
+                if (lvlEl) lvlEl.textContent = this.state.level || 1;
+                const xpEl = document.getElementById("headerXP");
+                if (xpEl) xpEl.textContent = this.state.xp || 0;
+                const coinEl = document.getElementById("headerCoins");
+                if (coinEl) coinEl.textContent = (this.state.coins || 0).toLocaleString();
+                const avatarEl = document.getElementById("headerAvatar");
+                if (avatarEl) avatarEl.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${this.state.avatarSeed}`;
+            } catch (e) {}
+        },
 
         updateProfileUI() {
-            // (Same as before, simplified for brevity)
             try {
                 const s = this.state;
                 const map = {
@@ -341,7 +357,6 @@
                 }
                 const xpBar = document.getElementById("xpBarFill");
                 if (xpBar) {
-                    // Visual bar based on new quadratic curve
                     const currentLvlXP = 100 * (s.level * s.level);
                     const nextLvlXP = 100 * ((s.level + 1) * (s.level + 1));
                     const range = nextLvlXP - currentLvlXP;

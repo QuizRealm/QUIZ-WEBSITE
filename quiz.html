@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 
-<!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -11,16 +10,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script type="module" src="firebase-config.js"></script>
  <script src="game-engine.js"></script> <script src="components.js" defer></script> 
 <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
-<!-- End Google Tag Manager -->
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuizRealm • Quiz Session</title>
         <link rel="manifest" href="assets/site.webmanifest">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
     <meta name="theme-color" content="#0A0F1E">
-
-
 
     <meta name="description" content="Play a fast, focused trivia session and track your score and streak.">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
@@ -91,7 +87,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         .grid-bg { 
             background-size: 60px 60px; 
             background-image: linear-gradient(to right, rgba(59, 130, 246, 0.03) 1px, transparent 1px), 
-                             linear-gradient(to bottom, rgba(59, 130, 246, 0.03) 1px, transparent 1px); 
+                                     linear-gradient(to bottom, rgba(59, 130, 246, 0.03) 1px, transparent 1px); 
             mask-image: linear-gradient(to bottom, black 20%, transparent 90%); 
         }
 
@@ -135,11 +131,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </style>
 </head>
 <body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
-<!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-    <div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
+<div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
 
     <header class="sticky top-0 z-50 glass-panel border-b border-white/5 backdrop-blur-xl">
         <div class="max-w-[1400px] mx-auto px-4 h-14 flex items-center justify-between">
@@ -362,7 +356,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         let fastCorrectCount = 0;
         let wrongCount = 0;
         let questionResults = [];
-        let startTime = Date.now(); // Track total time
+        let startTime = Date.now(); // Track total session time
+        
+        // --- NEW TRACKING VARIABLES ---
+        let questionStartTime = 0;
+        let totalReactionTime = 0;
+        let ghostClickCount = 0;
+        let validClickCount = 0;
+
+        // --- NEW: GHOST CLICK TRACKER ---
+        document.addEventListener('click', (e) => {
+            // If they click something that is NOT a button or link, count it as a ghost click
+            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.option-btn') || e.target.closest('.power-btn')) {
+                validClickCount++;
+            } else {
+                ghostClickCount++;
+            }
+        });
 
         // --- INIT ---
         function init() {
@@ -403,7 +413,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 document.getElementById('factBody2').textContent = `Fact database offline.`;
                 return;
             }
-            // (Same fact logic as before - abbreviated for clarity)
+            
             let factPool = quizFacts[activeCategory] || [];
             if(factPool.length === 0) Object.keys(quizFacts).forEach(k => factPool = factPool.concat(quizFacts[k]));
             if (factPool.length > 0) {
@@ -429,6 +439,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             timer = TIME_LIMIT;
             updateTimerUI();
             startTimer();
+            
+            // --- NEW: START REACTION TIMER FOR THIS QUESTION ---
+            questionStartTime = Date.now();
 
             if (index >= questions.length) {
                 endGame();
@@ -461,6 +474,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         function handleAnswer(selectedIndex, btn) {
+            // --- NEW: CALCULATE REACTION TIME ---
+            const timeTaken = Date.now() - questionStartTime;
+            totalReactionTime += timeTaken;
+
             clearInterval(timerInterval);
             const q = questions[index];
             const isCorrect = selectedIndex === q.shuffledCorrectIndex;
@@ -560,11 +577,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
         }
 
-        // --- ENDGAME LOGIC (THE FIX) ---
+        // --- ENDGAME LOGIC (UPDATED WITH SAVE) ---
         function endGame() {
             const totalQuestions = questions.length || 1;
             const finalPercent = (score / totalQuestions) * 100;
             const totalTime = (Date.now() - startTime) / 1000;
+            
+            // Calculate Average Speed
+            const questionsAnswered = index; // How many they actually did
+            const avgTime = questionsAnswered > 0 ? Math.round(totalReactionTime / questionsAnswered) : 0;
 
             // 1. CALCULATE REWARDS
             let xpEarned = score * 50; // 50 XP per right answer
@@ -578,6 +599,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 
                 // Unlock Achievements
                 checkAchievements(finalPercent, activeCategory, totalTime);
+                
+                // --- NEW: SAVE FULL GAME RESULT TO DB ---
+                window.GameEngine.saveGameResult(
+                    "Standard Quiz (" + activeCategory + ")", 
+                    score, 
+                    totalQuestions, 
+                    {
+                        avgTime: avgTime,
+                        ghostClicks: ghostClickCount,
+                        difficulty: currentDifficulty
+                    }
+                );
             }
 
             // 3. SHOW UI
