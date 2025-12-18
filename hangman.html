@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chronos Lexicon • Hangman v2</title>
     <script type="module" src="firebase-config.js"></script>
-     <script src="game-engine.js"></script> <script src="components.js" defer></script> 
+     <script type="module" src="game-engine.js"></script> <script src="components.js" defer></script> 
 
     <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
@@ -84,6 +84,126 @@
         /* ================== PREMIUM KEYBOARD (NEW) ================== */
         .kb-btn{ -webkit-tap-highlight-color: transparent; }
         .kb-btn:focus-visible{ outline:none; }
+
+        /* ================== PREMIUM KEYBOARD (REPLACE YOUR CURRENT LOOK) ================== */
+.kbd-row{
+  display:flex;
+  width:100%;
+  align-items:center;
+  justify-content:space-between;
+  gap: .45rem;
+}
+@media (min-width: 768px){
+  .kbd-row{ gap:.55rem; }
+}
+
+/* Key sizing that stays “premium” across devices */
+.kbd-key{
+  width: clamp(1.75rem, 6.2vw, 3.15rem);
+  height: clamp(2.35rem, 7.2vw, 3.35rem);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 0.95rem;
+  position:relative;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+
+  /* Keycap look */
+  background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+  border: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.92);
+
+  /* Depth */
+  box-shadow:
+    0 18px 28px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -18px 22px rgba(0,0,0,.28);
+
+  transition: transform .10s ease, box-shadow .10s ease, border-color .12s ease, filter .12s ease, opacity .12s ease;
+}
+
+.kbd-key::before{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:12%;
+  top:8px;
+  height:8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
+  opacity:.75;
+  pointer-events:none;
+}
+
+.kbd-key::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: inherit;
+  background: radial-gradient(90% 120% at 50% 0%, rgba(255,255,255,.18), transparent 58%);
+  opacity:.45;
+  pointer-events:none;
+}
+
+.kbd-key:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,.18);
+  filter: brightness(1.03);
+}
+
+.kbd-key:active{
+  transform: translateY(1px) scale(.99);
+  box-shadow:
+    0 12px 18px rgba(0,0,0,.48),
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -14px 18px rgba(0,0,0,.32);
+}
+
+.kbd-key:focus-visible{
+  outline:none;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.18),
+    0 18px 28px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -18px 22px rgba(0,0,0,.28);
+}
+
+/* Used states */
+.kbd-key[disabled]{
+  cursor:not-allowed;
+  transform:none !important;
+  filter:none;
+  opacity:.68;
+}
+
+/* Correct letter: premium “gold key” (uses your --accent) */
+.kbd-key.is-correct{
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--accent) 92%, white 8%),
+    color-mix(in oklab, var(--accent) 55%, #000 45%)
+  );
+  border-color: color-mix(in oklab, var(--accent) 55%, rgba(255,255,255,.22));
+  color:#050810;
+  box-shadow:
+    0 18px 30px rgba(0,0,0,.44),
+    0 0 18px color-mix(in oklab, var(--accent) 40%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.35),
+    inset 0 -18px 22px rgba(0,0,0,.22);
+}
+
+/* Wrong letter: clean dim slate (not “red ugly”) */
+.kbd-key.is-wrong{
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border-color: rgba(148,163,184,.18);
+  color: rgba(148,163,184,.92);
+  box-shadow:
+    0 14px 20px rgba(0,0,0,.38),
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -18px 22px rgba(0,0,0,.30);
+}
+
     </style>
 </head>
 <body class="flex flex-col antialiased selection:bg-white selection:text-black">
@@ -618,9 +738,50 @@
                     slot.textContent = ch; this.el.word.appendChild(slot);
                 });
             },
-            renderKeyboard(){
-                // NEW: Premium keyboard already rendered; we just sync states.
-                if(this.keyboard && typeof this.keyboard.refresh === 'function') this.keyboard.refresh();
+           renderKeyboard(){
+    this.el.keys.innerHTML = '';
+
+    const rows = ["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"];
+
+    // Wrapper (keeps same max width via your container)
+    const wrap = document.createElement('div');
+    wrap.className = 'flex flex-col gap-2 md:gap-3';
+    this.el.keys.appendChild(wrap);
+
+    rows.forEach((rowStr, idx) => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'kbd-row';
+
+        // Premium “real keyboard” row offsets (subtle)
+        if(idx === 1) rowDiv.style.padding = '0 clamp(0.4rem, 2.2vw, 1.15rem)';
+        if(idx === 2) rowDiv.style.padding = '0 clamp(0.9rem, 4.0vw, 2.0rem)';
+
+        rowStr.split('').forEach(ch => {
+            const used = this.state.guessed.has(ch);
+            const hit = used && this.state.currentWordObj.word.includes(ch);
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = ch;
+            btn.className = 'kbd-key font-mono font-bold tracking-wide';
+            btn.setAttribute('aria-label', `Letter ${ch}`);
+
+            // Disabled when used or game over
+            btn.disabled = used || this.state.isGameOver;
+
+            // State styling: correct / wrong
+            if(used){
+                if(hit) btn.classList.add('is-correct');
+                else btn.classList.add('is-wrong');
+            }
+
+            btn.addEventListener('click', () => this.handleGuess(ch));
+            rowDiv.appendChild(btn);
+        });
+
+        wrap.appendChild(rowDiv);
+    });
+
             },
             handleGuess(ch){
                 if(this.state.isGameOver || this.state.guessed.has(ch)) return;
