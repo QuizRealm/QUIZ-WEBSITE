@@ -1,29 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuizRealm • Daily Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Daily Challenge Hub • Streaks, Rewards & Brain Training | QuizRealm</title>
+    <meta name="description" content="Your daily dose of knowledge. Complete the Daily Trivia, solve the Weekly Brain Buster, and keep your streak alive. Earn XP and unlock badges every day.">
+    <meta name="keywords" content="daily trivia, quiz streak, brain training, weekly puzzle, logic games, knowledge challenge">
     <meta name="theme-color" content="#020617">
-<link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <meta property="og:title" content="I'm keeping my streak alive on QuizRealm!">
+    <meta property="og:description" content="Can you solve today's challenge? Join me and prove your mastery.">
+    <meta property="og:image" content="assets/daily-share-card.png">
+
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+    </script>
     <script type="module" src="firebase-config.js"></script>
-    <script src="game-engine.js"></script> 
+    <script type="module" src="game-engine.js"></script>
     <script src="components.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['Share Tech Mono', 'monospace'] },
-                    colors: { bgDark: '#020617', accentCyan: '#06b6d4', accentGold: '#eab308' },
-                    animation: { 'float': 'float 6s ease-in-out infinite', 'shimmer': 'shimmer 2s infinite' },
-                    keyframes: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'], arcade: ['Bungee', 'cursive'], mono: ['Share Tech Mono', 'monospace'] },
+                    colors: { bgDark: '#020617', accentGold: '#fbbf24', accentRed: '#ef4444', accentPurple: '#a855f7', glass: 'rgba(30, 41, 59, 0.70)' },
+                    animation: { 'float': 'float 6s ease-in-out infinite', 'pulse-glow': 'pulseGlow 3s infinite' },
+                    keyframes: { 
                         float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
-                        shimmer: { '100%': { transform: 'translateX(100%)' } }
+                        pulseGlow: { '0%, 100%': { boxShadow: '0 0 20px rgba(251, 191, 36, 0.2)' }, '50%': { boxShadow: '0 0 40px rgba(251, 191, 36, 0.5)' } }
                     }
                 }
             }
@@ -31,275 +54,429 @@
     </script>
 
     <style>
-        body { background-color: #020617; color: #e2e8f0; min-height: 100vh; overflow-x: hidden; }
-        /* Clean, subtle background */
-        .bg-gradient-mesh {
-            background-color: #020617;
-            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-        }
-        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        body { background-color: #020617; background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #020617 80%); min-height: 100vh; color: white; overflow-x: hidden; }
+        .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5); }
+        .gold-border { border: 1px solid rgba(251, 191, 36, 0.3); }
+        .purple-border { border: 1px solid rgba(168, 85, 247, 0.3); }
+        .btn-option { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-option:hover { transform: translateX(5px); border-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+        .streak-fire { filter: drop-shadow(0 0 15px rgba(249, 115, 22, 0.6)); animation: float 4s ease-in-out infinite; }
     </style>
 </head>
-<body class="flex flex-col antialiased bg-gradient-mesh">
-    
+
+<body class="flex flex-col antialiased">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
     <quiz-header></quiz-header>
 
-    <div class="sticky top-0 z-50 bg-[#020617]/80 backdrop-blur-md border-b border-white/5 py-3">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span class="text-xs font-bold tracking-widest text-slate-400">DAILY HUB LIVE</span>
-            </div>
-            
-            <div class="flex items-center gap-6 text-sm font-bold">
-                <div class="flex items-center gap-2">
-                    <span class="text-blue-400 text-xs">LVL</span>
-                    <span id="navLevel" class="text-white">...</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-purple-400 text-xs">XP</span>
-                    <span id="navXP" class="text-white">...</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-coins text-amber-400 text-xs"></i>
-                    <span id="navTokens" class="text-white">...</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <main class="flex-grow w-full max-w-6xl mx-auto px-4 py-8 space-y-12">
 
-    <main class="flex-grow w-full max-w-7xl mx-auto p-4 md:p-8 space-y-8">
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <div class="lg:col-span-8 flex flex-col h-full">
-                <div class="relative w-full h-[500px] rounded-[2rem] overflow-hidden group cursor-pointer shadow-2xl transition-all duration-500 hover:shadow-cyan-500/10" onclick="playDaily()">
-                    <div id="missionBg" class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] ease-out group-hover:scale-105" 
-                         style="background-image: url('https://images.unsplash.com/photo-1535905557558-afc4877a26fc?auto=format&fit=crop&q=80');">
-                    </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/40 to-transparent"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#020617]/90 via-transparent to-transparent"></div>
-                    <div class="absolute inset-0 p-10 md:p-12 flex flex-col justify-end items-start z-10">
-                        <div class="absolute top-10 left-10">
-                            <span class="bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg animate-pulse">Live Event</span>
-                        </div>
-                        <div class="space-y-4 max-w-2xl transform transition-all duration-500 group-hover:-translate-y-2">
-                            <h2 class="text-cyan-400 text-sm font-bold tracking-[0.2em] uppercase mb-2 flex items-center gap-3"><span class="w-8 h-[2px] bg-cyan-400"></span>Today's Feature</h2>
-                            <h1 class="text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tight drop-shadow-2xl" id="missionTitle">SUPERMAN LEGACY</h1>
-                            <p class="text-slate-300 text-lg font-light leading-relaxed border-l-2 border-white/20 pl-4 mt-4" id="missionDesc">The Man of Steel. The Myth. The Legend. Only 4% get it right.</p>
-                        </div>
-                        <div class="w-full flex flex-col md:flex-row items-center gap-8 mt-10 border-t border-white/10 pt-8">
-                            <button class="relative group/btn overflow-hidden rounded-full bg-white text-[#020617] font-black text-lg py-4 px-12 transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] w-full md:w-auto">
-                                <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-slate-200 to-transparent -translate-x-full group-hover/btn:animate-shimmer"></div>
-                                <span class="relative flex items-center justify-center gap-3"><i class="fas fa-play"></i> PLAY NOW</span>
-                            </button>
-                            <div class="flex items-center gap-8 text-sm font-medium text-slate-400 w-full md:w-auto justify-center md:justify-start">
-                                <div class="flex flex-col"><span class="text-[10px] uppercase tracking-wider text-slate-500">Reward</span><span class="text-cyan-400 text-xl font-bold" id="xpReward">+1,200</span></div>
-                                <div class="w-px h-8 bg-white/10"></div>
-                                <div class="flex flex-col"><span class="text-[10px] uppercase tracking-wider text-slate-500">Ends In</span><span class="text-white text-xl font-mono" id="countdown">--:--:--</span></div>
-                            </div>
-                        </div>
-                    </div>
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div class="text-center md:text-left space-y-2">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono uppercase tracking-widest text-slate-400">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Server Time: <span id="serverTime">00:00</span> UTC
                 </div>
+                <h1 class="text-4xl md:text-6xl font-arcade text-white leading-tight">
+                    DAILY <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentGold to-orange-500">HABIT</span>
+                </h1>
+                <p class="text-slate-400 text-sm md:text-base max-w-md">
+                    Consistenty is the key to mastery. Complete your daily tasks to maintain your streak and earn double XP.
+                </p>
             </div>
 
-            <div class="lg:col-span-4 space-y-6">
-                <div class="glass-panel p-8 rounded-[2rem] relative overflow-hidden group h-[240px] flex flex-col justify-center">
-                    <div class="relative z-10">
-                        <span class="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Daily Loot</span>
-                        <h3 class="text-white font-bold text-2xl mt-1">Mystery Chest</h3>
-                        <p class="text-sm text-slate-400 mt-2 mb-4">Complete today's feature to unlock.</p>
-                        <div class="flex gap-2">
-                            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 border border-white/10"><i class="fas fa-mask"></i></div>
-                            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 border border-white/10"><i class="fas fa-coins"></i></div>
-                        </div>
-                    </div>
-                    <div class="absolute -right-4 top-1/2 -translate-y-1/2 text-9xl animate-float opacity-80 filter drop-shadow-2xl">🎁</div>
-                </div>
-
-                <div class="glass-panel p-6 rounded-[2rem] h-[236px] overflow-y-auto hide-scrollbar">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-white font-bold">Side Objectives</h3>
-                        <span class="text-xs bg-white/10 px-2 py-1 rounded text-slate-400">3 Active</span>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5">
-                            <div class="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center"><i class="fas fa-crosshairs"></i></div>
-                            <div class="flex-grow">
-                                <div class="flex justify-between text-xs font-bold text-white mb-1"><span>Sharpshooter</span><span class="text-green-400">100 XP</span></div>
-                                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden"><div id="bar-acc" class="h-full bg-green-500 w-0 transition-all duration-1000"></div></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5">
-                            <div class="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center"><i class="fas fa-bolt"></i></div>
-                            <div class="flex-grow">
-                                <div class="flex justify-between text-xs font-bold text-white mb-1"><span>Speed Run</span><span class="text-purple-400">250 XP</span></div>
-                                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden"><div id="bar-speed" class="h-full bg-purple-500 w-0 transition-all duration-1000"></div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            <div class="glass-panel rounded-3xl p-6 relative overflow-hidden group hover:bg-white/5 transition-all">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="bg-blue-500/10 p-3 rounded-2xl text-blue-400 text-xl"><i class="fas fa-globe-americas"></i></div>
-                    <div class="flex items-center gap-1 text-[10px] font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded-full uppercase">
-                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div> Live
-                    </div>
-                </div>
+            <div class="glass-panel rounded-2xl p-6 flex items-center justify-between relative overflow-hidden group gold-border animate-pulse-glow cursor-pointer" onclick="trackAction('streak_card_click')">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-orange-500/20 blur-[60px] rounded-full"></div>
                 <div>
-                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Global Community</h3>
-                    <div class="text-3xl font-black text-white mb-1">1,482</div>
-                    <p class="text-sm text-slate-500">Players online right now.</p>
+                    <div class="text-xs text-orange-300 font-bold uppercase tracking-widest mb-1">Current Streak</div>
+                    <div class="text-5xl font-arcade text-white" id="displayStreak">0</div>
+                    <div class="text-xs text-slate-400 font-mono mt-2">Next Reset: <span id="countdownTimer">00:00:00</span></div>
                 </div>
-                <div class="mt-6 flex items-center gap-2">
-                    <div class="flex -space-x-2">
-                        <img src="https://ui-avatars.com/api/?name=A&background=random" class="w-6 h-6 rounded-full border-2 border-[#020617]">
-                        <img src="https://ui-avatars.com/api/?name=B&background=random" class="w-6 h-6 rounded-full border-2 border-[#020617]">
-                        <img src="https://ui-avatars.com/api/?name=C&background=random" class="w-6 h-6 rounded-full border-2 border-[#020617]">
-                    </div>
-                    <span class="text-xs text-slate-400">+1.4k others</span>
+                <div class="streak-fire text-6xl text-orange-500">
+                    <i class="fas fa-fire"></i>
                 </div>
-                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition-all"></div>
             </div>
+        </section>
 
-            <div class="glass-panel rounded-3xl p-6 relative overflow-hidden group hover:bg-white/5 transition-all">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="bg-amber-500/10 p-3 rounded-2xl text-amber-400 text-xl"><i class="fas fa-trophy"></i></div>
-                    <button class="text-[10px] font-bold text-white bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition">VIEW ALL</button>
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-7 space-y-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="fas fa-calendar-day text-accentGold"></i> Daily Trivia</h2>
+                    <span class="text-xs font-mono text-slate-500 border border-white/10 px-2 py-1 rounded">Resets 00:00 UTC</span>
                 </div>
-                <div>
-                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Today's Top Performers</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="text-amber-400 font-bold text-sm">#1</span>
-                                <span class="text-white text-sm font-bold">CyberNinja</span>
-                            </div>
-                            <span class="text-xs font-mono text-slate-400">100% (42s)</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="text-slate-300 font-bold text-sm">#2</span>
-                                <span class="text-white text-sm font-bold">PixelMage</span>
-                            </div>
-                            <span class="text-xs font-mono text-slate-400">100% (45s)</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="text-amber-700 font-bold text-sm">#3</span>
-                                <span class="text-white text-sm font-bold">Dr. Quiz</span>
-                            </div>
-                            <span class="text-xs font-mono text-slate-400">98% (30s)</span>
-                        </div>
+
+                <div id="dailyCard" class="glass-panel rounded-2xl p-6 md:p-8 border-t border-t-white/10 relative">
+                    <div id="dailyCompleted" class="hidden absolute inset-0 z-20 bg-black/80 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-check-circle text-5xl text-green-500 mb-3 shadow-[0_0_30px_rgba(34,197,94,0.4)] rounded-full"></i>
+                        <h3 class="text-2xl font-arcade text-white">COMPLETE</h3>
+                        <p class="text-slate-400 text-xs mt-2">Streak Saved. Come back tomorrow.</p>
                     </div>
-                </div>
-                 <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-500/20 rounded-full blur-3xl group-hover:bg-amber-500/30 transition-all"></div>
-            </div>
 
-            <div class="glass-panel rounded-3xl p-6 relative overflow-hidden group cursor-pointer border border-white/5 hover:border-purple-500/50 transition-all">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620553184661-d70312cb3531?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-30 group-hover:scale-110 transition duration-700"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-[#020617] to-transparent"></div>
-                
-                <div class="relative z-10 flex flex-col h-full justify-between">
-                    <div class="flex justify-between items-start">
-                        <div class="bg-purple-500/20 p-2 rounded-xl text-purple-400 backdrop-blur-md"><i class="fas fa-calendar-alt"></i></div>
-                        <span class="text-[10px] font-bold text-white bg-black/50 backdrop-blur px-2 py-1 rounded border border-white/10">TOMORROW</span>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-[10px] font-bold uppercase tracking-widest">General Knowledge</span>
+                        <span class="text-accentGold text-sm font-bold">+500 XP</span>
                     </div>
                     
-                    <div class="mt-8">
-                        <h3 class="text-purple-300 text-xs font-bold uppercase tracking-widest mb-1">Coming Attraction</h3>
-                        <h2 class="text-2xl font-black text-white leading-tight group-hover:text-purple-200 transition">SCI-FI SATURDAY</h2>
-                        <div class="mt-4 flex items-center gap-2 text-xs text-slate-400 group-hover:text-white transition">
-                            <i class="far fa-bell"></i> Notify me when live
+                    <h3 id="dailyQuestion" class="text-lg md:text-xl font-bold text-white leading-relaxed mb-6">Loading Question...</h3>
+                    
+                    <div id="dailyOptions" class="space-y-3">
                         </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 space-y-6">
+                
+                <div class="glass-panel rounded-2xl p-6 purple-border relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/20 blur-[40px] rounded-full"></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fas fa-crown text-accentPurple"></i> Weekly Boss</h2>
+                        <span class="text-xs font-bold text-accentPurple bg-purple-500/10 px-2 py-1 rounded">+1000 XP</span>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-4">A harder logic puzzle that changes every Monday. Prove your elite status.</p>
+                    
+                    <div id="weeklyCard">
+                        <p id="weeklyQuestion" class="font-bold text-white text-md mb-4 leading-snug">...</p>
+                        <div id="weeklyOptions" class="grid grid-cols-2 gap-2"></div>
+                    </div>
+                    
+                    <div id="weeklyCompleted" class="hidden text-center py-4 border border-green-500/30 bg-green-500/10 rounded-xl mt-2">
+                        <span class="text-green-400 font-bold text-sm">WEEKLY BOSS DEFEATED</span>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 border border-white/5">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fas fa-stopwatch text-blue-400"></i> Hourly Training</h2>
+                        <span class="text-[10px] font-mono text-slate-500">REFRESHES HOURLY</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-4">Quick-fire rounds to keep your reaction time sharp.</p>
+                    <a href="rapid.html" onclick="trackAction('hourly_training_click')" class="block w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-center text-sm font-bold text-blue-300 transition">
+                        Start Rapid Fire <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+<section class="space-y-8 pt-8 border-t border-white/10">
+            
+            <div class="flex items-center gap-4 mb-8">
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                <h2 class="text-xl font-arcade text-white uppercase tracking-widest">Explore The Realm</h2>
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-8 md:p-12 relative overflow-hidden group gold-border cursor-pointer" onclick="trackAction('big_promo_categories_click'); window.location.href='categories.html'">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay animate-pulse-slow"></div>
+                <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-accentGold/20 blur-[100px] rounded-full group-hover:bg-accentGold/30 transition duration-500"></div>
+                <div class="absolute -left-20 -top-20 w-64 h-64 bg-blue-500/20 blur-[100px] rounded-full group-hover:bg-blue-500/30 transition duration-500"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+                    <div class="space-y-4 max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-accentGold text-sm font-bold uppercase tracking-widest mb-2">
+                            <i class="fas fa-compass animate-spin-slow"></i> The Knowledge Nexus
+                        </div>
+                        <h3 class="text-3xl md:text-5xl font-arcade text-white leading-tight">
+                            MASTER EVERY <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentGold via-orange-400 to-accentGold">CATEGORY</span>
+                        </h3>
+                        <p class="text-slate-300 text-lg leading-relaxed">
+                            Don't limit yourself to daily trivia. Dive into our expansive library covering everything from Quantum Physics and Ancient Civilizations to Pop Culture and obscure cinema. 
+                            <strong>Choose your path, earn specialized badges, and dominate the global leaderboards across 20+ distinct knowledge domains.</strong>
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="w-32 h-32 md:w-40 md:h-40 bg-white/5 rounded-full border-4 border-accentGold/50 flex items-center justify-center shadow-[0_0_40px_rgba(251,191,36,0.3)] group-hover:scale-110 transition duration-500">
+                            <i class="fas fa-layer-group text-5 md:text-6xl text-accentGold"></i>
+                        </div>
+                        <button class="mt-6 px-8 py-3 bg-accentGold text-bgDark font-bold uppercase tracking-widest rounded-xl hover:bg-white transition shadow-lg w-full md:w-auto">
+                            BROWSE ALL MODES
+                        </button>
                     </div>
                 </div>
             </div>
 
-        </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <div class="glass-panel rounded-2xl p-6 relative group border-t-4 border-t-blue-500/50 flex flex-col h-[500px]">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-2xl text-blue-400">
+                            <i class="fas fa-hourglass-start"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Chronological Mastery</h3>
+                            <p class="text-xs text-blue-300 font-mono uppercase">Brain Training • History</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-grow overflow-y-auto pr-4 space-y-4 text-slate-300 text-sm leading-relaxed scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-white/5 relative">
+                        <div class="sticky top-0 h-4 bg-gradient-to-b from-[rgba(15,23,42,0.9)] to-transparent z-10"></div>
+                        
+                        <p class="font-semibold text-white">Why understanding the sequence of events is crucial for cognitive development.</p>
+                        <p>
+                            In an era of fragmented information, the ability to contextualize events chronologically is a superpower. Our <strong>history timeline games</strong> are not just about memorizing dates; they are designed to enhance your temporal reasoning and cognitive mapping skills. When you actively engage in placing historical events—from the fall of the Roman Empire to the invention of the printing press—in their correct sequence, you are strengthening neural pathways associated with memory retrieval and logical structuring. This form of <strong>active recall</strong> is far more effective for long-term retention than passive reading.
+                        </p>
+                        <p>
+                            QuizRealm's timeline challenges cover a vast array of subjects, ensuring that whether you are a buff of ancient civilizations, modern warfare, scientific discoveries, or art history, there is a challenge that will test your knowledge. We move beyond simple multiple-choice questions. By utilizing a drag-and-drop interface, we force your brain to evaluate the relationships *between* events, rather than just recalling isolated facts. This relational processing is key to developing a deeper, more nuanced understanding of how our world has evolved.
+                        </p>
+                        <p>
+                            Regular engagement with these <strong>chronology quizzes</strong> has been shown to improve general knowledge retention and foster a better understanding of cause-and-effect relationships in history. It's not just trivia; it's mental gymnastics for the history enthusiast. As you progress, the margins for error decrease, demanding greater precision and a more comprehensive grasp of the historical narrative. Start with the 'World History Beginner' mode to establish your baseline, then challenge yourself with 'Scientific Breakthroughs' or 'The 20th Century' to truly test your mettle. Every correct placement earns XP, contributes to your profile stats, and helps you climb the global leaderboards for historical accuracy.
+                        </p>
+                         <div class="sticky bottom-0 h-12 bg-gradient-to-t from-[rgba(15,23,42,1)] via-[rgba(15,23,42,0.8)] to-transparent pointer-events-none"></div>
+                    </div>
+
+                    <a href="timeline-history.html" onclick="trackAction('seo_card_click', {type: 'history'})" class="mt-4 block w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 rounded-xl text-center text-sm font-bold text-blue-300 transition uppercase tracking-widest">
+                        TEST YOUR TIMELINE <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 relative group border-t-4 border-t-green-500/50 flex flex-col h-[500px]">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-2xl text-green-400">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">The Logic League</h3>
+                            <p class="text-xs text-green-300 font-mono uppercase">Deduction • Problem Solving</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-grow overflow-y-auto pr-4 space-y-4 text-slate-300 text-sm leading-relaxed scrollbar-thin scrollbar-thumb-green-500/30 scrollbar-track-white/5 relative">
+                        <div class="sticky top-0 h-4 bg-gradient-to-b from-[rgba(15,23,42,0.9)] to-transparent z-10"></div>
+                         <p class="font-semibold text-white">Sharpen your deductive reasoning through pattern recognition and code-breaking.</p>
+                        <p>
+                            Your brain is a muscle, and logic puzzles are the ultimate gym. In our rapidly evolving world, the ability to think critically, analyze patterns, and deduce solutions from limited information is more valuable than ever. QuizRealm's <strong>logic puzzles and brain games</strong> are specifically designed to target these cognitive functions. We move beyond mere knowledge recall to test your raw processing power. Our flagship 'Logic League' mode is a digital evolution of classic code-breaking games like Mastermind, requiring you to crack hidden color sequences using pure deduction and process of elimination.
+                        </p>
+                        <p>
+                            Engaging in these daily <strong>mental exercises</strong> promotes neuroplasticity—the brain's ability to reorganize itself by forming new neural connections. Each attempt at solving a complex puzzle forces you to hypothesize, test, analyze feedback, and refine your strategy in real-time. This iterative process is central to developing strong problem-solving skills that translate into real-world scenarios. It's not about what you know; it's about how you think. The satisfaction of cracking a difficult code after several attempts provides a dopamine hit that encourages continued practice and cognitive development.
+                        </p>
+                        <p>
+                            Our logic modes scale in difficulty. Beginners can start with 3-slot puzzles to grasp the fundamentals of deductive feedback. Veterans can push their cognitive limits with 5-slot, limited-attempt challenges that require flawless logic and forward thinking. We track your efficiency, average attempts to solve, and streak consistency, providing detailed metrics on your cognitive performance over time. Forget mindless scrolling; invest ten minutes a day in these <strong>deductive reasoning challenges</strong> and feel the difference in your mental clarity and analytical speed. Join the ranks of the Logic League and prove you have the sharpest mind in the Realm.
+                        </p>
+                        <div class="sticky bottom-0 h-12 bg-gradient-to-t from-[rgba(15,23,42,1)] via-[rgba(15,23,42,0.8)] to-transparent pointer-events-none"></div>
+                    </div>
+
+                    <a href="logic.html" onclick="trackAction('seo_card_click', {type: 'logic'})" class="mt-4 block w-full py-3 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 rounded-xl text-center text-sm font-bold text-green-300 transition uppercase tracking-widest">
+                        CRACK THE CODE <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
+                 <div class="glass-panel rounded-2xl p-6 relative group border-t-4 border-t-purple-500/50 flex flex-col h-[500px]">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-2xl text-purple-400">
+                            <i class="fas fa-fingerprint"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Identity & Archetypes</h3>
+                            <p class="text-xs text-purple-300 font-mono uppercase">Self-Discovery • Pop Culture</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-grow overflow-y-auto pr-4 space-y-4 text-slate-300 text-sm leading-relaxed scrollbar-thin scrollbar-thumb-purple-500/30 scrollbar-track-white/5 relative">
+                        <div class="sticky top-0 h-4 bg-gradient-to-b from-[rgba(15,23,42,0.9)] to-transparent z-10"></div>
+                         <p class="font-semibold text-white">Explore the psychology of character through our immersive personality assessments.</p>
+                        <p>
+                            Self-discovery doesn't have to be boring. While we love hard facts and logic, QuizRealm also embraces the fun side of self-reflection through our extensive collection of <strong>personality quizzes and archetype assessments</strong>. Humans have always used stories and characters to understand themselves better. Whether it's ancient mythology or modern pop culture juggernauts like the Marvel Cinematic Universe or The Big Bang Theory, we see aspects of ourselves in the fictional characters we love (and sometimes hate). Our quizzes use these recognizable frameworks to provide fun, shareable insights into your own personality traits.
+                        </p>
+                        <p>
+                            Unlike standard trivia where there is a right or wrong answer, these <strong>identity quizzes</strong> rely on honest self-reporting across a variety of scenarios. Are you the tactical leader like Captain America, or the brilliant renegade like Tony Stark? Do you solve problems with the cold logic of Sheldon Cooper, or the street-smart intuition of Penny? By answering a series of carefully calibrated questions, our engine maps your responses against established character archetypes to deliver a personalized result that feels authentic. It's a fun, low-stakes way to engage with introspection and compare results with friends.
+                        </p>
+                        <p>
+                            These quizzes are among our most popular social features. They are designed to be shared, sparking conversations and debates about why you got "The Vision" when you were sure you were a "Thor." We constantly update our roster with new franchises and deeper psychological profiles. Beyond just the final result, the process of choosing answers forces you to consider your values, your reactions to stress, and your social preferences. Dive into our <strong>pop culture personality tests</strong> today—you might just learn something new about the character you play in real life.
+                        </p>
+                        <div class="sticky bottom-0 h-12 bg-gradient-to-t from-[rgba(15,23,42,1)] via-[rgba(15,23,42,0.8)] to-transparent pointer-events-none"></div>
+                    </div>
+
+                    <a href="categories.html#persona" onclick="trackAction('seo_card_click', {type: 'persona'})" class="mt-4 block w-full py-3 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 rounded-xl text-center text-sm font-bold text-purple-300 transition uppercase tracking-widest">
+                        FIND YOUR MATCH <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+<style>
+    /* Custom Scrollbar Styling for SEO Cards */
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+    
+    /* Specific color overrides based on card theme */
+    .scrollbar-thumb-blue-500\/30::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.3); }
+    .scrollbar-thumb-green-500\/30::-webkit-scrollbar-thumb { background: rgba(34, 197, 94, 0.3); }
+    .scrollbar-thumb-purple-500\/30::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.3); }
+</style>
 
     </main>
 
     <quiz-footer></quiz-footer>
-</body>
-<script>
-    // 1. CONFIGURATION (The Content)
-    const SCHEDULE = {
-        0: { id: 'superman_legacy', title: "SUPERMAN LEGACY", desc: "History of the Man of Steel. Only 4% get it right.", xp: 1200, diff: 'HARD', img: "https://images.unsplash.com/photo-1520038410233-7141dd782f0a?auto=format&fit=crop&q=80" },
-        1: { id: 'gotham_villain', title: "GOTHAM VILLAINS", desc: "Which Arkham inmate matches your psychology?", xp: 500, diff: 'EASY', img: "https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?auto=format&fit=crop&q=80" },
-        2: { id: 'impossible_batman', title: "IMPOSSIBLE BATMAN", desc: "Prove you are the world's greatest detective.", xp: 750, diff: 'HARD', img: "https://images.unsplash.com/photo-1478720568477-152d9b164e63?auto=format&fit=crop&q=80" },
-        3: { id: 'dc_vs_marvel', title: "DC VS MARVEL", desc: "Choose your allegiance in this showdown.", xp: 500, diff: 'MEDIUM', img: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&q=80" },
-        4: { id: 'screenshot_quiz', title: "FRAME PERFECT", desc: "Guess the movie from a single frame.", xp: 600, diff: 'MEDIUM', img: "https://images.unsplash.com/photo-1596727147705-0608c643e34b?auto=format&fit=crop&q=80" },
-        5: { id: 'gotham_villain', title: "VILLAIN FRIDAY", desc: "Arkham is loose again. Identify them all.", xp: 800, diff: 'MEDIUM', img: "https://images.unsplash.com/photo-1605806616949-1e87b487bc2a?auto=format&fit=crop&q=80" },
-        6: { id: 'superman_legacy', title: "WEEKEND WARRIOR", desc: "Maximum XP Event for the weekend.", xp: 1500, diff: 'HARD', img: "https://images.unsplash.com/photo-1535905557558-afc4877a26fc?auto=format&fit=crop&q=80" }
-    };
 
-    let currentDaily = null;
+    <script>
+        // --- 1. TRACKING ENGINE ---
+        function trackAction(actionName, details = {}) {
+            const uid = window.GameEngine?.state?.uid || 'guest';
+            console.log(`[TRACK] ${actionName}`, details);
+            if(window.dataLayer) {
+                window.dataLayer.push({
+                    'event': 'daily_hub_interaction',
+                    'action_name': actionName,
+                    'user_id': uid,
+                    ...details
+                });
+            }
+            // Firebase Analytics hook (if available in window)
+            if(window.logEvent) window.logEvent(window.analytics, actionName, details);
+        }
 
-    // 2. IMMEDIATE RENDER (Fixes Blank Card)
-    (function initPage() {
-        const today = new Date().getDay();
-        currentDaily = SCHEDULE[today] || SCHEDULE[1];
+        // --- 2. DATA SOURCE (Rotation Logic) ---
+        // Daily: Uses Day of Year (0-365)
+        // Weekly: Uses Week Number (0-52)
+        
+        const DAILY_DB = [
+            { q: "What is the only planet that spins clockwise?", a: ["Venus", "Mars", "Jupiter", "Uranus"], c: 0 },
+            { q: "How many hearts does an octopus have?", a: ["One", "Two", "Three", "Four"], c: 2 },
+            { q: "Which element has the chemical symbol 'K'?", a: ["Krypton", "Potassium", "Kalium", "Ketamine"], c: 1 },
+            { q: "Who wrote '1984'?", a: ["Huxley", "Orwell", "Bradbury", "Tolstoy"], c: 1 },
+            { q: "What is the speed of light (approx)?", a: ["300,000 km/s", "150,000 km/s", "1,000 km/s", "Infinite"], c: 0 }
+        ];
 
-        // Safe Element Selection
-        const els = {
-            title: document.getElementById('missionTitle'),
-            desc: document.getElementById('missionDesc'),
-            xp: document.getElementById('xpReward'),
-            bg: document.getElementById('missionBg')
-        };
+        const WEEKLY_DB = [
+            { q: "Logic Puzzle: I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?", a: ["An Echo", "A Ghost", "A Cloud", "A Shadow"], c: 0 },
+            { q: "Geography Hard Mode: Which country has the most islands?", a: ["Philippines", "Indonesia", "Sweden", "Canada"], c: 2 },
+            { q: "Science Deep Dive: What is the rarest blood type?", a: ["AB-", "O-", "Rh-Null", "B+"], c: 2 }
+        ];
 
-        if(els.title) els.title.innerText = currentDaily.title;
-        if(els.desc) els.desc.innerText = currentDaily.desc;
-        if(els.xp) els.xp.innerText = `+${currentDaily.xp}`;
-        if(els.bg) els.bg.style.backgroundImage = `url('${currentDaily.img}')`;
-    })();
+        // --- 3. CONTROLLER ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initDaily();
+            initWeekly();
+            startTimer();
+            updateStreakUI();
+        });
 
-    // 3. THE HEARTBEAT (Fixes Clock & XP)
-    setInterval(() => {
-        // A. UPDATE CLOCK (Countdown to Midnight)
-        const now = new Date();
-        const midnight = new Date(now).setHours(24,0,0,0);
-        const diff = midnight - now;
+        function getDayOfYear() {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 0);
+            const diff = now - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
 
-        const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
-        const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
-        const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+        function getWeekNumber() {
+            const d = new Date();
+            d.setHours(0,0,0,0);
+            d.setDate(d.getDate() + 4 - (d.getDay()||7));
+            const yearStart = new Date(d.getFullYear(),0,1);
+            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+        }
 
-        const countdownEl = document.getElementById('countdown');
-        if (countdownEl) countdownEl.innerText = `${h}:${m}:${s}`;
-
-        // B. UPDATE STATS (Check GameEngine constantly)
-        if (window.GameEngine && window.GameEngine.state) {
-            const s = window.GameEngine.state;
-            
-            const elLevel = document.getElementById('navLevel');
-            const elXP = document.getElementById('navXP');
-            const elTokens = document.getElementById('navTokens');
-
-            // Force update if found
-            if (elLevel) elLevel.innerText = s.level || 1;
-            if (elXP) elXP.innerText = (s.xp || 0).toLocaleString();
-            if (elTokens) elTokens.innerText = (s.coins || 0).toLocaleString();
-            
-            // Optional: Update Bounties if played today
+        function initDaily() {
+            const dayIndex = getDayOfYear() % DAILY_DB.length;
+            const data = DAILY_DB[dayIndex];
+            const lastPlayed = localStorage.getItem('QR_LAST_DAILY');
             const todayStr = new Date().toDateString();
-            if (s.lastDailyDate === todayStr) {
-                const bar1 = document.getElementById('bar-acc');
-                if (bar1) bar1.style.width = '100%';
+
+            if(lastPlayed === todayStr) {
+                document.getElementById('dailyCompleted').classList.remove('hidden');
+            } else {
+                document.getElementById('dailyQuestion').textContent = data.q;
+                const container = document.getElementById('dailyOptions');
+                data.a.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "btn-option w-full text-left p-4 rounded-xl bg-white/5 text-slate-200 font-bold text-sm flex items-center";
+                    btn.innerHTML = `<span class="w-6 h-6 rounded bg-white/10 flex items-center justify-center mr-3 text-xs text-slate-400 font-mono">${String.fromCharCode(65+idx)}</span> ${opt}`;
+                    btn.onclick = () => handleDailyAnswer(idx, data.c, btn);
+                    container.appendChild(btn);
+                });
             }
         }
-    }, 1000); // Runs every 1 second
 
-    // 4. PLAY ACTION
-    window.playDaily = function() {
-        localStorage.setItem('QR_DAILY_ATTEMPT', new Date().toDateString());
-        window.location.href = `quiz.html?id=${currentDaily.id}&mode=daily&diff=${currentDaily.diff.toLowerCase()}`;
-    };
-</script>
+        function handleDailyAnswer(idx, correct, btn) {
+            trackAction('daily_attempt', { result: idx === correct ? 'win' : 'loss' });
+            
+            const allBtns = document.getElementById('dailyOptions').children;
+            for(let b of allBtns) b.disabled = true;
+
+            if(idx === correct) {
+                btn.classList.add('bg-green-500', 'border-green-400', 'text-black');
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                
+                if(window.GameEngine) {
+                    window.GameEngine.completeDailyChallenge();
+                    window.GameEngine.addXP(500);
+                    updateStreakUI();
+                }
+                localStorage.setItem('QR_LAST_DAILY', new Date().toDateString());
+                
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                btn.classList.add('bg-red-500', 'border-red-400', 'text-white');
+                // Allow retry tomorrow, but mark attempted? For now, simple lock out.
+                // Or maybe just lock for 5 seconds. Let's lock for day to keep stakes high.
+                localStorage.setItem('QR_LAST_DAILY', new Date().toDateString()); // Fail state
+                setTimeout(() => location.reload(), 1500);
+            }
+        }
+
+        function initWeekly() {
+            const weekIndex = getWeekNumber() % WEEKLY_DB.length;
+            const data = WEEKLY_DB[weekIndex];
+            const lastWeekly = localStorage.getItem('QR_LAST_WEEKLY');
+            const thisWeekStr = `W${getWeekNumber()}-${new Date().getFullYear()}`;
+
+            if(lastWeekly === thisWeekStr) {
+                document.getElementById('weeklyCard').classList.add('hidden');
+                document.getElementById('weeklyCompleted').classList.remove('hidden');
+            } else {
+                document.getElementById('weeklyQuestion').textContent = data.q;
+                const container = document.getElementById('weeklyOptions');
+                data.a.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "p-3 rounded-lg bg-white/5 border border-white/10 text-xs font-bold text-slate-300 hover:bg-purple-500/20 hover:border-purple-500 transition";
+                    btn.textContent = opt;
+                    btn.onclick = () => {
+                        if(idx === data.c) {
+                            if(window.GameEngine) window.GameEngine.addXP(1000);
+                            localStorage.setItem('QR_LAST_WEEKLY', thisWeekStr);
+                            confetti({ particleCount: 50, spread: 60 });
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            btn.classList.add('bg-red-500/20', 'border-red-500');
+                            btn.disabled = true;
+                        }
+                    };
+                    container.appendChild(btn);
+                });
+            }
+        }
+
+        function updateStreakUI() {
+            setTimeout(() => {
+                if(window.GameEngine) {
+                    const s = window.GameEngine.state.streak || 0;
+                    document.getElementById('displayStreak').textContent = s;
+                }
+            }, 500);
+        }
+
+        function startTimer() {
+            setInterval(() => {
+                const now = new Date();
+                const tmr = new Date(now);
+                tmr.setDate(tmr.getDate() + 1);
+                tmr.setHours(0,0,0,0);
+                
+                const diff = tmr - now;
+                const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const m = Math.floor((diff / (1000 * 60)) % 60);
+                const s = Math.floor((diff / 1000) % 60);
+                
+                document.getElementById('countdownTimer').innerText = 
+                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                
+                document.getElementById('serverTime').textContent = 
+                    `${now.getUTCHours().toString().padStart(2,'0')}:${now.getUTCMinutes().toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+    </script>
+</body>
 </html>

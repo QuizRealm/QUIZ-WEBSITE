@@ -4684,6 +4684,78 @@ const quantumBank = {
   ]
 };
 
+const avatar2025Bank = {
+  easy: [
+    { question: "Who is the director of the Avatar franchise?", options: ["James Cameron", "Steven Spielberg", "Christopher Nolan", "George Lucas"], correctIndex: 0 },
+    { question: "What is the name of the planet where Avatar takes place?", options: ["Pandora", "Tatooine", "Vulcan", "Arrakis"], correctIndex: 0 },
+    { question: "What is the name of the main male protagonist?", options: ["Jake Sully", "Norm Spellman", "Miles Quaritch", "Parker Selfridge"], correctIndex: 0 },
+    { question: "What is the name of the indigenous blue humanoids?", options: ["Na'vi", "Wookiees", "Klingons", "Ewoks"], correctIndex: 0 },
+    { question: "What is the valuable mineral humans sought in the first movie?", options: ["Unobtainium", "Vibranium", "Adamantium", "Kryptonite"], correctIndex: 0 },
+    { question: "What is the title of the third Avatar movie releasing in 2025?", options: ["Fire and Ash", "The Seed Bearer", "The Tulkun Rider", "Quest for Eywa"], correctIndex: 0 },
+    { question: "Who is the main villain who returns as a Recombinant in The Way of Water?", options: ["Miles Quaritch", "Parker Selfridge", "General Ardmore", "Lyle Wainfleet"], correctIndex: 0 },
+    { question: "What is the name of the water tribe introduced in The Way of Water?", options: ["Metkayina", "Omaticaya", "Tayrangi", "Tipani"], correctIndex: 0 },
+    { question: "What is the name of the whale-like creatures in the second movie?", options: ["Tulkun", "Ilu", "Skimwing", "Akula"], correctIndex: 0 },
+    { question: "What is the name of Jake and Neytiri's eldest son?", options: ["Neteyam", "Lo'ak", "Spider", "Rotxo"], correctIndex: 0 },
+    { question: "Who plays the character Neytiri?", options: ["Zoe Saldana", "Sigourney Weaver", "Kate Winslet", "Michelle Rodriguez"], correctIndex: 0 },
+    { question: "What is the name of the human organization invading Pandora?", options: ["RDA", "Weyland-Yutani", "Umbrella Corp", "Cyberdyne"], correctIndex: 0 },
+    { question: "What is the biological connection the Na'vi make with creatures called?", options: ["Tsaheylu", "Eywa", "Toruk", "Skxawng"], correctIndex: 0 },
+    { question: "What is the name of the substance harvested from Tulkuns that stops aging?", options: ["Amrita", "Unobtainium", "Spice", "Ambrosia"], correctIndex: 0 },
+    { question: "Which element is associated with the new tribe in Avatar 3?", options: ["Fire", "Wind", "Earth", "Ice"], correctIndex: 0 },
+    { question: "Who plays Jake Sully?", options: ["Sam Worthington", "Chris Pratt", "Matt Damon", "Tom Hardy"], correctIndex: 0 },
+    { question: "What is the name of the spiritual mother goddess of Pandora?", options: ["Eywa", "Gaia", "Terra", "Hylia"], correctIndex: 0 },
+    { question: "What creature did Jake Sully tame to become Toruk Makto?", options: ["Great Leonopteryx", "Mountain Banshee", "Thanator", "Hammerhead Titanothere"], correctIndex: 0 },
+    { question: "What is the name of the floating mountains in the first movie?", options: ["Hallelujah Mountains", "Misty Peaks", "Floating Isles", "Sky Rocks"], correctIndex: 0 },
+    { question: "What year is Avatar: Fire and Ash scheduled to release?", options: ["2025", "2024", "2026", "2027"], correctIndex: 0 }
+  ],
+  medium: [
+    { question: "Who is the biological mother of Kiri?", options: ["Grace Augustine", "Neytiri", "Ronal", "Mo'at"], correctIndex: 0 },
+    { question: "What is the name of the 'Ash People' leader in Avatar 3?", options: ["Varang", "Ronal", "Tsireya", "Neytiri"], correctIndex: 0 },
+    { question: "Who plays the character Ronal in The Way of Water?", options: ["Kate Winslet", "Sigourney Weaver", "Edie Falco", "Oona Chaplin"], correctIndex: 0 },
+    { question: "What is the name of the outcast Tulkun that befriends Lo'ak?", options: ["Payakan", "Roa", "Tuk", "Zdog"], correctIndex: 0 },
+    { question: "What is Spider's real name?", options: ["Miles Socorro", "Javier Socorro", "Norm Spellman Jr.", "Max Patel"], correctIndex: 0 },
+    { question: "What is the name of the new human city built on Pandora in the sequels?", options: ["Bridgehead City", "Hell's Gate", "Pandora Prime", "New Terra"], correctIndex: 0 },
+    { question: "Who is the chief of the Metkayina clan?", options: ["Tonowari", "Aonung", "Rotxo", "Tarsem"], correctIndex: 0 },
+    { question: "What star system is Pandora located in?", options: ["Alpha Centauri A", "Proxima Centauri", "Sirius", "Betelgeuse"], correctIndex: 0 },
+    { question: "What is the Na'vi word for 'I see you'?", options: ["Oel ngati kameie", "Kaltxì", "Irayo", "Skxawng"], correctIndex: 0 },
+    { question: "What is the name of the General leading the RDA in the sequels?", options: ["Frances Ardmore", "Miles Quaritch", "Lyle Wainfleet", "Ian Garvin"], correctIndex: 0 },
+    { question: "What is the name of the massive sea vessel used by the RDA for hunting Tulkun?", options: ["SeaDragon", "Matador", "Leviathan", "Poseidon"], correctIndex: 0 },
+    { question: "Which actress plays the Ash People leader Varang?", options: ["Oona Chaplin", "Michelle Yeoh", "Bailey Bass", "Trinity Bliss"], correctIndex: 0 },
+    { question: "What is the name of Jake and Neytiri's second son?", options: ["Lo'ak", "Neteyam", "Spider", "Aonung"], correctIndex: 0 },
+    { question: "What is the name of the youngest Sully child?", options: ["Tuk (Tuktirey)", "Kiri", "Tsireya", "Neytiri"], correctIndex: 0 },
+    { question: "What is the name of the scientist played by Jemaine Clement?", options: ["Dr. Ian Garvin", "Dr. Max Patel", "Dr. Norm Spellman", "Dr. Parker"], correctIndex: 0 },
+    { question: "What is the name of the whaler captain who loses an arm?", options: ["Mick Scoresby", "Lyle Wainfleet", "Sean Fike", "Ja' McCrimmon"], correctIndex: 0 },
+    { question: "What is the name of the flying creature the Metkayina ride?", options: ["Tsurak", "Ilu", "Ikran", "Toruk"], correctIndex: 0 },
+    { question: "What is the name of the underwater creature the Metkayina ride (like a plesiosaur)?", options: ["Ilu", "Tsurak", "Akula", "Nalutsa"], correctIndex: 0 },
+    { question: "Who is the producer of the Avatar films alongside James Cameron?", options: ["Jon Landau", "Kathleen Kennedy", "Frank Marshall", "Kevin Feige"], correctIndex: 0 },
+    { question: "What is the name of the sacred willow tree in the Metkayina village?", options: ["Spirit Tree", "Tree of Voices", "Tree of Souls", "Cove Tree"], correctIndex: 0 }
+  ],
+  hard: [
+    { question: "What is the name of the gas giant that Pandora orbits?", options: ["Polyphemus", "Zeus", "Cronus", "Titan"], correctIndex: 0 },
+    { question: "What does RDA stand for?", options: ["Resources Development Administration", "Resource Defense Agency", "Rapid Deployment Army", "Research & Development Association"], correctIndex: 0 },
+    { question: "What is the name of the interstellar ship that brings humans to Pandora?", options: ["ISV Venture Star", "USCSS Nostromo", "USS Sulaco", "Hermes"], correctIndex: 0 },
+    { question: "Who created the Na'vi language?", options: ["Paul Frommer", "J.R.R. Tolkien", "David Peterson", "Marc Okrand"], correctIndex: 0 },
+    { question: "What is the name of the song by The Weeknd for Avatar: The Way of Water?", options: ["Nothing Is Lost (You Give Me Strength)", "I See You", "Becoming One", "Song of the Tulkun"], correctIndex: 0 },
+    { question: "What is the specific name of the Metkayina village?", options: ["Awa'atlu", "Marui", "Kelutral", "Hell's Gate"], correctIndex: 0 },
+    { question: "What is the name of the actor who plays Spider?", options: ["Jack Champion", "Britain Dalton", "Jamie Flatters", "Filip Geljo"], correctIndex: 0 },
+    { question: "What is the name of the actor who plays Neteyam?", options: ["Jamie Flatters", "Britain Dalton", "Jack Champion", "Duane Evans Jr."], correctIndex: 0 },
+    { question: "What is the name of the actor who plays Lo'ak?", options: ["Britain Dalton", "Jamie Flatters", "Jack Champion", "Trinity Bliss"], correctIndex: 0 },
+    { question: "What is the name of the actor who plays Tsireya?", options: ["Bailey Bass", "Trinity Bliss", "Chloe Coleman", "Filip Geljo"], correctIndex: 0 },
+    { question: "What is the name of the actor who plays Aonung?", options: ["Filip Geljo", "Duane Evans Jr.", "Jack Champion", "Britain Dalton"], correctIndex: 0 },
+    { question: "What is the name of the Recombinant soldier who fights alongside Quaritch?", options: ["Lyle Wainfleet", "Sean Fike", "Kevin Mansk", "Warren Z-Dog"], correctIndex: 0 },
+    { question: "What is the name of the substance that allows the Hallelujah Mountains to float?", options: ["Unobtainium", "Amrita", "Superconductor X", "Levitatium"], correctIndex: 0 },
+    { question: "What is the name of the specific region where the Ash People live?", options: ["Volcanic Region", "Ashlands", "Fire Nation", "Burning Plains"], correctIndex: 0 },
+    { question: "What is the name of the composer for Avatar (2009)?", options: ["James Horner", "Simon Franglen", "Hans Zimmer", "John Williams"], correctIndex: 0 },
+    { question: "What is the name of the composer for Avatar: The Way of Water?", options: ["Simon Franglen", "James Horner", "Ludwig Göransson", "Michael Giacchino"], correctIndex: 0 },
+    { question: "What is the name of the creature that attacks Jake in the first movie (panther-like)?", options: ["Thanator", "Viperwolf", "Direhorse", "Slinger"], correctIndex: 0 },
+    { question: "What is the name of the rhino-like creature with a hammerhead?", options: ["Hammerhead Titanothere", "Sturmbeest", "Hexapede", "Tapirus"], correctIndex: 0 },
+    { question: "What is the name of the lemur-like creatures in the trees?", options: ["Prolemuris", "Tetrapteron", "Fan Lizard", "Woodsprites"], correctIndex: 0 },
+    { question: "What is the name of the glowing seeds of the Tree of Souls?", options: ["Woodsprites (Atokirina)", "Eywa's Seeds", "Spirit Seeds", "Light Spores"], correctIndex: 0 }
+  ]
+};
+
+
+
+
 const worldCupFinalsBank = {
   easy: [
     { question: "Which country won the first ever FIFA World Cup in 1930?", options: ["Uruguay", "Argentina", "Brazil", "Italy"], correctIndex: 0 },
@@ -5504,6 +5576,7 @@ const QUESTION_BANKS = {
     tbbt: tbbtBank,
     internet: internetBank,
     iphone17: iphone17Bank,
+    avatar2025: avatar2025Bank,
     fastandfurious: fastAndFuriousBank,
     got: gotBank,
     anime: animeBank,
@@ -5586,6 +5659,11 @@ const CATEGORY_DESCRIPTIONS = {
         title: "iPhone 17 Future",
         short: "The Tech and Specs.",
         long: "This section serves as a broad reconnaissance mission of technology and computer, It covers hardware, software, CPU, Ram, Motherboard etc"
+    },
+    avatar2025: {
+        title: "Avatar 2025",
+        short: "Return to Pandora. Trivia on the Na'vi, the Way of Water, and Fire and Ash.",
+        long: "I see you. This category explores the expanding universe of James Cameron's Avatar. From the jungles of the Omaticaya to the reefs of the Metkayina and the upcoming volcanic regions of the Ash People. Test your knowledge on the biology of Pandora, the RDA's technology, the Sully family tree, and the details of the upcoming 2025 release 'Fire and Ash'. Sivako!"
     },
 
 
@@ -5809,6 +5887,17 @@ const CATEGORY_CONFIG = {
     desc: "Test your knowledge of Ross, Rachel, Monica, Chandler, Joey, and Phoebe in this ultimate Friends trivia quiz.",
     longDesc: "Step into Central Perk and relive the most iconic moments from the defining sitcom of the 90s. This category dives deep into the lives, loves, and laughs of the six best friends living in New York City. Questions will range from the obvious—like who got off the plane—to the obscure, such as the name of Joey’s bedtime penguin or the specific ingredients in Rachel’s English trifle. Expect questions about famous cameos, memorable quotes like 'We were on a break!', and the intricate romantic entanglements that kept us watching for ten seasons."
   },
+
+  avatar2025: { 
+    label: "Avatar 2025",
+    icon: "🌌",
+    pill: "Sci-Fi",
+    group: "movies",
+    img: "assets/avatar.png",
+    desc: "Return to Pandora! Trivia on Jake Sully, Neytiri, and the upcoming Fire and Ash."
+  },
+
+
   tbbt: { 
     label: "Big Bang Theory", 
     icon: "🧪", 
