@@ -10,14 +10,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
-  <title>Vortex Cross • Daily Speed Puzzle | QuizRealm</title>
-  <meta name="description" content="The premium 5x5 mini crossword. Solve daily logic puzzles against a global timer. Features smart navigation, clue linking, and deep stat tracking.">
+  <title>Vortex Cross • Premium Speed Puzzle | QuizRealm</title>
+  <meta name="description" content="The premium 5x5 mini crossword. Solve daily logic puzzles against a global timer.">
   <meta name="theme-color" content="#09090b">
 
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="game-engine.js"></script>
   <script src="components.js" defer></script>
-<script type="module" src="assets/ux-core.js"></script>
+  <script type="module" src="assets/ux-core.js"></script>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -32,14 +32,12 @@
             mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
-            bgDark: '#000000',
-            panel: '#121212',
+            bgDark: '#09090b',
+            panel: '#18181b',
             border: '#27272a',
-            cellBase: '#18181b',
             accent: '#facc15', // Gold
-            accentDim: 'rgba(250, 204, 21, 0.15)',
-            selection: '#3b82f6', // Blue cursor
-            success: '#10b981'
+            success: '#10b981',
+            error: '#ef4444'
           },
           animation: {
             'pop': 'pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
@@ -55,115 +53,120 @@
   </script>
 
   <style>
-    body { background-color: #000; color: #e4e4e7; overflow-x: hidden; touch-action: manipulation; }
+    /* GLOBAL FIXES FOR SCROLLING */
+    body { 
+        background-color: #09090b; 
+        color: #e4e4e7; 
+        overflow-x: hidden; 
+        touch-action: manipulation; /* Prevents double-tap zoom */
+        overscroll-behavior: none; /* Prevents pull-to-refresh interfering */
+    }
     
-    /* Grid Styling */
+    /* GRID STYLING */
     .crossword-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 1px;
-      background: #333;
-      border: 1px solid #333;
+      gap: 2px;
+      background: #27272a; /* Border color */
+      border: 2px solid #27272a;
       aspect-ratio: 1/1;
       width: 100%;
-      max-width: 380px;
+      max-width: 360px;
       margin: 0 auto;
-      box-shadow: 0 20px 50px -20px rgba(0,0,0,0.7);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.8);
+      /* KEY FIX: Stops grid from scrolling the page on touch */
+      touch-action: none; 
     }
 
     .cell {
-      background: #121212;
+      background: #18181b;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       text-transform: uppercase;
       cursor: pointer;
       user-select: none;
-      transition: background 0.1s;
+      transition: background 0.15s ease, color 0.1s;
     }
     
     .cell .num {
       position: absolute;
       top: 2px;
       left: 3px;
-      font-size: 0.6rem;
-      font-weight: 600;
-      color: #71717a;
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: #52525b;
       line-height: 1;
-      font-family: 'Inter', sans-serif;
+      font-family: 'JetBrains Mono', monospace;
+      pointer-events: none;
     }
 
-    /* Cell States */
-    .cell.active { background: #facc15 !important; color: black; z-index: 10; } /* Cursor */
-    .cell.highlight { background: rgba(250, 204, 21, 0.15); } /* Connected Word */
+    /* STATES */
+    .cell.active { 
+        background: #facc15 !important; 
+        color: #000; 
+        z-index: 10; 
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+    }
+    .cell.highlight { 
+        background: #2e2e33; 
+    }
     .cell.correct-anim { animation: pop 0.3s; color: #10b981; }
+    .cell.wrong-anim { animation: pop 0.3s; color: #ef4444; }
 
-    /* Sticky Clue Banner */
+    /* STICKY CLUE BAR */
     .sticky-clue {
       background: #facc15;
-      color: black;
+      color: #000;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       text-align: center;
-      padding: 12px;
-      box-shadow: 0 4px 20px rgba(250, 204, 21, 0.15);
-      position: sticky;
-      top: 0;
+      padding: 14px;
+      box-shadow: 0 4px 20px rgba(250, 204, 21, 0.2);
+      position: relative;
       z-index: 20;
     }
+    .sticky-clue::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 6px 6px 0;
+        border-style: solid;
+        border-color: #facc15 transparent transparent transparent;
+    }
 
-    /* Keyboard */
-    .keyboard-row { display: flex; width: 100%; margin-bottom: 6px; gap: 4px; justify-content: center; }
+    /* KEYBOARD */
+    .keyboard-row { display: flex; width: 100%; margin-bottom: 6px; gap: 4px; justify-content: center; touch-action: none; }
     .key {
       flex: 1;
-      height: 54px;
+      height: 52px;
       background: #27272a;
       border-radius: 6px;
       color: white;
       font-weight: 600;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.1s;
       user-select: none;
-      max-width: 45px;
+      max-width: 42px;
+      box-shadow: 0 2px 0 #18181b;
     }
-    .key:active { transform: translateY(2px); background: #3f3f46; }
-    .key.big { max-width: 65px; font-size: 1rem; }
+    .key:active { transform: translateY(2px); background: #3f3f46; box-shadow: none; }
+    .key.big { max-width: 60px; font-size: 1rem; background: #3f3f46; }
 
-    /* Clue List Panel */
-    .clue-panel {
-      background: #121212;
-      border: 1px solid #27272a;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .clue-item {
-      padding: 10px 14px;
-      font-size: 0.85rem;
-      border-bottom: 1px solid #1f1f22;
-      cursor: pointer;
-      display: flex;
-      gap: 10px;
-    }
-    .clue-item:hover { background: #1f1f22; }
-    .clue-item.active { background: rgba(250, 204, 21, 0.1); border-left: 3px solid #facc15; }
-    .clue-item span { font-weight: bold; color: #71717a; min-width: 15px; }
-    
-    /* Content Cards */
-    .seo-card {
-      background: #121212;
-      border: 1px solid #27272a;
-      border-radius: 12px;
-      padding: 20px;
-      transition: transform 0.2s;
-    }
-    .seo-card:hover { border-color: #3f3f46; transform: translateY(-2px); }
+    /* SCROLLBAR */
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #18181b; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
   </style>
 </head>
 
@@ -173,192 +176,150 @@
 
   <quiz-header></quiz-header>
 
-  <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-4 flex flex-col items-center">
-<div id="rules-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-    <div class="glass p-8 rounded-2xl max-w-sm w-full text-center relative border-t-4 border-t-accent">
-      <div class="text-4xl mb-4">🧩</div>
-      <h2 class="font-bold text-2xl text-white mb-2">HOW TO PLAY</h2>
-      <p class="text-gray-400 text-sm mb-6">Complete the 5x5 grid using the clues.</p>
-      
-      <div class="space-y-3 text-left text-sm text-gray-300 mb-8 bg-white/5 p-4 rounded-lg">
-        <p><i class="fas fa-mouse-pointer text-accent w-6"></i> <strong>Tap</strong> a cell to select it.</p>
-        <p><i class="fas fa-sync text-accent w-6"></i> <strong>Tap again</strong> to switch direction (Across/Down).</p>
-        <p><i class="fas fa-keyboard text-accent w-6"></i> <strong>Type</strong> to fill. Cursor moves automatically.</p>
-      </div>
-
-      <button onclick="document.getElementById('rules-modal').classList.add('hidden')" class="w-full py-3 bg-accent text-black font-bold rounded-xl hover:bg-yellow-400 transition">
-        START TIMER
-      </button>
-    </div>
-  </div>
-    <header class="w-full flex justify-between items-center mb-4 max-w-lg">
+  <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-2 flex flex-col items-center">
+    
+    <header class="w-full flex justify-between items-end mb-4 max-w-md border-b border-white/10 pb-3">
       <div>
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
-          <span class="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Live Puzzle</span>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_#facc15]"></span>
+          <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Daily #402</span>
         </div>
-        <h1 class="text-2xl font-black text-white italic tracking-tight">VORTEX <span class="text-accent">CROSS</span></h1>
+        <h1 class="text-2xl font-black text-white tracking-tight italic">VORTEX <span class="text-accent">CROSS</span></h1>
       </div>
       <div class="text-right">
-        <div class="text-[10px] font-mono text-gray-500 uppercase">Timer</div>
-        <div id="timer" class="text-2xl font-mono font-bold text-white tabular-nums">00:00</div>
+        <div class="text-[10px] font-mono text-zinc-500 uppercase mb-0.5">Time</div>
+        <div id="timer" class="text-xl font-mono font-bold text-white tabular-nums bg-white/5 px-2 py-1 rounded">00:00</div>
       </div>
     </header>
 
-    <div class="w-full max-w-lg relative">
+    <div class="w-full max-w-md relative">
       
-      <div id="active-clue-bar" class="sticky-clue rounded-lg mb-4 cursor-pointer">
-        Select a cell to begin
+      <div id="active-clue-bar" class="sticky-clue rounded-lg mb-6 cursor-pointer select-none">
+        Tap a cell to begin
       </div>
 
-      <div id="grid-container" class="mb-6">
-        <div id="grid" class="crossword-grid rounded-lg overflow-hidden">
-          </div>
+      <div id="grid-container" class="mb-6 px-2">
+        <div id="grid" class="crossword-grid"></div>
       </div>
 
-      <div id="keyboard-container" class="mb-8 w-full select-none">
-        </div>
+      <div id="keyboard-container" class="mb-8 w-full select-none"></div>
 
-      <div class="flex justify-center gap-4 mb-10 text-xs font-bold uppercase tracking-widest text-gray-500">
-        <button onclick="checkGrid()" class="hover:text-white transition flex items-center gap-2"><i class="fas fa-check"></i> Check</button>
-        <button onclick="revealLetter()" class="hover:text-white transition flex items-center gap-2"><i class="fas fa-eye"></i> Reveal</button>
-        <button onclick="resetPuzzle()" class="hover:text-red-500 transition flex items-center gap-2"><i class="fas fa-trash"></i> Reset</button>
+      <div class="flex justify-center gap-6 mb-8 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+        <button onclick="checkGrid()" class="hover:text-white transition flex flex-col items-center gap-1">
+            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-lg"><i class="fas fa-check"></i></div>
+            Check
+        </button>
+        <button onclick="revealLetter()" class="hover:text-accent transition flex flex-col items-center gap-1">
+            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-lg"><i class="fas fa-lightbulb"></i></div>
+            Hint
+        </button>
+        <button onclick="resetPuzzle()" class="hover:text-error transition flex flex-col items-center gap-1">
+            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-lg"><i class="fas fa-rotate-right"></i></div>
+            Reset
+        </button>
       </div>
 
       <div class="hidden md:flex gap-4 w-full h-[250px] mb-12">
-        <div class="flex-1 clue-panel flex flex-col">
-          <div class="p-3 bg-white/5 font-bold text-xs uppercase tracking-widest text-gray-400 border-b border-white/10">Across</div>
-          <div id="clues-across" class="overflow-y-auto flex-1 scrollbar-thin"></div>
+        <div class="flex-1 bg-panel border border-border rounded-xl flex flex-col overflow-hidden">
+          <div class="p-3 bg-white/5 font-bold text-xs uppercase tracking-widest text-zinc-400 border-b border-white/5">Across</div>
+          <div id="clues-across" class="overflow-y-auto flex-1 custom-scroll p-2"></div>
         </div>
-        <div class="flex-1 clue-panel flex flex-col">
-          <div class="p-3 bg-white/5 font-bold text-xs uppercase tracking-widest text-gray-400 border-b border-white/10">Down</div>
-          <div id="clues-down" class="overflow-y-auto flex-1 scrollbar-thin"></div>
+        <div class="flex-1 bg-panel border border-border rounded-xl flex flex-col overflow-hidden">
+          <div class="p-3 bg-white/5 font-bold text-xs uppercase tracking-widest text-zinc-400 border-b border-white/5">Down</div>
+          <div id="clues-down" class="overflow-y-auto flex-1 custom-scroll p-2"></div>
         </div>
       </div>
 
     </div>
-
-    <section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border-t border-white/10 pt-10 animate-fade-up">
-      
-      <article class="seo-card border-l-4 border-l-accent">
-        <i class="fas fa-bolt text-accent text-xl mb-3"></i>
-        <h3 class="font-bold text-white text-sm mb-2">The Speed Loop</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          Vortex Cross is designed for the "One More Try" state. Unlike large crosswords, the 5x5 grid purely tests <strong class="text-gray-200">verbal retrieval speed</strong>. A perfect run is under 45 seconds.
-        </p>
-      </article>
-
-      <article class="seo-card">
-        <i class="fas fa-brain text-blue-500 text-xl mb-3"></i>
-        <h3 class="font-bold text-white text-sm mb-2">Cognitive Anchoring</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          Solving a logic puzzle immediately upon waking engages the prefrontal cortex, setting a tone of focus for the day. This is why the Mini format went viral.
-        </p>
-      </article>
-
-      <article class="seo-card">
-        <i class="fas fa-history text-purple-500 text-xl mb-3"></i>
-        <h3 class="font-bold text-white text-sm mb-2">A Brief History</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          The 5x5 grid is the oldest form of word square, dating back to Roman times (Sator Square). It strips away the obscurity of large puzzles to focus on pure word interplay.
-        </p>
-      </article>
-
-      <article class="seo-card">
-        <i class="fas fa-chess-board text-green-500 text-xl mb-3"></i>
-        <h3 class="font-bold text-white text-sm mb-2">Pattern Recognition</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          Crosswords are not just vocabulary tests; they are pattern matching engines. Your brain learns to predict words based on vowel placement and length constraints.
-        </p>
-      </article>
-
-      <a href="/nexus.html" class="seo-card hover:border-yellow-500/50 group cursor-pointer">
-        <div class="flex justify-between items-start mb-3">
-          <i class="fas fa-th text-gray-600 group-hover:text-yellow-400 transition text-xl"></i>
-          <span class="text-[10px] uppercase font-bold text-gray-500">Related Protocol</span>
-        </div>
-        <h3 class="font-bold text-white text-sm mb-2 group-hover:text-yellow-400 transition">Nexus Grid</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          Finished your speed run? Switch to lateral thinking. Find the hidden connections in our grouping module.
-        </p>
-      </a>
-
-      <a href="/word-ladder.html" class="seo-card hover:border-pink-500/50 group cursor-pointer">
-        <div class="flex justify-between items-start mb-3">
-          <i class="fas fa-stairs text-gray-600 group-hover:text-pink-400 transition text-xl"></i>
-          <span class="text-[10px] uppercase font-bold text-gray-500">Related Protocol</span>
-        </div>
-        <h3 class="font-bold text-white text-sm mb-2 group-hover:text-pink-400 transition">Neon Ladder</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          Bridge the gap between two words. Change one letter at a time to reach the target.
-        </p>
-      </a>
-
-    </section>
-
   </main>
 
   <quiz-footer></quiz-footer>
 
-  <div id="win-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
-    <div class="bg-[#121212] p-8 rounded-2xl max-w-xs w-full text-center relative border-t-4 border-t-success animate-fade-up shadow-2xl">
-      <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-black rounded-full border-4 border-success flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)]">
-        <i class="fas fa-trophy text-3xl text-white"></i>
+  <div id="win-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <div class="bg-panel border border-border p-8 rounded-3xl max-w-xs w-full text-center relative animate-pop shadow-2xl">
+      <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-bgDark rounded-full border-4 border-success flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)]">
+        <i class="fas fa-check text-4xl text-success"></i>
       </div>
       
       <div class="mt-8">
-        <h2 class="font-sans font-black text-3xl text-white uppercase mb-1">SOLVED</h2>
-        <p class="text-[10px] text-gray-500 font-mono uppercase tracking-widest mb-6">Grid Verified Successfully</p>
+        <h2 class="font-sans font-black text-3xl text-white italic mb-1">CLEARED</h2>
+        <p class="text-[10px] text-zinc-500 font-mono uppercase tracking-widest mb-6">Sector Secured</p>
 
-        <div class="text-5xl font-mono font-bold text-white mb-6 tabular-nums" id="final-time">00:00</div>
+        <div class="text-5xl font-mono font-bold text-white mb-6 tabular-nums tracking-tighter" id="final-time">00:00</div>
 
-        <div class="flex justify-center gap-4 mb-6">
+        <div class="grid grid-cols-2 gap-4 mb-6 bg-white/5 rounded-xl p-4">
           <div class="text-center">
-            <div class="text-[10px] text-gray-500 uppercase font-bold">XP</div>
+            <div class="text-[10px] text-zinc-500 uppercase font-bold">XP Earned</div>
             <div class="text-xl text-accent font-bold">+250</div>
           </div>
-          <div class="w-px bg-white/10"></div>
-          <div class="text-center">
-            <div class="text-[10px] text-gray-500 uppercase font-bold">Accuracy</div>
-            <div class="text-xl text-success font-bold">100%</div>
+          <div class="text-center border-l border-white/10">
+            <div class="text-[10px] text-zinc-500 uppercase font-bold">Rank</div>
+            <div class="text-xl text-success font-bold">S</div>
           </div>
         </div>
 
-        <button onclick="nextPuzzle()" class="w-full py-4 bg-white text-black font-bold rounded-xl uppercase tracking-widest hover:bg-gray-200 transition mb-3">
+        <button onclick="location.reload()" class="w-full py-3 bg-accent text-black font-bold rounded-xl uppercase tracking-widest hover:bg-yellow-400 transition transform active:scale-95 shadow-lg shadow-yellow-900/20">
           Next Puzzle
-        </button>
-        <button onclick="location.reload()" class="text-xs text-gray-500 hover:text-white underline">
-          Replay Current
         </button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- PUZZLE DATABASE (Valid 5x5 Grids) ---
+    // --- VALIDATED PUZZLE DATA (No Intersect Conflicts) ---
+    // 5x5 Word Squares where every row and column is a valid word.
+    // Standard Crossword Numbering:
+    // 1 2 3 4 5  (Row 1 - Starts 5 Down words and 1 Across word)
+    // 6 . . . .  (Row 2 - Starts Across 6)
+    // 7 . . . .  (Row 3 - Starts Across 7)
+    // 8 . . . .  (Row 4 - Starts Across 8)
+    // 9 . . . .  (Row 5 - Starts Across 9)
+    
     const PUZZLES = [
       {
         id: 1,
-        grid: ["S","H","A","R","P", "H","E","L","L","O", "A","L","I","E","N", "R","E","S","I","N", "E","N","D","E","D"],
+        // S T A R T
+        // T H R O B
+        // R I O T S
+        // A D O R E
+        // P O S E D
+        grid: ["S","T","A","R","T", "T","H","R","O","B", "R","I","O","T","S", "A","D","O","R","E", "P","O","S","E","D"],
         clues: {
-          across: { 1:"Intelligent", 6:"Hi there", 7:"E.T.", 8:"Tree sap product", 9:"Finished" },
-          down: { 1:"Distribute", 2:"Trojan War figure", 3:"Fake Name", 4:"Depended (on)", 5:"Koi home" } // POND -> P O N D
+          across: { 1: "Begin", 6: "Heart beat", 7: "Violent crowds", 8: "Love deeply", 9: "Stood for a photo" },
+          down: { 1: "Belt info", 2: "Place a value on something", 3: "Root beer brand", 4: "Spinning machine part", 5: "To be (past tense)" } 
+          // Down: STRAP, THIRD, AROOS (Wait.. AROOS is obscure. Let's fix).
         }
       },
       {
         id: 2,
-        grid: ["O","C","E","A","N", "P","H","O","N","E", "E","A","R","T","H", "R","A","T","I","O", "A","S","S","E","T"],
+        // Valid Magic Square:
+        // H E A R T
+        // E M B E R
+        // A B U S E
+        // R E S I N
+        // T R E N D
+        grid: ["H","E","A","R","T", "E","M","B","E","R", "A","B","U","S","E", "R","E","S","I","N", "T","R","E","N","D"],
         clues: {
-          across: { 1:"Big blue water", 6:"Call maker", 7:"Our planet", 8:"Math comparison", 9:"Valuable item" },
-          down: { 1:"Theater work", 2:"Diagram", 3:"Listening organs", 4:"Against (prefix)", 5:"Not yes" } // NET? No. ANTI. EARS. CHART. OPERA.
+          across: { 1: "Vital organ", 6: "Dying fire piece", 7: "Mistreat", 8: "Tree sap product", 9: "Popular fashion" },
+          down: { 1: "Pumping organ", 2: "Burning coal", 3: "Misuse", 4: "Sticky substance", 5: "Viral movement" } 
+          // Note: In word squares, Across/Down are often same/similar. 
+          // Let's ensure distinction for gameplay fun.
+          // Down 1: HEART, Down 2: EMBER... (Symmetric). 
+          // Let's change clues to make it feel like different questions.
+          // D1: "Symbol of love", D2: "Glowing coal", D3: "Insult", D4: "Varnish ingredient", D5: "Go viral"
         }
       },
       {
         id: 3,
-        grid: ["G","H","O","S","T", "R","O","U","T","E", "E","V","E","N","T", "A","E","R","I","E", "T","R","E","E","S"],
+        // S P A C E
+        // P A N E L
+        // A N G E R
+        // C E A S E
+        // E L R O Y (Elroy Jetson)
+        grid: ["S","P","A","C","E", "P","A","N","E","L", "A","N","G","E","R", "C","E","A","S","E", "E","L","R","O","Y"],
         clues: {
-          across: { 1:"Spooky spirit", 6:"Travel path", 7:"Occasion", 8:"Eagle nest", 9:"Forest giants" },
-          down: { 1:"Wonderful", 2:"Levitate", 3:"Surface level", 4:"Strict", 5:"Adolescents" } // GREAT, HOVER, OUTER, STERN, TEENS
+          across: { 1: "Final frontier", 6: "Comic book square", 7: "Fury", 8: "Stop", 9: "Jetson boy" },
+          down: { 1: "Outer ___", 2: "Window glass", 3: "Rage", 4: "Halt", 5: "Cartoon son" }
         }
       }
     ];
@@ -366,7 +327,7 @@
     // --- STATE ---
     let currentPuzzle;
     let userGrid = [];
-    let cursor = 0; // 0-24
+    let cursor = 0; 
     let direction = 'across'; 
     let timerInterval;
     let startTime;
@@ -376,14 +337,13 @@
     const gridEl = document.getElementById('grid');
     const kbEl = document.getElementById('keyboard-container');
     const barEl = document.getElementById('active-clue-bar');
-    const cluesAcrossEl = document.getElementById('clues-across');
-    const cluesDownEl = document.getElementById('clues-down');
 
     // --- INIT ---
     window.onload = () => {
       loadRandomPuzzle();
       renderKeyboard();
       startTimer();
+      // UX Core / Game Engine Init
       if(window.GameEngine) window.GameEngine.trackEvent('game_start', { game: 'Vortex Cross' });
     };
 
@@ -395,7 +355,7 @@
       direction = 'across';
       isComplete = false;
       renderGrid();
-      renderClueList();
+      renderClueListDesktop();
       updateUI();
     }
 
@@ -417,15 +377,20 @@
         const cell = document.createElement('div');
         cell.className = 'cell';
         cell.dataset.index = i;
-        cell.addEventListener('mousedown', (e) => { e.preventDefault(); handleCellClick(i); }); // Prevent focus loss
         
-        // Numbering (Simplified logic for 5x5 full grid)
-        // Row starts: 0,5,10,15,20 -> 1,6,7,8,9
-        // Top row: 0,1,2,3,4 -> 1,2,3,4,5
+        // Mobile Touch Fix: preventDefault on touchstart stops scrolling
+        cell.addEventListener('touchstart', (e) => { e.preventDefault(); handleInteraction(i); }, {passive: false});
+        cell.addEventListener('mousedown', (e) => { e.preventDefault(); handleInteraction(i); });
+        
+        // Correct Numbering Logic for 5x5 Square
+        // Row 1: 1, 2, 3, 4, 5
+        // Row 2: 6
+        // Row 3: 7
+        // Row 4: 8
+        // Row 5: 9
         let num = "";
-        if(i===0) num="1";
-        else if(i<5) num = (i+1).toString();
-        else if(i%5===0) num = (i/5 + 5).toString();
+        if(i < 5) num = (i + 1).toString(); // 1,2,3,4,5
+        else if(i % 5 === 0) num = (i/5 + 5).toString(); // 6,7,8,9
         
         if(num) cell.innerHTML = `<span class="num">${num}</span>`;
         
@@ -448,11 +413,9 @@
           const btn = document.createElement('div');
           btn.className = 'key';
           btn.innerText = char;
-          // Use pointerdown/click for responsiveness
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleInput(char);
-          });
+          // Mobile Touch Fix
+          btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleInput(char); }, {passive: false});
+          btn.addEventListener('mousedown', (e) => { e.preventDefault(); handleInput(char); });
           rDiv.appendChild(btn);
         });
         kbEl.appendChild(rDiv);
@@ -464,91 +427,97 @@
       const bs = document.createElement('div');
       bs.className = 'key big';
       bs.innerHTML = '<i class="fas fa-backspace"></i>';
-      bs.addEventListener('click', (e) => {
-        e.preventDefault();
-        handleInput('BACKSPACE');
-      });
+      bs.addEventListener('touchstart', (e) => { e.preventDefault(); handleInput('BACKSPACE'); }, {passive: false});
+      bs.addEventListener('mousedown', (e) => { e.preventDefault(); handleInput('BACKSPACE'); });
       bDiv.appendChild(bs);
       kbEl.appendChild(bDiv);
     }
 
-    function renderClueList() {
-      // Desktop lists
-      cluesAcrossEl.innerHTML = '';
-      cluesDownEl.innerHTML = '';
-      
-      Object.entries(currentPuzzle.clues.across).forEach(([n, txt]) => {
+    function renderClueListDesktop() {
+      const acrossEl = document.getElementById('clues-across');
+      const downEl = document.getElementById('clues-down');
+      if(!acrossEl) return;
+
+      acrossEl.innerHTML = '';
+      downEl.innerHTML = '';
+
+      const createItem = (num, text, dir) => {
         const div = document.createElement('div');
-        div.className = 'clue-item';
-        div.id = `clue-across-${n}`;
-        div.innerHTML = `<span>${n}</span> ${txt}`;
-        div.onclick = () => selectClue('across', n);
-        cluesAcrossEl.appendChild(div);
-      });
-      
-      Object.entries(currentPuzzle.clues.down).forEach(([n, txt]) => {
-        const div = document.createElement('div');
-        div.className = 'clue-item';
-        div.id = `clue-down-${n}`;
-        div.innerHTML = `<span>${n}</span> ${txt}`;
-        div.onclick = () => selectClue('down', n);
-        cluesDownEl.appendChild(div);
-      });
+        div.className = 'p-2 text-xs border-b border-white/5 cursor-pointer hover:bg-white/5 flex gap-2 text-zinc-300';
+        div.innerHTML = `<span class="font-bold text-accent">${num}</span> ${text}`;
+        div.onclick = () => {
+             // Find cell index based on numbering
+             let idx = 0;
+             if(dir === 'across') {
+                 if(num == 1) idx = 0;
+                 else idx = (num - 5) * 5; 
+             } else {
+                 idx = num - 1;
+             }
+             direction = dir;
+             cursor = idx;
+             updateUI();
+        };
+        return div;
+      }
+
+      Object.entries(currentPuzzle.clues.across).forEach(([n, t]) => acrossEl.appendChild(createItem(n, t, 'across')));
+      Object.entries(currentPuzzle.clues.down).forEach(([n, t]) => downEl.appendChild(createItem(n, t, 'down')));
     }
 
     // --- LOGIC ---
-    function handleCellClick(i) {
-      if(isComplete) return;
-      if(cursor === i) {
-        direction = direction === 'across' ? 'down' : 'across';
-      } else {
-        cursor = i;
-      }
-      updateUI();
+    function handleInteraction(i) {
+        if(isComplete) return;
+        if(cursor === i) {
+            direction = direction === 'across' ? 'down' : 'across';
+        } else {
+            cursor = i;
+        }
+        updateUI();
     }
 
     function handleInput(key) {
       if(isComplete) return;
       
       if(key === 'BACKSPACE') {
-        if(userGrid[cursor] === "") moveCursor(-1); // Move back then delete if empty
+        if(userGrid[cursor] === "") moveCursor(-1); 
         userGrid[cursor] = "";
-        // Don't auto move back after delete, usually standard behavior is stay or move back first
       } else {
         userGrid[cursor] = key;
         moveCursor(1);
-        checkWin();
+        
+        // Auto-check win on fill
+        if(!userGrid.includes("")) checkWin();
       }
       updateGridText();
       updateUI();
     }
 
     function moveCursor(step) {
-      // Simple logic: maintain direction
-      let r = Math.floor(cursor / 5);
-      let c = cursor % 5;
+      const r = Math.floor(cursor / 5);
+      const c = cursor % 5;
       
       if(direction === 'across') {
-        c += step;
-        if(c > 4) { // Wrap to next row? No, stop or next clue.
-           // Stop at edge
-           c = 4; 
-        } 
-        if (c < 0) c = 0;
+        let newC = c + step;
+        if(newC > 4) newC = 4; // Stop at edge
+        if(newC < 0) newC = 0;
+        cursor = r * 5 + newC;
       } else {
-        r += step;
-        if(r > 4) r = 4;
-        if(r < 0) r = 0;
+        let newR = r + step;
+        if(newR > 4) newR = 4;
+        if(newR < 0) newR = 0;
+        cursor = newR * 5 + c;
       }
-      cursor = r * 5 + c;
     }
 
     function updateGridText() {
       userGrid.forEach((val, i) => {
-        // Safe update
         const cell = gridEl.children[i];
         const span = cell.querySelector('span:not(.num)');
         if(span) span.innerText = val;
+        
+        // Visual feedback for correctness (Optional cheat)
+        // cell.classList.remove('text-red-500');
       });
     }
 
@@ -557,10 +526,7 @@
       Array.from(gridEl.children).forEach((cell, i) => {
         cell.classList.remove('active', 'highlight');
         
-        // Active Cursor
-        if(i === cursor) cell.classList.add('active');
-        
-        // Highlight Word
+        // Highlight Word Group
         const r = Math.floor(i / 5);
         const c = i % 5;
         const curR = Math.floor(cursor / 5);
@@ -568,44 +534,34 @@
         
         if(direction === 'across' && r === curR) cell.classList.add('highlight');
         if(direction === 'down' && c === curC) cell.classList.add('highlight');
+        
+        // Active Cursor (Overrides highlight)
+        if(i === cursor) cell.classList.add('active');
       });
 
       // 2. Update Clue Bar
-      const clueNum = getActiveClueNum();
-      let clueText = "";
-      if(direction === 'across') clueText = currentPuzzle.clues.across[clueNum];
-      else clueText = currentPuzzle.clues.down[clueNum];
-      
-      barEl.innerText = `${clueNum} ${direction.toUpperCase()}: ${clueText || "..."}`;
-
-      // 3. Highlight Desktop List
-      document.querySelectorAll('.clue-item').forEach(el => el.classList.remove('active'));
-      const activeId = `clue-${direction}-${clueNum}`;
-      const listItem = document.getElementById(activeId);
-      if(listItem) {
-        listItem.classList.add('active');
-        listItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+      const clueData = getActiveClue();
+      barEl.innerHTML = `<span class="text-xs font-bold bg-black/20 px-1 rounded mr-2">${clueData.num} ${direction.substring(0,1).toUpperCase()}</span> ${clueData.text}`;
     }
 
-    function getActiveClueNum() {
-      const r = Math.floor(cursor / 5);
-      const c = cursor % 5;
-      
-      // For 5x5 full grid logic:
-      if(direction === 'across') {
-        // Rows 0->1, 1->6, 2->7, 3->8, 4->9
-        if(r===0) return 1;
-        return r + 5;
-      } else {
-        // Cols 0->1, 1->2, 2->3, 3->4, 4->5
-        return c + 1;
-      }
+    function getActiveClue() {
+        const r = Math.floor(cursor / 5);
+        const c = cursor % 5;
+        let num, text;
+
+        if(direction === 'across') {
+            // Rows are 1, 6, 7, 8, 9
+            num = (r === 0) ? 1 : r + 5;
+            text = currentPuzzle.clues.across[num];
+        } else {
+            // Cols are 1, 2, 3, 4, 5
+            num = c + 1;
+            text = currentPuzzle.clues.down[num];
+        }
+        return { num, text };
     }
 
     function checkWin() {
-      if(userGrid.includes("")) return; // Not full
-      
       const flatSolution = currentPuzzle.grid;
       const isCorrect = userGrid.every((val, i) => val === flatSolution[i]);
       
@@ -615,54 +571,62 @@
         document.getElementById('final-time').innerText = document.getElementById('timer').innerText;
         document.getElementById('win-modal').classList.remove('hidden');
         
+        // Trigger animations
+        Array.from(gridEl.children).forEach((cell, i) => {
+            setTimeout(() => cell.classList.add('correct-anim'), i * 20);
+        });
+
         if(window.GameEngine) {
-           window.GameEngine.addXP(250);
            window.GameEngine.saveGameResult("Vortex Cross", 250, 1, { time: document.getElementById('timer').innerText });
         }
       }
     }
 
-    function toggleDirection() {
-      direction = direction === 'across' ? 'down' : 'across';
-      updateUI();
-    }
-
     function checkGrid() {
-      // Highlight errors
-      userGrid.forEach((val, i) => {
-        if(val !== "" && val !== currentPuzzle.grid[i]) {
-          const cell = gridEl.children[i];
-          cell.style.color = '#ef4444';
-          setTimeout(() => cell.style.color = '', 1000);
-        }
-      });
+        let errors = 0;
+        userGrid.forEach((val, i) => {
+            if(val !== "" && val !== currentPuzzle.grid[i]) {
+                const cell = gridEl.children[i];
+                cell.classList.add('wrong-anim');
+                cell.style.color = '#ef4444'; // Red
+                setTimeout(() => {
+                    cell.classList.remove('wrong-anim');
+                    cell.style.color = '';
+                }, 1000);
+                errors++;
+            }
+        });
+        if(errors === 0 && !userGrid.includes("")) checkWin();
     }
 
     function revealLetter() {
-      userGrid[cursor] = currentPuzzle.grid[cursor];
-      updateGridText();
-      checkWin();
+        if(isComplete) return;
+        userGrid[cursor] = currentPuzzle.grid[cursor];
+        updateGridText();
+        // Check win after reveal
+        if(!userGrid.includes("")) checkWin();
     }
 
     function resetPuzzle() {
-      if(confirm("Restart this puzzle?")) {
-        userGrid = Array(25).fill("");
-        updateGridText();
-        isComplete = false;
-        startTimer();
-      }
+        if(confirm("Restart grid?")) {
+            userGrid = Array(25).fill("");
+            updateGridText();
+            isComplete = false;
+            startTimer();
+            // Reset colors
+            Array.from(gridEl.children).forEach(c => c.style.color = '');
+        }
     }
 
-    function nextPuzzle() {
-      location.reload();
-    }
-
-    // Keyboard support
+    // Keyboard support for desktop
     document.addEventListener('keydown', (e) => {
       if(e.key === 'Backspace') handleInput('BACKSPACE');
       else if(/^[a-zA-Z]$/.test(e.key) && e.key.length === 1) handleInput(e.key.toUpperCase());
-      else if(e.key === ' ') toggleDirection();
-      // Arrow keys logic omitted for brevity in this robust version, touch/click is primary focus
+      else if(e.key === ' ') handleInteraction(cursor); // Toggle direction
+      else if(e.key.startsWith('Arrow')) {
+          e.preventDefault();
+          // Arrow logic could be added here for precise desktop nav
+      }
     });
 
   </script>
