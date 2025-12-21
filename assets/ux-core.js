@@ -1,37 +1,42 @@
-/* UX CORE - Experience Optimization Module (SAFE MODE)
-   Handles session persistency, metrics, and remote logging.
-   Fixes: "Firebase App named '[DEFAULT]' already exists" error.
+/* UX CORE - Experience Optimization Module (V2 - AUTH FIX)
+   - Auto-authenticates to bypass Firestore Security Rules.
+   - Handles "Duplicate App" errors safely.
+   - Logs specific errors for debugging.
 */
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// --- CONFIGURATION ---
-// (We still need the config in case this script runs first, but we won't force it)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE", // PASTE YOUR KEY IF NOT ALREADY IN CONFIG
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDqRiQs_ezSxSpaYo0BO8WAcJF9LKvyOwo",
+  authDomain: "thequizrealm-ef52c.firebaseapp.com",
+  projectId: "thequizrealm-ef52c",
+  storageBucket: "thequizrealm-ef52c.firebasestorage.app",
+  messagingSenderId: "56820951002",
+  appId: "1:56820951002:web:3f7d419d62f6d7ee2102e3",
+  measurementId: "G-4JL3CD1WQT"
 };
+// --- INITIALIZATION ---
+let app, db, auth;
 
-// --- INITIALIZATION FIX ---
-let app;
-let db;
+try {
+    // 1. Safe App Initialization
+    if (getApps().length === 0) {
+        app = initializeApp(firebaseConfig);
+    } else {
+        app = getApp(); 
+    }
 
-// Check if an app is already initialized to avoid the "Duplicate App" crash
-if (getApps().length === 0) {
-    // No app exists, so we initialize it (Safe to do here)
-    app = initializeApp(firebaseConfig);
-} else {
-    // App already exists (likely from firebase-config.js), so we just grab it
-    app = getApp(); 
+    // 2. Get Services
+    db = getFirestore(app);
+    auth = getAuth(app);
+    
+    console.log("🔹 UX Core: Firebase initialized.");
+
+} catch (e) {
+    console.error("❌ UX Core Setup Failed. Did you replace 'YOUR_API_KEY'?", e);
 }
-
-// Get the Firestore instance from the app we just grabbed/created
-db = getFirestore(app);
 
 // --- SESSION VARIABLES ---
 const startTime = Date.now();
@@ -39,20 +44,31 @@ const currentPage = window.location.pathname.split('/').pop().replace('.html', '
 let sessionDocId = null; 
 let interactions = 0;
 
-// 1. USER IDENTIFICATION
-let userId = localStorage.getItem('ux_uid');
-if (!userId) {
-    userId = 'user_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('ux_uid', userId);
-}
+// --- MAIN LOGIC ---
+async function startTracking() {
+    // 3. AUTHENTICATE (Crucial for Firestore Permissions)
+    try {
+        if (!auth.currentUser) {
+            await signInAnonymously(auth);
+            console.log("👤 UX Core: Signed in anonymously.");
+        }
+    } catch (e) {
+        console.warn("⚠️ UX Core Auth Warning (Data might not save if rules are strict):", e);
+    }
 
-// 2. ATTEMPT/REFRESH TRACKING
-let attempts = parseInt(localStorage.getItem(`attempts_${currentPage}`) || '0');
-attempts++;
-localStorage.setItem(`attempts_${currentPage}`, attempts);
+    // 4. USER ID (Prefer Auth UID, fallback to LocalStorage)
+    let userId = auth.currentUser ? auth.currentUser.uid : localStorage.getItem('ux_uid');
+    if (!userId) {
+        userId = 'anon_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('ux_uid', userId);
+    }
 
-// 3. START LOGGING
-async function initSession() {
+    // 5. ATTEMPT COUNTING
+    let attempts = parseInt(localStorage.getItem(`attempts_${currentPage}`) || '0');
+    attempts++;
+    localStorage.setItem(`attempts_${currentPage}`, attempts);
+
+    // 6. CREATE DATABASE ENTRY
     try {
         const docRef = await addDoc(collection(db, "arcade_activity"), {
             userId: userId,
@@ -64,28 +80,32 @@ async function initSession() {
             screen_size: `${window.screen.width}x${window.screen.height}`
         });
         sessionDocId = docRef.id;
+        console.log(`✅ UX Core: Tracking started for '${currentPage}' (ID: ${sessionDocId})`);
     } catch (e) {
-        console.error("UX Core Init Error:", e);
+        console.error("❌ UX Core Write Error (Check Firestore Rules):", e);
     }
 }
 
-// Only run if we are actually in a browser environment
+// Only run in browser
 if (typeof window !== 'undefined') {
-    initSession();
+    startTracking();
 }
 
-// 4. INTERACTION LISTENER
-document.addEventListener('click', (e) => {
+// --- EVENT LISTENERS ---
+
+// A. Track Clicks
+document.addEventListener('click', () => {
     interactions++;
 });
 
-// 5. RESULT OBSERVER
+// B. "Spy" on Game Outcomes
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
             if (node.nodeType === 1 && node.innerText) {
                 const text = node.innerText.toLowerCase();
                 
+                // Detect Winning/Losing words
                 if (text.includes("game over") || text.includes("you win") || text.includes("score:")) {
                     
                     const timeSpent = ((Date.now() - startTime) / 1000).toFixed(1);
@@ -102,7 +122,7 @@ const observer = new MutationObserver((mutations) => {
                             duration_seconds: timeSpent,
                             total_clicks: interactions,
                             end_timestamp: serverTimestamp()
-                        });
+                        }).then(() => console.log("💾 UX Core: Results saved."));
                     }
                     observer.disconnect();
                 }
@@ -112,12 +132,11 @@ const observer = new MutationObserver((mutations) => {
 });
 observer.observe(document.body, { childList: true, subtree: true });
 
-// 6. ABANDONMENT TRACKING
+// C. Save on Tab Close
 window.addEventListener('beforeunload', () => {
     if (sessionDocId && interactions > 0) {
         const timeSpent = ((Date.now() - startTime) / 1000).toFixed(1);
         const sessionRef = doc(db, "arcade_activity", sessionDocId);
-        // Best effort save on close
         updateDoc(sessionRef, { duration_seconds: timeSpent });
     }
 });
