@@ -373,6 +373,220 @@
       background: rgba(0,0,0,0.14);
     }
     .drawerBody{ overflow:auto; padding: 12px 12px; }
+
+
+    /* ==============================
+   MOBILE FIT + PREMIUM OVERRIDES
+   Paste at END of <style>
+   ============================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Make top action buttons feel premium on phones: single-row scroll instead of ugly wrapping */
+.actionsStrip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:flex-start;
+}
+@media (max-width: 640px){
+  .actionsStrip{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    padding: 2px 2px 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .actionsStrip::-webkit-scrollbar{ display:none; }
+  .btn{
+    flex:0 0 auto;
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+}
+
+/* Ensure the paper card never causes side overflow on phones */
+.paper{ overflow:hidden; }
+
+/* Responsive crossword sizing (no horizontal overflow, better density on small screens) */
+.cw{
+  width: 100%;
+  max-width: min(620px, calc(100vw - 32px));
+  margin-inline: auto;
+  padding: clamp(8px, 2.4vw, 14px);
+  gap: clamp(2px, 0.9vw, 3px);
+}
+
+/* Cells scale down cleanly on small screens */
+.cell{
+  border-radius: clamp(6px, 1.6vw, 10px);
+}
+.cell .n{
+  top: clamp(4px, 1.1vw, 6px);
+  left: clamp(5px, 1.2vw, 7px);
+  font-size: clamp(8px, 2.0vw, 9px);
+}
+.cell .l{
+  font-size: clamp(12px, 3.9vw, 20px);
+  letter-spacing: clamp(.04em, 0.9vw, .14em);
+  transform: translateX(0.04em);
+}
+
+/* Reduce header density on tiny phones */
+@media (max-width: 420px){
+  .chip{ font-size:10px; padding:5px 9px; }
+  h1{ letter-spacing: -0.02em; }
+}
+
+/* ==============================
+   CATEGORY MODAL: less crowded,
+   scrollable, more premium
+   ============================== */
+
+.modalCard{
+  max-height: 86vh;
+  display:flex;
+  flex-direction:column;
+}
+.catBody{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow:auto;
+  padding: 14px;
+}
+.catBody::-webkit-scrollbar{ width:10px; }
+.catBody::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius:999px; }
+.catBody::-webkit-scrollbar-track{ background: rgba(0,0,0,0.20); }
+
+/* 1 column on mobile, 2 on small desktop, 3 on large desktop (never 4 cramped columns) */
+.catGrid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 0;
+}
+@media (min-width: 640px){ .catGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; } }
+@media (min-width: 1024px){ .catGrid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+/* Premium category card */
+.catBtn{
+  display:flex;
+  align-items:stretch;
+  gap:12px;
+  padding: 14px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background:
+    radial-gradient(800px 140px at 20% 0%, rgba(250,204,21,0.10), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+  color: rgba(228,228,231,0.94);
+  text-transform:none;
+  letter-spacing: normal;
+  font-weight: 800;
+  transition: transform .08s ease, border-color .15s ease, filter .15s ease, background-color .15s ease;
+  user-select:none;
+}
+.catBtn:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.16);
+  filter: brightness(1.03);
+}
+.catBtn:active{ transform: translateY(0px); }
+
+.catIcon{
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.20);
+  flex: 0 0 auto;
+}
+.catMain{ flex: 1 1 auto; min-width: 0; }
+.catTitle{
+  font-size: 14px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.2;
+}
+.catSub{
+  margin-top: 6px;
+  font-family:'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing:.14em;
+  color: rgba(161,161,170,0.95);
+  text-transform: uppercase;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.catPill{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing:.14em;
+  color: rgba(250,204,21,0.95);
+  background: rgba(250,204,21,0.10);
+  border: 1px solid rgba(250,204,21,0.20);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space:nowrap;
+  flex: 0 0 auto;
+}
+.catMetaStrong{
+  color: rgba(228,228,231,0.92);
+}
+.recentRow{
+  padding: 10px 14px 0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.recentChip{
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-family:'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing:.14em;
+  text-transform: uppercase;
+  color: rgba(228,228,231,0.90);
+  transition: background-color .15s ease, border-color .15s ease, transform .06s ease;
+}
+.recentChip:hover{ background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); }
+.recentChip:active{ transform: translateY(1px); }
+
+/* SEO cards styling */
+.seoCard{
+  border-radius: 26px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(20,20,24,0.76);
+  box-shadow: 0 26px 90px rgba(0,0,0,0.55);
+  backdrop-filter: blur(12px);
+}
+.seoCard h2{
+  color:#fff;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.seoCard p, .seoCard li{
+  color: rgba(228,228,231,0.86);
+  line-height: 1.6;
+}
+.seoCard .k{
+  font-family:'JetBrains Mono', monospace;
+  letter-spacing:.14em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: rgba(250,204,21,0.92);
+}
+.catBtn[data-tier="Elite"]{ box-shadow: 0 0 0 1px rgba(250,204,21,0.10), 0 24px 80px rgba(0,0,0,0.55); }
+.catBtn[data-tier="Pro"]{ box-shadow: 0 0 0 1px rgba(250,204,21,0.06), 0 20px 70px rgba(0,0,0,0.50); }
+.catBtn[data-tier="Ready"]{ box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 18px 60px rgba(0,0,0,0.48); }
+.catBtn[data-tier="Needs More"]{ opacity: 0.88; }
+
   </style>
 </head>
 
@@ -409,7 +623,7 @@
           </p>
         </div>
 
-        <div class="flex flex-wrap gap-2 justify-start lg:justify-end">
+      <div class="actionsStrip lg:justify-end">
           <button id="categoryBtn" class="btn btnAccent"><i class="fa-solid fa-grid-2"></i> Categories</button>
           <button id="newBtn" class="btn"><i class="fa-solid fa-arrows-rotate"></i> New Puzzle</button>
           <button id="resetBtn" class="btn"><i class="fa-solid fa-eraser"></i> Reset</button>
@@ -485,7 +699,45 @@
         <button id="openClues" class="dockBtn" type="button"><i class="fa-solid fa-list"></i> Clues</button>
         <button id="openKeys" class="dockBtn" type="button"><i class="fa-solid fa-keyboard"></i> Keys</button>
       </div>
+    
     </section>
+
+
+
+
+
+
+    <section class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <article class="seoCard p-6 md:p-7">
+    <div class="k">15×15 Crossword • Category Edition</div>
+    <h2 class="mt-2 text-2xl md:text-3xl">A Category Crossword That Actually Feels Themed</h2>
+    <p class="mt-3">
+      A good online crossword puzzle is more than a grid and a clue list. The experience has to feel consistent: every answer should belong to the theme, the clue tone should match the category, and the puzzle should remain readable on phones without sacrificing precision. This 15×15 category crossword is designed around that idea. When you select a category—Friends, Marvel, Geography, History, Science, and more—the puzzle is generated from a dedicated bank of answers and clues that live inside your category files. That means the crossword does not “accidentally” drift into unrelated trivia. If you choose Friends, the answers and clue references remain Friends-only, including character names, iconic locations, recurring phrases, episode moments, and in-universe details that fans recognize immediately.
+    </p>
+    <p class="mt-3">
+      The 15×15 format is the classic crossword size because it supports real crossing density: you get enough intersections to validate guesses, but not so many blocks that the puzzle feels fragmented. The category approach makes that density even more satisfying because crossings reinforce the theme instead of pulling you out of it. A Marvel crossword crossing a hero alias with a location, or a Geography crossword crossing a capital with a river, feels like a coherent “knowledge map” rather than random vocabulary. On top of that, the interface is built for modern play: tap a cell to focus, switch direction, use the on-screen keyboard, and check or reveal a word when you want feedback.
+    </p>
+    <p class="mt-3">
+      If you are searching for a premium crossword puzzle online, a themed 15×15 grid is one of the strongest formats for both casual sessions and longer problem-solving. It is approachable for new players, yet deep enough for experienced solvers who want efficient navigation, clear clue grouping, and satisfying completion. Category selection keeps the puzzle aligned with what you actually want to play—sitcom fans can stay in TV mode, film fans can stay in franchise mode, and trivia players can rotate through knowledge categories without changing the core mechanics. This is exactly how a modern category crossword should behave: one stable interface, many themed worlds.
+    </p>
+  </article>
+
+  <article class="seoCard p-6 md:p-7">
+    <div class="k">How To Play • Mobile First</div>
+    <h2 class="mt-2 text-2xl md:text-3xl">Solving Strategy That Works For Any Category</h2>
+    <p class="mt-3">
+      If you want to solve a 15×15 crossword efficiently—especially on mobile—the goal is to build reliable crossings as early as possible. Start by scanning the Across and Down clue groups for anything that is instantly obvious in the current category. In a sitcom category like Friends, that might be a well-known location, a character surname, or a famous catchphrase. In Geography, it could be a capital city, a continent, or a common map term. Fill those “free points” first, because every completed entry becomes a set of letter anchors that narrow down the harder clues. Crosswords reward momentum: once you have a few anchored words, the rest of the grid becomes a process of constraint solving rather than raw guessing.
+    </p>
+    <p class="mt-3">
+      Next, focus on medium clues that intersect your existing letters. A letter you are unsure about is not a problem if multiple crossings support it. This is why 15×15 is so effective: the intersection network acts like built-in verification. When you tap a clue, the game highlights the full word path so you always know what you are filling. On phones, the best habit is to work in short loops: fill a few letters, switch direction when it helps, and let crossings confirm or eliminate your options. If a clue is close but not correct, a quick “Check” on the active word can show whether your current direction is consistent without revealing the entire answer. Use “Reveal” sparingly; it is most useful when a single missing fact blocks multiple intersections and stops progress.
+    </p>
+    <p class="mt-3">
+      Category crosswords also benefit from “theme thinking.” When the puzzle is themed, clues are rarely isolated facts; they usually reference a shared world. That means you should interpret uncertain clues through the category lens: a “bank” in a Marvel crossword is unlikely to be a finance term; it could be a proper noun or a location reference. In a Friends crossword, a vague clue often points to a recurring gag or episode event rather than a dictionary definition. Treat the category as a filter and you will reduce the search space dramatically. Over time, you will notice that your solve speed increases not because you type faster, but because your guesses become more informed and your crossings become more meaningful. That is the point of a premium category crossword: the theme is not decoration—it is the solving engine.
+    </p>
+  </article>
+</section>
+
+
   </main>
 
   <quiz-footer></quiz-footer>
@@ -507,7 +759,10 @@
                placeholder="Search categories (auto-detected)"/>
       </div>
 
-      <div id="catGrid" class="catGrid"></div>
+        <div id="catRecent" class="recentRow" aria-label="Recently used categories"></div>
+        <div class="catBody">
+          <div id="catGrid" class="catGrid"></div>
+        </div>
     </div>
   </div>
 
@@ -674,63 +929,217 @@
     }
 
     function savePrefs(categoryKey){
-      try{ localStorage.setItem(STORE_KEY, JSON.stringify({ categoryKey })); }catch(e){}
-    }
-    function loadPrefs(){
-      try{
-        const raw = localStorage.getItem(STORE_KEY);
-        if (!raw) return {};
-        return JSON.parse(raw) || {};
-      }catch(e){ return {}; }
-    }
+  try{
+    const prev = loadPrefs() || {};
+    const recents = Array.isArray(prev.recents) ? prev.recents : [];
+    const nextRecents = [categoryKey, ...recents.filter(k => k !== categoryKey)].slice(0, 8);
+    localStorage.setItem(STORE_KEY, JSON.stringify({ categoryKey, recents: nextRecents }));
+  }catch(e){}
+}
 
     function discoverCrosswordBanks(){
-      const out = [];
+  const out = [];
+  const seen = new Set();
 
-      const add = (key, label, bank, refName) => {
-        if (!key || !bank) return;
-        const k = String(key).toLowerCase();
-        const exists = out.some(x => x.key === k);
-        if (exists) return;
+  // ---------- helpers ----------
+  const safeLower = (v) => String(v || "").trim().toLowerCase();
 
-        const shaped = shapeBank(bank);
-        if (!shaped) return;
+  const inferIcon = (key) => {
+    const k = safeLower(key);
+    if (/(friends|tbbt|himym|twoandahalfmen|sitcom|tv)/.test(k)) return "fa-tv";
+    if (/(marvel|dc|superhero|avengers|spider|batman)/.test(k)) return "fa-bolt";
+    if (/(avatar)/.test(k)) return "fa-water";
+    if (/(geography|countries|capitals|maps|europe|asia|africa|america)/.test(k)) return "fa-earth-europe";
+    if (/(history|timeline|ancient|war|empire)/.test(k)) return "fa-landmark";
+    if (/(science|biology|anatomy|physics|chem|space)/.test(k)) return "fa-flask";
+    if (/(engineering|mechanic|robot|mechatronic)/.test(k)) return "fa-gear";
+    if (/(football|soccer|nba|nfl|mlb|sport)/.test(k)) return "fa-futbol";
+    if (/(comput|internet|iphone|tech|ai|code)/.test(k)) return "fa-microchip";
+    if (/(food|cooking|kitchen|recipe)/.test(k)) return "fa-burger";
+    return "fa-layer-group";
+  };
 
-        out.push({
-          key: k,
-          label: label || prettyLabel(k),
-          bank: shaped,
-          refName: refName || "CrosswordBanks"
-        });
-      };
+  const summarizeEntries = (entries) => {
+    // entries expected already normalized by extractEntries/shapeBank
+    const total = Array.isArray(entries) ? entries.length : 0;
+    if (!total) return {
+      total: 0, valid: 0, clueFill: 0, avgLen: 0, maxLen: 0, minLen: 0
+    };
 
-      if (window.CrosswordBanks && typeof window.CrosswordBanks === "object"){
-        for (const k of Object.keys(window.CrosswordBanks)){
-          const bank = window.CrosswordBanks[k];
-          const label = (bank && bank.label) ? bank.label : prettyLabel(k);
-          add(k, label, bank, "CrosswordBanks");
-        }
-      }
+    let valid = 0;
+    let clueOk = 0;
+    let sumLen = 0;
+    let maxLen = 0;
+    let minLen = 999;
 
-      const names = Object.getOwnPropertyNames(window);
-      for (const name of names){
-        if (!name) continue;
-        const lower = name.toLowerCase();
-        if (!lower.endsWith("crosswordbank")) continue;
-        const rawKey = name.slice(0, name.length - "CrosswordBank".length);
-        const bank = window[name];
-        if (!bank) continue;
-        const label = (bank && bank.label) ? bank.label : prettyLabel(rawKey);
-        add(rawKey, label, bank, name);
-      }
+    for (const e of entries){
+      const a = e?.answer;
+      if (!a || typeof a !== "string") continue;
+      const len = a.length;
+      if (len < 3 || len > SIZE) continue;
 
-      if (!out.length){
-        add("friends", "Friends", DEMO_FRIENDS_BANK, "DEMO_FRIENDS_BANK");
-      }
+      valid++;
+      sumLen += len;
+      maxLen = Math.max(maxLen, len);
+      minLen = Math.min(minLen, len);
 
-      out.sort((a,b) => a.label.localeCompare(b.label));
-      return out;
+      const clue = String(e?.clue || "").trim();
+      if (clue && clue !== "—") clueOk++;
     }
+
+    return {
+      total,
+      valid,
+      clueFill: valid ? Math.round((clueOk / valid) * 100) : 0,
+      avgLen: valid ? Math.round((sumLen / valid) * 10) / 10 : 0,
+      maxLen,
+      minLen: minLen === 999 ? 0 : minLen
+    };
+  };
+
+  const summarizeShapedBank = (shaped) => {
+    // shaped = { label, entries|null, puzzles|null }
+    const hasPuzzles = !!(shaped && Array.isArray(shaped.puzzles) && shaped.puzzles.length);
+    const hasEntries = !!(shaped && Array.isArray(shaped.entries) && shaped.entries.length);
+
+    if (hasEntries){
+      const s = summarizeEntries(shaped.entries);
+      return {
+        mode: "entries",
+        unitCount: s.valid,
+        clueFill: s.clueFill,
+        avgLen: s.avgLen,
+        maxLen: s.maxLen,
+        minLen: s.minLen,
+        puzzles: 0
+      };
+    }
+
+    if (hasPuzzles){
+      // sample puzzles for metadata; do NOT do heavy processing
+      const puzzles = shaped.puzzles;
+      let sampleValid = 0;
+      let sampleClueFill = 0;
+      let sampleAvgLen = 0;
+      let sampleMaxLen = 0;
+      let sampleMinLen = 0;
+      let samples = 0;
+
+      for (let i = 0; i < Math.min(4, puzzles.length); i++){
+        const p = puzzles[i];
+        if (!p || !Array.isArray(p.entries) || !p.entries.length) continue;
+        const ents = extractEntries(p.entries); // uses your existing normalizer
+        const s = summarizeEntries(ents);
+        if (!s.valid) continue;
+
+        sampleValid += s.valid;
+        sampleClueFill += s.clueFill;
+        sampleAvgLen += s.avgLen;
+        sampleMaxLen = Math.max(sampleMaxLen, s.maxLen);
+        sampleMinLen = (sampleMinLen === 0) ? s.minLen : Math.min(sampleMinLen, s.minLen);
+        samples++;
+      }
+
+      return {
+        mode: "puzzles",
+        unitCount: samples ? Math.round(sampleValid / samples) : 0, // avg entries per puzzle sample
+        clueFill: samples ? Math.round(sampleClueFill / samples) : 0,
+        avgLen: samples ? Math.round((sampleAvgLen / samples) * 10) / 10 : 0,
+        maxLen: sampleMaxLen || 0,
+        minLen: sampleMinLen || 0,
+        puzzles: puzzles.length
+      };
+    }
+
+    return { mode: "unknown", unitCount: 0, clueFill: 0, avgLen: 0, maxLen: 0, minLen: 0, puzzles: 0 };
+  };
+
+  const computeQualityScore = (m) => {
+    // Tuned for your generator: needs density + clue coverage
+    // Score range ~0..1000
+    const density = Math.min(400, (m.unitCount || 0) * 4);         // more entries improves generation
+    const clue = Math.min(250, (m.clueFill || 0) * 2.5);           // clue completeness matters
+    const length = Math.min(120, (m.avgLen || 0) * 12);            // medium-long answers improve interlocks
+    const variety = Math.min(100, Math.max(0, (m.maxLen - m.minLen) * 10));
+    const puzzles = m.mode === "puzzles" ? Math.min(130, (m.puzzles || 0) * 6) : 0;
+
+    // small penalty if basically unusable
+    const unusablePenalty = (m.unitCount || 0) < MIN_WORDS ? 140 : 0;
+
+    return Math.max(0, Math.round(density + clue + length + variety + puzzles - unusablePenalty));
+  };
+
+  const add = (key, label, bank, refName, sourceKind) => {
+    if (!key || !bank) return;
+
+    const k = safeLower(key);
+    if (!k || seen.has(k)) return;
+
+    const shaped = shapeBank(bank);   // your existing function
+    if (!shaped) return;
+
+    const m = summarizeShapedBank(shaped);
+    const qualityScore = computeQualityScore(m);
+
+    const ready = (m.unitCount || 0) >= MIN_WORDS; // simple readiness gate
+    const premiumBadge = ready ? (qualityScore >= 700 ? "Elite" : qualityScore >= 520 ? "Pro" : "Ready") : "Needs More";
+
+    out.push({
+      key: k,
+      label: label || prettyLabel(k),
+      bank: shaped,
+      refName: refName || "CrosswordBanks",
+      sourceKind: sourceKind || "unknown",
+
+      // Premium UI metadata (use this for FIRST CLASS cards)
+      ui: {
+        icon: inferIcon(k),
+        mode: m.mode,
+        unitCount: m.unitCount,
+        puzzles: m.puzzles,
+        clueFill: m.clueFill,
+        avgLen: m.avgLen,
+        badge: premiumBadge,
+        ready
+      },
+
+      qualityScore
+    });
+
+    seen.add(k);
+  };
+
+  // ---------- discovery ----------
+  if (window.CrosswordBanks && typeof window.CrosswordBanks === "object"){
+    for (const k of Object.keys(window.CrosswordBanks)){
+      const bank = window.CrosswordBanks[k];
+      const label = (bank && bank.label) ? bank.label : prettyLabel(k);
+      add(k, label, bank, "CrosswordBanks", "registry");
+    }
+  }
+
+  const names = Object.getOwnPropertyNames(window);
+  for (const name of names){
+    if (!name) continue;
+    const lower = name.toLowerCase();
+    if (!lower.endsWith("crosswordbank")) continue;
+
+    const rawKey = name.slice(0, name.length - "CrosswordBank".length);
+    const bank = window[name];
+    if (!bank) continue;
+
+    const label = (bank && bank.label) ? bank.label : prettyLabel(rawKey);
+    add(rawKey, label, bank, name, "globalVar");
+  }
+
+  if (!out.length){
+    add("friends", "Friends", DEMO_FRIENDS_BANK, "DEMO_FRIENDS_BANK", "fallback");
+  }
+
+  // Premium ordering: best banks first, then alphabetical
+  out.sort((a,b) => (b.qualityScore - a.qualityScore) || a.label.localeCompare(b.label));
+  return out;
+}
 
     function prettyLabel(key){
       const s = String(key||"").replace(/[_\-]+/g," ").trim();
@@ -1517,51 +1926,134 @@
       d.setAttribute("aria-hidden","true");
     }
 
+
+
+
+
+    function pickCatIcon(key){
+  const k = String(key || "").toLowerCase();
+  if (k.includes("friends") || k.includes("tbbt") || k.includes("himym") || k.includes("twoandahalfmen")) return "fa-tv";
+  if (k.includes("marvel") || k.includes("dc")) return "fa-bolt";
+  if (k.includes("avatar")) return "fa-water";
+  if (k.includes("geography")) return "fa-earth-europe";
+  if (k.includes("history")) return "fa-landmark";
+  if (k.includes("science") || k.includes("biology") || k.includes("anatomy") || k.includes("physics")) return "fa-flask";
+  if (k.includes("engineering")) return "fa-gear";
+  if (k.includes("football") || k.includes("soccer")) return "fa-futbol";
+  if (k.includes("comput")) return "fa-microchip";
+  if (k.includes("food")) return "fa-burger";
+  return "fa-layer-group";
+}
+
+// ==============================
+// PREFS (MAKE SURE THESE EXIST)
+// ==============================
+function savePrefs(categoryKey){
+  try{
+    const prev = loadPrefs() || {};
+    const recents = Array.isArray(prev.recents) ? prev.recents : [];
+    const nextRecents = [categoryKey, ...recents.filter(k => k !== categoryKey)].slice(0, 8);
+    localStorage.setItem(STORE_KEY, JSON.stringify({ categoryKey, recents: nextRecents }));
+  }catch(e){}
+}
+
+function loadPrefs(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw) || {};
+  }catch(e){
+    return {};
+  }
+}
+
+
     function buildCategoryUI(){
-      const catGrid = byId("catGrid");
-      catGrid.innerHTML = "";
+  const catGrid = byId("catGrid");
+  const catRecent = byId("catRecent");
 
-      const total = categories.length;
-      byId("catSubtitle").textContent = `Auto-detected ${total} crossword ${total === 1 ? "bank" : "banks"} from your loaded JS.`;
+  if (!catGrid) return;
 
-      for (const cat of categories){
-        const hasPuzzles = !!(cat.bank && Array.isArray(cat.bank.puzzles));
-        const hasEntries = !!(cat.bank && Array.isArray(cat.bank.entries));
-        const count = hasPuzzles ? cat.bank.puzzles.length : (hasEntries ? cat.bank.entries.length : 0);
+  catGrid.innerHTML = "";
+  if (catRecent) catRecent.innerHTML = "";
 
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "catBtn";
-        b.dataset.key = cat.key;
+  const total = categories.length;
+  const subtitle = byId("catSubtitle");
+  if (subtitle) subtitle.textContent = `Auto-detected ${total} crossword ${total === 1 ? "bank" : "banks"} from your loaded JS.`;
 
-        b.innerHTML = `
-          <div>
-            <div>${escapeHtml(cat.label)}</div>
-            <div class="catMeta">${hasPuzzles ? "puzzles" : "entries"}: ${count}</div>
-          </div>
-          <div class="tag">${escapeHtml(cat.refName)}</div>
-        `;
+  const prefs = loadPrefs() || {};
+  const recents = Array.isArray(prefs.recents) ? prefs.recents : [];
+  const recentCats = recents
+    .map(k => categories.find(c => c.key === String(k).toLowerCase()))
+    .filter(Boolean)
+    .slice(0, 8);
 
-        b.addEventListener("click", () => {
-          selectCategory(cat.key);
-          closeModal("categoryModal");
-        });
+  if (catRecent && recentCats.length){
+    recentCats.forEach(cat => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "recentChip";
+      b.textContent = cat.label;
+      b.addEventListener("click", () => {
+        selectCategory(cat.key);
+        closeModal("categoryModal");
+      });
+      catRecent.appendChild(b);
+    });
+  }
 
-        catGrid.appendChild(b);
-      }
+  const mkCard = (cat) => {
+    const hasPuzzles = !!(cat.bank && Array.isArray(cat.bank.puzzles));
+    const hasEntries = !!(cat.bank && Array.isArray(cat.bank.entries));
+    const count = hasPuzzles ? cat.bank.puzzles.length : (hasEntries ? cat.bank.entries.length : 0);
 
-      const search = byId("catSearch");
-      search.value = "";
-      search.oninput = () => {
-        const q = String(search.value || "").trim().toLowerCase();
-        catGrid.querySelectorAll(".catBtn").forEach(btn => {
-          const key = btn.dataset.key || "";
-          const cat = categories.find(x => x.key === key);
-          const hay = `${cat?.label || ""} ${cat?.key || ""} ${cat?.refName || ""}`.toLowerCase();
-          btn.style.display = hay.includes(q) ? "" : "none";
-        });
-      };
-    }
+    const icon = (typeof pickCatIcon === "function") ? pickCatIcon(cat.key) : "fa-layer-group";
+    const mode = hasPuzzles ? "puzzles" : "entries";
+
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "catBtn";
+    b.dataset.key = cat.key;
+    b.dataset.tier = (cat.ui && cat.ui.badge) ? cat.ui.badge : "Ready";
+
+    b.innerHTML = `
+      <div class="catIcon" aria-hidden="true">
+        <i class="fa-solid ${icon} text-accent"></i>
+      </div>
+      <div class="catMain">
+        <div class="catTitle">${escapeHtml(cat.label)}</div>
+        <div class="catSub">
+          <span>${escapeHtml(mode)}: <span class="catMetaStrong">${count}</span></span>
+          <span>key: <span class="catMetaStrong">${escapeHtml(cat.key)}</span></span>
+        </div>
+      </div>
+      <div class="catPill" title="Detected source">${escapeHtml(cat.refName)}</div>
+    `;
+
+    b.addEventListener("click", () => {
+      selectCategory(cat.key);
+      closeModal("categoryModal");
+    });
+
+    return b;
+  };
+
+  categories.forEach(cat => catGrid.appendChild(mkCard(cat)));
+
+  const search = byId("catSearch");
+  if (search){
+    search.value = "";
+    search.oninput = () => {
+      const q = String(search.value || "").trim().toLowerCase();
+      catGrid.querySelectorAll(".catBtn").forEach(btn => {
+        const key = btn.dataset.key || "";
+        const cat = categories.find(x => x.key === key);
+        const hay = `${cat?.label || ""} ${cat?.key || ""} ${cat?.refName || ""}`.toLowerCase();
+        btn.style.display = hay.includes(q) ? "" : "none";
+      });
+    };
+  }
+}
 
     function selectCategory(key){
       const cat = categories.find(c => c.key === String(key).toLowerCase());
