@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Odd One Out • Cognitive Pattern Recognition | QuizRealm</title>
+  <meta name="description" content="Test your logic. Identify the anomaly in a set of 6 items. Patterns include semantic meaning, math properties, and visual categories.">
+  <meta name="theme-color" content="#020202">
+
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="game-engine.js"></script>
+  <script src="components.js" defer></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&family=Bungee&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Rajdhani', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace'],
+            arcade: ['Bungee', 'cursive']
+          },
+          colors: {
+            neonPurple: '#d946ef',
+            neonBlue: '#3b82f6',
+            neonRed: '#ef4444',
+            bgDark: '#020202',
+            panel: 'rgba(15, 23, 42, 0.6)'
+          },
+          animation: {
+            'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+            'pulse-glow': 'pulseGlow 2s infinite',
+            'pop-in': 'popIn 0.3s ease-out forwards',
+          },
+          keyframes: {
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+            },
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 10px rgba(217, 70, 239, 0.2)' },
+              '50%': { boxShadow: '0 0 25px rgba(217, 70, 239, 0.6)' }
+            },
+            popIn: {
+              '0%': { opacity: '0', transform: 'scale(0.9)' },
+              '100%': { opacity: '1', transform: 'scale(1)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #020202;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1), transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(217, 70, 239, 0.1), transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .tile-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .tile-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(217, 70, 239, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .tile-btn:active { transform: scale(0.98); }
+    
+    .tile-btn.correct {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #10b981;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    }
+    .tile-btn.wrong {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #ef4444;
+      animation: shake 0.4s ease-in-out;
+    }
+
+    /* Timer Bar */
+    .timer-container {
+      width: 100%;
+      height: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff2600, #ff8d8d);
+      transition: width 1s linear;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-8 relative z-10">
+
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <div class="text-[10px] font-mono uppercase tracking-widest text-neonPurple mb-1">Cognitive Protocol</div>
+        <h1 class="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-wider">
+          ODD <span class="text-neonBlue">ONE</span> OUT
+        </h1>
+      </div>
+      <div class="text-right hidden md:block">
+        <div class="text-xs text-slate-400 font-mono">Current Streak</div>
+        <div id="streak-display" class="text-3xl font-display font-bold text-white">0</div>
+      </div>
+    </div>
+
+    <div class="glass-panel rounded-2xl p-1 relative overflow-hidden">
+      <div class="timer-container absolute top-0 left-0 right-0 z-20">
+        <div id="timer-bar" class="timer-fill" style="width: 100%;"></div>
+      </div>
+
+      <div class="p-6 md:p-8">
+        <div class="flex justify-between items-center mb-6 font-mono text-sm text-slate-300">
+          <div>LEVEL <span id="level-display" class="text-white font-bold">1</span>/10</div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs uppercase tracking-widest opacity-70">Lives:</span>
+            <div id="lives-container" class="flex gap-1 text-neonRed">
+              <i class="fas fa-heart"></i><i class="fas fa-heart"></i><i class="fas fa-heart"></i>
+            </div>
+          </div>
+        </div>
+
+        <div id="hint-text" class="text-center text-slate-400 text-sm md:text-base mb-6 h-6">
+          Find the anomaly.
+        </div>
+
+        <div id="game-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 min-h-[300px]">
+          </div>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center md:hidden">
+      <div class="text-xs text-slate-500 font-mono uppercase tracking-widest">Streak</div>
+      <div id="mobile-streak" class="text-2xl font-display font-bold text-white">0</div>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <div class="glass-panel p-8 rounded-2xl max-w-sm w-full text-center relative animate-pop-in border-t-4 border-t-neonPurple">
+      
+      <div class="mb-6">
+        <div id="modal-icon" class="text-5xl mb-4"></div>
+        <h2 id="modal-title" class="font-display font-black text-4xl text-white uppercase"></h2>
+        <p id="modal-msg" class="text-slate-400 font-mono text-xs mt-2 uppercase tracking-widest"></p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="bg-white/5 rounded-lg p-3 border border-white/5">
+          <div class="text-[10px] uppercase font-bold text-slate-500">Total Score</div>
+          <div id="resScore" class="text-xl font-mono text-white font-bold">0</div>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3 border border-white/5">
+          <div class="text-[10px] uppercase font-bold text-slate-500">XP Gained</div>
+          <div id="resXP" class="text-xl font-mono text-neonPurple font-bold">+0</div>
+        </div>
+      </div>
+
+      <button onclick="location.reload()" class="w-full py-4 bg-gradient-to-r from-neonBlue to-neonPurple text-white font-bold font-mono text-sm rounded-xl uppercase tracking-widest hover:opacity-90 transition mb-3 shadow-[0_0_20px_rgba(217,70,239,0.3)]">
+        Play Again
+      </button>
+      <button onclick="location.href='index.html'" class="w-full py-3 bg-transparent hover:bg-white/5 text-slate-400 hover:text-white font-mono text-xs rounded-xl border border-white/10 transition uppercase tracking-widest">
+        Exit to Hub
+      </button>
+
+    </div>
+  </div>
+
+  <script>
+    // --- GAME DATA: The Pattern Sets ---
+    const LEVELS = [
+      // 1. Semantic (Category)
+      { items: ["Apple", "Banana", "Carrot", "Grape", "Orange", "Pear"], odd: 2, rule: "Carrot is a vegetable; others are fruits." },
+      // 2. Structural (Palindromes)
+      { items: ["Level", "Radar", "Civic", "Kayak", "Robot", "Madam"], odd: 4, rule: "Robot is not a palindrome." },
+      // 3. Math (Primes vs Composite)
+      { items: ["2", "3", "5", "7", "9", "11"], odd: 4, rule: "9 is not a prime number." },
+      // 4. Semantic (Verbs of movement)
+      { items: ["Sprint", "Jog", "Run", "Walk", "Sleep", "Hike"], odd: 4, rule: "Sleep is not a movement verb." },
+      // 5. Category (Planets)
+      { items: ["Mars", "Venus", "Titan", "Earth", "Saturn", "Jupiter"], odd: 2, rule: "Titan is a moon; others are planets." },
+      // 6. Linguistic (Vowel Start)
+      { items: ["Eagle", "Owl", "Iguana", "Ant", "Bear", "Urchin"], odd: 4, rule: "Bear starts with a consonant." },
+      // 7. Context (Tech Companies)
+      { items: ["Apple", "Google", "Amazon", "Nike", "Microsoft", "Meta"], odd: 3, rule: "Nike is a clothing brand; others are big tech." },
+      // 8. Math (Squares)
+      { items: ["4", "9", "16", "25", "30", "36"], odd: 4, rule: "30 is not a perfect square." },
+      // 9. Physics (States of Matter)
+      { items: ["Iron", "Gold", "Mercury", "Silver", "Copper", "Lead"], odd: 2, rule: "Mercury is liquid at room temperature." },
+      // 10. Conceptual (Time)
+      { items: ["Second", "Minute", "Hour", "Lightyear", "Day", "Week"], odd: 3, rule: "Lightyear measures distance, not time." }
+    ];
+
+    // --- STATE VARIABLES ---
+    let currentLevelIdx = 0;
+    let score = 0;
+    let lives = 3;
+    let streak = 0;
+    let isProcessing = false;
+    let timerInterval;
+    let timeLeft = 200; // Percentage
+
+    // Tracking Stats
+    let startTime = 0;
+    let roundStartTime = 0;
+    let totalReactionTime = 0;
+    let ghostClickCount = 0;
+    let validClickCount = 0;
+
+    // --- ELEMENTS ---
+    const grid = document.getElementById('game-grid');
+    const levelDisplay = document.getElementById('level-display');
+    const streakDisplay = document.getElementById('streak-display');
+    const mobileStreak = document.getElementById('mobile-streak');
+    const livesContainer = document.getElementById('lives-container');
+    const timerBar = document.getElementById('timer-bar');
+    const hintText = document.getElementById('hint-text');
+
+    // --- GHOST CLICK TRACKER ---
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('button') || e.target.closest('a')) {
+        validClickCount++;
+      } else {
+        ghostClickCount++;
+      }
+    });
+
+    // --- INIT ---
+    function initGame() {
+      currentLevelIdx = 0;
+      score = 0;
+      lives = 3;
+      streak = 0;
+      startTime = Date.now();
+      totalReactionTime = 0;
+      updateUI();
+      loadLevel();
+      startTimer();
+      
+      // Tracking Event
+      if(window.dataLayer) window.dataLayer.push({'event': 'game_start', 'game_name': 'Odd One Out'});
+    }
+
+    function loadLevel() {
+      if (currentLevelIdx >= LEVELS.length) return endGame(true);
+
+      const levelData = LEVELS[currentLevelIdx];
+      grid.innerHTML = ''; // Clear grid
+      hintText.innerText = "Identify the anomaly."; // Reset hint
+      hintText.classList.remove('text-neonRed', 'text-neonBlue');
+      
+      levelDisplay.innerText = currentLevelIdx + 1;
+      roundStartTime = Date.now();
+      isProcessing = false;
+
+      // Animate Grid In
+      levelData.items.forEach((item, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'tile-btn rounded-xl flex items-center justify-center text-lg md:text-xl font-display font-bold uppercase tracking-wider text-white h-24 md:h-32 opacity-0 animate-pop-in';
+        btn.style.animationDelay = `${index * 50}ms`;
+        btn.innerText = item;
+        btn.onclick = () => handleTileClick(index, btn);
+        grid.appendChild(btn);
+      });
+    }
+
+    function handleTileClick(index, btnElement) {
+      if (isProcessing) return;
+      isProcessing = true;
+
+      const levelData = LEVELS[currentLevelIdx];
+      const reactionTime = Date.now() - roundStartTime;
+      totalReactionTime += reactionTime;
+
+      if (index === levelData.odd) {
+        // CORRECT
+        btnElement.classList.add('correct');
+        score += 100 + (streak * 10);
+        streak++;
+        timeLeft = Math.min(timeLeft + 10, 100); // Bonus time
+        
+        // Show logic briefly
+        hintText.innerText = `Correct! ${levelData.rule}`;
+        hintText.classList.add('text-neonBlue');
+
+        setTimeout(() => {
+          currentLevelIdx++;
+          updateUI();
+          loadLevel();
+        }, 1200);
+
+      } else {
+        // WRONG
+        btnElement.classList.add('wrong');
+        lives--;
+        streak = 0;
+        updateUI();
+        
+        // Highlight the correct one
+        const correctBtn = grid.children[levelData.odd];
+        setTimeout(() => correctBtn.classList.add('correct'), 300);
+
+        if (lives <= 0) {
+          setTimeout(() => endGame(false), 1000);
+        } else {
+          hintText.innerText = "Incorrect. Focus.";
+          hintText.classList.add('text-neonRed');
+          setTimeout(() => {
+            currentLevelIdx++; // Move on even if wrong (to keep flow)
+            loadLevel();
+          }, 1500);
+        }
+      }
+    }
+
+    function updateUI() {
+      streakDisplay.innerText = streak;
+      mobileStreak.innerText = streak;
+      
+      // Update Lives Icon
+      let heartsHtml = '';
+      for(let i=0; i<3; i++) {
+        if(i < lives) heartsHtml += '<i class="fas fa-heart"></i>';
+        else heartsHtml += '<i class="far fa-heart opacity-30"></i>';
+      }
+      livesContainer.innerHTML = heartsHtml;
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if(isProcessing) return; // Pause timer during transitions
+        
+        timeLeft -= 0.5; // Speed of decay
+        timerBar.style.width = `${timeLeft}%`;
+        
+        // Color change based on urgency
+        if(timeLeft < 30) timerBar.style.background = '#ef4444';
+        else timerBar.style.background = 'linear-gradient(90deg, #3b82f6, #d946ef)';
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          endGame(false);
+        }
+      }, 10000);
+    }
+
+    // --- GAME OVER ---
+    function endGame(win) {
+      clearInterval(timerInterval);
+      const modal = document.getElementById('result-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const modalIcon = document.getElementById('modal-icon');
+      const modalMsg = document.getElementById('modal-msg');
+      
+      const avgReaction = Math.round(totalReactionTime / (currentLevelIdx + 1));
+      let xp = Math.floor(score * 0.5);
+
+      modal.classList.remove('hidden');
+      
+      if (win) {
+        modalTitle.innerText = "SYSTEM SECURED";
+        modalIcon.innerHTML = '<i class="fas fa-shield-check text-neonBlue"></i>';
+        modalMsg.innerText = "Pattern recognition optimal.";
+        xp += 50; // Bonus
+      } else {
+        modalTitle.innerText = "BREACH DETECTED";
+        modalTitle.classList.replace('text-white', 'text-neonRed');
+        modalIcon.innerHTML = '<i class="fas fa-triangle-exclamation text-neonRed"></i>';
+        modalMsg.innerText = "Neural link severed.";
+      }
+
+      document.getElementById('resScore').innerText = score;
+      document.getElementById('resXP').innerText = `+${xp}`;
+
+      // SAVE DATA TO ENGINE
+      if (window.GameEngine) {
+        window.GameEngine.addXP(xp);
+        window.GameEngine.saveGameResult(
+            "Odd One Out",
+            score,
+            1, 
+            {
+                won: win,
+                levelsCompleted: currentLevelIdx,
+                avgReactionTime: avgReaction,
+                ghostClicks: ghostClickCount
+            }
+        );
+      }
+
+      // GTM Final Event
+      if(window.dataLayer) {
+        window.dataLayer.push({
+          'event': 'game_complete',
+          'game_result': win ? 'win' : 'lose',
+          'score': score
+        });
+      }
+    }
+
+    // Start on load
+    window.onload = initGame;
+
+  </script>
+</body>
+</html>

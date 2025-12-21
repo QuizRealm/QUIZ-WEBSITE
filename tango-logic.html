@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Solar Grid • Binary Logic Protocol | QuizRealm</title>
+  <meta name="description" content="Restore balance to the grid. Place Suns and Moons according to three strict logic rules. A daily constraint satisfaction puzzle.">
+  <meta name="theme-color" content="#0f172a">
+
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="game-engine.js"></script>
+  <script src="components.js" defer></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0f172a',
+            panel: '#1e293b',
+            sun: '#f59e0b',   // Gold
+            moon: '#6366f1',  // Indigo
+            empty: '#334155',
+            border: '#475569'
+          },
+          animation: {
+            'spin-slow': 'spin 3s linear infinite',
+            'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            'shake': 'shake 0.4s ease-in-out',
+          },
+          keyframes: {
+            pop: { '0%': { transform: 'scale(0.8)' }, '100%': { transform: 'scale(1)' } },
+            shake: {
+              '10%, 90%': { transform: 'translateX(-1px)' },
+              '20%, 80%': { transform: 'translateX(2px)' },
+              '30%, 50%, 70%': { transform: 'translateX(-4px)' },
+              '40%, 60%': { transform: 'translateX(4px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0f172a; color: #e2e8f0; overflow-x: hidden; touch-action: manipulation; }
+    
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    /* THE GRID */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      aspect-ratio: 1/1;
+    }
+
+    .cell {
+      background: #334155;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .cell:active { transform: scale(0.95); }
+    
+    /* Cell States */
+    .cell[data-state="0"] { background: #334155; } /* Empty */
+    
+    .cell[data-state="1"] { /* SUN */
+      background: rgba(245, 158, 11, 0.15);
+      border: 2px solid #f59e0b;
+      color: #f59e0b;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    }
+    
+    .cell[data-state="2"] { /* MOON */
+      background: rgba(99, 102, 241, 0.15);
+      border: 2px solid #6366f1;
+      color: #6366f1;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+    }
+
+    .cell.locked {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    .cell.locked::after {
+      content: '•';
+      position: absolute;
+      bottom: 2px;
+      font-size: 10px;
+      opacity: 0.5;
+    }
+
+    .cell.error {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      animation: shake 0.4s;
+    }
+
+    /* SEO Card Typography */
+    .seo-text { font-size: 0.85rem; line-height: 1.7; color: #94a3b8; }
+    .seo-text strong { color: #e2e8f0; }
+
+
+    /* DEMO ANIMATION STYLES */
+.demo-cell-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+}
+
+.demo-cell {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: #334155;
+  animation: cell-cycle 4s infinite step-end;
+}
+
+.demo-cursor {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  font-size: 1.5rem;
+  color: white;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  animation: tap-cycle 4s infinite;
+}
+
+/* Cycle States */
+@keyframes cell-cycle {
+  0%, 100% { background: #334155; border-color: transparent; box-shadow: none; color: transparent; } /* Empty */
+  33% { background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); color: #f59e0b; } /* Sun */
+  66% { background: rgba(99, 102, 241, 0.15); border-color: #6366f1; box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); color: #6366f1; } /* Moon */
+}
+
+/* Simulated Tap */
+@keyframes tap-cycle {
+  0%, 30%, 63%, 96% { transform: scale(1); opacity: 0; }
+  15%, 48%, 81% { transform: scale(0.8); opacity: 1; } /* The "Tap" moment */
+}
+
+/* Icon Switching */
+.demo-cell::after {
+  content: '';
+  font-family: "Font Awesome 6 Free"; 
+  font-weight: 900;
+}
+@keyframes icon-cycle {
+  0%, 100% { content: ''; }
+  33% { content: '\f185'; } /* Sun Icon */
+  66% { content: '\f186'; } /* Moon Icon */
+}
+
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center">
+
+    <header class="text-center mb-8 w-full max-w-lg">
+      <div class="flex items-center justify-center gap-3 mb-2">
+        <div class="h-px w-10 bg-slate-700"></div>
+        <div class="text-[10px] font-mono uppercase tracking-[0.25em] text-blue-400">Binary Protocol</div>
+        <div class="h-px w-10 bg-slate-700"></div>
+      </div>
+      <h1 class="font-display font-bold text-4xl md:text-5xl text-white tracking-tight">SOLAR <span class="text-sun">GRID</span></h1>
+      
+      <div class="flex justify-between items-center mt-4 px-4">
+        <button onclick="document.getElementById('rules-modal').classList.remove('hidden')" class="text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <i class="fas fa-book"></i> RULES
+        </button>
+        <div class="text-2xl font-mono font-bold text-white tabular-nums" id="timer">00:00</div>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full max-w-5xl items-start">
+
+  <div class="lg:col-span-7 w-full">
+    <div id="grid-container" class="mb-6 relative">
+      <div id="game-grid" class="game-grid rounded-xl overflow-hidden p-1 bg-slate-800/50">
+        </div>
+    </div>
+    
+    <div class="flex justify-center gap-4">
+      <button onclick="checkPuzzle()" class="px-8 py-3 bg-white text-black font-bold rounded-full uppercase tracking-widest hover:bg-slate-200 transition shadow-lg shadow-white/10">
+        Check Logic
+      </button>
+      <button onclick="resetPuzzle()" class="px-6 py-3 bg-slate-800 text-slate-400 font-bold rounded-full hover:bg-slate-700 transition">
+        <i class="fas fa-rotate"></i>
+      </button>
+    </div>
+  </div>
+
+  <aside class="lg:col-span-5 flex flex-col gap-6">
+
+    <div class="glass-panel p-6 rounded-2xl border border-slate-700/50">
+  <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-4 text-center">Control Mechanics</div>
+  
+  <div class="flex items-center justify-center gap-6">
+    <div class="demo-cell-wrapper">
+      <div class="demo-cell">
+        <i class="fas fa-sun absolute text-sun drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" 
+           style="animation: icon-sun-cycle 4s infinite step-end; opacity: 0;"></i>
+        
+        <i class="fas fa-moon absolute text-moon drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" 
+           style="animation: icon-moon-cycle 4s infinite step-end; opacity: 0;"></i>
+      </div>
+      
+      <div class="demo-cursor"><i class="fas fa-hand-pointer"></i></div>
+    </div>
+    
+    <div class="text-xs text-slate-300 space-y-2 font-mono">
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-sun text-black rounded-full flex items-center justify-center text-[8px] font-bold">1</span> 
+        <span>Tap for <strong>Sun</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-moon text-white rounded-full flex items-center justify-center text-[8px] font-bold">2</span> 
+        <span>Tap for <strong>Moon</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-slate-700 text-slate-300 rounded-full flex items-center justify-center text-[8px] font-bold">3</span> 
+        <span>Tap to <strong>Clear</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-sun">
+      <h3 class="font-display font-bold text-white text-lg mb-3">How to Win</h3>
+      <p class="text-sm text-slate-400 leading-relaxed mb-4">
+        Your goal is to fill the grid with <span class="text-sun font-bold">Light</span> and <span class="text-moon font-bold">Darkness</span> while maintaining perfect balance.
+      </p>
+      
+      <div class="space-y-3">
+        <div class="p-3 bg-slate-800/50 rounded-lg flex gap-3 items-start">
+          <i class="fas fa-scale-balanced text-sun mt-1"></i>
+          <div class="text-xs text-slate-300">
+            <strong class="text-white block mb-1">The Rule of Three</strong>
+            Every row and column must have exactly <strong>3 Suns</strong> and <strong>3 Moons</strong>.
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-800/50 rounded-lg flex gap-3 items-start">
+          <i class="fas fa-ban text-moon mt-1"></i>
+          <div class="text-xs text-slate-300">
+            <strong class="text-white block mb-1">No Triples</strong>
+            You can never have three of the same symbol touching (e.g. ☀️☀️☀️ is forbidden).
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+    <section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-t border-slate-800 pt-10 animate-fade-up">
+      
+      <article class="glass-panel p-6 rounded-2xl border-l-4 border-l-sun">
+        <h3 class="font-display font-bold text-white text-lg mb-4">Core Directives</h3>
+        <ul class="space-y-3 text-sm text-slate-300">
+          <li class="flex items-start gap-3">
+            <i class="fas fa-equals text-sun mt-1"></i>
+            <span><strong>Balance:</strong> Each row and column must have an equal number of Suns and Moons (3 of each).</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i class="fas fa-ban text-sun mt-1"></i>
+            <span><strong>Spacing:</strong> No more than two of the same symbol can be adjacent horizontally or vertically. (e.g., Sun-Sun-Sun is forbidden).</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i class="fas fa-fingerprint text-sun mt-1"></i>
+            <span><strong>Uniqueness:</strong> No two rows or columns can be identical.</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="glass-panel p-6 rounded-2xl">
+        <h3 class="font-display font-bold text-white text-lg mb-4">About Solar Grid</h3>
+        <p class="seo-text">
+          Solar Grid is a binary determination puzzle based on the classic algorithmic challenge "Takuzu" (also known as Binairo). Unlike Sudoku which uses 9 variables, Solar Grid uses only two: <strong>Light and Dark</strong>. 
+          <br><br>
+          This simplicity is deceptive. Because the constraints are tighter (you cannot simply place a number anywhere), the puzzle forces you to deduce chains of logic. "If this is a Sun, and that is a Sun, the next <em>must</em> be a Moon." It is pure deductive reasoning stripped of arithmetic.
+        </p>
+      </article>
+
+      <article class="glass-panel p-6 rounded-2xl">
+        <h3 class="font-display font-bold text-white text-lg mb-4">The Logic of Constraint</h3>
+        <p class="seo-text">
+          Why do constraint puzzles feel so satisfying? Cognitive science suggests that the brain enjoys "closing loops." Solar Grid presents a <strong>Constraint Satisfaction Problem (CSP)</strong> where every move reduces the entropy of the system. 
+          <br><br>
+          When you place a Moon to prevent a "triple Sun," you aren't just guessing; you are applying a strict rule set. This engages the <strong>Dorsolateral Prefrontal Cortex</strong>, the area responsible for working memory and planning. Regular engagement with CSPs improves your ability to visualize future states and consequences.
+        </p>
+      </article>
+
+      <article class="glass-panel p-6 rounded-2xl">
+        <h3 class="font-display font-bold text-white text-lg mb-4">The Daily Ritual</h3>
+        <p class="seo-text">
+          In 2025, the "Daily Micro-Game" has replaced the morning newspaper. Games like Solar Grid, Wordle, and Mini Crossword are designed for high-frequency, low-duration engagement. 
+          <br><br>
+          They act as a <strong>cognitive warm-up</strong>. By solving a finite, solvable problem first thing in the morning, you trigger a dopamine release that sets a tone of efficacy for the rest of the day. The "Streak" mechanic further reinforces this by turning logic into a lifestyle.
+        </p>
+      </article>
+
+      <article class="glass-panel p-6 rounded-2xl">
+        <h3 class="font-display font-bold text-white text-lg mb-4">Mastery Techniques</h3>
+        <p class="seo-text">
+          <strong>1. The Sandwich Rule:</strong> If you see two Suns with a space between them (Sun - Empty - Sun), the middle <em>must</em> be a Moon to prevent a triple.
+          <br><br>
+          <strong>2. The Double Rule:</strong> If you see two Suns adjacent, the cells on either side <em>must</em> be Moons.
+          <br><br>
+          <strong>3. The Count:</strong> Always check row totals. If a row has 3 Suns already, fill the rest with Moons immediately. This often triggers a cascade of solutions across intersecting columns.
+        </p>
+      </article>
+
+    </section>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <div id="rules-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <div class="glass-panel p-8 rounded-2xl max-w-sm w-full text-center relative border-t-4 border-t-sun">
+      <h2 class="font-display font-bold text-2xl text-white mb-2">DIRECTIVES</h2>
+      <p class="text-slate-400 text-sm mb-6">Fill the grid with Suns & Moons.</p>
+      <div class="text-left text-sm text-slate-300 space-y-4 mb-8">
+        <p>1. No more than two adjacent identical symbols.</p>
+        <p>2. Equal number of Suns/Moons per row/col.</p>
+        <p>3. Tap cell to toggle: <span class="text-sun">Sun</span> -> <span class="text-moon">Moon</span> -> Empty.</p>
+      </div>
+      <button onclick="document.getElementById('rules-modal').classList.add('hidden')" class="w-full py-3 bg-sun text-black font-bold rounded-xl hover:bg-yellow-400 transition">
+        INITIATE
+      </button>
+    </div>
+  </div>
+
+  <div id="win-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
+    <div class="glass-panel p-8 rounded-2xl max-w-xs w-full text-center relative border-t-4 border-t-green-500 animate-pop">
+      <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-black rounded-full border-4 border-green-500 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)]">
+        <i class="fas fa-check text-4xl text-green-500"></i>
+      </div>
+      <div class="mt-8">
+        <h2 class="font-display font-black text-3xl text-white uppercase mb-1">BALANCE</h2>
+        <p class="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-6">Equilibrium Restored</p>
+        
+        <div class="text-5xl font-mono font-bold text-white mb-6 tabular-nums" id="final-time">00:00</div>
+
+        <div class="flex justify-center gap-4 mb-6">
+          <div class="text-center">
+            <div class="text-[10px] text-slate-500 uppercase font-bold">XP</div>
+            <div class="text-xl text-sun font-bold">+200</div>
+          </div>
+        </div>
+
+        <button onclick="nextPuzzle()" class="w-full py-4 bg-white text-black font-bold rounded-xl uppercase tracking-widest hover:bg-slate-200 transition mb-3">
+          Next Grid
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- PUZZLE DATABASE (6x6 Valid Grids) ---
+    // 0 = Empty, 1 = Sun, 2 = Moon
+    // 'locked' array defines initial state
+    const PUZZLES = [
+      {
+        id: 1,
+        // Solution Grid
+        solution: [
+          [1,2,1,2,1,2],
+          [2,1,2,1,2,1],
+          [1,1,2,2,1,2],
+          [2,2,1,1,2,1],
+          [1,2,1,2,2,1],
+          [2,1,2,1,1,2]
+        ],
+        // Initial setup (Null = empty, Number = Locked)
+        initial: [
+          [1,null,null,2,null,null],
+          [null,null,2,null,null,1],
+          [null,1,null,null,1,null],
+          [2,null,null,1,null,null],
+          [null,null,1,null,null,1],
+          [null,1,null,null,null,2]
+        ]
+      },
+      {
+        id: 2,
+        solution: [
+          [2,1,1,2,1,2],
+          [1,2,2,1,2,1],
+          [1,2,1,2,1,2],
+          [2,1,2,1,2,1],
+          [2,1,1,2,1,2],
+          [1,2,2,1,2,1]
+        ],
+        initial: [
+          [null,1,1,null,null,null],
+          [null,null,null,1,null,null],
+          [1,null,1,null,null,2],
+          [null,null,null,1,2,null],
+          [null,1,null,null,null,null],
+          [1,null,null,1,null,1]
+        ]
+      },
+      {
+        id: 3,
+        solution: [
+          [1,1,2,1,2,2],
+          [2,2,1,2,1,1],
+          [1,1,2,1,2,2],
+          [2,1,1,2,2,1],
+          [1,2,2,1,1,2],
+          [2,2,1,2,1,1]
+        ],
+        initial: [
+          [1,null,null,null,2,null],
+          [null,2,null,2,null,1],
+          [null,1,2,null,null,null],
+          [null,null,null,null,null,1],
+          [null,2,2,null,null,null],
+          [2,null,null,2,null,null]
+        ]
+      }
+    ];
+
+    // --- STATE ---
+    let currentPuzzle;
+    let userGrid = []; // 6x6 array
+    let timerInterval;
+    let startTime;
+    let isComplete = false;
+
+    // --- INIT ---
+    window.onload = () => {
+      loadRandomPuzzle();
+      if(window.GameEngine) window.GameEngine.trackEvent('game_start', { game: 'Solar Grid' });
+    };
+
+    function loadRandomPuzzle() {
+      const idx = Math.floor(Math.random() * PUZZLES.length);
+      currentPuzzle = PUZZLES[idx];
+      
+      // Initialize User Grid based on 'initial'
+      userGrid = currentPuzzle.initial.map(row => row.map(val => val === null ? 0 : val));
+      
+      renderGrid();
+      startTimer();
+      isComplete = false;
+      document.getElementById('win-modal').classList.add('hidden');
+    }
+
+    // --- RENDER ---
+    function renderGrid() {
+      const container = document.getElementById('game-grid');
+      container.innerHTML = '';
+      
+      for(let r=0; r<6; r++) {
+        for(let c=0; c<6; c++) {
+          const val = userGrid[r][c];
+          const isLocked = currentPuzzle.initial[r][c] !== null;
+          
+          const cell = document.createElement('div');
+          cell.className = `cell ${isLocked ? 'locked' : ''}`;
+          cell.dataset.state = val;
+          cell.dataset.r = r;
+          cell.dataset.c = c;
+          
+          if(!isLocked) {
+            cell.onclick = () => toggleCell(r, c);
+          }
+
+          // Icon Logic
+          if(val === 1) cell.innerHTML = '<i class="fas fa-sun animate-pop"></i>';
+          else if(val === 2) cell.innerHTML = '<i class="fas fa-moon animate-pop"></i>';
+          
+          container.appendChild(cell);
+        }
+      }
+      updateCounts();
+    }
+
+    function updateCounts() {
+      // Just a visual aid, optional logic here to count totals
+    }
+
+    // --- LOGIC ---
+    function toggleCell(r, c) {
+      if(isComplete) return;
+      
+      // Cycle: 0 -> 1 -> 2 -> 0
+      let val = userGrid[r][c];
+      val = (val + 1) > 2 ? 0 : val + 1;
+      userGrid[r][c] = val;
+      
+      // Update DOM directly for performance
+      const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+      cell.dataset.state = val;
+      if(val === 1) cell.innerHTML = '<i class="fas fa-sun animate-pop"></i>';
+      else if(val === 2) cell.innerHTML = '<i class="fas fa-moon animate-pop"></i>';
+      else cell.innerHTML = '';
+      
+      // Remove error state if exists
+      cell.classList.remove('error');
+    }
+
+    function checkPuzzle() {
+      let isCorrect = true;
+      let isFull = true;
+      const flatSol = currentPuzzle.solution.flat();
+      const flatUser = userGrid.flat();
+
+      // 1. Check Completeness & Match
+      flatUser.forEach((val, i) => {
+        if(val === 0) isFull = false;
+        if(val !== 0 && val !== flatSol[i]) {
+          // Highlight error
+          const r = Math.floor(i / 6);
+          const c = i % 6;
+          const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+          cell.classList.add('error');
+          setTimeout(() => cell.classList.remove('error'), 1000);
+          isCorrect = false;
+        }
+      });
+
+      if (isFull && isCorrect) {
+        endGame();
+      } else if (!isFull) {
+        // Optional: Toast "Grid not full"
+      }
+    }
+
+    function resetPuzzle() {
+      if(confirm("Clear board?")) {
+        userGrid = currentPuzzle.initial.map(row => row.map(val => val === null ? 0 : val));
+        renderGrid();
+      }
+    }
+
+    function endGame() {
+      isComplete = true;
+      clearInterval(timerInterval);
+      document.getElementById('final-time').innerText = document.getElementById('timer').innerText;
+      document.getElementById('win-modal').classList.remove('hidden');
+      
+      if(window.GameEngine) {
+        window.GameEngine.addXP(200);
+        window.GameEngine.saveGameResult("Solar Grid", 200, 1, { time: document.getElementById('timer').innerText });
+      }
+    }
+
+    function nextPuzzle() {
+      location.reload();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const d = Math.floor((Date.now() - startTime)/1000);
+        const m = Math.floor(d/60).toString().padStart(2,'0');
+        const s = (d%60).toString().padStart(2,'0');
+        document.getElementById('timer').innerText = `${m}:${s}`;
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

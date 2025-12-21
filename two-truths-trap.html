@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Two Truths & a Trap • Logic Decryption | QuizRealm</title>
+  <meta name="description" content="Identify the logical fallacy. 3 statements appear, but one is a lie. Deduce the trap to clear the level.">
+  <meta name="theme-color" content="#020202">
+
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="game-engine.js"></script>
+  <script src="components.js" defer></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&family=Bungee&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Rajdhani', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace'],
+            arcade: ['Bungee', 'cursive']
+          },
+          colors: {
+            neonCyan: '#22d3ee',
+            neonPink: '#f472b6',
+            neonYellow: '#facc15',
+            neonRed: '#ef4444',
+            bgDark: '#020202',
+            glass: 'rgba(15, 23, 42, 0.7)'
+          },
+          animation: {
+            'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+            'slide-up': 'slideUp 0.3s ease-out forwards',
+            'pulse-glow': 'pulseGlow 2s infinite',
+          },
+          keyframes: {
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 5px rgba(34, 211, 238, 0.2)' },
+              '50%': { boxShadow: '0 0 20px rgba(34, 211, 238, 0.5)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #020202;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(34, 211, 238, 0.08), transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(244, 114, 182, 0.08), transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .glass-panel {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .option-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .option-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(34, 211, 238, 0.5);
+      transform: translateY(-2px);
+    }
+    .option-card:active { transform: scale(0.98); }
+    
+    .option-card.correct {
+      background: rgba(34, 211, 238, 0.15);
+      border-color: #22d3ee;
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+    }
+    .option-card.wrong {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: #ef4444;
+      animation: shake 0.4s ease-in-out;
+    }
+
+    /* Explanation Box */
+    .explanation-box {
+      background: rgba(0,0,0,0.4);
+      border-left: 4px solid #22d3ee;
+    }
+
+    /* Timer Bar */
+    .timer-container {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22d3ee, #f472b6);
+      transition: width 1s linear;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-3xl mx-auto px-4 py-8 relative z-10">
+
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <div class="text-[10px] font-mono uppercase tracking-widest text-neonCyan mb-1">Logic Module</div>
+        <h1 class="font-display font-black text-3xl md:text-5xl text-white uppercase tracking-wider leading-none">
+          TWO TRUTHS <br><span class="text-slate-500 text-2xl md:text-4xl">& A TRAP</span>
+        </h1>
+      </div>
+      <div class="text-right">
+        <div class="text-xs text-slate-400 font-mono">Score</div>
+        <div id="score-display" class="text-3xl font-display font-bold text-white">0</div>
+      </div>
+    </div>
+
+    <div class="glass-panel rounded-2xl relative overflow-hidden flex flex-col min-h-[500px]">
+      
+      <div class="timer-container absolute top-0 left-0 right-0 z-20">
+        <div id="timer-bar" class="timer-fill" style="width: 100%;"></div>
+      </div>
+
+      <div class="p-6 md:p-10 flex flex-col h-full justify-between">
+        
+        <div class="flex justify-between items-center mb-6 font-mono text-sm">
+          <div class="text-slate-400">CASE <span id="level-display" class="text-white font-bold">1</span>/10</div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs uppercase tracking-widest opacity-70">Integrity:</span>
+            <div id="lives-container" class="flex gap-1 text-neonCyan">
+              <i class="fas fa-square-full text-[10px]"></i><i class="fas fa-square-full text-[10px]"></i><i class="fas fa-square-full text-[10px]"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-white font-display text-xl md:text-2xl uppercase tracking-wide mb-2">Identify the False Statement</h2>
+          <p class="text-slate-400 text-sm font-mono">Two of these facts are logically sound. One is a fabrication.</p>
+        </div>
+
+        <div id="options-grid" class="flex flex-col gap-4">
+          </div>
+
+        <div id="feedback-area" class="hidden mt-6 animate-slide-up">
+          <div class="explanation-box p-4 rounded-r-lg">
+            <div id="feedback-title" class="font-bold text-white uppercase mb-1">Logic Check</div>
+            <p id="feedback-text" class="text-slate-300 text-sm leading-relaxed"></p>
+          </div>
+          <button onclick="nextLevel()" class="mt-4 w-full py-3 bg-neonCyan text-black font-bold uppercase tracking-widest rounded-lg hover:bg-cyan-300 transition">
+            Next Case <i class="fas fa-arrow-right ml-2"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <div class="glass-panel p-8 rounded-2xl max-w-sm w-full text-center relative border-t-4 border-t-neonCyan">
+      
+      <div class="mb-6">
+        <div id="modal-icon" class="text-5xl mb-4 text-neonCyan"></div>
+        <h2 id="modal-title" class="font-display font-black text-4xl text-white uppercase"></h2>
+        <p id="modal-msg" class="text-slate-400 font-mono text-xs mt-2 uppercase tracking-widest"></p>
+      </div>
+
+      <div class="bg-white/5 rounded-lg p-4 border border-white/5 mb-6">
+        <div class="grid grid-cols-2 gap-4">
+           <div>
+             <div class="text-[10px] uppercase font-bold text-slate-500">Correct</div>
+             <div id="resCorrect" class="text-xl font-mono text-white font-bold">0/10</div>
+           </div>
+           <div>
+             <div class="text-[10px] uppercase font-bold text-slate-500">XP Gained</div>
+             <div id="resXP" class="text-xl font-mono text-neonCyan font-bold">+0</div>
+           </div>
+        </div>
+      </div>
+
+      <button onclick="location.reload()" class="w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold font-mono text-sm rounded-xl uppercase tracking-widest hover:opacity-90 transition mb-3">
+        Re-Initialize
+      </button>
+      <button onclick="location.href='index.html'" class="w-full py-3 bg-transparent hover:bg-white/5 text-slate-400 hover:text-white font-mono text-xs rounded-xl border border-white/10 transition uppercase tracking-widest">
+        Return to Hub
+      </button>
+
+    </div>
+  </div>
+
+  <script>
+    // --- THE RICH DATABASE (Extendable) ---
+    // Format: { id: X, category: "", options: [ {text: "", isTrap: boolean} ], explanation: "" }
+    const QUESTION_BANK = [
+      {
+        id: 1, category: "Math",
+        options: [
+          { text: "2 is the only even prime number.", isTrap: false },
+          { text: "Every square number has an odd number of divisors.", isTrap: false },
+          { text: "1 is the smallest prime number.", isTrap: true }
+        ],
+        explanation: "1 is not a prime number because it has only one divisor (itself). Primes must have exactly two divisors."
+      },
+      {
+        id: 2, category: "Geography",
+        options: [
+          { text: "Africa is the only continent in all four hemispheres.", isTrap: false },
+          { text: "Russia has a larger surface area than Pluto.", isTrap: false },
+          { text: "The Atlantic Ocean is the largest ocean on Earth.", isTrap: true }
+        ],
+        explanation: "The Pacific Ocean is the largest. The Atlantic is the second largest."
+      },
+      {
+        id: 3, category: "Biology",
+        options: [
+          { text: "Sharks do not have bones.", isTrap: false },
+          { text: "Bananas are genetically berries.", isTrap: false },
+          { text: "Octopuses have two hearts.", isTrap: true }
+        ],
+        explanation: "Octopuses actually have three hearts: two pump blood to the gills, one pumps it to the rest of the body."
+      },
+      {
+        id: 4, category: "Space",
+        options: [
+          { text: "A day on Venus is longer than a year on Venus.", isTrap: false },
+          { text: "Sound cannot travel through a vacuum.", isTrap: false },
+          { text: "The Sun is a yellow dwarf star.", isTrap: false }, 
+          // Wait, logic error in my writing above. Fixing manually in code:
+          // The Trap must be false. 
+          // Let's rewrite Question 4 properly.
+        ],
+        // REWRITE Q4 in logic below
+      },
+      // ... Let's build the array properly now ...
+    ];
+    
+    // OVERWRITING WITH CLEAN, FULL LIST
+    const FULL_DATABASE = [
+       {
+        id: 1, category: "Math",
+        options: [
+          { text: "2 is the only even prime number.", isTrap: false },
+          { text: "Every integer greater than 1 is either prime or composite.", isTrap: false },
+          { text: "1 is a prime number.", isTrap: true }
+        ],
+        explanation: "1 is neither prime nor composite. It is a unit."
+      },
+      {
+        id: 2, category: "Astronomy",
+        options: [
+          { text: "A day on Venus is longer than a year on Venus.", isTrap: false },
+          { text: "Neutron stars are the densest stars in the universe.", isTrap: false },
+          { text: "The Great Red Spot is on Saturn.", isTrap: true }
+        ],
+        explanation: "The Great Red Spot is a massive storm on Jupiter, not Saturn."
+      },
+      {
+        id: 3, category: "Physics",
+        options: [
+          { text: "Water expands when it freezes.", isTrap: false },
+          { text: "Photons have no mass.", isTrap: false },
+          { text: "Sound travels faster in air than in water.", isTrap: true }
+        ],
+        explanation: "Sound travels much faster in water (approx 1,480 m/s) than in air (343 m/s) because water is denser."
+      },
+      {
+        id: 4, category: "Biology",
+        options: [
+          { text: "Fungi are more closely related to animals than plants.", isTrap: false },
+          { text: "Strawberries are not true berries.", isTrap: false },
+          { text: "Blue whales are the largest fish in the ocean.", isTrap: true }
+        ],
+        explanation: "Blue whales are mammals, not fish. The whale shark is the largest fish."
+      },
+      {
+        id: 5, category: "Geography",
+        options: [
+          { text: "Mount Everest is the tallest mountain above sea level.", isTrap: false },
+          { text: "The Amazon is the longest river in the world.", isTrap: true }, // Debate exists but Nile is generally accepted
+          { text: "Antarctica is the largest desert on Earth.", isTrap: false }
+        ],
+        explanation: "The Nile is generally considered the longest river (6,650 km) vs Amazon (6,400 km), though this is debated, it is the safest trap logic."
+      },
+      {
+        id: 6, category: "Logic",
+        options: [
+          { text: "If All A are B, and All B are C, then All A are C.", isTrap: false },
+          { text: "If X is even, X+2 must be even.", isTrap: false },
+          { text: "If Something is not A, it must be B.", isTrap: true }
+        ],
+        explanation: "False dichotomy fallacy. Something could be C, D, or E."
+      },
+      {
+        id: 7, category: "Chemistry",
+        options: [
+          { text: "Gold is a noble metal.", isTrap: false },
+          { text: "The pH of pure water is 7.", isTrap: false },
+          { text: "Oxygen is the most abundant gas in the atmosphere.", isTrap: true }
+        ],
+        explanation: "Nitrogen (78%) is the most abundant gas. Oxygen is second (21%)."
+      },
+      {
+        id: 8, category: "History",
+        options: [
+          { text: "Cleopatra lived closer to the iPhone release than the Pyramids.", isTrap: false },
+          { text: "The University of Oxford is older than the Aztec Empire.", isTrap: false },
+          { text: "Napoleon was famously short for his time.", isTrap: true }
+        ],
+        explanation: "Napoleon was average height for a Frenchman of his time. The 'short' myth came from unit conversion errors."
+      },
+      {
+        id: 9, category: "Anatomy",
+        options: [
+          { text: "The femur is the longest bone in the body.", isTrap: false },
+          { text: "The skin is the largest organ.", isTrap: false },
+          { text: "Blood turns blue when it lacks oxygen.", isTrap: true }
+        ],
+        explanation: "Blood is always red (bright when oxygenated, dark maroon when deoxygenated). Veins look blue due to light scattering."
+      },
+      {
+        id: 10, category: "Language",
+        options: [
+          { text: "English is a Germanic language.", isTrap: false },
+          { text: "Mandarin Chinese has the most native speakers.", isTrap: false },
+          { text: "Spanish is the official language of Brazil.", isTrap: true }
+        ],
+        explanation: "Portuguese is the official language of Brazil."
+      },
+      {
+        id: 11, category: "Technology",
+        options: [
+          { text: "The first computer bug was an actual moth.", isTrap: false },
+          { text: "Wi-Fi stands for Wireless Fidelity.", isTrap: true },
+          { text: "Python is named after Monty Python.", isTrap: false }
+        ],
+        explanation: "Wi-Fi is a marketing term and doesn't officially stand for anything, despite the common 'Wireless Fidelity' myth."
+      },
+      {
+        id: 12, category: "Food",
+        options: [
+          { text: "White chocolate contains no cocoa solids.", isTrap: false },
+          { text: "Peanuts are legumes, not nuts.", isTrap: false },
+          { text: "Caesar Salad originated in Italy.", isTrap: true }
+        ],
+        explanation: "Caesar Salad was invented in Tijuana, Mexico."
+      },
+      {
+        id: 13, category: "Geometry",
+        options: [
+          { text: "A triangle can have two right angles.", isTrap: true },
+          { text: "A square is a rectangle.", isTrap: false },
+          { text: "The sum of angles in a triangle is 180 degrees.", isTrap: false }
+        ],
+        explanation: "If a triangle had two 90 degree angles, the lines would be parallel and never meet to form a third vertex."
+      },
+      {
+        id: 14, category: "Cinema",
+        options: [
+          { text: "Avatar is the highest grossing movie of all time.", isTrap: false },
+          { text: "The Wizard of Oz was the first color movie.", isTrap: true },
+          { text: "Toy Story was the first feature-length CGI film.", isTrap: false }
+        ],
+        explanation: "Color films existed before Wizard of Oz (1939), though it popularized Technicolor."
+      },
+      {
+        id: 15, category: "Elements",
+        options: [
+          { text: "Diamond is made of carbon.", isTrap: false },
+          { text: "The symbol for Iron is Fe.", isTrap: false },
+          { text: "Helium is flammable.", isTrap: true }
+        ],
+        explanation: "Helium is a noble gas and is non-flammable (unlike Hydrogen)."
+      }
+    ];
+
+    // --- GAME VARIABLES ---
+    let currentSessionQuestions = [];
+    let currentIdx = 0;
+    let score = 0;
+    let lives = 3;
+    let isProcessing = false;
+    let startTime = 0;
+    let ghostClicks = 0;
+
+    // --- ELEMENTS ---
+    const els = {
+      grid: document.getElementById('options-grid'),
+      levelDisplay: document.getElementById('level-display'),
+      scoreDisplay: document.getElementById('score-display'),
+      livesContainer: document.getElementById('lives-container'),
+      timerBar: document.getElementById('timer-bar'),
+      feedbackArea: document.getElementById('feedback-area'),
+      feedbackText: document.getElementById('feedback-text'),
+      feedbackTitle: document.getElementById('feedback-title')
+    };
+
+    // --- LOGIC ---
+    document.addEventListener('click', (e) => {
+      if(!e.target.closest('button')) ghostClicks++;
+    });
+
+    window.onload = initGame;
+
+    function initGame() {
+      // 1. Pick 10 random questions
+      currentSessionQuestions = getRandomSet(FULL_DATABASE, 10);
+      currentIdx = 0;
+      score = 0;
+      lives = 3;
+      ghostClicks = 0;
+      startTime = Date.now();
+      isProcessing = false;
+
+      updateUI();
+      renderLevel();
+      
+      if(window.dataLayer) window.dataLayer.push({'event': 'game_start', 'game_name': 'Two Truths Trap'});
+    }
+
+    function getRandomSet(array, n) {
+      const shuffled = [...array].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, n);
+    }
+
+    function renderLevel() {
+      if(currentIdx >= currentSessionQuestions.length) return endGame(true);
+
+      const q = currentSessionQuestions[currentIdx];
+      const shuffledOptions = [...q.options].sort(() => 0.5 - Math.random());
+      
+      els.levelDisplay.innerText = currentIdx + 1;
+      els.feedbackArea.classList.add('hidden');
+      els.grid.innerHTML = '';
+      els.timerBar.style.width = '100%';
+
+      shuffledOptions.forEach((opt) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-card w-full p-5 rounded-xl text-left flex items-center justify-between group';
+        btn.innerHTML = `
+          <div class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded-full border border-slate-600 flex items-center justify-center text-slate-400 font-mono text-xs group-hover:border-neonCyan group-hover:text-neonCyan transition">?</div>
+            <span class="text-slate-200 group-hover:text-white font-medium text-sm md:text-base">${opt.text}</span>
+          </div>
+          <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 text-neonCyan transition"></i>
+        `;
+        btn.onclick = () => handleChoice(opt, btn, q);
+        els.grid.appendChild(btn);
+      });
+
+      isProcessing = false;
+    }
+
+    function handleChoice(option, btn, questionData) {
+      if(isProcessing) return;
+      isProcessing = true;
+
+      // Disable all buttons
+      Array.from(els.grid.children).forEach(b => b.classList.add('pointer-events-none', 'opacity-80'));
+
+      if(option.isTrap) {
+        // CORRECT (Found the trap)
+        btn.classList.remove('opacity-80');
+        btn.classList.add('correct');
+        score += 100;
+        
+        showFeedback(true, questionData.explanation);
+        
+      } else {
+        // WRONG (Picked a truth)
+        btn.classList.remove('opacity-80');
+        btn.classList.add('wrong');
+        lives--;
+        updateUI();
+
+        // Highlight the actual trap
+        // We have to find which button contained the trap text. 
+        // Note: In a real app we might map IDs, but text compare works here.
+        const trapOption = questionData.options.find(o => o.isTrap);
+        Array.from(els.grid.children).forEach(b => {
+          if(b.innerText.includes(trapOption.text)) {
+            b.classList.add('correct'); // Show them what the answer was
+          }
+        });
+
+        if(lives <= 0) {
+           showFeedback(false, "System Failure. Integrity compromised.");
+           setTimeout(() => endGame(false), 2000);
+           return;
+        }
+
+        showFeedback(false, questionData.explanation);
+      }
+    }
+
+    function showFeedback(success, text) {
+      els.feedbackArea.classList.remove('hidden');
+      els.feedbackText.innerText = text;
+      
+      if(success) {
+        els.feedbackTitle.innerText = "TRAP DETECTED";
+        els.feedbackTitle.className = "font-bold text-neonCyan uppercase mb-1";
+      } else {
+        els.feedbackTitle.innerText = "ERROR: THAT STATEMENT WAS TRUE";
+        els.feedbackTitle.className = "font-bold text-neonRed uppercase mb-1";
+      }
+    }
+
+    function nextLevel() {
+      currentIdx++;
+      renderLevel();
+    }
+
+    function updateUI() {
+      els.scoreDisplay.innerText = score;
+      let icons = '';
+      for(let i=0; i<3; i++) {
+        if(i < lives) icons += '<i class="fas fa-square-full text-[10px]"></i>';
+        else icons += '<i class="far fa-square text-[10px] opacity-30"></i>';
+      }
+      els.livesContainer.innerHTML = icons;
+    }
+
+    function endGame(win) {
+      const modal = document.getElementById('result-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const modalIcon = document.getElementById('modal-icon');
+      const modalMsg = document.getElementById('modal-msg');
+      
+      modal.classList.remove('hidden');
+      
+      let xp = Math.floor(score * 0.5);
+
+      if(win) {
+        modalTitle.innerText = "LOGIC VERIFIED";
+        modalIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+        modalMsg.innerText = "All traps successfully neutralized.";
+        xp += 50; // Completion bonus
+      } else {
+        modalTitle.innerText = "ANALYSIS FAILED";
+        modalTitle.classList.replace('text-white', 'text-neonRed');
+        modalIcon.innerHTML = '<i class="fas fa-times-circle text-neonRed"></i>';
+        modalIcon.classList.remove('text-neonCyan');
+        modalMsg.innerText = "Too many logic errors.";
+      }
+
+      document.getElementById('resCorrect').innerText = `${currentIdx}/${currentSessionQuestions.length}`;
+      document.getElementById('resXP').innerText = `+${xp}`;
+
+      // SAVE TO ENGINE
+      if(window.GameEngine) {
+        window.GameEngine.addXP(xp);
+        window.GameEngine.saveGameResult(
+           "Two Truths Trap",
+           score,
+           1,
+           {
+             won: win,
+             levelsCompleted: currentIdx,
+             ghostClicks: ghostClicks
+           }
+        );
+      }
+      
+      if(window.dataLayer) {
+        window.dataLayer.push({
+          'event': 'game_complete',
+          'game_result': win ? 'win' : 'lose',
+          'score': score
+        });
+      }
+    }
+  </script>
+</body>
+</html>

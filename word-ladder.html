@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Neon Ladder • Word Association Protocol | QuizRealm</title>
+  <meta name="description" content="Change one letter at a time. Bridge the gap between the Start word and the Target word. A premium vocabulary and logic ladder inside QuizRealm.">
+  <meta name="theme-color" content="#020202">
+
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="game-engine.js"></script>
+  <script src="components.js" defer></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&family=Bungee&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Rajdhani', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace'],
+            arcade: ['Bungee', 'cursive']
+          },
+          colors: {
+            neonGreen: '#00ff41',
+            neonPink: '#ff00ff',
+            neonCyan: '#00ffff',
+            bgDark: '#020202',
+            panel: 'rgba(20, 20, 20, 0.8)'
+          },
+          animation: {
+            'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+            'slide-in': 'slideIn 0.3s ease-out forwards',
+            'glow': 'glow 2s infinite alternate',
+          },
+          keyframes: {
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+            },
+            slideIn: {
+              '0%': { opacity: '0', transform: 'translateY(-10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            glow: {
+              'from': { textShadow: '0 0 5px #00ff41, 0 0 10px #00ff41' },
+              'to': { textShadow: '0 0 10px #00ff41, 0 0 20px #00ff41' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #020202;
+      background-image:
+        linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .glass-panel {
+      background: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    }
+
+    .step-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.5rem;
+    }
+
+    .letter-box {
+      width: 45px;
+      height: 55px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .letter-box.changed {
+      border-color: #00ff41;
+      color: #00ff41;
+      background: rgba(0, 255, 65, 0.1);
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+    }
+
+    .letter-box.target {
+      border-color: #ff00ff;
+      color: #ff00ff;
+      background: rgba(255, 0, 255, 0.1);
+    }
+
+    .word-input {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid #333;
+      color: white;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 2rem;
+      text-align: center;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .word-input:focus {
+      border-color: #00ff41;
+    }
+
+    .word-input::placeholder {
+      color: #333;
+      letter-spacing: 0;
+      font-size: 1rem;
+    }
+
+    .rung-connector {
+      width: 2px;
+      height: 12px;
+      background: #333;
+      margin: 0 auto 12px auto;
+      opacity: 0.9;
+    }
+
+    #ladder-container {
+      width: 100%;
+      max-height: 270px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    #ladder-container::-webkit-scrollbar { width: 8px; }
+    #ladder-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+    #ladder-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-lg mx-auto px-4 py-8 relative z-10">
+    <div class="text-center mb-8">
+      <div class="text-[10px] font-mono uppercase tracking-widest text-neonGreen mb-1">Lexicon Bridge</div>
+      <h1 class="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-wider animate-glow">NEON LADDER</h1>
+      <p class="text-slate-400 text-xs font-mono mt-2 uppercase tracking-widest">Change 1 Letter • Reach the Target</p>
+    </div>
+
+    <div class="flex justify-between items-center mb-6 px-4">
+      <div class="text-xs text-slate-500 font-mono uppercase">Level <span id="level-num" class="text-white font-bold">1</span></div>
+      <div class="text-xs text-slate-500 font-mono uppercase">Moves: <span id="move-count" class="text-neonGreen font-bold">0</span></div>
+    </div>
+
+    <div class="glass-panel rounded-2xl p-6 min-h-[420px] flex flex-col">
+      <div id="ladder-container" class="flex-grow flex flex-col items-center"></div>
+
+      <div class="mt-6 border-t border-white/10 pt-6">
+        <div class="text-center mb-2 text-[10px] text-slate-500 uppercase tracking-widest">Next Step</div>
+        <form id="game-form" onsubmit="return handleInput(event)">
+          <input id="user-input" type="text" class="word-input" autocomplete="off" maxlength="5" placeholder="TYPE HERE" aria-label="Enter next word">
+          <button type="submit" class="hidden">Submit</button>
+        </form>
+        <div id="error-msg" class="text-center font-mono text-xs mt-3 h-4 opacity-0 transition-opacity"></div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <div class="text-[10px] text-slate-500 uppercase tracking-widest mb-2">Target Destination</div>
+        <div id="target-display" class="step-row"></div>
+        <div class="mt-3 text-[10px] font-mono uppercase tracking-widest text-slate-500">
+          Par: <span id="par-moves" class="text-white font-bold">—</span>
+          <span class="mx-2 text-slate-700">|</span>
+          Unverified: <span id="unverified-count" class="text-neonCyan font-bold">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-center gap-4">
+      <button onclick="restartLevel()" class="text-xs font-mono text-slate-500 hover:text-white uppercase tracking-widest">
+        <i class="fas fa-rotate mr-1"></i> Reset
+      </button>
+      <button onclick="giveUp()" class="text-xs font-mono text-slate-500 hover:text-red-500 uppercase tracking-widest">
+        <i class="fas fa-flag mr-1"></i> Reveal
+      </button>
+    </div>
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <div class="glass-panel p-8 rounded-2xl max-w-sm w-full text-center relative border-t-4 border-t-neonGreen animate-slide-in">
+      <i class="fas fa-link text-5xl text-neonGreen mb-4"></i>
+      <h2 class="font-display font-black text-3xl text-white uppercase mb-2">LINK ESTABLISHED</h2>
+      <p class="text-slate-400 font-mono text-xs mb-6 uppercase tracking-widest" id="result-subtitle">Connection Stable</p>
+
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="bg-white/5 rounded-lg p-3">
+          <div class="text-[10px] uppercase font-bold text-slate-500">Moves</div>
+          <div id="resMoves" class="text-xl font-mono text-white font-bold">0</div>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3">
+          <div class="text-[10px] uppercase font-bold text-slate-500">XP</div>
+          <div id="resXP" class="text-xl font-mono text-neonGreen font-bold">+0</div>
+        </div>
+      </div>
+
+      <button onclick="nextLevel()" class="w-full py-4 bg-neonGreen text-black font-bold font-mono text-sm rounded-xl uppercase tracking-widest hover:bg-green-400 transition mb-3">
+        Next Sequence
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const STRICT_MODE = new URLSearchParams(location.search).get("strict") === "1";
+
+    const DICT_RAW = `
+ABLE ACID ACNE ACRE ACTS ADDS AIDE AIDS AIMS AIRS AIRY ALAS ALLY ALOE ALSO ALTO AMEN AMID AMMO AMPS ANEW ANTS APEX ARCH AREA ARID ARMS ARMY ARTS ATOM AURA AUTO AVID AXES AXIS
+BABY BACK BAIL BAIT BAKE BALD BALL BAND BANG BANK BARK BARN BARS BASE BASH BATH BATS BEAD BEAK BEAM BEAN BEAR BEAT BEEF BEER BEET BEGS BELL BELT BEND BENT BEST BIAS BIDE BIDS BIKE BIND BIRD BITE BITS BLADE BLAME BLAND BLANK BLAST BLAZE BLEED BLEND BLESS BLIND BLINK BLOCK BLOOD BLOOM BLOWN BLUE BLUR BOAT BODY BOIL BOLD BOLT BOND BONE BOOK BOOM BOOT BORE BORN BOSS BOTH BOWL BRAG BRAN BRASS BRAVE BREAD BREAK BREED BRICK BRIDE BRIEF BRING BRINK BROAD BROKE BROOM BROWN BRUSH BUCK BUDS BULB BULK BULL BUNK BURN BURY BUSH BUSY
+CAGE CAKE CALM CAMP CANE CANS CAPE CARD CARE CARS CART CASE CASH CAST CATS CAVE CELL CENT CHAT CHEAP CHEAT CHECK CHEEK CHEER CHEST CHIEF CHILD CHILL CHIPS CHOIR CHOKE CHOP CHORD CITE CITY CLAD CLAIM CLAM CLAP CLAY CLEAN CLEAR CLERK CLICK CLIFF CLIMB CLING CLOCK CLONE CLOSE CLOTH CLOUD CLOWN CLUB CLUE COAL COAT CODE COIL COIN COLD COME CONE COOK COOL COPY CORD CORE CORK CORN COST COSY COUCH COUGH COUNT COURT COVER CRAFT CRANE CRASH CRAWL CRAZY CREAM CREEP CREW CRIB CROP CROW CROWN CRUDE CRUEL CRUSH CRUST CUBE CUFF CULT CUPS CURE CURL CURT CURVE CUTE CUTS CYCLE
+DAMP DANCE DARE DARK DART DASH DATA DATE DAWN DEAD DEAL DEAR DEBT DECK DEED DEEP DEER DEFY DENT DENY DESK DIAL DICE DIET DIME DINE DIRT DISC DISH DIVE DOCK DOES DOGS DOLL DOME DONE DOOM DOOR DOSE DOTS DOUBT DOVE DOWN DOZE DRAG DRAIN DRAMA DRANK DRAW DREAM DRESS DRIED DRIFT DRILL DRINK DRIVE DROP DRUG DRUM DRY DUCK DULL DUMP DUNE DUSK DUST DUTY
+EAGER EAGLE EARL EARN EARS EARTH EASE EAST EASY EATS ECHO EDGE EDIT EIGHT ELBOW ELDER ELITE ELSE EMPTY ENDS ENEMY ENJOY ENTER ENTRY ENVY EPIC EQUAL ERASE ERROR ESSAY ETCH EVEN EVENT EVER EVERY EVIL EXAM EXIST EXIT EYES
+FACE FACT FADE FAIL FAIR FAITH FAKE FALL FAME FANCY FANG FARM FAST FATE FEAR FEED FEEL FEES FEET FELL FELT FENCE FEND FERRY FEVER FEW FIBER FIELD FIERY FIFTH FIFTY FIGHT FILE FILL FILM FINAL FIND FINE FIRE FIRM FIRST FISH FIST FIVE FIX FLAG FLAME FLANK FLAP FLASH FLAT FLAW FLEE FLEET FLESH FLEW FLEX FLICK FLING FLINT FLIP FLOAT FLOCK FLOOD FLOOR FLOUR FLOWN FLUID FLUSH FLUTE FOAM FOCAL FOCUS FOG FOLD FOLK FOOD FOOL FOOT FORCE FORK FORM FORT FORTY FORUM FOUL FOUND FOUR FOX FRAME FRANK FRAUD FRAY FREE FRESH FRET FRIED FROG FROM FRONT FROST FROWN FROZE FRUIT FUEL FULL FUME FUND FUNNY FUR FURY FUSE
+GAIN GALE GAME GANG GAP GATE GAVE GAZE GEAR GEMS GENE GENT GERM GHOST GIANT GIFT GIRL GIVE GLAD GLASS GLAZE GLEAM GLIDE GLOOM GLORY GLOVE GLOW GLUE GNAT GOAL GOAT GOLD GOLF GONE GOOD GORE GOWN GRAB GRACE GRADE GRAIN GRAND GRANT GRAPE GRASP GRASS GRATE GRAVE GRAY GRAZE GREAT GREED GREEN GREET GREW GRID GRIEF GRILL GRIM GRIN GRIND GRIP GRIT GROAN GROOM GROSS GROUP GROVE GROW GROWN GRUB GUARD GUESS GUEST GUIDE GUILT GULF GULP GUM GUST GUT GUY GYM
+HACK HAIL HAIR HALF HALL HALT HAND HANG HARD HARM HARP HARSH HATE HAUL HAVE HAZE HEAD HEAL HEAP HEAR HEART HEAT HEAVE HEAVY HEDGE HEEL HEFT HEIR HELD HELM HELP HERD HERE HERO HIDE HIGH HIKE HILL HIND HINT HIRE HISS HIT HIVE HOARD HOBBY HOCK HOIST HOLD HOLE HOLY HOME HONEY HOOD HOOF HOOK HOOP HOPE HORN HORSE HOSE HOST HOT HOTEL HOUND HOUR HOUSE HOVER HOWL HUB HUGE HULL HUM HUMAN HUMID HUMP HUNCH HUNG HUNGER HUNT HURL HURRY HURT HUSH
+ICON IDEA IDEAL IDLE IDOL INCH INDEX INNER INPUT IRON ISLE ISSUE ITEM
+JAIL JAM JAR JAW JAZZ JEANS JEEP JELLY JERK JEST JET JEWEL JOB JOCK JOG JOIN JOINT JOKE JOLLY JOLT JOY JUDGE JUICE JUMP JUNK JURY JUST
+KEEN KEEP KEPT KEY KICK KID KILL KILO KIND KING KISS KIT KITE KNEE KNIT KNOB KNOT KNOW
+LACE LACK LADY LAID LAKE LAMB LAME LAMP LAND LANE LARGE LARK LASER LASH LAST LATE LATER LAUGH LAWN LAY LAYER LAZY LEAD LEAF LEAK LEAN LEAP LEARN LEASE LEASH LEAST LEAVE LEFT LEG LEGAL LEMON LEND LENGTH LENS LENT LESS LET LETTER LEVEL LEVER LIAR LICK LIFE LIFT LIGHT LIKE LIMB LIME LIMIT LIMP LINE LINK LION LIP LIQUID LIST LIT LIVE LIVER LOAD LOAF LOAN LOBBY LOBE LOCAL LOCK LODGE LOGIC LOIN LONE LONG LOOK LOOM LOOP LOOSE LOOT LORD LOSE LOSS LOT LOUD LOVE LOVER LOW LOYAL LUCK LUCKY LULL LUMP LUNCH LUNG LURE LURK LUSH
+MADE MAID MAIL MAIN MAKE MALE MALL MAN MANY MAPLE MARCH MARE MARK MARKET MARRY MARSH MART MASK MASS MAST MATCH MATE MATH MAZE MEAL MEAN MEANT MEAT MEDIA MEDIC MEET MELT MEMBER MEMO MERCY MERGE MERIT MERRY MESH MESS METAL METER METHOD METRO MICE MID MIGHT MILD MILE MILK MILL MIND MINE MINI MINOR MINT MINUS MIRROR MISER MISS MIST MITT MIX MOAN MOAT MOB MODE MODEL MOIST MOLD MOLE MOM MONEY MONTH MOOD MOON MORE MORAL MOSS MOST MOTH MOTION MOTOR MOUNT MOURN MOUSE MOUTH MOVE MOVIE MUCH MUCK MUD MUG MULE MURMUR MUSIC MUST MUTE MUTT MYTH
+NAIL NAME NARROW NASTY NATION NATIVE NAVY NEAR NEAT NECK NEED NEEDLE NERVE NEST NET NEVER NEWS NEXT NICE NICK NIECE NIGHT NINE NINTH NOBLE NOD NOISE NOISY NONE NOOK NOON NOSE NOTE NOTION NOUN NOVEL NOW NUDE NUDGE NUMB NURSE NUT
+OAK OAR OATH OATS OBEY OBJECT OCEAN ODD ODOR OFFER OFFICE OFTEN OIL OKAY OLD OLIVE OMEN OMIT ONCE ONE ONION ONLY ONTO OPEN OPERA ORAL ORANGE ORBIT ORDER ORGAN OTHER OTTER OUCH OUGHT OUNCE OUR OUT OUTER OVAL OVEN OVER OWL OWN OWNER OXEN OZONE
+PACE PACK PACT PAGE PAIL PAIN PAINT PAIR PALE PALM PAN PANEL PANIC PANT PAPER PARADE PARENT PARK PART PARTY PASS PAST PASTE PAT PATCH PATH PAUSE PAVE PAW PAY PEACE PEACH PEAK PEAR PEARL PEEP PEER PEN PENNY PEOPLE PEPPER PERCH PERIL PERIOD PERMIT PERSON PEST PET PETAL PETTY PHASE PHONE PHOTO PHRASE PIANO PICK PIE PIECE PIER PIG PILE PILL PILOT PIN PINCH PINE PINK PINT PIPE PIT PITCH PITY PLACE PLAIN PLAN PLANE PLANK PLANT PLATE PLAY PLEA PLEAD PLEASE PLEDGE PLOT PLOW PLUG PLUM PLUME PLUSH POCKET POEM POET POINT POISON POKE POLE POLICE POLISH POLL POND PONY POOL POOR PORT POSE POST POT POUCH POUND POUR POUT POWER PRAISE PRAY PRESS PRETTY PRICE PRIDE PRIM PRIME PRINCE PRINT PRIOR PRISM PRISON PRIZE PROBE PROOF PROPER PROUD PROVE PRUNE PUBLIC PUFF PULL PULP PULSE PUMP PUNCH PUPIL PUPPY PURE PURSE PUSH
+QUAIL QUAKE QUALM QUART QUEEN QUEST QUICK QUIET QUILL QUILT QUIT QUITE QUOTA QUOTE
+RABBI RACE RACK RADAR RADIO RAID RAIL RAIN RAISE RAKE RALLY RAM RANCH RANGE RANK RARE RASH RATE RATIO RATTLE RAVE RAW RAY RAZOR REACH REACT READ READY REAL REALM REAP REAR REBEL RECALL RECENT RECIPE RECITE RECORD RECOVER REED REEL REFER REFINE REFUSE REGAL REGARD REGION REGRET REIGN REIN RELAX RELAY RELEASE RELIEF RELY REMAIN REMARK REMEDY REMIND REMOTE REMOVE RENT REPAIR REPAY REPEAT REPLY REPORT RESCUE RESET RESIDE RESIGN RESIST RESOLVE RESORT RESOURCE RESPECT RESPOND REST RESULT RETAIN RETIRE RETURN REVEAL REVIEW REVISE REVIVE REWARD RHYME RICE RICH RIDE RIDGE RIFLE RIGHT RIGID RIM RING RIPE RISE RISK RITUAL RIVAL RIVER ROAD ROAR ROAST ROBIN ROBOT ROCK ROCKET ROD ROGUE ROLE ROLL ROMAN ROOF ROOM ROOT ROPE ROSE ROTTEN ROUGH ROUND ROUTE ROVE ROW ROYAL RUBY RUDE RUGBY RUIN RULE RULER RUMOR RUN RURAL RUSH RUST
+SACK SACRED SAFE SAFETY SAGE SAID SAIL SAINT SAKE SALAD SALARY SALE SALMON SALON SALT SAME SAMPLE SAND SANE SASH SAT SATIN SAUCE SAVE SAW SCALE SCALP SCAN SCANT SCAR SCARE SCARF SCENE SCENT SCHEME SCHOOL SCIENCE SCOLD SCOOP SCOPE SCORE SCORN SCOUT SCRAP SCREAM SCREEN SCREW SCRIPT SCRUB SEAL SEAM SEARCH SEASON SEAT SECOND SECRET SECTION SECURE SEED SEEK SEEM SEEN SEIZE SELDOM SELECT SELF SELL SEND SENSE SENT SENTRY SEQUENCE SERENE SERIES SERVE SESSION SET SETTLE SEVEN SEVER SEVERE SEW SEWER SHACK SHADE SHADOW SHAFT SHAKE SHALL SHALLOW SHAME SHAPE SHARE SHARK SHARP SHAVE SHEAR SHED SHEEP SHEER SHEET SHELF SHELL SHELTER SHERIFF SHIELD SHIFT SHINE SHIP SHIRT SHIVER SHOCK SHOE SHOOK SHOOT SHOP SHORE SHORT SHOT SHOULD SHOUT SHOVE SHOW SHOWER SHRED SHRIEK SHRIMP SHRINK SHRUG SHUN SHUT SHY SICK SIDE SIEGE SIGH SIGHT SIGN SIGNAL SILENCE SILENT SILK SILLY SILVER SIMPLE SIN SINCE SING SINGLE SINK SIP SIREN SISTER SIT SITE SIX SIZE SKATE SKETCH SKID SKILL SKIN SKIP SKIRT SKULL SKY SLAB SLACK SLAM SLANG SLANT SLAP SLASH SLATE SLAVE SLED SLEEK SLEEP SLEET SLEEVE SLEPT SLICE SLIDE SLIGHT SLIM SLING SLIP SLIT SLOPE SLOT SLOW SLUG SLUMP SLY SMACK SMALL SMART SMASH SMELL SMILE SMOKE SMOOTH SMUG SNACK SNAIL SNAKE SNAP SNARE SNARL SNATCH SNEAK SNEER SNIFF SNOB SNOOZE SNOW SOAK SOAP SOAR SOB SOBER SOCIAL SOCK SODA SOFT SOIL SOLD SOLDIER SOLE SOLID SOLO SOLVE SOME SON SONG SOON SOOT SORE SORRY SORT SOUL SOUND SOUP SOUR SOURCE SOUTH SPACE SPADE SPAN SPARE SPARK SPEAK SPEAR SPECIAL SPECK SPEECH SPEED SPELL SPEND SPHERE SPICE SPIDER SPIKE SPILL SPIN SPINE SPIRIT SPIT SPITE SPLASH SPLIT SPOIL SPOKE SPONGE SPOON SPORT SPOT SPOUT SPRAY SPREAD SPRING SPRINT SPUR SPY SQUAD SQUARE SQUASH SQUAT SQUEAK SQUEAL SQUEEZE SQUID STACK STAFF STAGE STAIN STAIR STAKE STALE STALK STALL STAMP STAND STAR STARE START STARVE STATE STATION STATUE STAY STEAD STEAK STEAL STEAM STEEL STEEP STEER STEM STEP STERN STEW STICK STIFF STILL STING STINK STIR STITCH STOCK STONE STOOL STOOP STOP STORE STORK STORM STORY STOUT STOVE STRAIN STRAND STRAP STRAW STRAY STREAM STREET STRESS STRETCH STRICT STRIDE STRIKE STRING STRIP STRIPE STROKE STRONG STUD STUDENT STUDY STUFF STUMP STUN STUNT STYLE SUBJECT SUBMIT SUBTLE SUBWAY SUCCEED SUCCESS SUCH SUDDEN SUFFER SUGAR SUGGEST SUIT SULK SUM SUMMER SUMMIT SUN SUNNY SUPER SUPPER SUPPLY SUPPORT SUPPOSE SUPREME SURE SURFACE SURGE SURPRISE SURROUND SURVEY SURVIVE SUSPECT SUSPEND SWALLOW SWAMP SWAN SWAP SWARM SWAY SWEAR SWEAT SWEEP SWEET SWELL SWEPT SWIFT SWIM SWINE SWING SWITCH SWORD SYMBOL SYRUP SYSTEM
+TABLE TACK TACT TAIL TAILOR TAKE TALE TALK TALL TAME TANK TAP TAPE TARGET TART TASK TASTE TAUGHT TAX TEA TEACH TEAM TEAR TEASE TECH TEETH TELL TEMPER TEMPT TEN TEND TENDER TENSE TENT TERM TERRIBLE TERROR TEST TEXT THAN THANK THAT THAW THEFT THEIR THEME THEN THEORY THERE THESE THEY THICK THIEF THIGH THIN THING THINK THIRD THIRST THIRTY THIS THORN THOSE THOUGH THOUGHT THREAD THREAT THREE THRILL THROAT THROUGH THROW THRUST THUD THUG THUMB THUMP THUNDER THUS TICK TICKET TIDE TIDY TIE TIGER TIGHT TILE TILL TILT TIME TIMID TIN TINY TIP TIRE TISSUE TITLE TOAD TOAST TODAY TOE TOGETHER TOIL TOILET TOKEN TOLD TOLL TOMATO TOMB TONE TONGUE TONIGHT TOO TOOK TOOL TOOTH TOP TOPIC TOPPLE TORCH TORN TORTOISE TOSS TOTAL TOUCH TOUGH TOUR TOW TOWEL TOWER TOWN TOY TRACE TRACK TRADE TRAFFIC TRAGEDY TRAIL TRAIN TRAIT TRAM TRAMP TRANSFER TRAP TRASH TRAVEL TRAY TREASURE TREAT TREE TRIAL TRIBE TRICK TRIED TRIM TRIP TRIUMPH TROOP TROPHY TROUBLE TRUCK TRUE TRUNK TRUST TRUTH TRY TUBE TUCK TUG TULIP TUMBLE TUNE TUNNEL TURKEY TURN TURTLE TUSK TUTOR TWIN TWIST TWO TYPE
+UGLY ULTRA UNABLE UNCLE UNDER UNEASY UNFAIR UNFIT UNFOLD UNHAPPY UNIFORM UNION UNIT UNITE UNITY UNLESS UNTIL UP UPON UPPER UPSET UPSIDE UPWARD URGE URGENT US USE USEFUL USER USUAL UTTER
+VACANT VAGUE VAIN VALLEY VALUE VALVE VAN VAPOR VARY VASE VAST VAULT VEIL VEIN VELVET VENDOR VENT VERB VERGE VERSE VERY VESSEL VEST VETO VEX VIBE VICE VIDEO VIEW VIGOR VILE VINE VIOLATE VIOLENT VIOLET VIOLIN VIRTUE VIRUS VISA VISIBLE VISION VISIT VISOR VISUAL VITAL VOICE VOID VOLCANO VOLUME VOTE VOW
+WADE WAGE WAGON WAIST WAIT WAKE WALK WALL WALNUT WANDER WANT WAR WARD WARM WARN WARP WARY WASH WASP WASTE WATCH WATER WAVE WAX WAY WEAK WEALTH WEAPON WEAR WEARY WEATHER WEAVE WEB WEDDING WEDGE WEED WEEK WEEP WEIGH WEIGHT WEIRD WELCOME WELD WELL WENT WEPT WERE WEST WET WHALE WHAT WHEAT WHEEL WHEN WHERE WHICH WHILE WHIM WHINE WHIP WHIRL WHISPER WHISTLE WHITE WHO WHOLE WHOM WHOSE WHY WICK WIDE WIDOW WIDTH WIELD WIFE WILD WILL WILLOW WIN WIND WINDOW WINE WING WINK WINNER WINTER WIPE WIRE WISDOM WISE WISH WIT WITCH WITH WITHER WITHIN WITHOUT WITNESS WOLF WOMAN WONDER WOOD WOOL WORD WORK WORLD WORM WORRY WORSE WORST WORTH WOULD WOUND WRAP WRATH WRECK WRIST WRITE WRITER WRONG
+YACHT YARD YARN YAWN YEAR YELL YELLOW YES YET YIELD YOKE YOLK YOUNG YOUR YOUTH
+ZANY ZEST ZONE ZOO ZOOM
+    `;
+
+    const BLOCKLIST = new Set(["ORGY","BUTT","SLUT","PORN","DICK"]);
+    const WORD_SET = new Set(
+      DICT_RAW.toUpperCase().trim().split(/\s+/)
+        .filter(w => (w.length === 4 || w.length === 5) && /^[A-Z]+$/.test(w) && !BLOCKLIST.has(w))
+    );
+
+    const FEATURED_FALLBACK = [
+      ["COLD","CORD","CARD","WARD","WARM"],
+      ["HEAD","HEAL","TEAL","TELL","TALL","TAIL"],
+      ["FISH","WISH","WASH","MASH","MATH"],
+      ["BLACK","BLANK","BLEND","BLEED"],
+      ["SMART","START","STARE","STORE","STONE"],
+      ["SHORE","SCORE","SCARE","SCALE"],
+      ["PLANT","PLANE","PLATE","SLATE","STATE"]
+    ];
+
+    function xmur3(str) {
+      let h = 1779033703 ^ str.length;
+      for (let i = 0; i < str.length; i++) {
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = (h << 13) | (h >>> 19);
+      }
+      return function() {
+        h = Math.imul(h ^ (h >>> 16), 2246822507);
+        h = Math.imul(h ^ (h >>> 13), 3266489909);
+        h ^= h >>> 16;
+        return h >>> 0;
+      };
+    }
+
+    function mulberry32(a) {
+      return function() {
+        let t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function rngForLevel(levelIdx) {
+      const day = new Date();
+      const y = day.getFullYear();
+      const m = String(day.getMonth() + 1).padStart(2, "0");
+      const d = String(day.getDate()).padStart(2, "0");
+      const seedStr = `${y}-${m}-${d}-NEONLADDER-${levelIdx}`;
+      const seed = xmur3(seedStr)();
+      return mulberry32(seed);
+    }
+
+    function bucketKey(word, i) {
+      return word.slice(0, i) + "_" + word.slice(i + 1);
+    }
+
+    const BUCKETS = { 4: new Map(), 5: new Map() };
+    const WORDS_BY_LEN = { 4: [], 5: [] };
+
+    for (const w of WORD_SET) {
+      WORDS_BY_LEN[w.length].push(w);
+      for (let i = 0; i < w.length; i++) {
+        const k = bucketKey(w, i);
+        const map = BUCKETS[w.length];
+        const arr = map.get(k);
+        if (arr) arr.push(w);
+        else map.set(k, [w]);
+      }
+    }
+
+    function neighbors(word) {
+      const map = BUCKETS[word.length];
+      const out = new Set();
+      for (let i = 0; i < word.length; i++) {
+        const arr = map.get(bucketKey(word, i));
+        if (!arr) continue;
+        for (let k = 0; k < arr.length; k++) {
+          const cand = arr[k];
+          if (cand !== word) out.add(cand);
+        }
+      }
+      return Array.from(out);
+    }
+
+    const CONNECTED = { 4: [], 5: [] };
+    for (const len of [4,5]) {
+      for (const w of WORDS_BY_LEN[len]) {
+        if (neighbors(w).length > 0) CONNECTED[len].push(w);
+      }
+    }
+
+    function diffCount(a, b) {
+      let d = 0;
+      for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d++;
+      return d;
+    }
+
+    function isPlausible(word) {
+      if (!/^[A-Z]{4,5}$/.test(word)) return false;
+      if (!/[AEIOU]/.test(word)) return false;
+      if (/([A-Z])\1\1/.test(word)) return false;
+      if (word.endsWith("S")) return false;
+      const bad = ["QJ","JQ","ZX","XZ","QX","XQ","VJ"];
+      for (let i = 0; i < bad.length; i++) if (word.includes(bad[i])) return false;
+      return true;
+    }
+
+    function findPath(start, target, maxVisited) {
+      if (start === target) return [start];
+      const q = [start];
+      let qi = 0;
+      const parent = new Map();
+      parent.set(start, "");
+      while (qi < q.length && parent.size < maxVisited) {
+        const cur = q[qi++];
+        const neigh = neighbors(cur);
+        for (let i = 0; i < neigh.length; i++) {
+          const nxt = neigh[i];
+          if (parent.has(nxt)) continue;
+          parent.set(nxt, cur);
+          if (nxt === target) {
+            const path = [target];
+            let p = cur;
+            while (p) {
+              path.push(p);
+              p = parent.get(p) || "";
+            }
+            path.reverse();
+            return path;
+          }
+          q.push(nxt);
+        }
+      }
+      return null;
+    }
+
+    function pick(arr, r) {
+      return arr[Math.floor(r() * arr.length)];
+    }
+
+    function generatePuzzle(levelIdx) {
+      const r = rngForLevel(levelIdx);
+      const len = r() > 0.5 ? 4 : 5;
+      const pool = CONNECTED[len].length ? CONNECTED[len] : WORDS_BY_LEN[len];
+
+      if (!pool.length) {
+        const fallback = FEATURED_FALLBACK[Math.floor(r() * FEATURED_FALLBACK.length)];
+        return { start: fallback[0], target: fallback[fallback.length - 1], par: fallback.length - 1, solution: fallback };
+      }
+
+      const difficulty = Math.min(7, 3 + Math.floor(levelIdx / 2));
+      const walkSteps = Math.max(2, Math.min(6, difficulty - 1));
+
+      for (let tries = 0; tries < 60; tries++) {
+        const start = pick(pool, r);
+        let cur = start;
+        const seen = new Set([start]);
+
+        for (let s = 0; s < walkSteps; s++) {
+          const n = neighbors(cur).filter(w => !seen.has(w));
+          if (!n.length) break;
+          cur = n[Math.floor(r() * n.length)];
+          seen.add(cur);
+        }
+
+        const target = cur;
+        if (start === target) continue;
+        if (diffCount(start, target) < 2) continue;
+
+        const path = findPath(start, target, 35000);
+        if (path && path.length >= 3 && path.length <= 8) {
+          return { start, target, par: path.length - 1, solution: path };
+        }
+      }
+
+      const fallback = FEATURED_FALLBACK[Math.floor(r() * FEATURED_FALLBACK.length)];
+      return { start: fallback[0], target: fallback[fallback.length - 1], par: fallback.length - 1, solution: fallback };
+    }
+
+    let currentLevelIdx = 0;
+    let currentWord = "";
+    let targetWord = "";
+    let moveHistory = [];
+    let moves = 0;
+    let startTime = 0;
+    let ghostClicks = 0;
+    let unverifiedMoves = 0;
+    let parMoves = 0;
+    let solutionPath = [];
+
+    window.onload = initGame;
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('input') && !e.target.closest('button')) ghostClicks++;
+    });
+
+    const userInputEl = () => document.getElementById("user-input");
+
+    function initGame() {
+      currentLevelIdx = 0;
+      loadLevel();
+      if (window.dataLayer) window.dataLayer.push({ event: "game_start", game_name: "Neon Ladder" });
+    }
+
+    function loadLevel() {
+      ghostClicks = 0;
+      unverifiedMoves = 0;
+
+      const puzzle = generatePuzzle(currentLevelIdx + 1);
+      currentWord = puzzle.start;
+      targetWord = puzzle.target;
+      parMoves = puzzle.par;
+      solutionPath = puzzle.solution.slice();
+
+      moveHistory = [currentWord];
+      moves = 0;
+      startTime = Date.now();
+
+      document.getElementById('level-num').innerText = currentLevelIdx + 1;
+      document.getElementById('move-count').innerText = "0";
+      document.getElementById('par-moves').innerText = String(parMoves);
+      document.getElementById('unverified-count').innerText = "0";
+
+      const modal = document.getElementById('result-modal');
+      if (modal) modal.classList.add('hidden');
+
+      const subtitle = document.getElementById("result-subtitle");
+      if (subtitle) subtitle.innerText = "Connection Stable";
+
+      const err = document.getElementById('error-msg');
+      if (err) {
+        err.style.opacity = 0;
+        err.innerText = "";
+      }
+
+      const input = userInputEl();
+      if (input) {
+        input.value = "";
+        input.setAttribute('maxlength', String(currentWord.length));
+        input.focus();
+      }
+
+      renderHistory();
+      renderTarget();
+
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "level_load",
+          game_name: "Neon Ladder",
+          level: currentLevelIdx + 1,
+          start_word: currentWord,
+          target_word: targetWord,
+          par: parMoves,
+          strict: STRICT_MODE ? 1 : 0
+        });
+      }
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('ladder-container');
+      container.innerHTML = '';
+
+      moveHistory.forEach((word, index) => {
+        const row = document.createElement('div');
+        row.className = 'step-row animate-slide-in';
+
+        const prevWord = index > 0 ? moveHistory[index - 1] : null;
+
+        for (let i = 0; i < word.length; i++) {
+          const letterDiv = document.createElement('div');
+          letterDiv.className = 'letter-box';
+          letterDiv.innerText = word[i];
+
+          if (prevWord && word[i] !== prevWord[i]) letterDiv.classList.add('changed');
+          row.appendChild(letterDiv);
+        }
+
+        container.appendChild(row);
+
+        if (index < moveHistory.length - 1) {
+          const connector = document.createElement('div');
+          connector.className = 'rung-connector';
+          container.appendChild(connector);
+        }
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function renderTarget() {
+      const container = document.getElementById('target-display');
+      container.innerHTML = '';
+      for (let i = 0; i < targetWord.length; i++) {
+        const div = document.createElement('div');
+        div.className = 'letter-box target';
+        div.innerText = targetWord[i];
+        container.appendChild(div);
+      }
+    }
+
+    function showMsg(msg, tone) {
+      const el = document.getElementById('error-msg');
+      el.innerText = msg;
+      el.style.opacity = 1;
+      el.classList.remove("text-red-500", "text-neonCyan", "text-neonGreen", "text-slate-400");
+      if (tone === "cyan") el.classList.add("text-neonCyan");
+      else if (tone === "green") el.classList.add("text-neonGreen");
+      else if (tone === "muted") el.classList.add("text-slate-400");
+      else el.classList.add("text-red-500");
+    }
+
+    function shakeInput() {
+      const input = userInputEl();
+      if (!input) return;
+      input.classList.add('animate-shake');
+      setTimeout(() => input.classList.remove('animate-shake'), 400);
+    }
+
+    document.addEventListener("input", (e) => {
+      if (e.target && e.target.id === "user-input") {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, "");
+      }
+    });
+
+    function handleInput(e) {
+      e.preventDefault();
+      const inputEl = userInputEl();
+      const guess = (inputEl.value || "").toUpperCase().trim().replace(/[^A-Z]/g, "");
+      const errEl = document.getElementById('error-msg');
+      if (errEl) errEl.style.opacity = 0;
+
+      if (guess.length !== currentWord.length) {
+        showMsg("Invalid Length", "red");
+        shakeInput();
+        if (window.dataLayer) window.dataLayer.push({ event: "invalid_move", reason: "length", level: currentLevelIdx + 1 });
+        return false;
+      }
+
+      if (guess === currentWord) {
+        showMsg("No Change Detected", "red");
+        shakeInput();
+        if (window.dataLayer) window.dataLayer.push({ event: "invalid_move", reason: "same_word", level: currentLevelIdx + 1 });
+        return false;
+      }
+
+      if (moveHistory.includes(guess)) {
+        showMsg("Already Used", "red");
+        shakeInput();
+        if (window.dataLayer) window.dataLayer.push({ event: "invalid_move", reason: "repeat", level: currentLevelIdx + 1 });
+        return false;
+      }
+
+      if (diffCount(guess, currentWord) !== 1) {
+        showMsg("Change Exactly ONE Letter", "red");
+        shakeInput();
+        if (window.dataLayer) window.dataLayer.push({ event: "invalid_move", reason: "diff_not_one", level: currentLevelIdx + 1 });
+        return false;
+      }
+
+      const inDict = WORD_SET.has(guess) || guess === targetWord;
+      if (!inDict) {
+        if (STRICT_MODE || !isPlausible(guess)) {
+          showMsg("Unknown Word", "red");
+          shakeInput();
+          if (window.dataLayer) window.dataLayer.push({ event: "invalid_move", reason: "unknown_word", level: currentLevelIdx + 1 });
+          return false;
+        }
+        unverifiedMoves++;
+        document.getElementById('unverified-count').innerText = String(unverifiedMoves);
+        showMsg("Unverified Word Accepted", "cyan");
+      }
+
+      moveHistory.push(guess);
+      currentWord = guess;
+      moves++;
+
+      document.getElementById('move-count').innerText = String(moves);
+      inputEl.value = "";
+      renderHistory();
+
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "move",
+          game_name: "Neon Ladder",
+          level: currentLevelIdx + 1,
+          moves: moves,
+          par: parMoves,
+          unverified: unverifiedMoves
+        });
+      }
+
+      if (currentWord === targetWord) winLevel(false);
+      return false;
+    }
+
+    function calcXP() {
+      const elapsed = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
+      const speedBonus = Math.max(0, 35 - Math.floor(elapsed / 4));
+      const efficiencyBonus = moves <= parMoves ? 55 : Math.max(0, 35 - (moves - parMoves) * 8);
+      const unverifiedPenalty = unverifiedMoves * 10;
+      const base = 45;
+      const xp = Math.max(10, base + speedBonus + efficiencyBonus - unverifiedPenalty);
+      return xp;
+    }
+
+    function winLevel(revealed) {
+      const xp = revealed ? 0 : calcXP();
+
+      document.getElementById('result-modal').classList.remove('hidden');
+      document.getElementById('resMoves').innerText = String(moves);
+      document.getElementById('resXP').innerText = `+${xp}`;
+      document.getElementById('result-subtitle').innerText = revealed ? "Sequence Revealed" : "Connection Stable";
+
+      if (window.GameEngine && typeof window.GameEngine.addXP === "function") {
+        window.GameEngine.addXP(xp);
+        if (typeof window.GameEngine.saveGameResult === "function") {
+          window.GameEngine.saveGameResult(
+            "Neon Ladder",
+            xp,
+            1,
+            { level: currentLevelIdx + 1, moves: moves, par: parMoves, unverified: unverifiedMoves, ghostClicks: ghostClicks, strict: STRICT_MODE ? 1 : 0, revealed: revealed ? 1 : 0 }
+          );
+        }
+      }
+
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "game_complete",
+          game_name: "Neon Ladder",
+          game_result: revealed ? "reveal" : "win",
+          level: currentLevelIdx + 1,
+          moves: moves,
+          par: parMoves,
+          xp: xp,
+          unverified: unverifiedMoves,
+          ghostClicks: ghostClicks
+        });
+      }
+    }
+
+    function nextLevel() {
+      currentLevelIdx++;
+      loadLevel();
+    }
+
+    function restartLevel() {
+      if (window.dataLayer) window.dataLayer.push({ event: "level_reset", game_name: "Neon Ladder", level: currentLevelIdx + 1 });
+      loadLevel();
+    }
+
+    function giveUp() {
+      const path = solutionPath && solutionPath.length ? solutionPath : findPath(moveHistory[0], targetWord, 35000);
+      if (path && path.length) {
+        moveHistory = path.slice();
+        currentWord = targetWord;
+        moves = Math.max(0, path.length - 1);
+        document.getElementById('move-count').innerText = String(moves);
+        renderHistory();
+        winLevel(true);
+      } else {
+        showMsg("No Solution Found (DB Too Small)", "muted");
+        shakeInput();
+      }
+    }
+  </script>
+</body>
+</html>

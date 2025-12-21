@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <title>Spelling Bee • Daily Hive | QuizRealm</title>
+  <meta name="description" content="Build words from 7 letters. The center letter is required in every word. Score points, find pangrams, and climb ranks in QuizRealm’s Spelling Bee." />
+  <meta name="theme-color" content="#020202" />
+
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="game-engine.js"></script>
+  <script src="components.js" defer></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&family=Bungee&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Rajdhani', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace'],
+            arcade: ['Bungee', 'cursive']
+          },
+          colors: {
+            neonGreen: '#00ff41',
+            neonPink: '#ff00ff',
+            neonCyan: '#00ffff',
+            bgDark: '#020202'
+          },
+          animation: {
+            'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+            'slide-in': 'slideIn 0.22s ease-out both',
+            'toast-in': 'toastIn 0.24s ease-out both',
+            'toast-out': 'toastOut 0.18s ease-in both',
+            'score-pop': 'scorePop 0.65s ease-out both'
+          },
+          keyframes: {
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+            },
+            slideIn: {
+              '0%': { opacity: '0', transform: 'translateY(-10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            toastIn: {
+              '0%': { opacity: '0', transform: 'translateY(-10px) scale(.985)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
+            },
+            toastOut: {
+              '0%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+              '100%': { opacity: '0', transform: 'translateY(-8px) scale(.99)' }
+            },
+            scorePop: {
+              '0%': { opacity: '0', transform: 'translateY(8px) scale(.98)' },
+              '35%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+              '100%': { opacity: '0', transform: 'translateY(-12px) scale(1.02)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root{
+      --bg:#020202;
+      --panel: rgba(10,10,10,.74);
+      --panelSoft: rgba(255,255,255,.035);
+      --border: rgba(255,255,255,.10);
+      --border2: rgba(255,255,255,.14);
+      --txt:#e2e8f0;
+      --muted:#94a3b8;
+      --shadow: 0 18px 55px rgba(0,0,0,.72);
+    }
+
+    body{
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(1200px 700px at 50% -10%, rgba(0,255,65,0.12), transparent 58%),
+        radial-gradient(900px 550px at 18% 10%, rgba(0,255,255,0.06), transparent 60%),
+        radial-gradient(1000px 520px at 86% 18%, rgba(255,0,255,0.05), transparent 62%),
+        linear-gradient(rgba(255,255,255,.026) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size:auto, auto, auto, 70px 70px, 70px 70px;
+      color: var(--txt);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .qr-card{
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .qr-soft{
+      background: var(--panelSoft);
+      border: 1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(10px);
+    }
+    .qr-hairline{ position:relative; }
+    .qr-hairline:before{
+      content:"";
+      position:absolute;
+      left:0; right:0; top:0;
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,65,.35), transparent);
+      opacity:.95;
+      pointer-events:none;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#cbd5e1;
+      font-family:'Share Tech Mono', monospace;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    .kbd{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width: 30px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .10em;
+      color: rgba(226,232,240,.85);
+      text-transform: uppercase;
+    }
+
+    .btn-soft{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.045);
+      color:#e2e8f0;
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 950;
+      transition: background-color .15s ease, transform .06s ease, border-color .15s ease, filter .15s ease;
+      user-select:none;
+    }
+    .btn-soft:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16); filter: brightness(1.04); }
+    .btn-soft:active{ transform: translateY(1px); }
+
+    .btn-primary{
+      background: #00ff41;
+      color: #041006;
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 950;
+      transition: filter .15s ease, transform .06s ease;
+      user-select:none;
+    }
+    .btn-primary:hover{ filter: brightness(1.07); }
+    .btn-primary:active{ transform: translateY(1px); }
+
+    .btn-danger{
+      background: rgba(255,0,255,.10);
+      border: 1px solid rgba(255,0,255,.22);
+      color: #ffd6ff;
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 950;
+      transition: filter .15s ease, transform .06s ease, background-color .15s ease;
+      user-select:none;
+    }
+    .btn-danger:hover{ background: rgba(255,0,255,.14); filter: brightness(1.03); }
+    .btn-danger:active{ transform: translateY(1px); }
+
+    .sticky-rail{ position: static; }
+    @media (min-width: 1024px){
+      .sticky-rail{ position: sticky; top: 92px; }
+    }
+
+    .hive-shell{
+      width: 100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 16px 8px 8px;
+      overflow: hidden;
+    }
+    .hive{
+      --hex: clamp(66px, 12vw, 98px);
+      width: min(380px, 100%);
+      aspect-ratio: 1 / 1;
+      position: relative;
+      display:grid;
+      place-items:center;
+      isolation: isolate;
+    }
+    .hex{
+      width: var(--hex);
+      height: calc(var(--hex) * 0.92);
+      clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0% 50%);
+      border: 1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(150px 150px at 35% 18%, rgba(255,255,255,.10), transparent 55%),
+        rgba(0,0,0,.32);
+      box-shadow: 0 14px 35px rgba(0,0,0,.45);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .08s ease, border-color .15s ease, filter .15s ease, background-color .15s ease;
+      position:absolute;
+    }
+    .hex:hover{
+      border-color: rgba(0,255,65,.45);
+      filter: brightness(1.06);
+      background:
+        radial-gradient(150px 150px at 35% 18%, rgba(0,255,65,.14), transparent 55%),
+        rgba(0,0,0,.30);
+    }
+    .hex:active{ transform: translateY(1px) scale(0.995); }
+
+    .hex span{
+      font-family: 'Bungee', cursive;
+      font-size: clamp(22px, 4.2vw, 34px);
+      letter-spacing: .03em;
+      color: #e2e8f0;
+      transform: translateY(1px);
+      text-shadow: 0 10px 26px rgba(0,0,0,.55);
+    }
+
+    .hex.center{
+      border-color: rgba(0,255,65,.72);
+      background:
+        radial-gradient(160px 160px at 35% 18%, rgba(0,255,65,.30), transparent 55%),
+        rgba(0,0,0,.30);
+      box-shadow: 0 0 0 1px rgba(0,255,65,.16), 0 22px 55px rgba(0,0,0,.60);
+      z-index: 2;
+    }
+    .hex.center span{ color: #00ff41; }
+    .hex.center:after{
+      content: "REQUIRED";
+      position:absolute;
+      bottom: 9px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .18em;
+      color: rgba(226,232,240,.82);
+      background: rgba(0,0,0,.36);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 3px 8px;
+      border-radius: 999px;
+      pointer-events:none;
+      white-space:nowrap;
+    }
+
+    .pC{ left:50%; top:50%; transform: translate(-50%,-50%); }
+    .pN{ left:50%; top:18%; transform: translate(-50%,-50%); }
+    .pS{ left:50%; top:82%; transform: translate(-50%,-50%); }
+    .pNW{ left:24%; top:34%; transform: translate(-50%,-50%); }
+    .pNE{ left:76%; top:34%; transform: translate(-50%,-50%); }
+    .pSW{ left:24%; top:66%; transform: translate(-50%,-50%); }
+    .pSE{ left:76%; top:66%; transform: translate(-50%,-50%); }
+
+    @media (max-width: 380px){
+      .hive{ --hex: clamp(58px, 16vw, 86px); }
+      .pN{ top:20%; } .pS{ top:80%; }
+    }
+
+    .slots-frame{
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      padding: 12px;
+    }
+    #slots{
+      display:grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+      align-items: center;
+      justify-items: stretch;
+    }
+
+    .slot{
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:'Share Tech Mono', monospace;
+      font-size: clamp(12px, 2.8vw, 18px);
+      color:#fff;
+      user-select:none;
+      letter-spacing:.08em;
+      min-width: 0;
+    }
+    .slot.dim{ color: rgba(148,163,184,.65); background: rgba(255,255,255,.028); }
+    .slot.ok{ border-color: rgba(0,255,65,.30); background: rgba(0,255,65,.07); color:#00ff41; }
+    .slot.warn{ border-color: rgba(255,0,255,.28); background: rgba(255,0,255,.07); color:#ffb7ff; }
+
+    .overflow-badge{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.55);
+      border-radius:999px;
+      padding:6px 10px;
+      font-family:'Share Tech Mono', monospace;
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#cbd5e1;
+      user-select:none;
+      display:none;
+      white-space:nowrap;
+      flex: 0 0 auto;
+    }
+
+    .word-input{
+      background: rgba(0,0,0,.28);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      color: white;
+      font-family:'Share Tech Mono', monospace;
+      font-size: 1.35rem;
+      text-align: center;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      width:100%;
+      outline:none;
+      transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+      padding: 14px 14px;
+    }
+    .word-input:focus{
+      border-color: rgba(0,255,65,.55);
+      box-shadow: 0 0 0 4px rgba(0,255,65,.12);
+      background: rgba(0,0,0,.38);
+    }
+    .word-input::placeholder{
+      color: rgba(148,163,184,.9);
+      letter-spacing: 0;
+      font-size: .95rem;
+    }
+
+    .chip{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #e2e8f0;
+      line-height: 1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: 40px;
+    }
+
+    #found-list{
+      max-height: 320px;
+      overflow: auto;
+      width:100%;
+      padding-right: 6px;
+    }
+    #found-list::-webkit-scrollbar{ width: 8px; }
+    #found-list::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius: 10px; }
+    #found-list::-webkit-scrollbar-track{ background: rgba(0,0,0,0.2); }
+
+    .toast{
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 80;
+      width: min(540px, calc(100% - 32px));
+      pointer-events: none;
+    }
+    .toast-card{
+      pointer-events: auto;
+      background: rgba(10,10,10,.92);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 45px rgba(0,0,0,.70);
+      backdrop-filter: blur(10px);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ scroll-behavior:auto !important; }
+      .animate-shake, .animate-slide-in, .animate-toast-in, .animate-toast-out, .animate-score-pop{ animation: none !important; }
+    }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <div id="toast" class="toast hidden" aria-live="polite" aria-atomic="true">
+    <div id="toast-card" class="toast-card animate-toast-in">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div id="toast-title" class="text-white font-bold text-sm">Saved</div>
+          <div id="toast-msg" class="text-slate-300 text-xs mt-1">Nice.</div>
+        </div>
+        <button id="toast-close" class="text-slate-400 hover:text-white transition" type="button" aria-label="Close">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-6 py-8 relative z-10">
+    <section class="qr-card qr-hairline rounded-3xl p-6 md:p-8">
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 min-w-0">
+        <div class="min-w-0">
+          <div class="inline-flex items-center gap-2 flex-wrap">
+            <span class="badge"><i class="fa-solid fa-calendar-day text-neonCyan"></i> Daily Hive</span>
+            <span class="badge"><i class="fa-solid fa-circle-dot text-neonGreen"></i> Center required</span>
+            <span class="badge"><i class="fa-solid fa-star text-neonPink"></i> Pangram +7</span>
+          </div>
+
+          <h1 class="mt-4 font-display font-black text-4xl md:text-5xl text-white uppercase tracking-wider">Spelling Bee</h1>
+          <p class="mt-2 text-slate-300 text-sm md:text-base">
+            Make words using only today’s 7 letters. Repeat letters are allowed. Your goal is to reach <span class="text-white font-semibold">Genius</span>.
+          </p>
+
+          <div class="mt-4 flex flex-wrap gap-2 text-xs text-slate-300">
+            <span class="badge">Min 4 letters</span>
+            <span class="badge">Enter to submit</span>
+            <span class="badge">Space to shuffle</span>
+            <span class="badge">Esc to clear</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 w-full lg:w-auto min-w-0">
+          <div class="qr-soft rounded-2xl p-4 text-center min-w-0">
+            <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Score</div>
+            <div class="mt-1 text-2xl font-mono text-neonGreen font-bold" id="score-num">0</div>
+          </div>
+          <div class="qr-soft rounded-2xl p-4 text-center min-w-0">
+            <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Found</div>
+            <div class="mt-1 text-2xl font-mono text-white font-bold" id="found-num">0</div>
+          </div>
+          <div class="qr-soft rounded-2xl p-4 text-center min-w-0">
+            <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Pangrams</div>
+            <div class="mt-1 text-2xl font-mono text-neonPink font-bold" id="pangram-num">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 min-w-0">
+        <div class="flex flex-wrap gap-2 items-center min-w-0">
+          <span class="badge">Hive <span id="hive-num" class="text-white font-bold">1</span></span>
+          <span class="badge">Words <span id="total-words" class="text-white font-bold">0</span></span>
+          <span class="badge">Max <span id="max-score" class="text-white font-bold">0</span></span>
+          <div class="relative">
+            <span id="score-float" class="pointer-events-none absolute -top-7 right-0 font-black text-sm opacity-0"></span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 items-center">
+          <button id="reset-btn" type="button" class="btn-soft">Reset</button>
+          <button id="reveal-btn" type="button" class="btn-danger">Reveal</button>
+          <button id="next-btn" type="button" class="btn-primary">New Hive</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <section class="lg:col-span-8 min-w-0 space-y-6">
+        <div class="qr-card rounded-3xl p-6 md:p-7 min-w-0">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start min-w-0">
+            <div class="md:col-span-5 min-w-0">
+              <div class="qr-soft rounded-3xl p-5 min-w-0">
+                <div class="flex items-start justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-white font-display font-extrabold text-lg">Your letters</div>
+                    <div class="mt-1 text-slate-400 text-sm">
+                      Every word must include <span id="center-letter" class="text-neonGreen font-bold">E</span>.
+                    </div>
+                  </div>
+                  <button id="shuffle-btn" type="button" class="btn-soft inline-flex items-center gap-2 shrink-0">
+                    <i class="fas fa-shuffle text-neonCyan"></i> Shuffle
+                  </button>
+                </div>
+
+                <div class="hive-shell" aria-label="Letter hive">
+                  <div class="hive" id="hive-grid">
+                    <button type="button" class="hex pN"  data-hex="0" aria-label="Outer letter 1"><span id="L0">A</span></button>
+                    <button type="button" class="hex pNW" data-hex="1" aria-label="Outer letter 2"><span id="L1">B</span></button>
+                    <button type="button" class="hex pNE" data-hex="2" aria-label="Outer letter 3"><span id="L2">C</span></button>
+
+                    <button type="button" class="hex center pC" data-hex="C" aria-label="Center required letter"><span id="LC">E</span></button>
+
+                    <button type="button" class="hex pSW" data-hex="3" aria-label="Outer letter 4"><span id="L3">D</span></button>
+                    <button type="button" class="hex pSE" data-hex="4" aria-label="Outer letter 5"><span id="L4">F</span></button>
+                    <button type="button" class="hex pS"  data-hex="5" aria-label="Outer letter 6"><span id="L5">G</span></button>
+                  </div>
+                </div>
+
+                <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-300">
+                  <div class="qr-soft rounded-2xl px-3 py-2 flex items-center justify-between min-w-0">
+                    <span class="text-slate-400">Rule</span>
+                    <span class="font-mono text-white font-bold">A–Z only</span>
+                  </div>
+                  <div class="qr-soft rounded-2xl px-3 py-2 flex items-center justify-between min-w-0">
+                    <span class="text-slate-400">Repeat</span>
+                    <span class="font-mono text-white font-bold">Allowed</span>
+                  </div>
+                </div>
+
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <span class="badge">Tap letters</span>
+                  <span class="badge">Min 4</span>
+                  <span class="badge">Pangram +7</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="md:col-span-7 min-w-0 space-y-5">
+              <div class="qr-soft rounded-3xl p-5 min-w-0">
+                <div class="flex items-start justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-white font-display font-extrabold text-lg">Build a word</div>
+                    <div class="mt-1 text-slate-400 text-sm">
+                      Type or tap. Press <span class="kbd">Enter</span> to submit.
+                    </div>
+                  </div>
+                  <span id="overflow-badge" class="overflow-badge">+0</span>
+                </div>
+
+                <div class="mt-4 slots-frame" aria-label="8 letter slots">
+                  <div id="slots"></div>
+                  <div class="mt-3 flex items-center justify-between gap-3">
+                    <div class="text-[11px] font-mono uppercase tracking-widest text-slate-500">Last 8 letters shown</div>
+                    <div class="text-[11px] font-mono uppercase tracking-widest text-slate-400">Center required</div>
+                  </div>
+                </div>
+
+                <form id="bee-form" class="mt-4" onsubmit="return handleSubmit(event)">
+                  <input id="bee-input" class="word-input" type="text" autocomplete="off" inputmode="text" maxlength="32" placeholder="TYPE YOUR WORD">
+                  <button type="submit" class="hidden">Submit</button>
+                </form>
+
+                <div id="error-msg" class="text-center text-sm mt-3 h-5 opacity-0 transition-opacity text-neonPink font-semibold"></div>
+
+                <div class="mt-4 grid grid-cols-3 gap-3">
+                  <button id="delete-btn" type="button" class="btn-soft">Delete</button>
+                  <button id="clear-btn" type="button" class="btn-soft">Clear</button>
+                  <button id="enter-btn" type="button" class="btn-primary">Enter</button>
+                </div>
+
+                <div class="mt-4 flex flex-wrap gap-2 text-xs text-slate-300">
+                  <span class="badge"><i class="fa-solid fa-keyboard text-neonCyan"></i> <span class="kbd">Esc</span> clear</span>
+                  <span class="badge"><i class="fa-solid fa-rotate text-neonCyan"></i> <span class="kbd">Space</span> shuffle</span>
+                  <span class="badge"><i class="fa-solid fa-delete-left text-neonCyan"></i> Backspace delete</span>
+                </div>
+              </div>
+
+              <div class="qr-soft rounded-3xl p-5 min-w-0">
+                <div class="flex items-end justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-white font-display font-extrabold text-lg">Found words</div>
+                    <div class="mt-1 text-slate-400 text-sm">Valid answers appear here in alphabetical order.</div>
+                  </div>
+                  <span class="badge"><i class="fa-solid fa-list-check text-neonGreen"></i> Live</span>
+                </div>
+                <div class="mt-4" id="found-list" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="lg:col-span-4 min-w-0">
+        <div class="sticky-rail space-y-6 min-w-0">
+          <div class="qr-card rounded-3xl p-6 min-w-0">
+            <div class="flex items-center justify-between gap-3 min-w-0">
+              <div class="text-white font-display font-extrabold text-lg">How to play</div>
+              <span class="badge"><i class="fa-solid fa-circle-info text-neonCyan"></i> Quick</span>
+            </div>
+
+            <div class="mt-4 space-y-3 text-slate-300 text-sm">
+              <div class="flex gap-3">
+                <span class="badge" style="padding:6px 9px;">1</span>
+                <div><span class="text-white font-semibold">Use only hive letters</span> (repeat is allowed).</div>
+              </div>
+              <div class="flex gap-3">
+                <span class="badge" style="padding:6px 9px;">2</span>
+                <div><span class="text-white font-semibold">Center letter is mandatory</span> every time.</div>
+              </div>
+              <div class="flex gap-3">
+                <span class="badge" style="padding:6px 9px;">3</span>
+                <div><span class="text-white font-semibold">Submit</span> with <span class="kbd">Enter</span> and earn points.</div>
+              </div>
+            </div>
+
+            <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
+              <div class="qr-soft rounded-2xl p-4 min-w-0">
+                <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Scoring</div>
+                <div class="mt-2 text-slate-300 text-sm">4 letters = 1<br>5+ = length</div>
+              </div>
+              <div class="qr-soft rounded-2xl p-4 min-w-0">
+                <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Pangram</div>
+                <div class="mt-2 text-slate-300 text-sm">Uses all 7<br><span class="text-neonPink font-bold">+7 bonus</span></div>
+              </div>
+            </div>
+
+            <div class="mt-5 flex items-center justify-between gap-3 min-w-0">
+              <div class="text-slate-500 text-xs">Examples</div>
+              <div id="example-words" class="text-slate-200 text-xs font-semibold text-right min-w-0">—</div>
+            </div>
+          </div>
+
+          <div class="qr-card rounded-3xl p-6 min-w-0">
+            <div class="flex items-center justify-between gap-3 min-w-0">
+              <div class="text-white font-display font-extrabold text-lg">Progress</div>
+              <span class="badge"><i class="fa-solid fa-chart-line text-neonGreen"></i> Rank</span>
+            </div>
+
+            <div class="mt-4 min-w-0">
+              <div class="flex items-center justify-between gap-3 min-w-0">
+                <div class="text-slate-400 text-sm">Current rank</div>
+                <div class="text-white font-bold" id="rank-name">Beginner</div>
+              </div>
+
+              <div class="mt-4 w-full h-2.5 rounded-full bg-white/10 overflow-hidden">
+                <div id="progress-bar" class="h-full bg-neonGreen/80" style="width:0%"></div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-3 gap-2 text-xs text-slate-400 min-w-0">
+                <div class="qr-soft rounded-xl px-3 py-2 min-w-0">Good <span id="t-good" class="text-white font-bold float-right">0</span></div>
+                <div class="qr-soft rounded-xl px-3 py-2 min-w-0">Great <span id="t-great" class="text-white font-bold float-right">0</span></div>
+                <div class="qr-soft rounded-xl px-3 py-2 min-w-0">Genius <span id="t-genius" class="text-white font-bold float-right">0</span></div>
+              </div>
+            </div>
+
+            <div class="mt-5 qr-soft rounded-2xl p-4 min-w-0">
+              <div class="flex items-center justify-between gap-3 min-w-0">
+                <div class="text-slate-400 text-sm">Word bank</div>
+                <span class="badge"><i class="fa-solid fa-database text-neonGreen"></i> Local</span>
+              </div>
+              <div class="mt-2 text-slate-500 text-xs" id="dict-status">Loading local word bank…</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <div class="qr-card p-8 rounded-3xl max-w-sm w-full text-center relative border-t-4 border-t-neonGreen animate-slide-in">
+      <i class="fas fa-crown text-5xl text-neonGreen mb-4"></i>
+      <h2 class="font-display font-black text-3xl text-white uppercase mb-2" id="result-title">HIVE COMPLETE</h2>
+      <p class="text-slate-400 font-mono text-xs mb-6 uppercase tracking-widest" id="result-subtitle">Rank Achieved</p>
+
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="qr-soft rounded-2xl p-4">
+          <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Score</div>
+          <div id="resScore" class="text-2xl font-mono text-white font-bold mt-1">0</div>
+        </div>
+        <div class="qr-soft rounded-2xl p-4">
+          <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">XP</div>
+          <div id="resXP" class="text-2xl font-mono text-neonGreen font-bold mt-1">+0</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <button id="modal-replay" type="button" class="btn-soft w-full">Replay</button>
+        <button id="modal-next" type="button" class="btn-primary w-full">New Hive</button>
+      </div>
+
+      <button id="modal-close" type="button" class="w-full py-3 bg-white/5 text-white font-bold font-mono text-xs rounded-2xl uppercase tracking-widest hover:bg-white/10 transition border border-white/10">
+        Back to Game
+      </button>
+    </div>
+  </div>
+
+  <div id="confirm-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div class="qr-card p-7 rounded-3xl max-w-sm w-full border border-white/10">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div id="confirm-title" class="text-white font-display font-extrabold text-xl">Confirm</div>
+          <div id="confirm-desc" class="text-slate-300 text-sm mt-1">Are you sure?</div>
+        </div>
+        <button id="confirm-close" type="button" class="text-slate-400 hover:text-white transition" aria-label="Close">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="mt-6 grid grid-cols-2 gap-3">
+        <button id="confirm-cancel" type="button" class="btn-soft">Cancel</button>
+        <button id="confirm-yes" type="button" class="btn-primary">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const HIVES = [
+      { id: "HIVE-001", center: "E", outer: ["A","L","R","T","N","D"] },
+      { id: "HIVE-002", center: "O", outer: ["R","B","I","T","N","E"] },
+      { id: "HIVE-003", center: "A", outer: ["C","R","B","O","N","L"] },
+      { id: "HIVE-004", center: "I", outer: ["S","G","N","A","L","E"] },
+      { id: "HIVE-005", center: "S", outer: ["T","R","E","A","M","N"] },
+      { id: "HIVE-006", center: "P", outer: ["O","L","I","C","Y","A"] },
+      { id: "HIVE-007", center: "U", outer: ["S","T","A","R","N","E"] },
+      { id: "HIVE-008", center: "E", outer: ["C","H","A","R","G","N"] },
+      { id: "HIVE-009", center: "A", outer: ["T","R","I","L","E","N"] },
+      { id: "HIVE-010", center: "O", outer: ["S","C","A","R","E","D"] },
+      { id: "HIVE-011", center: "E", outer: ["P","L","A","N","T","R"] },
+      { id: "HIVE-012", center: "I", outer: ["T","R","A","N","G","E"] },
+      { id: "HIVE-013", center: "E", outer: ["S","T","O","R","A","N"] },
+      { id: "HIVE-014", center: "A", outer: ["C","H","E","R","T","N"] },
+      { id: "HIVE-015", center: "O", outer: ["P","E","R","A","T","N"] },
+      { id: "HIVE-016", center: "I", outer: ["C","L","A","R","T","E"] }
+    ];
+
+    const RANKS = [
+      { name: "Beginner", pct: 0.00 },
+      { name: "Good",     pct: 0.20 },
+      { name: "Solid",    pct: 0.35 },
+      { name: "Great",    pct: 0.50 },
+      { name: "Amazing",  pct: 0.70 },
+      { name: "Genius",   pct: 0.90 }
+    ];
+
+    const BUILTIN_FALLBACK =
+      "ABLE ABOUT ABOVE ABUSE ACTOR ACUTE ADAPT ADULT AFTER AGAIN AGENT AGREE AHEAD ALARM ALERT ALIKE ALIVE ALLOW ALONE ALONG ALTER AMONG ANGEL ANGER ANGLE ANGRY ANNEX ANNOY ANSWER APART APPLE APPLY ARENA ARGUE ARISE ARMED ARMOR AROUND ARROW ASIDE ASSET AUDIO AVOID AWARD AWARE BACK BADGE BAKER BASIC BEACH BEGIN BEGUN BEING BELOW BENEFIT BERRY BIRTH BLACK BLADE BLAME BLANK BLAST BLAZE BLEND BLESS BLIND BLINK BLOOD BLOOM BOARD BOOST BOOTH BOUND BRAIN BRAND BRAVE BREAD BREAK BRICK BRIDE BRIEF BRING BROAD BROKE BROWN BRUSH BUILD BUILT CABLE CACHE CADET CANAL CANDY CARAT CARBON CARGO CARRY CARVE CATCH CAUSE CHAIN CHAIR CHANCE CHANGE CHARGE CHARM CHASE CHEAP CHECK CHEER CHIEF CHILD CHILL CHOICE CLEAN CLEAR CLICK CLIMB CLOCK CLOSE COACH COAST COLOR COMET COMIC COMMON CORAL CORE CORN COUNT COURT COVER CRAFT CRANE CRASH CRAWL CRAZY CREAM CREEK CREW CRIME CRISP CROSS CROWD CROWN CYCLE DAILY DANCE DARED DEALT DEBUG DECAY DELAY DELTA DEMON DENIM DEPTH DIRTY DISCO DIVER DONOR DOUBT DOZEN DRAFT DRAIN DRAMA DREAM DRESS DRIFT DRIVE DRONE DROWN EARLY EARTH EASEL EATEN EATER EIGHT ELDER ELITE ENACT ENEMY ENJOY ENTER ENTRY EQUAL EQUIP ERROR ESSAY EVENT EVERY EXACT EXILE EXIST EXTRA FAITH FALSE FANCY FARMER FASTER FATAL FAULT FAVOR FEAST FEVER FIBER FIELD FIFTY FINAL FINDER FINEST FINGER FINISH FIXED FLAME FLASH FLEET FLOOR FLOUR FOCUS FORCE FORGE FORUM FOUND FRAME FRESH FRONT FROST FRUIT FULLY FUNNY GAINS GAMER GAMES GHOST GIANT GIVEN GLASS GLOVE GRACE GRADE GRAIN GRAND GRANT GRAPE GRAPH GRASP GRASS GREAT GREEN GREET GROUP GROVE GROWN GUARD GUESS GUIDE HABIT HAPPY HARDY HASTE HATER HEART HEARD HEAVY HEDGE HELLO HONEY HONOR HORSE HOTEL HOUSE HUMAN HURRY IDEAL IMAGE IMPLY INDEX INNER INPUT IRATE ISSUE JOINT JOKER JUDGE JUICE KNIFE KNOWN LABEL LABOR LADEN LATER LAUGH LAYER LEARN LEAST LEAVE LEGAL LEMON LEVEL LIGHT LIMIT LINER LINES LISTEN LITTLE LOCAL LOGIC LOVER LOWER LUNAR LUNCH MAGIC MAJOR MAKER MARCH MARGIN MARINE MARKET MATCH MEANT MEDIA MERIT METAL METER MINOR MINUTE MIRROR MODEL MODERN MONEY MONTH MORAL MOUSE MOVIE MUSIC NAKED NARROW NATIVE NEAR NEAT NEVER NIGHT NOBLE NOISE NORTH NOVEL NURSE OCEAN OFFER OFTEN OLDER OLIVE OPERA ORBIT ORDER ORGAN OTHER OUTER OWNER PANEL PANIC PAPER PARCEL PARENT PARTY PAUSE PEACE PEARL PENAL PENCIL PEOPLE PHASE PHONE PHOTO PIANO PIECE PILOT PITCH PLACE PLAIN PLANE PLANT PLATE PLEAD POINT POLAR POLICY PRICE PRIDE PRIME PRINT PRIOR PRIZE PROOF PROUD PROVE PULSE PUNCH QUEEN QUICK QUIET QUITE RADIO RAISE RANGE RAPID RATIO REACH REACT READY REALM REBEL RECAP RECALL RECIPE RECORD REDEEM REDO REFER REGAL REIGN RELATE RELIEF RELY REMAIN REMARK RENEW REPAIR REPEAT REPLY REPORT RESET RESIN RESORT RESULT RETAIN RETIRE RETURN REVEAL REVIEW RIDER RIGHT RIVAL RIVER ROBOT ROUGH ROUND ROUTE ROYAL RULER RULES RUMOR SCALE SCARCE SCENE SCENT SCOPE SCORE SCOUT SCREAM SCREEN SCRIPT SEARCH SEASON SECOND SECRET SELECT SELLER SENSE SERIES SERVE SETUP SHAPE SHARE SHARK SHEEP SHEER SHELL SHIFT SHINE SHOCK SHORE SHORT SIGNAL SIGNED SINGLE SINGE SIREN SKILL SLEEP SLICE SLIDE SMART SMILE SMOKE SOLAR SOLID SOLVE SOUND SPACE SPARE SPARK SPEAK SPEED SPELL SPEND SPICE SPIRIT SPLIT SPORT SPOT STATE STEAM STEEL STEER STONE STORE STORM STORY STRAIN STRAND STRANGE STREAM STREET STRESS STRIKE STRING STRONG STUDY STYLE SUGAR SUITE SUNNY SUPER SUPPLY SURELY SWARM SWEET SWING TABLE TAKEN TALENT TASTE TEACH TEARS TEASE THANK THEIR THEME THERE THICK THING THINK THIRD THRIVE THROW TIGHT TIMER TIRED TITLE TODAY TOKEN TONE TOPIC TOTAL TOUCH TOUGH TOWER TRACE TRACK TRADE TRAIN TREAT TREND TRIAL TRIBE TRICK TRIED TRUE TRUST TRUTH TUTOR TWICE UNDER UNION UNITE UNITY UNLESS UNTIL UPPER URBAN URGE USAGE USUAL VALID VALUE VIDEO VISIT VOCAL VOICE VOTER WAGER WASTE WATCH WATER WEALTH WEAPON WEARY WEAVE WHEEL WHERE WHILE WHITE WHOLE WIDER WINNER WINTER WOMAN WONDER WORLD WORTH WOULD WRITE YOUNG";
+
+    let DICT_WORDS = [];
+    let DICT_MASKS = null;
+    let DICT_LENS = null;
+
+    let hiveIdx = 0;
+    let hive = null;
+
+    let center = "E";
+    let outer = ["A","L","R","T","N","D"];
+    let allowedMask = 0;
+    let centerMask = 0;
+
+    let allowedWords = [];
+    let allowedSet = new Set();
+    let found = new Set();
+    let score = 0;
+    let pangramsFound = 0;
+    let revealed = false;
+
+    let ghostClicks = 0;
+    let startTime = 0;
+    let maxScore = 0;
+
+    let confirmAction = null;
+    let toastTimer = null;
+
+    function byId(id){ return document.getElementById(id); }
+
+    window.onload = () => init();
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('input') && !e.target.closest('button')) ghostClicks++;
+    });
+
+    async function init() {
+      bindUI();
+      setSlots("");
+      hiveIdx = computeDailyIndex();
+
+      await loadDictionary();
+      loadHive(hiveIdx);
+
+      if (window.dataLayer) window.dataLayer.push({ event: "game_start", game_name: "Spelling Bee" });
+    }
+
+    function computeDailyIndex() {
+      const base = new Date(2025, 0, 1);
+      const now = new Date();
+      const day = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const diffDays = Math.floor((day - base) / 86400000);
+      return ((diffDays % HIVES.length) + HIVES.length) % HIVES.length;
+    }
+
+    function letterBit(ch){
+      const code = ch.charCodeAt(0) - 65;
+      if (code < 0 || code > 25) return 0;
+      return (1 << code) >>> 0;
+    }
+
+    function wordMask(word){
+      let m = 0;
+      for (let i=0;i<word.length;i++){
+        const b = letterBit(word[i]);
+        if (!b) return 0;
+        m |= b;
+      }
+      return m >>> 0;
+    }
+
+    async function loadDictionary() {
+  const status = byId("dict-status");
+  const t0 = performance.now();
+  status.textContent = "Loading local word bank…";
+
+  // Turn on verbose logging while debugging
+  const DEBUG_DICT = true;
+
+  // Add every filename you actually generated here (keep big_dictionary.txt first)
+  const sources = [
+    { type: "txt", path: "assets/big_dictionary.txt", label: "assets/big_dictionary.txt" },
+
+    // Optional: common alternates (keep if you might deploy to different folder)
+    { type: "txt", path: "assets/wordlists/big_dictionary.txt", label: "assets/wordlists/big_dictionary.txt" },
+
+    // If you generated “final” merged outputs, add them here:
+    { type: "txt", path: "assets/wordlists/wordlist.txt", label: "assets/wordlists/wordlist.txt" },
+    { type: "txt", path: "assets/wordlists/words_alpha.txt", label: "assets/wordlists/words_alpha.txt" },
+
+    // Your previous ones (keep as fallback options)
+    { type: "txt", path: "assets/wordlists/enable1.txt", label: "assets/wordlists/enable1.txt" },
+    { type: "txt", path: "assets/wordlists/words.txt", label: "assets/wordlists/words.txt" },
+    { type: "json", path: "assets/wordlists/wordlist.json", label: "assets/wordlists/wordlist.json" }
+  ];
+
+  function cleanWordsFromText(text) {
+    // Guard: sometimes a 404 page returns HTML
+    const head = text.slice(0, 200).toLowerCase();
+    if (head.includes("<html") || head.includes("<!doctype")) return [];
+
+    // Split on ANY whitespace (works for newline-separated or space-separated)
+    return text
+      .split(/\s+/)
+      .map(w => w.trim().toUpperCase())
+      .filter(w => /^[A-Z]{4,32}$/.test(w));
+  }
+
+  function cleanWordsFromArray(arr) {
+    return (arr || [])
+      .map(w => String(w).trim().toUpperCase())
+      .filter(w => /^[A-Z]{4,32}$/.test(w));
+  }
+
+  let words = null;
+  let usedLabel = null;
+
+  for (const src of sources) {
+    try {
+      const res = await fetch(src.path, { cache: "no-store" }); // use no-store while debugging
+      if (!res.ok) {
+        if (DEBUG_DICT) console.warn("[DICT] 404/ERR", src.path, res.status);
+        continue;
+      }
+
+      // Optional: basic content-type check
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      if (DEBUG_DICT) console.info("[DICT] fetched", src.path, "content-type:", ct || "(unknown)");
+
+      if (src.type === "txt") {
+        const text = await res.text();
+        const arr = cleanWordsFromText(text);
+        if (DEBUG_DICT) console.info("[DICT] parsed", src.path, "words:", arr.length);
+
+        // Accept even if smaller during testing; raise threshold later
+        if (arr.length > 5000) {
+          words = arr;
+          usedLabel = src.label;
+          break;
+        }
+      } else {
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : (Array.isArray(data.words) ? data.words : []);
+        const cleaned = cleanWordsFromArray(arr);
+        if (DEBUG_DICT) console.info("[DICT] parsed", src.path, "words:", cleaned.length);
+
+        if (cleaned.length > 5000) {
+          words = cleaned;
+          usedLabel = src.label;
+          break;
+        }
+      }
+    } catch (e) {
+      if (DEBUG_DICT) console.warn("[DICT] failed", src.path, e);
+    }
+  }
+
+  if (!words) {
+    words = BUILTIN_FALLBACK.split(/\s+/).map(w => w.trim().toUpperCase()).filter(Boolean);
+    usedLabel = "built-in fallback";
+  }
+
+  // Deduplicate
+  const uniq = Array.from(new Set(words));
+  DICT_WORDS = uniq;
+
+  // Precompute masks + lens
+  const masks = new Uint32Array(DICT_WORDS.length);
+  const lens = new Uint8Array(DICT_WORDS.length);
+
+  for (let i = 0; i < DICT_WORDS.length; i++) {
+    const w = DICT_WORDS[i];
+    lens[i] = w.length;
+    masks[i] = wordMask(w);
+  }
+
+  DICT_MASKS = masks;
+  DICT_LENS = lens;
+
+  const ms = Math.max(1, Math.round(performance.now() - t0));
+  status.textContent = `Word bank: ${usedLabel} (${DICT_WORDS.length.toLocaleString()}) • ${ms}ms`;
+}
+
+    function chooseHiveWithReasonableAnswerCount(startIdx) {
+      const MIN_WORDS = 25;
+      const MAX_WORDS = 260;
+      let idx = startIdx;
+
+      for (let tries=0; tries < HIVES.length; tries++) {
+        const h = HIVES[idx % HIVES.length];
+        const m = buildAllowedForHive(h);
+        if (m.words.length >= MIN_WORDS && m.words.length <= MAX_WORDS) return { idx, data: m, hive: h };
+        idx++;
+      }
+
+      const h = HIVES[startIdx % HIVES.length];
+      return { idx: startIdx, data: buildAllowedForHive(h), hive: h };
+    }
+
+    function buildAllowedForHive(h) {
+      const c = h.center.toUpperCase();
+      const o = h.outer.map(x => x.toUpperCase());
+      const setMask = (letterBit(c) | o.reduce((acc,ch)=>acc|letterBit(ch),0)) >>> 0;
+      const cMask = letterBit(c) >>> 0;
+
+      const words = [];
+      for (let i=0;i<DICT_WORDS.length;i++){
+        const len = DICT_LENS[i];
+        if (len < 4) continue;
+
+        const wm = DICT_MASKS[i];
+        if (!wm) continue;
+        if ((wm & cMask) === 0) continue;
+        if ((wm & ~setMask) !== 0) continue;
+
+        words.push(DICT_WORDS[i]);
+      }
+
+      return { center: c, outer: o, allowedMask: setMask, centerMask: cMask, words };
+    }
+
+    function loadHive(idx) {
+      revealed = false;
+      found = new Set();
+      score = 0;
+      pangramsFound = 0;
+      startTime = Date.now();
+      ghostClicks = 0;
+
+      const chosen = chooseHiveWithReasonableAnswerCount(idx);
+      hiveIdx = chosen.idx;
+      hive = chosen.hive;
+
+      center = chosen.data.center;
+      outer = chosen.data.outer;
+      allowedMask = chosen.data.allowedMask;
+      centerMask = chosen.data.centerMask;
+
+      allowedWords = chosen.data.words.slice().sort((a,b) => a.localeCompare(b));
+      allowedSet = new Set(allowedWords);
+
+      maxScore = computeMaxScore();
+
+      renderHiveLetters();
+      renderHeaderStats();
+      renderExamples();
+      renderFoundList();
+      renderScore();
+      setSlots("");
+      updateProgress();
+
+      const input = byId("bee-input");
+      input.value = "";
+      input.focus();
+
+      const err = byId("error-msg");
+      err.style.opacity = 0;
+      err.innerText = "";
+
+      byId("result-modal").classList.add("hidden");
+
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "hive_load",
+          game_name: "Spelling Bee",
+          hive_id: hive.id,
+          hive_index: (hiveIdx % HIVES.length) + 1,
+          center: center,
+          outer: outer.join(""),
+          words_count: allowedWords.length,
+          max_score: maxScore
+        });
+      }
+    }
+
+    function renderHeaderStats() {
+      byId("hive-num").innerText = String((hiveIdx % HIVES.length) + 1);
+      byId("center-letter").innerText = center;
+      byId("total-words").innerText = String(allowedWords.length);
+      byId("max-score").innerText = String(maxScore);
+    }
+
+    function computeMaxScore() {
+      let total = 0;
+      for (const w of allowedWords) total += scoreWord(w);
+      return total;
+    }
+
+    function isPangram(word) {
+      return (wordMask(word) & allowedMask) === allowedMask;
+    }
+
+    function scoreWord(word) {
+      const w = word.toUpperCase();
+      let pts = (w.length === 4) ? 1 : w.length;
+      if (isPangram(w)) pts += 7;
+      return pts;
+    }
+
+    function thresholdFor(rankName) {
+      const r = RANKS.find(x => x.name === rankName) || RANKS[0];
+      return Math.floor(maxScore * r.pct);
+    }
+
+    function computeRank() {
+      if (maxScore <= 0) return RANKS[0].name;
+      const pct = score / maxScore;
+      let name = RANKS[0].name;
+      for (const r of RANKS) if (pct >= r.pct) name = r.name;
+      return name;
+    }
+
+    function renderScore() {
+      byId("score-num").innerText = String(score);
+      byId("found-num").innerText = String(found.size);
+      byId("pangram-num").innerText = String(pangramsFound);
+
+      const rank = computeRank();
+      byId("rank-name").innerText = rank;
+
+      byId("t-good").innerText = String(thresholdFor("Good"));
+      byId("t-great").innerText = String(thresholdFor("Great"));
+      byId("t-genius").innerText = String(thresholdFor("Genius"));
+    }
+
+    function updateProgress() {
+      const pct = maxScore > 0 ? Math.min(1, score / maxScore) : 0;
+      byId("progress-bar").style.width = `${Math.floor(pct * 100)}%`;
+    }
+
+    function renderExamples() {
+      const el = byId("example-words");
+      if (!allowedWords || allowedWords.length < 1) { el.innerText = "—"; return; }
+      const pool = allowedWords.filter(w => w.length >= 4 && w.length <= 7);
+      pool.sort(() => Math.random() - 0.5);
+      const picks = pool.slice(0, 3);
+      el.innerText = picks.length ? picks.join(", ") : "Try short words first";
+    }
+
+    function renderHiveLetters() {
+      byId("LC").innerText = center;
+      for (let i=0;i<6;i++) byId("L"+i).innerText = outer[i] || "";
+    }
+
+    function bindUI() {
+      byId("toast-close").onclick = hideToast;
+
+      byId("shuffle-btn").onclick = shuffleOuter;
+      byId("delete-btn").onclick = deleteChar;
+      byId("clear-btn").onclick = clearInput;
+      byId("enter-btn").onclick = submitWord;
+
+      byId("reset-btn").onclick = () => openConfirm("Reset hive", "Clear your progress for this hive?", () => restartHive());
+      byId("next-btn").onclick  = () => openConfirm("New hive", "Switch to a different hive and start fresh?", () => nextHive());
+      byId("reveal-btn").onclick = () => openConfirm("Reveal answers", "Learning mode: show all acceptable words. XP is disabled.", () => revealAnswers());
+
+      byId("modal-replay").onclick = () => { closeResult(); restartHive(); };
+      byId("modal-next").onclick = () => { closeResult(); nextHive(); };
+      byId("modal-close").onclick = closeResult;
+
+      byId("confirm-close").onclick = closeConfirm;
+      byId("confirm-cancel").onclick = closeConfirm;
+      byId("confirm-yes").onclick = () => { if (confirmAction) confirmAction(); closeConfirm(); };
+
+      byId("hive-grid").addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        const key = btn.getAttribute("data-hex");
+        if (key === "C") return appendChar(center);
+        const idx = Number(key);
+        if (!Number.isNaN(idx) && outer[idx]) appendChar(outer[idx]);
+      });
+
+      document.addEventListener("input", (e) => {
+        if (e.target && e.target.id === "bee-input") {
+          const before = e.target.value.toUpperCase().replace(/[^A-Z]/g, "");
+          e.target.value = before;
+          setSlots(before);
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        const confirmOpen = !byId("confirm-modal").classList.contains("hidden");
+        const resultOpen = !byId("result-modal").classList.contains("hidden");
+
+        if (e.key === "Escape") {
+          if (confirmOpen) { e.preventDefault(); closeConfirm(); return; }
+          if (resultOpen) { e.preventDefault(); closeResult(); return; }
+          clearInput();
+          toast("Cleared", "Input cleared.", "muted");
+          return;
+        }
+
+        if (confirmOpen || resultOpen) return;
+
+        if (e.key === " " || e.code === "Space") {
+          const active = document.activeElement;
+          if (active && active.id === "bee-input") return;
+          e.preventDefault();
+          shuffleOuter();
+          return;
+        }
+
+        if (e.key === "Enter") {
+          const active = document.activeElement;
+          if (active && active.id === "bee-input") return;
+        }
+      });
+    }
+
+    function shuffleOuter() {
+      for (let i = outer.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [outer[i], outer[j]] = [outer[j], outer[i]];
+      }
+      renderHiveLetters();
+      toast("Shuffled", "Outer letters reordered.", "muted");
+
+      if (window.dataLayer) window.dataLayer.push({ event: "hive_shuffle", game_name: "Spelling Bee", hive_index: (hiveIdx % HIVES.length) + 1 });
+    }
+
+    function appendChar(ch) {
+      const input = byId("bee-input");
+      input.value = (input.value + ch).toUpperCase();
+      input.focus();
+      setSlots(input.value);
+    }
+
+    function deleteChar() {
+      const input = byId("bee-input");
+      input.value = (input.value || "").slice(0, -1);
+      input.focus();
+      setSlots(input.value);
+    }
+
+    function clearInput() {
+      const input = byId("bee-input");
+      input.value = "";
+      input.focus();
+      setSlots("");
+      const el = byId("error-msg");
+      el.style.opacity = 0;
+      el.innerText = "";
+    }
+
+    function showMsg(msg) {
+      const el = byId("error-msg");
+      el.innerText = msg;
+      el.style.opacity = 1;
+
+      const input = byId("bee-input");
+      input.classList.add("animate-shake");
+      setTimeout(() => input.classList.remove("animate-shake"), 400);
+    }
+
+    function validateWord(raw) {
+      const word = (raw || "").toUpperCase().trim().replace(/[^A-Z]/g, "");
+      if (word.length < 4) return { ok: false, reason: "too_short", word };
+      if (!word.includes(center)) return { ok: false, reason: "missing_center", word };
+
+      const wm = wordMask(word);
+      if (!wm) return { ok:false, reason:"bad_chars", word };
+      if ((wm & ~allowedMask) !== 0) return { ok: false, reason: "bad_letter", word };
+
+      if (found.has(word)) return { ok: false, reason: "already_found", word };
+      if (!allowedSet.has(word)) return { ok: false, reason: "not_allowed", word };
+
+      return { ok: true, reason: "ok", word };
+    }
+
+    function submitWord() {
+      handleSubmit({ preventDefault: () => {} });
+    }
+
+    function handleSubmit(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const input = byId("bee-input");
+      const v = validateWord(input.value || "");
+
+      if (!v.ok) {
+        let msg = "Invalid word";
+        if (v.reason === "too_short") msg = "Minimum 4 letters";
+        else if (v.reason === "missing_center") msg = `Must include center: ${center}`;
+        else if (v.reason === "bad_letter") msg = "Use only hive letters";
+        else if (v.reason === "already_found") msg = "Already found";
+        else if (v.reason === "not_allowed") msg = "Not an accepted word";
+        showMsg(msg);
+
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "word_invalid",
+            game_name: "Spelling Bee",
+            hive_index: (hiveIdx % HIVES.length) + 1,
+            reason: v.reason
+          });
+        }
+        return false;
+      }
+
+      found.add(v.word);
+
+      const gained = scoreWord(v.word);
+      score += gained;
+
+      const pangram = isPangram(v.word);
+      if (pangram) pangramsFound++;
+
+      renderFoundList();
+      animateScore(gained, pangram);
+      renderScore();
+      updateProgress();
+
+      input.value = "";
+      input.focus();
+      setSlots("");
+
+      if (pangram) toast("Pangram!", `${v.word} (+${gained})`, "pink");
+      else toast("Nice!", `${v.word} (+${gained})`, "muted");
+
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "word_valid",
+          game_name: "Spelling Bee",
+          hive_index: (hiveIdx % HIVES.length) + 1,
+          word_length: v.word.length,
+          pangram: pangram ? 1 : 0,
+          points: gained,
+          score: score
+        });
+      }
+
+      const geniusThreshold = thresholdFor("Genius");
+      if (!revealed && (score >= geniusThreshold || found.size === allowedWords.length)) {
+        openResult(false);
+      }
+
+      return false;
+    }
+
+    function renderFoundList() {
+      const list = byId("found-list");
+      list.innerHTML = "";
+      const items = Array.from(found).sort((a,b) => a.localeCompare(b));
+      for (const w of items) {
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        chip.innerText = w;
+        list.appendChild(chip);
+      }
+    }
+
+    function setSlots(raw) {
+      const val = (raw || "").toUpperCase().replace(/[^A-Z]/g, "");
+      const SLOT_COUNT = 8;
+
+      const overflow = Math.max(0, val.length - SLOT_COUNT);
+      const slice = overflow > 0 ? val.slice(-SLOT_COUNT) : val;
+
+      const badge = byId("overflow-badge");
+      badge.style.display = overflow > 0 ? "inline-flex" : "none";
+      badge.innerText = `+${overflow}`;
+
+      const slots = byId("slots");
+      slots.innerHTML = "";
+
+      const hasCenter = val.includes(center);
+
+      for (let i=0;i<SLOT_COUNT;i++){
+        const ch = slice[i] || "·";
+        const s = document.createElement("div");
+        s.className = "slot";
+
+        if (ch === "·") s.classList.add("dim");
+        else {
+          const b = letterBit(ch);
+          if ((b & allowedMask) === 0) s.classList.add("warn");
+          else s.classList.add("ok");
+        }
+
+        if (ch === "·" && !hasCenter && i < 4) s.classList.add("warn");
+
+        s.innerText = ch;
+        slots.appendChild(s);
+      }
+    }
+
+    function animateScore(gained, pangram) {
+      const el = byId("score-float");
+      el.textContent = `+${gained}`;
+      el.style.opacity = "1";
+      el.classList.remove("animate-score-pop");
+      el.classList.add("animate-score-pop");
+      el.style.color = pangram ? "#ff00ff" : "#00ff41";
+      setTimeout(() => { el.style.opacity = "0"; el.textContent = ""; }, 650);
+    }
+
+    function restartHive() {
+      loadHive(hiveIdx);
+      if (window.dataLayer) window.dataLayer.push({ event: "hive_reset", game_name: "Spelling Bee", hive_index: (hiveIdx % HIVES.length) + 1 });
+    }
+
+    function nextHive() {
+      hiveIdx++;
+      loadHive(hiveIdx);
+      if (window.dataLayer) window.dataLayer.push({ event: "hive_next", game_name: "Spelling Bee", hive_index: (hiveIdx % HIVES.length) + 1 });
+    }
+
+    function revealAnswers() {
+      revealed = true;
+      found = new Set(allowedWords);
+      pangramsFound = 0;
+      for (const w of found) if (isPangram(w)) pangramsFound++;
+
+      renderFoundList();
+      renderScore();
+      updateProgress();
+
+      toast("Learning mode", "All acceptable answers revealed.", "muted");
+      openResult(true);
+
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "hive_reveal",
+          game_name: "Spelling Bee",
+          hive_index: (hiveIdx % HIVES.length) + 1
+        });
+      }
+    }
+
+    function calcXP() {
+      const elapsed = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
+      const pct = maxScore > 0 ? (score / maxScore) : 0;
+      const base = 25;
+      const rankBonus = Math.floor(95 * pct);
+      const pangramBonus = pangramsFound * 18;
+      const speedBonus = Math.max(0, 40 - Math.floor(elapsed / 7));
+      return Math.max(10, base + rankBonus + pangramBonus + speedBonus);
+    }
+
+    function openResult(isReveal) {
+      byId("result-title").innerText = isReveal ? "LEARNING MODE" : "HIVE COMPLETE";
+      byId("result-subtitle").innerText = isReveal ? "Answers unlocked (XP disabled)" : `Rank: ${computeRank()}`;
+
+      const xp = isReveal ? 0 : calcXP();
+      byId("resScore").innerText = String(score);
+      byId("resXP").innerText = `+${xp}`;
+
+      byId("result-modal").classList.remove("hidden");
+
+      if (!isReveal && window.GameEngine && typeof window.GameEngine.addXP === "function") {
+        window.GameEngine.addXP(xp);
+        if (typeof window.GameEngine.saveGameResult === "function") {
+          window.GameEngine.saveGameResult(
+            "Spelling Bee",
+            xp,
+            1,
+            {
+              hive_index: (hiveIdx % HIVES.length) + 1,
+              hive_id: hive?.id || "",
+              score: score,
+              maxScore: maxScore,
+              rank: computeRank(),
+              found: found.size,
+              total: allowedWords.length,
+              pangrams: pangramsFound,
+              ghostClicks: ghostClicks,
+              revealed: isReveal ? 1 : 0
+            }
+          );
+        }
+      }
+
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "game_complete",
+          game_name: "Spelling Bee",
+          game_result: isReveal ? "reveal" : "complete",
+          hive_index: (hiveIdx % HIVES.length) + 1,
+          score: score,
+          maxScore: maxScore,
+          rank: computeRank(),
+          pangrams: pangramsFound,
+          found: found.size,
+          total: allowedWords.length
+        });
+      }
+    }
+
+    function closeResult() {
+      byId("result-modal").classList.add("hidden");
+    }
+
+    function openConfirm(title, desc, actionFn) {
+      confirmAction = actionFn;
+      byId("confirm-title").innerText = title;
+      byId("confirm-desc").innerText = desc;
+      byId("confirm-modal").classList.remove("hidden");
+    }
+
+    function closeConfirm() {
+      confirmAction = null;
+      byId("confirm-modal").classList.add("hidden");
+    }
+
+    function toast(title, msg, tone) {
+      const wrap = byId("toast");
+      const card = byId("toast-card");
+      byId("toast-title").innerText = title;
+      byId("toast-msg").innerText = msg;
+
+      card.style.borderColor = "rgba(255,255,255,.12)";
+      if (tone === "pink") card.style.borderColor = "rgba(255,0,255,.28)";
+
+      wrap.classList.remove("hidden");
+      card.classList.remove("animate-toast-out");
+      card.classList.add("animate-toast-in");
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => hideToast(), 1500);
+    }
+
+    function hideToast() {
+      const wrap = byId("toast");
+      const card = byId("toast-card");
+      if (wrap.classList.contains("hidden")) return;
+
+      card.classList.remove("animate-toast-in");
+      card.classList.add("animate-toast-out");
+      setTimeout(() => wrap.classList.add("hidden"), 180);
+    }
+  </script>
+</body>
+</html>
