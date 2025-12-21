@@ -1,31 +1,45 @@
-/* UX CORE - Experience Optimization Module
+/* UX CORE - Experience Optimization Module (SAFE MODE)
    Handles session persistency, metrics, and remote logging.
+   Fixes: "Firebase App named '[DEFAULT]' already exists" error.
 */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- CONFIGURATION (Paste your Firebase keys here) ---
+// --- CONFIGURATION ---
+// (We still need the config in case this script runs first, but we won't force it)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "YOUR_API_KEY_HERE", // PASTE YOUR KEY IF NOT ALREADY IN CONFIG
   authDomain: "YOUR_PROJECT.firebaseapp.com",
   projectId: "YOUR_PROJECT_ID",
   storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "...",
-  appId: "..."
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// --- INITIALIZATION FIX ---
+let app;
+let db;
+
+// Check if an app is already initialized to avoid the "Duplicate App" crash
+if (getApps().length === 0) {
+    // No app exists, so we initialize it (Safe to do here)
+    app = initializeApp(firebaseConfig);
+} else {
+    // App already exists (likely from firebase-config.js), so we just grab it
+    app = getApp(); 
+}
+
+// Get the Firestore instance from the app we just grabbed/created
+db = getFirestore(app);
 
 // --- SESSION VARIABLES ---
 const startTime = Date.now();
 const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-let sessionDocId = null; // Will hold the ID of the log in Firestore
+let sessionDocId = null; 
 let interactions = 0;
 
-// 1. USER IDENTIFICATION (Get or Create Anonymous ID)
+// 1. USER IDENTIFICATION
 let userId = localStorage.getItem('ux_uid');
 if (!userId) {
     userId = 'user_' + Math.random().toString(36).substr(2, 9);
@@ -37,7 +51,7 @@ let attempts = parseInt(localStorage.getItem(`attempts_${currentPage}`) || '0');
 attempts++;
 localStorage.setItem(`attempts_${currentPage}`, attempts);
 
-// 3. START LOGGING (Create initial entry in Firestore)
+// 3. START LOGGING
 async function initSession() {
     try {
         const docRef = await addDoc(collection(db, "arcade_activity"), {
@@ -54,33 +68,31 @@ async function initSession() {
         console.error("UX Core Init Error:", e);
     }
 }
-initSession();
 
-// 4. INTERACTION LISTENER (Clicks & Hints)
+// Only run if we are actually in a browser environment
+if (typeof window !== 'undefined') {
+    initSession();
+}
+
+// 4. INTERACTION LISTENER
 document.addEventListener('click', (e) => {
     interactions++;
-    // Optional: Update Firestore every 10 clicks to keep the connection 'alive'
-    // or just track locally to save at the end.
 });
 
-// 5. RESULT OBSERVER (The "Spy" Logic)
+// 5. RESULT OBSERVER
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
             if (node.nodeType === 1 && node.innerText) {
                 const text = node.innerText.toLowerCase();
                 
-                // DETECT GAME OVER / WIN
                 if (text.includes("game over") || text.includes("you win") || text.includes("score:")) {
                     
                     const timeSpent = ((Date.now() - startTime) / 1000).toFixed(1);
-                    
-                    // Extract Score (Looks for "Score: 10/10" or just numbers)
                     const scoreMatch = text.match(/score:?\s*(\d+)/) || text.match(/(\d+)\/(\d+)/);
                     const finalScore = scoreMatch ? scoreMatch[0] : "N/A";
                     const outcome = text.includes("win") ? "WIN" : "LOSS/DONE";
 
-                    // Update Firestore with Final Results
                     if (sessionDocId) {
                         const sessionRef = doc(db, "arcade_activity", sessionDocId);
                         updateDoc(sessionRef, {
@@ -92,7 +104,7 @@ const observer = new MutationObserver((mutations) => {
                             end_timestamp: serverTimestamp()
                         });
                     }
-                    observer.disconnect(); // Stop watching once game ends
+                    observer.disconnect();
                 }
             }
         });
@@ -100,18 +112,12 @@ const observer = new MutationObserver((mutations) => {
 });
 observer.observe(document.body, { childList: true, subtree: true });
 
-// 6. ABANDONMENT TRACKING (If they close tab without finishing)
+// 6. ABANDONMENT TRACKING
 window.addEventListener('beforeunload', () => {
     if (sessionDocId && interactions > 0) {
-        // We use navigator.sendBeacon for reliability on tab close, 
-        // but since we can't use Firestore SDK in Beacon easily, 
-        // we rely on the fact that the 'In Progress' status in DB 
-        // plus a timestamp will tell you they quit.
-        
-        // Alternatively, try a quick update:
         const timeSpent = ((Date.now() - startTime) / 1000).toFixed(1);
         const sessionRef = doc(db, "arcade_activity", sessionDocId);
-        // This is "fire and forget" - might not always complete on aggressive tab closes
+        // Best effort save on close
         updateDoc(sessionRef, { duration_seconds: timeSpent });
     }
 });
