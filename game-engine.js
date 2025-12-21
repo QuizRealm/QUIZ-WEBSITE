@@ -1,8 +1,8 @@
 /* ============================================================
-   QUIZREALM • UNIVERSAL GAME ENGINE (HYBRID V6 - GLOBAL FIX)
-   - Solves "No Firebase App" error
-   - Solves "Module Specifier" error
-   - Includes Ghost Tracking & XP System
+   QUIZREALM • UNIVERSAL GAME ENGINE (HYBRID V7 - GHOST DATA FIX)
+   - Fixed: 'lastLogin' was never updating
+   - Fixed: 'heroes' collection now gets Server Timestamps
+   - Fixed: Ghost profiles now sync correctly to 'heroes'
    ============================================================ */
 
 (function () {
@@ -28,6 +28,7 @@
     const Engine = {
         state: {
             uid: null,
+            isAnonymous: false, // Added to track Ghost Status
             nickname: null,
             avatarSeed: "Player",
             xp: 0,
@@ -35,7 +36,7 @@
             rank: "The Drifter",
             badges: [],
             streak: 0,
-            lastLogin: null,
+            lastLogin: null, // This will now be updated
             lastDailyDate: null,
             coins: 0
         },
@@ -44,20 +45,17 @@
         init() {
             this._loadLocal();
             this._recalculateLevel(false); 
-
-            // FIX: Don't import Firebase. Wait for the Config file to load it.
             this._waitForFirebase();
 
             this.updateHeaderUI();
             this.updateProfileUI();
-            this._updateSimpleUI(); // Backward compatibility
+            this._updateSimpleUI(); 
 
             window.GameEngine = Engine;
             console.log("✅ GameEngine Active. Waiting for Firebase...");
         },
 
         _waitForFirebase() {
-            // Check every 100ms if firebase-config.js has finished
             const check = setInterval(() => {
                 if (window.auth && window.db) {
                     clearInterval(check);
@@ -69,19 +67,22 @@
 
         _attachAuthListener() {
             try {
-                // Use the auth instance from window (set by config file)
                 window.auth.onAuthStateChanged(async (firebaseUser) => {
                     if (firebaseUser) {
                         console.log("👤 User Connected:", firebaseUser.uid);
-                        this.state.uid = firebaseUser.uid;
                         
-                        // 1. Sync Stats
+                        // --- FIX: UPDATE STATE IMMEDIATELY ---
+                        this.state.uid = firebaseUser.uid;
+                        this.state.isAnonymous = firebaseUser.isAnonymous;
+                        this.state.lastLogin = new Date().toISOString(); // Tracks the exact time of login
+                        
+                        // 1. Ensure Ghost Profile Exists in BOTH collections
+                        await this._checkGhostProfile(firebaseUser);
+
+                        // 2. Sync Stats
                         await this._syncWithCloud(firebaseUser);
                         
-                        // 2. Ensure Ghost Profile Exists (Legal/Tracking Data)
-                        this._checkGhostProfile(firebaseUser);
                     } else {
-                        // User logged out? Update UI only.
                         this.updateHeaderUI();
                         this.updateProfileUI();
                     }
@@ -90,35 +91,43 @@
         },
 
         async _checkGhostProfile(user) {
-            // Safety check
             if (!window.doc || !window.getDoc || !window.setDoc) return;
 
+            // A. Update 'users' collection (Legal/Device Data)
             const userRef = window.doc(window.db, "users", user.uid);
             try {
                 const snap = await window.getDoc(userRef);
+                
+                // Always update 'lastActive' even if profile exists
+                const ghostData = {
+                    uid: user.uid,
+                    isAnonymous: user.isAnonymous,
+                    lastActive: new Date().toISOString(),
+                    nickname: user.isAnonymous ? "Ghost Guest" : (user.displayName || "Hero"),
+                    deviceModel: navigator.userAgent, 
+                    platform: navigator.platform,
+                    screenRes: `${window.screen.width}x${window.screen.height}`
+                };
+
                 if (!snap.exists()) {
-                    console.log("👻 Creating Ghost Profile...");
-                    await window.setDoc(userRef, {
-                        uid: user.uid,
-                        isAnonymous: user.isAnonymous,
-                        joinedAt: new Date(),
-                        nickname: user.isAnonymous ? "Ghost Guest" : "Hero",
-                        deviceModel: navigator.userAgent, 
-                        platform: navigator.platform,
-                        screenRes: `${window.screen.width}x${window.screen.height}`
-                    });
+                    ghostData.joinedAt = new Date().toISOString(); // Only set join date once
+                    console.log("👻 Creating New Ghost Profile...");
                 }
+
+                // Merge true ensures we don't overwrite existing fields like 'joinedAt' if they exist
+                await window.setDoc(userRef, ghostData, { merge: true });
+
             } catch (e) { console.warn("Ghost profile check skipped:", e); }
         },
 
-        // 4. DATA SAVING (The Helper Function)
+        // 4. DATA SAVING
         async saveGameResult(gameName, score, totalQuestions, extraStats = {}) {
             if (!this.state.uid) { console.warn("Save skipped: No User ID"); return; }
 
-            // DYNAMIC IMPORT: Load these only when needed to avoid "Module Specifier" crashes at startup
             try {
                 const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
                 
+                // Save to History Subcollection
                 await addDoc(collection(window.db, "users", this.state.uid, "history"), {
                     game: gameName,
                     score: score,
@@ -132,7 +141,6 @@
                 });
                 console.log(`💾 Saved result for ${gameName}`);
                 
-                // Give local XP reward
                 this.addXP(score * 10); 
             } catch (error) {
                 console.error("Save Error:", error);
@@ -169,18 +177,18 @@
                 this.state = {
                     ...this.state,
                     ...cloudData,
+                    // Keep the highest values to prevent data loss on device switch
                     xp: Math.max(this.state.xp || 0, cloudData.xp || 0),
                     streak: Math.max(this.state.streak || 0, cloudData.streak || 0),
                     badges: [...new Set([...(cloudData.badges||[]), ...(this.state.badges||[])])]
                 };
             }
+            
             this._recalculateLevel(false); 
             this._saveLocal();
             
-            // Write back to ensure cloud is current
-            if (window.setDoc) {
-                try { await window.setDoc(ref, this.state, { merge: true }); } catch (e) {}
-            }
+            // --- FIX: Force Cloud Update Immediately ---
+            this._saveCloudSafe(); 
 
             this.updateHeaderUI();
             this.updateProfileUI();
@@ -188,8 +196,24 @@
 
         async _saveCloudSafe() {
             if (!this.state.uid || !window.setDoc) return;
-            const ref = window.doc(window.db, "heroes", this.state.uid);
-            try { await window.setDoc(ref, this.state, { merge: true }); } catch (e) {}
+            
+            try {
+                // Dynamically import serverTimestamp for accuracy
+                const { serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                
+                const ref = window.doc(window.db, "heroes", this.state.uid);
+                
+                // We construct the payload manually to ensure timestamps are added
+                const payload = {
+                    ...this.state,
+                    lastSynced: serverTimestamp(), // Takes server time
+                    clientTime: new Date().toISOString() // Takes device time (good for checking timezones)
+                };
+
+                await window.setDoc(ref, payload, { merge: true });
+            } catch (e) {
+                console.error("Cloud Save Error:", e);
+            }
         },
 
         // --------------------------------------------------------
@@ -338,7 +362,7 @@
                     "profileLevel": s.level, "profileRank": s.rank, "profileXP": `${(s.xp || 0).toLocaleString()} XP`,
                     "profileName": s.nickname || "QuizRealm Hero", "statScore": (s.xp || 0).toLocaleString(),
                     "statStreak": s.streak || 0, "statBadges": s.badges?.length || 0,
-                    "resScore": s.xp // Updates result screens too
+                    "resScore": s.xp 
                 };
                 for(const [id, val] of Object.entries(map)){
                     const el = document.getElementById(id);
@@ -381,7 +405,6 @@
     Object.defineProperty(Engine, "level", { get() { return Engine.state.rank; } });
     Object.defineProperty(Engine, "streak", { get() { return Engine.state.streak; }, set(v) { Engine.state.streak = Number(v); Engine._saveLocal(); } });
     
-    // Save hook
     Engine.save = function () { Engine._saveLocal(); Engine._saveCloudSafe(); };
 
     Engine.init();
