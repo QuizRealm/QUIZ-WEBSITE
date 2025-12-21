@@ -72,9 +72,14 @@
                         console.log("👤 User Connected:", firebaseUser.uid);
                         
                         // --- FIX: UPDATE STATE IMMEDIATELY ---
-                        this.state.uid = firebaseUser.uid;
+                      this.state.uid = firebaseUser.uid;
+
+                        // --- LINK WITH UX CORE ---
+                        // This ensures the tracker script uses the exact same ID as the Game Engine
+                        localStorage.setItem('qr_persistent_uid', firebaseUser.uid); 
+
                         this.state.isAnonymous = firebaseUser.isAnonymous;
-                        this.state.lastLogin = new Date().toISOString(); // Tracks the exact time of login
+                        this.state.lastLogin = new Date().toISOString();
                         
                         // 1. Ensure Ghost Profile Exists in BOTH collections
                         await this._checkGhostProfile(firebaseUser);
