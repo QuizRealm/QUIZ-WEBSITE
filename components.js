@@ -719,6 +719,15 @@ function injectGlobalResourceHubCard() {
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Odd One Out</span>
           </a>
 
+
+
+           <a href="crossword.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+            <img src="assets/crossword.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Odd One Out">
+            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Odd One Out</span>
+          </a>
+
+
+          
           <a href="two-truths-trap.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
             <img src="assets/twotruths.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Two Truths">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Two Truths</span>
