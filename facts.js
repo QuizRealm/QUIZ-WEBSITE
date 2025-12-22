@@ -69,7 +69,7 @@ const quizFacts = {
     {
       title: "Kaley Cuoco Broke Her Leg",
       body: "After Kaley Cuoco broke her leg in a horseback riding accident, the writers hid her injury by placing her behind the bar at work.",
-      image: "assets/facts/tbbt11.webp",
+      image: "assets/facts/batman.webp",
       alt: "Penny in the Cheesecake Factory"
     },
     {
@@ -165,7 +165,7 @@ const quizFacts = {
     {
       title: "Sheldon’s Laws Of Robotics Obsession",
       body: "Sheldon frequently references Asimov’s laws of robotics, connecting his personality to strict logic.",
-      image: "assets/facts/tbbt11.webp",
+      image: "assets/facts/batman.webp",
       alt: "Sheldon holding a robot"
     },
     {
@@ -231,7 +231,7 @@ const quizFacts = {
     {
       title: "Penny’s Nebraska Roots",
       body: "Penny comes from Nebraska, where her father wanted a son and raised her like one.",
-      image: "assets/facts/tbbt11.webp",
+      image: "assets/facts/batman.webp",
       alt: "Penny visiting her family"
     },
     {
@@ -997,7 +997,7 @@ dc: [
   {
     title: "Christopher Reeve's Casting",
     body: "Christopher Reeve was cast as Superman and became the definitive version of the character for a generation of fans.",
-    image: "assets/facts/dc1.webp",
+    image: "assets/facts/tbbt3.webp",
     alt: "Christopher Reeve as Superman"
   },
 
@@ -1904,56 +1904,56 @@ alt: "Anime character making dramatic sports move"
 {
 title: "The Influence of Color",
 body: "Anime uses color symbolically - red for passion, blue for calm, green for nature. Background colors often shift to reflect characters' emotions or the mood of a scene.",
-image: "assets/facts/tbbt11.webp",
+image: "assets/facts/batman.webp",
 
 alt: "Anime scene with dramatic color palette"
 },
 {
 title: "Anime's Cooking Revolution",
 body: "Food in anime is famously detailed and mouth-watering. Series like Food Wars! have made anime cooking tutorials popular on YouTube, with fans recreating dishes.",
-image: "assets/facts/tbbt11.webp",
+image: "assets/facts/batman.webp",
 
 alt: "Extremely detailed anime food drawing"
 },
 {
 title: "The Manga Connection",
 body: "Most anime are adaptations of manga, light novels, or video games. Successful anime can boost manga sales by hundreds of percent, creating a symbiotic relationship.",
-image: "assets/facts/tbbt11.webp",
+image: "assets/facts/tbbt3.webp",
 
 alt: "Manga volume with anime adaptation poster"
 },
 {
 title: "Anime's Time Travel Complexity",
 body: "Anime often explores complex time travel concepts that would be difficult in live-action. Series like Steins;Gate and Erased use time travel to tell emotionally powerful stories.",
-image: "assets/facts/tbbt11.webp",
+image: "assets/facts/tbbt3.webp",
 
 alt: "Time travel diagram from Steins;Gate"
 },
 {
 title: "The Kawaii Aesthetic",
 body: "The kawaii (cute) aesthetic in anime has influenced global fashion and design. From Hello Kitty to Sanrio characters, this style has become synonymous with Japanese pop culture.",
-image: "assets/facts/tbbt11.webp",
+image: "assets/facts/tbbt3.webp",
 
 alt: "Cute anime characters in kawaii style"
 },
 {
 title: "Anime's Musical Diversity",
 body: "Anime soundtracks cover every genre from classical to heavy metal. Composers like Yoko Kanno and Hiroyuki Sawano create scores that are celebrated as standalone works of art.",
-image: "assets/facts/tbbt11.webp",
+image: "assets/facts/tbbt3.webp",
 
 alt: "Anime composer conducting orchestra"
 },
 {
 title: "The Fan Subbing Culture",
 body: "Before legal streaming, fan subbers were the primary way international fans watched anime. Many current industry professionals started as fan subbers or scanlators.",
-image: "assets/facts/tbbt11.webp",
+image: "assets/facts/tbbt3.webp",
 
 alt: "Early fan subbed anime on computer"
 },
 {
 title: "Anime's Technological预言",
 body: "Some anime have predicted future technology with surprising accuracy. The 1995 film Ghost in the Shell anticipated many aspects of the internet and cybertechnology.",
-image: "assets/facts/tbbt11.webp",
+image: "assets/facts/tbbt3.webp",
 
 alt: "Cyborg from Ghost in the Shell"
 },
@@ -2340,37 +2340,37 @@ batman: [
     {
       title: "The Bat-Voice",
       body: "Christian Bale developed the deep, gravelly voice for Batman himself during his audition. Director Christopher Nolan liked it so much that it became a defining, and sometimes debated, feature of his portrayal.",
-      image: "assets/facts/batman1.webp",
+      image: "assets/facts/spellingbee.png",
       alt: "Christian Bale as Batman in the dark"
     },
     {
       title: "Heath Ledger's Joker Diary",
       body: "To prepare for his role as the Joker, Heath Ledger isolated himself in a hotel room for a month. He kept a diary filled with the Joker's thoughts and inspirations, which helped him create the character's iconic, chaotic personality.",
-      image: "assets/facts/batman2.webp",
+      image: "assets/facts/batman.webp",
       alt: "Heath Ledger as the Joker"
     },
     {
       title: "The Tumbler Was Real",
       body: "The Batmobile in 'The Dark Knight' trilogy, known as the Tumbler, was not a CGI creation. It was a fully functional, custom-built vehicle capable of going 0-60 mph in under 6 seconds and performing its own stunts.",
-      image: "assets/facts/batman3.webp",
+      image: "assets/facts/strangerthings-wide.png",
       alt: "The Tumbler Batmobile on a city street"
     },
     {
       title: "Jack Nicholson's Joker Deal",
       body: "Jack Nicholson negotiated a landmark deal to play the Joker in 1989's 'Batman'. He took a lower salary in exchange for a percentage of the film's gross earnings and merchandise, earning him over $60 million.",
-      image: "assets/facts/batman4.webp",
+      image: "assets/facts/tbbt3.webp",
       alt: "Jack Nicholson as the Joker with a wide grin"
     },
     {
       title: "A Detective Story",
       body: "'The Batman' (2022) focused more on Batman's detective skills than previous films. Director Matt Reeves was heavily influenced by 1970s noir films like 'Chinatown' and 'The French Connection'.",
-      image: "assets/facts/batman5.webp",
+      image: "assets/facts/strangerthings-wide.png",
       alt: "Robert Pattinson as Batman investigating a crime scene"
     },
     {
       title: "The First Use of IMAX",
       body: "'The Dark Knight' was the first major feature film to use high-resolution IMAX cameras for its action sequences, including the opening bank heist. This set a new standard for blockbuster cinematography.",
-      image: "assets/facts/batman6.webp",
+      image: "assets/facts/spellingbee.png",
       alt: "An IMAX camera filming a scene for The Dark Knight"
     },
     {
@@ -2382,49 +2382,49 @@ batman: [
     {
       title: "The Penguin's Transformation",
       body: "Colin Farrell was so unrecognizable as the Penguin in 'The Batman' that other cast members didn't know it was him. He spent four hours in the makeup chair each day for the transformation.",
-      image: "assets/facts/batman8.webp",
+      image: "assets/facts/strangerthings-wide.png",
       alt: "Colin Farrell in full prosthetic makeup as The Penguin"
     },
     {
       title: "The Controversial 'Bat-Nipples'",
       body: "The Batsuits in 'Batman Forever' and 'Batman & Robin' famously featured nipples. Director Joel Schumacher said he was inspired by statues of Greek gods and wanted the suits to have an anatomical feel.",
-      image: "assets/facts/batman9.webp",
+      image: "assets/facts/strangerthings-wide.png",
       alt: "Close-up of the infamous Bat-Nipples on the suit"
     },
     {
       title: "A More Brutal Batman",
       body: "Ben Affleck's portrayal of Batman in the DCEU was inspired by Frank Miller's comic 'The Dark Knight Returns,' showing an older, more cynical, and physically brutal version of the character.",
-      image: "assets/facts/batman10.webp",
+      image: "assets/facts/spellingbee.png",
       alt: "Ben Affleck as a grizzled, armored Batman"
     },
     {
       title: "The Batmobile's Design",
       body: "Tim Burton's Batmobile from the 1989 film was built on the chassis of a Chevy Impala. Its sleek, art-deco design became one of the most iconic vehicle designs in film history.",
-      image: "assets/facts/batman11.webp",
+      image: "assets/facts/spellingbee.png",
       alt: "The iconic 1989 Batmobile"
     },
     {
       title: "The Keysi Fighting Method",
       body: "Christian Bale's Batman uses a real-world martial art called the Keysi Fighting Method. It's a brutal and efficient form of self-defense focused on close-quarters combat, perfect for Batman's style.",
-      image: "assets/facts/batman12.webp",
+      image: "assets/facts/batman.webp",
       alt: "Batman using the Keysi Fighting Method in combat"
     },
     {
       title: "The Joker's Oscar Wins",
       body: "The character of the Joker is the only one to have won two Academy Awards for two different actors. Heath Ledger won posthumously for 'The Dark Knight' and Joaquin Phoenix won for 'Joker'.",
-      image: "assets/facts/batman13.webp",
+      image: "assets/facts/strangerthings-wide.png",
       alt: "Heath Ledger and Joaquin Phoenix as the Joker"
     },
     {
       title: "A Practical Car Chase",
       body: "The thrilling chase between Batman and the Penguin in 'The Batman' was filmed using mostly practical effects. The Batmobile was a real, custom-built muscle car that could handle the high-speed stunts.",
-      image: "assets/facts/batman14.webp",
+      image: "assets/facts/spellingbee.png",
       alt: "The Batmobile chasing The Penguin's car in the rain"
     },
     {
       title: "The End of a Franchise",
       body: "The poor critical and commercial reception of 'Batman & Robin' (1997) caused Warner Bros. to cancel a planned sequel and put the Batman film franchise on hold for eight years until 'Batman Begins'.",
-      image: "assets/facts/batman15.webp",
+      image: "assets/facts/spellingbee.png",
       alt: "Promotional poster for Batman & Robin"
     }
 ],
