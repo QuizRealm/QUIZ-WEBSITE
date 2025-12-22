@@ -2376,7 +2376,7 @@ batman: [
     {
       title: "Catwoman's Vacuum-Sealed Suit",
       body: "Michelle Pfeiffer's iconic Catwoman costume in 'Batman Returns' was so tight it was vacuum-sealed for each take. She could only wear it for short periods before it became too uncomfortable.",
-      image: "assets/facts/batman7.webp",
+      image: "assets/facts/batman.webp",
       alt: "Michelle Pfeiffer as Catwoman in her latex suit"
     },
     {
