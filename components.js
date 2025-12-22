@@ -685,76 +685,76 @@ function injectGlobalResourceHubCard() {
         <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2">
           
           <a href="timeline-history.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/Histim.webp" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Timeline">
+            <img src="/assets/Histim.webp" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Timeline">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Timeline</span>
           </a>
 
           <a href="fusion-core.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/LOGIC.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Logic">
+            <img src="/assets/LOGIC.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Logic">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Logic Core</span>
           </a>
 
           <a href="hangman.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/hangman.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Hangman">
+            <img src="/assets/hangman.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Hangman">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Hangman</span>
           </a>
 
           <a href="cryptex.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/cryptex.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Cryptex">
+            <img src="/assets/cryptex.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Cryptex">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Cryptex</span>
           </a>
 
           <a href="rapid.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/rapid.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Rapid">
+            <img src="/assets/rapid.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Rapid">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Rapid Fire</span>
           </a>
 
           <a href="minigames.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/pictionary.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Pictionary">
+            <img src="/assets/pictionary.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Pictionary">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Pictionary</span>
           </a>
 
           <a href="odd-one-out.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/oddoneout.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Odd One Out">
+            <img src="/assets/oddoneout.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Odd One Out">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Odd One Out</span>
           </a>
 
 
 
            <a href="crossword.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/crossword.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Odd One Out">
+            <img src="/assets/crossword.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Odd One Out">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Odd One Out</span>
           </a>
 
 
           
           <a href="two-truths-trap.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/twotruths.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Two Truths">
+            <img src="/assets/twotruths.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Two Truths">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Two Truths</span>
           </a>
 
           <a href="word-ladder.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/wordladder.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Word Ladder">
+            <img src="/assets/wordladder.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Word Ladder">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Word Ladder</span>
           </a>
 
           <a href="mini-crossword.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/minicrossword.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Crossword">
+            <img src="/assets/minicrossword.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Crossword">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Crossword</span>
           </a>
 
           <a href="nexus.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/connections.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Connections">
+            <img src="/assets/connections.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Connections">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Connections</span>
           </a>
 
           <a href="tango-logic.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/tango.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Tango">
+            <img src="/assets/tango.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Tango">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Tango Logic</span>
           </a>
 
           <a href="spelling.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="assets/spellingbee.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Spelling Bee">
+            <img src="/assets/spellingbee.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Spelling Bee">
             <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Spelling Bee</span>
           </a>
 
