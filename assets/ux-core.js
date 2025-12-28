@@ -1,7 +1,7 @@
-/* UX CORE - HYBRID MASTER (V4 - DUAL SAVE)
-   - Handles: Auth, Tech Profiling, Session Tracking
-   - SAVES TO: 'users' collection (Structured) AND 'arcade_activity' (Backup)
-   - Exposes: DB and Auth for Game Engine
+/* UX CORE - FINAL V6 (PURE USERS COLLECTION)
+   - Collections: 'users' ONLY (plus 'heroes' via Game Engine)
+   - Heartbeat: 60s (Quota Safe)
+   - Tracks: Tech Profile + Session History inside 'users/{uid}/sessions'
 */
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -9,14 +9,14 @@ import { getFirestore, collection, addDoc, updateDoc, doc, serverTimestamp, setD
 import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDqRiQs_ezSxSpaYo0BO8WAcJF9LKvyOwo",
-  authDomain: "thequizrealm-ef52c.firebaseapp.com",
-  projectId: "thequizrealm-ef52c",
-  storageBucket: "thequizrealm-ef52c.firebasestorage.app",
-  messagingSenderId: "56820951002",
-  appId: "1:56820951002:web:3f7d419d62f6d7ee2102e3",
-  measurementId: "G-4JL3CD1WQT"
+  apiKey: "YOUR_API_KEY", // ⚠️ PASTE YOUR KEYS HERE
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
+
 // --- INIT FIREBASE ---
 let app, db, auth;
 if (getApps().length === 0) app = initializeApp(firebaseConfig);
@@ -25,7 +25,7 @@ else app = getApp();
 db = getFirestore(app);
 auth = getAuth(app);
 
-// --- EXPOSE TOOLS TO WINDOW (For Game Engine) ---
+// --- EXPOSE TOOLS TO WINDOW ---
 window.db = db;
 window.auth = auth;
 window.firebase = { auth: { GoogleAuthProvider: GoogleAuthProvider } };
@@ -37,38 +37,29 @@ window.serverTimestamp = serverTimestamp;
 // --- STATE ---
 const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
 const startTime = Date.now();
-
-// We now track TWO document IDs (one for each collection)
-let sessionDocId = null; // Inside users/{uid}/sessions
-let arcadeDocId = null;  // Inside arcade_activity
+let sessionDocId = null; 
 let interactions = 0;
 
-// --- DIGITAL FINGERPRINT GENERATOR ---
+// --- FINGERPRINT (Tech Data) ---
 function getDigitalFingerprint() {
     const nav = navigator;
-    const conn = nav.connection || nav.mozConnection || nav.webkitConnection || {};
     return {
         timestamp_local: new Date().toString(),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         screen_res: `${window.screen.width}x${window.screen.height}`,
-        viewport: `${window.innerWidth}x${window.innerHeight}`,
-        device_memory: nav.deviceMemory || "unknown",
         platform: nav.platform,
         is_mobile: /Mobi|Android/i.test(nav.userAgent),
-        connection_type: conn.effectiveType || "unknown",
-        downlink: conn.downlink || 0,
-        referrer: document.referrer || "Direct",
-        user_agent: nav.userAgent
+        user_agent: nav.userAgent,
+        referrer: document.referrer || "Direct"
     };
 }
 
-// --- MAIN TRACKER LOGIC ---
+// --- MAIN TRACKER ---
 let persistentUid = localStorage.getItem('qr_persistent_uid');
 
 async function initTracker() {
     onAuthStateChanged(auth, async (user) => {
+        // 1. IDENTITY RESOLUTION
         let finalUserId;
-
         if (user) {
             finalUserId = user.uid;
         } else if (persistentUid) {
@@ -78,23 +69,18 @@ async function initTracker() {
             localStorage.setItem('qr_persistent_uid', finalUserId);
             signInAnonymously(auth).catch(() => {});
         }
-        
         window.currentUserId = finalUserId; 
 
-        // Get nickname if saved locally
+        // 2. GET NICKNAME (If available locally)
         let currentNick = "Anonymous";
         try {
-            const localProfile = JSON.parse(localStorage.getItem("QR_PROFILE"));
-            if (localProfile && localProfile.nickname) currentNick = localProfile.nickname;
+            const local = JSON.parse(localStorage.getItem("QR_PROFILE"));
+            if (local && local.nickname) currentNick = local.nickname;
         } catch(e) {}
 
-        // =========================================================
-        // 1. UPDATE MAIN USER PROFILE (The 20 Data Points)
-        // =========================================================
+        // 3. UPDATE MAIN PROFILE (Tech Data) - Runs once per load
         try {
             const userRef = doc(db, "users", finalUserId);
-            const techProfile = getDigitalFingerprint();
-            
             await setDoc(userRef, {
                 identity: {
                     uid: finalUserId,
@@ -102,85 +88,56 @@ async function initTracker() {
                     is_anonymous: user?.isAnonymous ?? true,
                     last_active: serverTimestamp()
                 },
-                tech_profile: techProfile,
-                stats: {
-                    total_visits: increment(1)
-                }
+                tech_profile: getDigitalFingerprint(),
+                stats: { total_visits: increment(1) }
             }, { merge: true });
-            
-            console.log("✅ User Profile Synced");
-        } catch (e) { console.error("Profile Save Error:", e); }
+        } catch (e) {}
 
-        // =========================================================
-        // 2. START SESSION LOG (Structured)
-        // =========================================================
+        // 4. START SESSION LOG (Replaces Arcade Activity)
+        // Saves to: users/{uid}/sessions/{sessionID}
         try {
             const sessionRef = await addDoc(collection(db, "users", finalUserId, "sessions"), {
                 page: currentPage,
                 start_time: serverTimestamp(),
-                fingerprint: getDigitalFingerprint(),
-                metrics: {
-                    time_spent: 0,
-                    clicks: 0,
-                    status: "Live"
+                device: navigator.platform, // Quick reference
+                metrics: { 
+                    time_spent: 0, 
+                    clicks: 0, 
+                    status: "Live" 
                 }
             });
             sessionDocId = sessionRef.id;
-        } catch (e) { console.error("Session Error:", e); }
 
-        // =========================================================
-        // 3. START ARCADE LOG (Legacy Backup)
-        // =========================================================
-        try {
-            const arcadeRef = await addDoc(collection(db, "arcade_activity"), {
-                userId: finalUserId,
-                nickname: currentNick,
-                page: currentPage,
-                status: "Started",
-                time_spent: 0,
-                timestamp: serverTimestamp(),
-                device: navigator.userAgent
-            });
-            arcadeDocId = arcadeRef.id;
-        } catch (e) { console.error("Arcade Log Error:", e); }
+            // --- HEARTBEAT: 60 SECONDS (Quota Safe) ---
+            setInterval(() => saveData("Heartbeat"), 60000); 
 
-        // Start Heartbeat (Updates both)
-        setInterval(() => saveData("Heartbeat"), 10000); 
+        } catch (e) { console.error("Session Start Error:", e); }
     });
 }
 
 async function saveData(reason) {
-    if (!window.currentUserId) return;
+    if (!sessionDocId || !window.currentUserId) return;
     
     const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+    const docRef = doc(db, "users", window.currentUserId, "sessions", sessionDocId);
 
-    // A. UPDATE SESSION (Structured)
-    if (sessionDocId) {
-        const docRef = doc(db, "users", window.currentUserId, "sessions", sessionDocId);
-        await updateDoc(docRef, {
-            "metrics.time_spent": timeSpent,
-            "metrics.clicks": interactions,
-            "metrics.status": reason === "Exit" ? "Completed" : "Live",
-            last_ping: serverTimestamp()
-        }).catch(() => {});
-    }
+    // Update Session Data
+    await updateDoc(docRef, {
+        "metrics.time_spent": timeSpent,
+        "metrics.clicks": interactions,
+        "metrics.status": reason === "Exit" ? "Completed" : "Live",
+        last_ping: serverTimestamp()
+    }).catch(() => {});
 
-    // B. UPDATE ARCADE LOG (Legacy Backup)
-    if (arcadeDocId) {
-        const arcadeRef = doc(db, "arcade_activity", arcadeDocId);
-        await updateDoc(arcadeRef, {
-            time_spent: timeSpent,
-            total_clicks: interactions,
-            status: reason === "Exit" ? "Closed" : "Active",
-            last_update_trigger: reason
-        }).catch(() => {});
-    }
-
-    // C. UPDATE GLOBAL STATS (Every minute)
-    if (reason === "Heartbeat" && timeSpent > 0 && timeSpent % 60 === 0) {
+    // Update Total Time on Site (Only on Heartbeat or Exit)
+    // This is efficient: 1 write per minute maximum.
+    const interval = reason === "Heartbeat" ? 60 : (timeSpent % 60);
+    if (interval > 0) {
         try {
             const mainRef = doc(db, "users", window.currentUserId);
-            await updateDoc(mainRef, { "stats.total_time_on_site": increment(60) });
+            await updateDoc(mainRef, { 
+                "stats.total_time_on_site": increment(interval) 
+            });
         } catch(e) {}
     }
 }
