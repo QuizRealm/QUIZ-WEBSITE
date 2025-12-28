@@ -1,23 +1,22 @@
-/* UX CORE - FINAL OPTIMIZED (V2 - IDENTITY SUPPORT)
-   - Infrastructure: Initializes Firebase for the whole site
-   - Global: Exposes 'window.auth' and 'window.db' for Game Engine
-   - Tracking: Persists User ID and now tracks Nicknames
+/* UX CORE - FINAL MASTER (V3 - DATA GUARDIAN)
+   - Handles: Auth, Sessions, Tech Profiling (User Data)
+   - Exposes: DB and Auth for Game Engine
+   - Structure: Saves everything to 'users/{uid}'
 */
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, updateDoc, doc, serverTimestamp, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, updateDoc, doc, serverTimestamp, setDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-
 const firebaseConfig = {
-  apiKey: "AIzaSyDqRiQs_ezSxSpaYo0BO8WAcJF9LKvyOwo",
-  authDomain: "thequizrealm-ef52c.firebaseapp.com",
-  projectId: "thequizrealm-ef52c",
-  storageBucket: "thequizrealm-ef52c.firebasestorage.app",
-  messagingSenderId: "56820951002",
-  appId: "1:56820951002:web:3f7d419d62f6d7ee2102e3",
-  measurementId: "G-4JL3CD1WQT"
+  apiKey: "YOUR_API_KEY", // ⚠️ PASTE YOUR KEYS HERE
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
+
 // --- INIT FIREBASE ---
 let app, db, auth;
 if (getApps().length === 0) app = initializeApp(firebaseConfig);
@@ -26,16 +25,10 @@ else app = getApp();
 db = getFirestore(app);
 auth = getAuth(app);
 
-// --- 🛑 CRITICAL: EXPOSE TO WINDOW FOR GAME ENGINE 🛑 ---
-// The Game Engine needs these to handle the Popup and saving data
+// --- EXPOSE TOOLS TO WINDOW (For Game Engine) ---
 window.db = db;
 window.auth = auth;
-window.firebase = { 
-    auth: { 
-        GoogleAuthProvider: GoogleAuthProvider 
-    } 
-};
-// Also expose Firestore functions so Game Engine doesn't have to re-import them
+window.firebase = { auth: { GoogleAuthProvider: GoogleAuthProvider } };
 window.doc = doc;
 window.getDoc = getDoc;
 window.setDoc = setDoc;
@@ -46,7 +39,27 @@ const currentPage = window.location.pathname.split('/').pop().replace('.html', '
 const startTime = Date.now();
 let sessionDocId = null;
 let interactions = 0;
-// --- 1. PERSISTENT USER IDENTITY ---
+
+// --- DIGITAL FINGERPRINT GENERATOR ---
+function getDigitalFingerprint() {
+    const nav = navigator;
+    const conn = nav.connection || nav.mozConnection || nav.webkitConnection || {};
+    return {
+        timestamp_local: new Date().toString(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        screen_res: `${window.screen.width}x${window.screen.height}`,
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+        device_memory: nav.deviceMemory || "unknown",
+        platform: nav.platform,
+        is_mobile: /Mobi|Android/i.test(nav.userAgent),
+        connection_type: conn.effectiveType || "unknown",
+        downlink: conn.downlink || 0,
+        referrer: document.referrer || "Direct",
+        user_agent: nav.userAgent
+    };
+}
+
+// --- MAIN TRACKER LOGIC ---
 let persistentUid = localStorage.getItem('qr_persistent_uid');
 
 async function initTracker() {
@@ -54,9 +67,9 @@ async function initTracker() {
         let finalUserId;
 
         if (user) {
-            finalUserId = user.uid; 
+            finalUserId = user.uid;
         } else if (persistentUid) {
-            finalUserId = persistentUid; 
+            finalUserId = persistentUid;
         } else {
             finalUserId = 'anon_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('qr_persistent_uid', finalUserId);
@@ -64,60 +77,82 @@ async function initTracker() {
         }
         
         window.currentUserId = finalUserId; 
-        
-        // --- 2. START SESSION (INSIDE USERS COLLECTION) ---
+
+        // --- A. UPDATE MAIN USER PROFILE (The 20 Data Points) ---
         try {
-            // We use a sub-collection 'sessions' inside the specific user's document
+            const userRef = doc(db, "users", finalUserId);
+            const techProfile = getDigitalFingerprint();
+            
+            // Get nickname if saved locally
+            let currentNick = "Anonymous";
+            try {
+                const localProfile = JSON.parse(localStorage.getItem("QR_PROFILE"));
+                if (localProfile && localProfile.nickname) currentNick = localProfile.nickname;
+            } catch(e) {}
+
+            await setDoc(userRef, {
+                identity: {
+                    uid: finalUserId,
+                    nickname: user?.displayName || currentNick,
+                    is_anonymous: user?.isAnonymous ?? true,
+                    last_active: serverTimestamp()
+                },
+                tech_profile: techProfile,
+                stats: {
+                    total_visits: increment(1)
+                }
+            }, { merge: true });
+            
+            console.log("✅ User Profile Synced to DB");
+
+        } catch (e) { console.error("Profile Save Error:", e); }
+
+        // --- B. START SESSION LOG (Sub-collection) ---
+        try {
+            // This creates a NEW document inside users/UID/sessions for every visit
             const sessionRef = await addDoc(collection(db, "users", finalUserId, "sessions"), {
-                page_name: currentPage,
+                page: currentPage,
                 start_time: serverTimestamp(),
-                device_type: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop",
-                entry_point: document.referrer || "Direct",
-                
-                // Metrics that update live
+                fingerprint: getDigitalFingerprint(), // Save snapshot of tech data for this specific session
                 metrics: {
-                    time_spent_seconds: 0,
-                    click_count: 0,
-                    scroll_depth: 0,
+                    time_spent: 0,
+                    clicks: 0,
                     status: "Live"
                 }
             });
             sessionDocId = sessionRef.id;
 
-            // --- 3. HEARTBEAT (Every 10s for higher accuracy) ---
+            // --- HEARTBEAT (Every 10s) ---
             setInterval(() => saveData("Heartbeat"), 10000); 
 
-        } catch (e) { console.error("Tracking Error:", e); }
+        } catch (e) { console.error("Session Error:", e); }
     });
 }
 
-// --- SHARED SAVE FUNCTION ---
 async function saveData(reason) {
     if (!sessionDocId || !window.currentUserId) return;
     
-    // Calculate exact seconds
     const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-    
-    // Path: users -> {uid} -> sessions -> {sessionId}
     const docRef = doc(db, "users", window.currentUserId, "sessions", sessionDocId);
 
-    // Dynamic Updates
     await updateDoc(docRef, {
-        "metrics.time_spent_seconds": timeSpent,
-        "metrics.click_count": interactions,
+        "metrics.time_spent": timeSpent,
+        "metrics.clicks": interactions,
         "metrics.status": reason === "Exit" ? "Completed" : "Live",
         last_ping: serverTimestamp()
-    }).catch(e => console.warn("Save skipped:", e));
-    
-    // OPTIONAL: Update "Total Time" on the Main User Document (Cumulative)
-    // This gives you the "Total Time on Website" metric you asked for
-    if (reason === "Heartbeat" && (timeSpent % 60 === 0)) { // Update main doc every minute
+    }).catch(() => {});
+
+    // Update Global Time Counter every minute
+    if (reason === "Heartbeat" && timeSpent > 0 && timeSpent % 60 === 0) {
         try {
-            const { increment } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-            const mainUserRef = doc(db, "users", window.currentUserId);
-            await updateDoc(mainUserRef, {
-                "stats.total_time_on_site": increment(60)
-            });
+            const mainRef = doc(db, "users", window.currentUserId);
+            await updateDoc(mainRef, { "stats.total_time_on_site": increment(60) });
         } catch(e) {}
     }
 }
+
+document.addEventListener('click', () => interactions++);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'hidden') saveData("Exit"); });
+window.addEventListener('beforeunload', () => saveData("Exit"));
+
+if (typeof window !== 'undefined') initTracker();
