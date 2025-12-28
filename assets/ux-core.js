@@ -46,9 +46,7 @@ const currentPage = window.location.pathname.split('/').pop().replace('.html', '
 const startTime = Date.now();
 let sessionDocId = null;
 let interactions = 0;
-
 // --- 1. PERSISTENT USER IDENTITY ---
-// Check LocalStorage -> Then Firebase Auth -> Then Random Fallback
 let persistentUid = localStorage.getItem('qr_persistent_uid');
 
 async function initTracker() {
@@ -56,41 +54,38 @@ async function initTracker() {
         let finalUserId;
 
         if (user) {
-            finalUserId = user.uid; // Best: Firebase ID
+            finalUserId = user.uid; 
         } else if (persistentUid) {
-            finalUserId = persistentUid; // Good: Saved ID
+            finalUserId = persistentUid; 
         } else {
-            // New User: Create ID and SAVE IT
             finalUserId = 'anon_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('qr_persistent_uid', finalUserId);
             signInAnonymously(auth).catch(() => {});
         }
         
-        // Update global variable so other scripts can see it if needed
         window.currentUserId = finalUserId; 
-
-        // Attempt to get nickname from LocalStorage for better tracking logs
-        let currentNick = "Anonymous";
+        
+        // --- 2. START SESSION (INSIDE USERS COLLECTION) ---
         try {
-            const profile = JSON.parse(localStorage.getItem("QR_PROFILE"));
-            if (profile && profile.nickname) currentNick = profile.nickname;
-        } catch(e) {}
-
-        // --- 2. START SESSION ---
-        try {
-            const docRef = await addDoc(collection(db, "arcade_activity"), {
-                userId: finalUserId,
-                nickname: currentNick, // Now tracks the name!
-                page: currentPage,
-                status: "Started",
-                time_spent: 0,
-                timestamp: serverTimestamp(),
-                device: navigator.userAgent
+            // We use a sub-collection 'sessions' inside the specific user's document
+            const sessionRef = await addDoc(collection(db, "users", finalUserId, "sessions"), {
+                page_name: currentPage,
+                start_time: serverTimestamp(),
+                device_type: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop",
+                entry_point: document.referrer || "Direct",
+                
+                // Metrics that update live
+                metrics: {
+                    time_spent_seconds: 0,
+                    click_count: 0,
+                    scroll_depth: 0,
+                    status: "Live"
+                }
             });
-            sessionDocId = docRef.id;
+            sessionDocId = sessionRef.id;
 
-            // --- 3. HEARTBEAT (Every 30s) ---
-            setInterval(() => saveData("Heartbeat"), 30000); 
+            // --- 3. HEARTBEAT (Every 10s for higher accuracy) ---
+            setInterval(() => saveData("Heartbeat"), 10000); 
 
         } catch (e) { console.error("Tracking Error:", e); }
     });
@@ -98,41 +93,31 @@ async function initTracker() {
 
 // --- SHARED SAVE FUNCTION ---
 async function saveData(reason) {
-    if (!sessionDocId) return;
+    if (!sessionDocId || !window.currentUserId) return;
     
-    const timeSpent = ((Date.now() - startTime) / 1000).toFixed(0);
-    const docRef = doc(db, "arcade_activity", sessionDocId);
+    // Calculate exact seconds
+    const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+    
+    // Path: users -> {uid} -> sessions -> {sessionId}
+    const docRef = doc(db, "users", window.currentUserId, "sessions", sessionDocId);
 
-    // Update nickname if it changed during the session (e.g., user logged in via popup)
-    let currentNick = null;
-    try {
-        const profile = JSON.parse(localStorage.getItem("QR_PROFILE"));
-        if (profile && profile.nickname) currentNick = profile.nickname;
-    } catch(e) {}
-
-    const updateData = {
-        time_spent: parseInt(timeSpent),
-        total_clicks: interactions,
-        status: reason === "Exit" ? "Closed" : "Active",
-        last_update_trigger: reason
-    };
-
-    if (currentNick) updateData.nickname = currentNick;
-
-    await updateDoc(docRef, updateData).catch(e => console.warn("Save skipped:", e));
-}
-
-// --- CLICK LISTENER ---
-document.addEventListener('click', () => interactions++);
-
-// --- 4. THE EXIT SAVE (Catches the 30s players) ---
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === 'hidden') {
-        saveData("Exit");
+    // Dynamic Updates
+    await updateDoc(docRef, {
+        "metrics.time_spent_seconds": timeSpent,
+        "metrics.click_count": interactions,
+        "metrics.status": reason === "Exit" ? "Completed" : "Live",
+        last_ping: serverTimestamp()
+    }).catch(e => console.warn("Save skipped:", e));
+    
+    // OPTIONAL: Update "Total Time" on the Main User Document (Cumulative)
+    // This gives you the "Total Time on Website" metric you asked for
+    if (reason === "Heartbeat" && (timeSpent % 60 === 0)) { // Update main doc every minute
+        try {
+            const { increment } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            const mainUserRef = doc(db, "users", window.currentUserId);
+            await updateDoc(mainUserRef, {
+                "stats.total_time_on_site": increment(60)
+            });
+        } catch(e) {}
     }
-});
-window.addEventListener('beforeunload', () => {
-    saveData("Exit");
-});
-
-if (typeof window !== 'undefined') initTracker();
+}

@@ -228,28 +228,39 @@
         async _checkGhostProfile(user) {
             if (!window.doc || !window.getDoc || !window.setDoc) return;
 
-            // A. Update 'users' collection (Legal/Device Data)
             const userRef = window.doc(window.db, "users", user.uid);
+            
             try {
-                // If we have a nickname in state, use it. Otherwise use user.displayName, otherwise fallback.
+                // 1. Get the 20+ Data Points
+                const techProfile = getDigitalFingerprint();
+                
+                // 2. Determine Name
                 const currentName = this.state.nickname || user.displayName || "Ghost Guest";
 
-                const ghostData = {
-                    uid: user.uid,
-                    isAnonymous: user.isAnonymous,
-                    lastActive: new Date().toISOString(),
-                    nickname: currentName, // THIS IS THE KEY FIX
-                    deviceModel: navigator.userAgent, 
-                    platform: navigator.platform,
-                    screenRes: `${window.screen.width}x${window.screen.height}`
+                // 3. The Clean Data Structure
+                const userData = {
+                    // IDENTITY
+                    identity: {
+                        uid: user.uid,
+                        nickname: currentName,
+                        is_anonymous: user.isAnonymous,
+                        status: "Active"
+                    },
+                    
+                    // TECH STACK (The 20 Things)
+                    tech_profile: techProfile,
+
+                    // TIMESTAMPS
+                    last_active: new Date().toISOString(),
+                    last_updated_by: "GameEngine_V8"
                 };
 
-                // Merge true ensures we don't overwrite existing fields like 'joinedAt'
-                await window.setDoc(userRef, ghostData, { merge: true });
+                // 4. Save (Merge true keeps old data like 'joined_at')
+                await window.setDoc(userRef, userData, { merge: true });
 
-            } catch (e) { console.warn("Ghost profile check skipped:", e); }
+            } catch (e) { console.warn("Profile Sync Error:", e); }
         },
-
+        
         // 4. DATA SAVING
         async saveGameResult(gameName, score, totalQuestions, extraStats = {}) {
             if (!this.state.uid) { console.warn("Save skipped: No User ID"); return; }
