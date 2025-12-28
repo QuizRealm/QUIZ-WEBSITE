@@ -252,34 +252,31 @@
     </div>
 
     <quiz-footer></quiz-footer>
+<script type="module">
+        // NO IMPORTS HERE. We use the global variables from ux-core.js
+        // to prevent double-initialization errors.
 
-    <script type="module">
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const STORAGE_KEY = "QR_PROFILE";
 
         // Random Generators
         const ADJECTIVES = ["Cosmic", "Iron", "Shadow", "Neon", "Dark", "Scarlet", "Quantum", "Electric", "Rogue", "Mystic", "Savage", "Phantom"];
         const NOUNS = ["Goblin", "Avenger", "Knight", "Wizard", "Falcon", "Panther", "Guardian", "Hunter", "Storm", "Viper", "Hawk", "Titan"];
         
-        // State
         let currentUser = null;
-        let db = null;
-        let auth = null;
 
         // --- INIT ---
         async function initProfile() {
+            // Wait for ux-core to load firebase
             const check = setInterval(() => {
                 if (window.auth && window.db) {
                     clearInterval(check);
-                    auth = window.auth;
-                    db = window.db;
                     setupAuthListener();
                 }
             }, 100);
         }
 
         function setupAuthListener() {
-            onAuthStateChanged(auth, async (user) => {
+            window.auth.onAuthStateChanged(async (user) => {
                 currentUser = user;
                 if (user && !user.isAnonymous) {
                     renderLoggedInState(user);
@@ -297,8 +294,7 @@
             document.getElementById('userAuthView').classList.remove('blur-sm');
             document.getElementById('connectionStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Cloud Connected`;
             document.getElementById('connectionStatus').classList.replace('text-slate-400', 'text-green-400');
-            
-            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userEmail').textContent = user.email || "Google Account";
             document.getElementById('userId').textContent = user.uid;
         }
 
@@ -309,17 +305,18 @@
         }
 
         function updateUI(data) {
-            // 1. Nickname
-            const nameEl = document.getElementById('profileName');
-            nameEl.textContent = data.nickname || "Guest Hero";
+            const nickname = data.nickname || "Guest Hero";
+            
+            // 1. Update Name
+            document.getElementById('profileName').textContent = nickname;
+            document.getElementById('nicknameInput').value = nickname; // Set input value too
             
             // 2. Avatar
             const seed = data.avatarSeed || "Guest";
             document.getElementById('profileAvatar').src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(seed)}`;
 
-            // 3. Stats (Standardized Calc to match Header)
+            // 3. Stats
             const xp = data.xp || 0;
-            // Use same logic as Engine: sqrt(xp/100)
             const level = Math.max(1, Math.floor(Math.sqrt(xp / 100)));
             
             // Calc XP Bar
@@ -337,58 +334,26 @@
             document.getElementById('xpFill').style.width = `${progress}%`;
         }
 
-        // --- DATA SYNC ---
-        async function syncAndFetchData(user) {
-            const heroRef = doc(db, "heroes", user.uid);
-            
+        // --- DATA LOADING ---
+        function getLocalProfile() {
             try {
-                const snap = await getDoc(heroRef);
-                let data = {};
-
-                if (snap.exists()) {
-                    data = snap.data();
-                    // Sync cloud data to local storage so Header picks it up next reload
-                    localStorage.setItem("QR_PROFILE", JSON.stringify(data));
-                } else {
-                    // Create from local if cloud empty
-                    data = loadFromLocalStorage();
-                    await setDoc(heroRef, data, { merge: true });
-                }
-                
-                updateUI(data);
-                fetchHistory(user.uid);
-
-            } catch (e) { console.error("Sync error", e); }
-        }
-
-        // --- LOCAL DATA LOADER (UPDATED TO USE QR_PROFILE) ---
-        function loadFromLocalStorage() {
-            let data = {};
-            try {
-                // Try reading the Master Key first (Engine's source)
-                const raw = localStorage.getItem("QR_PROFILE");
-                if (raw) data = JSON.parse(raw);
-            } catch(e) {}
-
-            // Fallback to defaults if QR_PROFILE is missing or partial
-            return {
-                nickname: data.nickname || localStorage.getItem("QR_NICKNAME") || generateRandomName(),
-                xp: data.xp || 0,
-                streak: data.streak || 0,
-                coins: data.coins || 0,
-                avatarSeed: data.avatarSeed || localStorage.getItem("QR_AVATAR_SEED") || "Guest"
-            };
+                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            } catch { return {}; }
         }
 
         function loadLocalData() {
-            const data = loadFromLocalStorage();
-            // Ensure nickname exists
-            if (!data.nickname || data.nickname === "Guest Hero") {
+            let data = getLocalProfile();
+            
+            // If completely empty, generate defaults
+            if (!data.nickname) {
                 data.nickname = generateRandomName();
-                localStorage.setItem("QR_NICKNAME", data.nickname);
+                data.avatarSeed = "Guest";
+                data.xp = 0;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             }
             updateUI(data);
             
+            // Dummy history for guest
             document.getElementById('historyFeed').innerHTML = `
                 <div class="flex flex-col items-center justify-center h-full text-slate-500 gap-2 opacity-50">
                     <i class="fas fa-lock text-2xl"></i>
@@ -397,12 +362,44 @@
             `;
         }
 
+        async function syncAndFetchData(user) {
+            const heroRef = window.doc(window.db, "heroes", user.uid);
+            
+            try {
+                const snap = await window.getDoc(heroRef);
+                let cloudData = {};
+
+                if (snap.exists()) {
+                    cloudData = snap.data();
+                    // Merge Cloud into Local (Cloud wins for nickname)
+                    const local = getLocalProfile();
+                    const merged = { ...local, ...cloudData };
+                    
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+                    updateUI(merged);
+                } else {
+                    // New user: Push local to cloud
+                    let local = getLocalProfile();
+                    if(!local.nickname) local.nickname = generateRandomName();
+                    
+                    await window.setDoc(heroRef, local, { merge: true });
+                    updateUI(local);
+                }
+                
+                fetchHistory(user.uid);
+
+            } catch (e) { console.error("Sync error", e); }
+        }
+
         async function fetchHistory(uid) {
             const feed = document.getElementById('historyFeed');
             feed.innerHTML = '<div class="text-center text-xs text-slate-500 mt-4">Loading stats...</div>';
             
             try {
-                const historyRef = collection(db, "users", uid, "history");
+                // We have to dynamically import collection/query here because they might not be on window
+                const { collection, query, orderBy, limit, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+
+                const historyRef = collection(window.db, "users", uid, "history");
                 const q = query(historyRef, orderBy("timestamp", "desc"), limit(10));
                 const querySnapshot = await getDocs(q);
                 
@@ -481,18 +478,24 @@
             const newName = input.value.trim();
             if (!newName) return;
 
+            // 1. Update UI
             document.getElementById('profileName').textContent = newName;
-            
-            // UPDATE LOCAL STORAGE (Main Key)
-            let data = loadFromLocalStorage();
-            data.nickname = newName;
-            localStorage.setItem("QR_PROFILE", JSON.stringify(data));
-            
             document.getElementById('nameEditContainer').classList.add('hidden');
+            
+            // 2. Update Local Storage (Main Key)
+            let data = getLocalProfile();
+            data.nickname = newName;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            
+            // 3. Notify other components (Header)
+            window.dispatchEvent(new CustomEvent("userUpdate", { detail: data }));
 
-            if (currentUser) {
+            // 4. Update Cloud
+            if (currentUser && window.db) {
                 try {
-                    await setDoc(doc(db, "heroes", currentUser.uid), { nickname: newName }, { merge: true });
+                    await window.setDoc(window.doc(window.db, "heroes", currentUser.uid), { nickname: newName }, { merge: true });
+                    // Also update users collection for search consistency
+                    await window.setDoc(window.doc(window.db, "users", currentUser.uid), { identity: { nickname: newName } }, { merge: true });
                 } catch(e) { console.error("Save failed", e); }
             }
         };
@@ -501,26 +504,31 @@
             const seed = Math.random().toString(36).substring(7);
             document.getElementById('profileAvatar').src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${seed}`;
             
-            let data = loadFromLocalStorage();
+            let data = getLocalProfile();
             data.avatarSeed = seed;
-            localStorage.setItem("QR_PROFILE", JSON.stringify(data));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            window.dispatchEvent(new CustomEvent("userUpdate", { detail: data }));
 
-            if (currentUser) {
+            if (currentUser && window.db) {
                 try {
-                    await setDoc(doc(db, "heroes", currentUser.uid), { avatarSeed: seed }, { merge: true });
+                    await window.setDoc(window.doc(window.db, "heroes", currentUser.uid), { avatarSeed: seed }, { merge: true });
                 } catch(e) {}
             }
         };
 
         window.loginWithGoogle = async () => {
             try {
-                const provider = new GoogleAuthProvider();
-                await signInWithPopup(auth, provider);
-            } catch (e) { alert("Login failed: " + e.message); }
+                // Use global firebase object from ux-core.js
+                const provider = new window.firebase.auth.GoogleAuthProvider();
+                await window.auth.signInWithPopup(provider);
+            } catch (e) { 
+                alert("Login failed: " + e.message);
+                console.error(e);
+            }
         };
 
         window.handleLogout = async () => {
-            await signOut(auth);
+            await window.auth.signOut();
             window.location.reload();
         };
 
