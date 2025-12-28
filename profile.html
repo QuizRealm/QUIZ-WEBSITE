@@ -253,12 +253,11 @@
 
     <quiz-footer></quiz-footer>
 <script type="module">
-        // NO IMPORTS HERE. We use the global variables from ux-core.js
-        // to prevent double-initialization errors.
+        // 1. IMPORT FIREBASE FUNCTIONS DIRECTLY
+        import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const STORAGE_KEY = "QR_PROFILE";
-
-        // Random Generators
         const ADJECTIVES = ["Cosmic", "Iron", "Shadow", "Neon", "Dark", "Scarlet", "Quantum", "Electric", "Rogue", "Mystic", "Savage", "Phantom"];
         const NOUNS = ["Goblin", "Avenger", "Knight", "Wizard", "Falcon", "Panther", "Guardian", "Hunter", "Storm", "Viper", "Hawk", "Titan"];
         
@@ -266,7 +265,7 @@
 
         // --- INIT ---
         async function initProfile() {
-            // Wait for ux-core to load firebase
+            // Wait for ux-core.js to initialize window.auth
             const check = setInterval(() => {
                 if (window.auth && window.db) {
                     clearInterval(check);
@@ -276,7 +275,8 @@
         }
 
         function setupAuthListener() {
-            window.auth.onAuthStateChanged(async (user) => {
+            // Use the imported function, passing the global auth object
+            onAuthStateChanged(window.auth, async (user) => {
                 currentUser = user;
                 if (user && !user.isAnonymous) {
                     renderLoggedInState(user);
@@ -306,20 +306,15 @@
 
         function updateUI(data) {
             const nickname = data.nickname || "Guest Hero";
-            
-            // 1. Update Name
             document.getElementById('profileName').textContent = nickname;
-            document.getElementById('nicknameInput').value = nickname; // Set input value too
+            document.getElementById('nicknameInput').value = nickname;
             
-            // 2. Avatar
             const seed = data.avatarSeed || "Guest";
             document.getElementById('profileAvatar').src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(seed)}`;
 
-            // 3. Stats
             const xp = data.xp || 0;
             const level = Math.max(1, Math.floor(Math.sqrt(xp / 100)));
             
-            // Calc XP Bar
             const startXP = 100 * (level * level);
             const nextXP = 100 * ((level + 1) * (level + 1));
             const progress = Math.min(100, Math.max(0, ((xp - startXP) / (nextXP - startXP)) * 100));
@@ -336,15 +331,11 @@
 
         // --- DATA LOADING ---
         function getLocalProfile() {
-            try {
-                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-            } catch { return {}; }
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
         }
 
         function loadLocalData() {
             let data = getLocalProfile();
-            
-            // If completely empty, generate defaults
             if (!data.nickname) {
                 data.nickname = generateRandomName();
                 data.avatarSeed = "Guest";
@@ -353,7 +344,6 @@
             }
             updateUI(data);
             
-            // Dummy history for guest
             document.getElementById('historyFeed').innerHTML = `
                 <div class="flex flex-col items-center justify-center h-full text-slate-500 gap-2 opacity-50">
                     <i class="fas fa-lock text-2xl"></i>
@@ -363,42 +353,31 @@
         }
 
         async function syncAndFetchData(user) {
-            const heroRef = window.doc(window.db, "heroes", user.uid);
-            
+            const heroRef = doc(window.db, "heroes", user.uid);
             try {
-                const snap = await window.getDoc(heroRef);
+                const snap = await getDoc(heroRef);
                 let cloudData = {};
 
                 if (snap.exists()) {
                     cloudData = snap.data();
-                    // Merge Cloud into Local (Cloud wins for nickname)
                     const local = getLocalProfile();
-                    const merged = { ...local, ...cloudData };
-                    
+                    const merged = { ...local, ...cloudData }; // Merge
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
                     updateUI(merged);
                 } else {
-                    // New user: Push local to cloud
                     let local = getLocalProfile();
                     if(!local.nickname) local.nickname = generateRandomName();
-                    
-                    await window.setDoc(heroRef, local, { merge: true });
+                    await setDoc(heroRef, local, { merge: true });
                     updateUI(local);
                 }
-                
                 fetchHistory(user.uid);
-
             } catch (e) { console.error("Sync error", e); }
         }
 
         async function fetchHistory(uid) {
             const feed = document.getElementById('historyFeed');
             feed.innerHTML = '<div class="text-center text-xs text-slate-500 mt-4">Loading stats...</div>';
-            
             try {
-                // We have to dynamically import collection/query here because they might not be on window
-                const { collection, query, orderBy, limit, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-
                 const historyRef = collection(window.db, "users", uid, "history");
                 const q = query(historyRef, orderBy("timestamp", "desc"), limit(10));
                 const querySnapshot = await getDocs(q);
@@ -413,7 +392,6 @@
                     const h = doc.data();
                     const date = h.timestamp ? new Date(h.timestamp.seconds * 1000).toLocaleDateString() : 'Recent';
                     const icon = getGameIcon(h.game);
-                    
                     html += `
                         <div class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition">
                             <div class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center text-lg text-blue-400 border border-white/5">
@@ -429,17 +407,11 @@
                                     <span><i class="fas fa-bolt text-blue-500/50 mr-1"></i>XP: ${h.xpEarned || 0}</span>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
-                
                 feed.innerHTML = html;
                 document.getElementById('gamesPlayed').textContent = querySnapshot.size + "+";
-
-            } catch (e) {
-                console.error("History error", e);
-                feed.innerHTML = '<div class="text-center text-xs text-red-400 mt-4">Failed to load history.</div>';
-            }
+            } catch (e) { console.error(e); }
         }
 
         // --- UTILS ---
@@ -452,8 +424,7 @@
         function getGameIcon(gameName) {
             const g = (gameName || "").toLowerCase();
             if(g.includes('word')) return 'fas fa-font';
-            if(g.includes('logic') || g.includes('core')) return 'fas fa-microchip';
-            if(g.includes('timeline')) return 'fas fa-hourglass-half';
+            if(g.includes('logic')) return 'fas fa-microchip';
             if(g.includes('rapid')) return 'fas fa-bolt';
             return 'fas fa-gamepad';
         }
@@ -461,66 +432,48 @@
         function getRankTitle(level) {
             if(level > 90) return "The Singularity";
             if(level > 50) return "System Lord";
-            if(level > 40) return "Void Walker";
-            if(level > 30) return "Data Hunter";
             if(level > 20) return "Cyber Vanguard";
-            if(level > 10) return "Neon Runner";
             return "The Drifter";
         }
 
         // --- EXPOSED FUNCTIONS ---
-        window.toggleEditName = () => {
-            document.getElementById('nameEditContainer').classList.toggle('hidden');
-        };
+        window.toggleEditName = () => { document.getElementById('nameEditContainer').classList.toggle('hidden'); };
 
         window.saveName = async () => {
-            const input = document.getElementById('nicknameInput');
-            const newName = input.value.trim();
+            const newName = document.getElementById('nicknameInput').value.trim();
             if (!newName) return;
-
-            // 1. Update UI
             document.getElementById('profileName').textContent = newName;
             document.getElementById('nameEditContainer').classList.add('hidden');
             
-            // 2. Update Local Storage (Main Key)
             let data = getLocalProfile();
             data.nickname = newName;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            
-            // 3. Notify other components (Header)
             window.dispatchEvent(new CustomEvent("userUpdate", { detail: data }));
 
-            // 4. Update Cloud
             if (currentUser && window.db) {
                 try {
-                    await window.setDoc(window.doc(window.db, "heroes", currentUser.uid), { nickname: newName }, { merge: true });
-                    // Also update users collection for search consistency
-                    await window.setDoc(window.doc(window.db, "users", currentUser.uid), { identity: { nickname: newName } }, { merge: true });
-                } catch(e) { console.error("Save failed", e); }
+                    await setDoc(doc(window.db, "heroes", currentUser.uid), { nickname: newName }, { merge: true });
+                } catch(e) {}
             }
         };
 
         window.randomizeAvatar = async () => {
             const seed = Math.random().toString(36).substring(7);
             document.getElementById('profileAvatar').src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${seed}`;
-            
             let data = getLocalProfile();
             data.avatarSeed = seed;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             window.dispatchEvent(new CustomEvent("userUpdate", { detail: data }));
-
             if (currentUser && window.db) {
-                try {
-                    await window.setDoc(window.doc(window.db, "heroes", currentUser.uid), { avatarSeed: seed }, { merge: true });
-                } catch(e) {}
+                await setDoc(doc(window.db, "heroes", currentUser.uid), { avatarSeed: seed }, { merge: true });
             }
         };
 
         window.loginWithGoogle = async () => {
             try {
-                // Use global firebase object from ux-core.js
-                const provider = new window.firebase.auth.GoogleAuthProvider();
-                await window.auth.signInWithPopup(provider);
+                const provider = new GoogleAuthProvider();
+                // THIS IS THE FIX: Pass window.auth into the function
+                await signInWithPopup(window.auth, provider);
             } catch (e) { 
                 alert("Login failed: " + e.message);
                 console.error(e);
@@ -528,11 +481,10 @@
         };
 
         window.handleLogout = async () => {
-            await window.auth.signOut();
+            await signOut(window.auth);
             window.location.reload();
         };
 
-        // START
         initProfile();
     </script>
 </body>
