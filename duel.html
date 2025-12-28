@@ -251,7 +251,287 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     </main>
 
-    <quiz-footer></quiz-footer>
+    
+
+<div class="qr-seo-wrapper">
+    <style>
+        /* --- CONTAINER & SHARED STYLES --- */
+        .qr-seo-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            width: 100%;
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* --- CARD BASE --- */
+        .qr-hub-card {
+            position: relative;
+            background: linear-gradient(145deg, #060b18, #0f172a);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CARD THEMES (Unique Colors) */
+        .theme-green { border-left: 4px solid #10b981; }
+        .theme-green h2 span { color: #34d399; }
+        .theme-green .qr-badge { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        .theme-green a { color: #34d399; }
+
+        .theme-purple { border-left: 4px solid #a855f7; }
+        .theme-purple h2 span { color: #c084fc; }
+        .theme-purple .qr-badge { background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+        .theme-purple a { color: #c084fc; }
+
+        .theme-cyan { border-left: 4px solid #06b6d4; }
+        .theme-cyan h2 span { color: #22d3ee; }
+        .theme-cyan .qr-badge { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9; }
+        .theme-cyan a { color: #22d3ee; }
+
+        .theme-amber { border-left: 4px solid #f59e0b; }
+        .theme-amber h2 span { color: #fbbf24; }
+        .theme-amber .qr-badge { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .theme-amber a { color: #fbbf24; }
+
+        /* Content Layout */
+        .qr-card-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            height: 100%;
+        }
+        @media (min-width: 900px) {
+            .qr-card-content { flex-direction: row; align-items: flex-start; }
+        }
+
+        .qr-main-col { flex: 1; }
+        
+        .qr-side-col {
+            width: 100%;
+            max-width: 320px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        /* Typography & Elements */
+        .qr-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 4px 12px; border-radius: 99px;
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em;
+            margin-bottom: 1rem; font-weight: 700;
+        }
+        .qr-hub-card h2 { color: #fff; font-size: 1.8rem; margin: 0 0 1rem 0; line-height: 1.2; letter-spacing: -0.02em; }
+        .qr-hub-card p { margin-bottom: 1.5rem; font-size: 0.95rem; text-align: justify; }
+        .qr-hub-card strong { color: #fff; }
+        .qr-hub-card a { font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
+        .qr-hub-card a:hover { border-bottom-color: currentColor; }
+
+        /* Sidebar Links */
+        .qr-sidebar-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px; margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            text-decoration: none !important;
+        }
+        .qr-sidebar-link:hover { background: rgba(255, 255, 255, 0.08); }
+        .qr-link-text { display: flex; flex-direction: column; }
+        .qr-link-head { color: #e2e8f0; font-size: 0.85rem; font-weight: 700; }
+        .qr-link-sub { color: #64748b; font-size: 0.7rem; }
+        .qr-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px; }
+
+        /* Game Grid (Card 1) */
+        .qr-game-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px;
+            padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .qr-mini-link {
+            padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);
+            text-align: center; font-size: 0.75rem; color: #cbd5e1 !important;
+        }
+        .qr-mini-link:hover { background: rgba(255,255,255,0.1); }
+
+        /* Dense Link Matrix (Card 4) */
+        .qr-link-matrix {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem;
+        }
+        .qr-matrix-item {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; 
+            background: rgba(251, 191, 36, 0.1); color: #fbbf24 !important;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        .qr-matrix-item:hover { background: rgba(251, 191, 36, 0.2); }
+
+        @media (max-width: 600px) {
+            .qr-hub-card { padding: 1.5rem; }
+            .qr-side-col { max-width: 100%; }
+        }
+    </style>
+
+    <div class="qr-hub-card theme-green">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-gamepad"></i> The Neural Gym</div>
+                <h2>Arcade: <span>Logic & Reaction Training</span></h2>
+                <p>
+                    The <strong>Quiz Realm Arcade</strong> is a dedicated gymnasium for your brain. Designed for competitive data hunters, our platform offers a suite of 13+ browser-based games that require zero downloads. From the vocabulary challenges of <strong>Word Ladder</strong> to the binary constraints of <strong>Tango</strong>, these games are engineered to stimulate cognitive function.
+                </p>
+                <p>
+                    Whether you are killing time or keeping your daily streak alive, our engine tracks every move. Your performance across these modes contributes to your global RPG Rank, allowing you to level up from "Drifter" to "System Lord" based purely on mental agility.
+                </p>
+                
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1rem; color: #fff;">Featured Modules</div>
+                <div class="qr-game-grid">
+                    <a href="fusion-core.html" class="qr-mini-link">Logic Core</a>
+                    <a href="cryptex.html" class="qr-mini-link">Cryptex</a>
+                    <a href="rapid.html" class="qr-mini-link">Rapid Fire</a>
+                    <a href="nexus.html" class="qr-mini-link">Nexus</a>
+                    <a href="minigames.html" class="qr-mini-link">Pictionary</a>
+                    <a href="timeline-history.html" class="qr-mini-link">Timeline</a>
+                </div>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Quick Play</div>
+                <a href="daily.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-calendar-day text-green-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Daily Challenge</span><span class="qr-link-sub">Streak Builder</span></div>
+                </a>
+                <a href="arcade.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-th text-green-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Full Roster</span><span class="qr-link-sub">View All Games</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-purple">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-book"></i> The Archives</div>
+                <h2>Knowledge Hubs: <span>Deep Lore & Fandom</span></h2>
+                <p>
+                    For players who prefer deep data over reflexes, the <strong>Knowledge Nexus</strong> offers specialized "Hubs" for the world's biggest franchises. Here, you can explore the intricate timelines of the cinematic universes, study the genealogy of comic book mutants, or analyze sci-fi physics.
+                </p>
+                <p>
+                    <strong>Why separate Hubs?</strong> Standard trivia mixes topics randomly. Our Hubs allow for "Vertical Progression." You start with surface-level facts (e.g., "Who is Iron Man?") and unlock "Deep Lore" questions (e.g., "Earth-616 Serial Numbers") as you level up. Ideal for completionists.
+                </p>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Select Universe</div>
+                <a href="marvel.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-shield-alt text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Marvel Multiverse</span><span class="qr-link-sub">MCU & Comics</span></div>
+                </a>
+                <a href="dc.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-mask text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">DC Archives</span><span class="qr-link-sub">Gotham & Krypton</span></div>
+                </a>
+                <a href="rick-and-morty.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-flask text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Rick & Morty</span><span class="qr-link-sub">Sci-Fi Lore</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-cyan">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-fingerprint"></i> Identity Protocol</div>
+                <h2>Player Profile: <span>Gamify Your Mind</span></h2>
+                <p>
+                    Knowledge is personal. The Quiz Realm utilizes a persistent <strong>RPG Progression System</strong>. Every question you answer contributes XP (Experience Points) to your profile, building a unique "Data Fingerprint." Are you a specialist in History but weak in Pop Culture? Your stats will reveal the truth.
+                </p>
+                <p>
+                    We also host the <strong>Identity Lab</strong>. Unlike standard quizzes that score you right or wrong, our Identity Protocol uses a psych-eval algorithm to analyze your choices. Answer ethical dilemmas to discover which fictional archetype matches your personality—from "Stark-Level Visionary" to "Jedi Consular."
+                </p>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Your Data</div>
+                <a href="profile.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-user-circle text-cyan-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">My Profile</span><span class="qr-link-sub">Check Stats</span></div>
+                </a>
+                <a href="achievements.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-trophy text-cyan-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Trophy Room</span><span class="qr-link-sub">Badges & Ranks</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-amber">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-layer-group"></i> Master Index</div>
+                <h2>The Taxonomy: <span>Browse by Category</span></h2>
+                <p>
+                    Not sure where to begin? The <strong>Master Index</strong> breaks down our entire question database into granular categories. Whether you are a student brushing up on <a href="#">STEM</a> subjects or a film buff organizing a trivia night, you can filter by topic.
+                </p>
+                <p>
+                    Our database is updated weekly with trending topics. Below is the direct routing matrix to our most popular question banks. Selecting a category here bypasses the main menu and launches a "Quick Play" session immediately.
+                </p>
+
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem; color: #fff;">Direct Access Matrix</div>
+                <div class="qr-link-matrix">
+                    <a href="categories.html" class="qr-matrix-item">General Knowledge</a>
+                    <a href="categories.html" class="qr-matrix-item">Film & Cinema</a>
+                    <a href="categories.html" class="qr-matrix-item">World History</a>
+                    <a href="categories.html" class="qr-matrix-item">Geography</a>
+                    <a href="categories.html" class="qr-matrix-item">Science (STEM)</a>
+                    <a href="categories.html" class="qr-matrix-item">Technology</a>
+                    <a href="categories.html" class="qr-matrix-item">Literature</a>
+                    <a href="categories.html" class="qr-matrix-item">Music Theory</a>
+                    <a href="categories.html" class="qr-matrix-item">Video Games</a>
+                    <a href="categories.html" class="qr-matrix-item">Art History</a>
+                    <a href="categories.html" class="qr-matrix-item">Sports</a>
+                    <a href="categories.html" class="qr-matrix-item">Mythology</a>
+                    <a href="categories.html" class="qr-matrix-item">Television</a>
+                    <a href="categories.html" class="qr-matrix-item">Anime / Manga</a>
+                    <a href="categories.html" class="qr-matrix-item">Celebs</a>
+                </div>
+            </div>
+            
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">System Links</div>
+                <a href="about.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-info text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">About Us</span><span class="qr-link-sub">Mission Statement</span></div>
+                </a>
+                <a href="contact.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-envelope text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Contact</span><span class="qr-link-sub">Support & feedback</span></div>
+                </a>
+                <a href="privacy.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-lock text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Privacy</span><span class="qr-link-sub">Data Policy</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<quiz-footer></quiz-footer>
 
     <script>
         // --- GAME LOGIC ---

@@ -44,6 +44,7 @@ function getHeaderUserSnapshot() {
 
     return snapshot;
 }
+
 // =================================================================
 // 1. HEADER MARKUP GENERATOR
 // =================================================================
@@ -187,9 +188,8 @@ function getQuizHeaderMarkup() {
 </header>`;
 }
 
-// Helper to keep the main function clean, containing all your specific arcade links
+// Helper to keep the main function clean
 function getArcadeLinksMarkup() {
-    // Array of your existing arcade games to maintain logic
     const games = [
         { url: 'fusion-core.html', icon: 'fa-microchip', color: 'green', title: 'Logic League', sub: 'Mastermind' },
         { url: 'nexus.html', icon: 'fa-th', color: 'yellow', title: 'Connections', sub: 'Grouping' },
@@ -218,6 +218,7 @@ function getArcadeLinksMarkup() {
         </a>
     `).join('');
 }
+
 // =================================================================
 // 2. FOOTER MARKUP GENERATOR
 // =================================================================
@@ -451,252 +452,5 @@ if (!customElements.get("quiz-seo-content")) {
     }
     customElements.define("quiz-seo-content", QuizSeoContent);
 }
-// ================================
-// GLOBAL RESOURCE HUB (AUTO-INJECT)
-// Inserts a helpful SEO + navigation card BEFORE <quiz-footer>
-// ================================
-function injectGlobalResourceHubCard() {
-  const footer = document.querySelector("quiz-footer");
-  if (!footer) return;
-
-  // Avoid duplicates
-  if (document.getElementById("qr-resource-hub-card")) return;
-
-  // Optional: do not show on some pages (uncomment if you want)
-  // const block = ["arcade.html", "categories.html"];
-  // if (block.some(p => location.pathname.endsWith(p))) return;
-
-  const section = document.createElement("section");
-  section.id = "qr-resource-hub-card";
-  section.className = "w-full max-w-[1400px] mx-auto px-4 my-12 md:my-16";
-
-  section.innerHTML = `
-    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#060B18] via-[#050810] to-[#070A12] shadow-2xl">
-
-      <!-- Subtle grid + glow (different style than your usual SEO cards) -->
-      <div class="absolute inset-0 opacity-60"
-           style="background-image:
-             radial-gradient(circle at 20% 15%, rgba(34,211,238,0.16), transparent 50%),
-             radial-gradient(circle at 85% 25%, rgba(59,130,246,0.12), transparent 45%),
-             radial-gradient(circle at 35% 85%, rgba(16,185,129,0.10), transparent 50%),
-             linear-gradient(to bottom, rgba(255,255,255,0.04), transparent 40%),
-             repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 34px);">
-      </div>
-
-      <div class="relative p-6 md:p-10">
-  <div class="flex flex-col lg:flex-row gap-8 lg:items-start">
-
-    <div class="flex-1">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] font-mono uppercase tracking-[0.32em] text-slate-300">
-        <i class="fas fa-compass text-cyan-300"></i>
-        QuizRealm Resource Hub
-      </div>
-
-      <h2 class="font-arcade text-2xl md:text-4xl text-white leading-tight mt-4">
-        Find the right game fast — and get better every round
-      </h2>
-
-      <p class="text-slate-300 leading-relaxed mt-3 max-w-2xl">
-        Use this quick hub to jump into <strong class="text-white">trivia categories</strong>, explore the <strong class="text-white">Arcade mini-games</strong>,
-        and learn the rules that help you score higher. Internal links like these also make navigation easier across QuizRealm.
-      </p>
-
-      <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <div class="text-[10px] uppercase tracking-[0.28em] text-slate-400 font-bold mb-2">Best for new players</div>
-          <div class="text-white font-bold">Start with Categories</div>
-          <div class="text-slate-400 text-xs mt-1">Pick a topic, choose difficulty, play instantly.</div>
-        </div>
-
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <div class="text-[10px] uppercase tracking-[0.28em] text-slate-400 font-bold mb-2">Best for daily habit</div>
-          <div class="text-white font-bold">Daily Challenge</div>
-          <div class="text-slate-400 text-xs mt-1">One run per day — climb steadily over time.</div>
-        </div>
-
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <div class="text-[10px] uppercase tracking-[0.28em] text-slate-400 font-bold mb-2">Best for speed</div>
-          <div class="text-white font-bold">Arcade Mode</div>
-          <div class="text-slate-400 text-xs mt-1">Short sessions, high replay value, fast feedback.</div>
-        </div>
-      </div>
-
-      <div class="mt-8 pt-6 border-t border-white/5">
-        <div class="flex items-center gap-2 mb-4">
-          <i class="fas fa-gamepad text-purple-400 text-xs"></i>
-          <span class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-bold">Full Arcade Roster</span>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2">
-          
-          <a href="timeline-history.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/Histim.webp" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Timeline">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Timeline</span>
-          </a>
-
-          <a href="fusion-core.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/LOGIC.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Logic">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Logic Core</span>
-          </a>
-
-          <a href="hangman.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/hangman.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Hangman">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Hangman</span>
-          </a>
-
-          <a href="cryptex.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/cryptex.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Cryptex">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Cryptex</span>
-          </a>
-
-          <a href="rapid.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/rapid.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Rapid">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Rapid Fire</span>
-          </a>
-
-          <a href="minigames.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/pictionary.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Pictionary">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Pictionary</span>
-          </a>
-
-          <a href="odd-one-out.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/oddoneout.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Odd One Out">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Odd One Out</span>
-          </a>
-
-
-
-           <a href="crossword.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/crossword.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Odd One Out">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Odd One Out</span>
-          </a>
-
-
-          
-          <a href="two-truths-trap.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/twotruths.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Two Truths">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Two Truths</span>
-          </a>
-
-          <a href="word-ladder.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/wordladder.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Word Ladder">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Word Ladder</span>
-          </a>
-
-          <a href="mini-crossword.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/minicrossword.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Crossword">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Crossword</span>
-          </a>
-
-          <a href="nexus.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/connections.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Connections">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Connections</span>
-          </a>
-
-          <a href="tango-logic.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/tango.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Tango">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Tango Logic</span>
-          </a>
-
-          <a href="spelling.html" class="group flex items-center gap-2.5 p-1.5 pr-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-            <img src="/assets/spellingbee.png" class="w-8 h-8 rounded-md object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Spelling Bee">
-            <span class="text-[10px] font-bold text-slate-300 group-hover:text-white uppercase tracking-wider truncate">Spelling Bee</span>
-          </a>
-
-        </div>
-      </div>
-      </div>
-
-    <div class="w-full lg:w-[440px]">
-      <div class="rounded-3xl border border-white/10 bg-black/30 backdrop-blur-xl p-5 md:p-6">
-        <div class="flex items-center justify-between gap-3 mb-4">
-          <div class="text-[10px] uppercase tracking-[0.32em] text-slate-400 font-bold">
-            Quick Links
-          </div>
-          <div class="text-[10px] font-mono text-slate-500">
-            Updated globally
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-3">
-          <a href="/index.html" class="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-300">
-              <i class="fas fa-house"></i>
-            </div>
-            <div class="flex-1">
-              <div class="text-white font-bold uppercase tracking-wider text-xs">QuizRealm Home</div>
-              <div class="text-slate-400 text-xs">Main hub, featured modes, latest updates.</div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-500 group-hover:text-white transition"></i>
-          </a>
-
-          <a href="/categories.html" class="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300">
-              <i class="fas fa-layer-group"></i>
-            </div>
-            <div class="flex-1">
-              <div class="text-white font-bold uppercase tracking-wider text-xs">Trivia Categories</div>
-              <div class="text-slate-400 text-xs">Browse TV, movies, science, history, geography and more.</div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-500 group-hover:text-white transition"></i>
-          </a>
-
-          <a href="/daily.html" class="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-300">
-              <i class="fas fa-calendar-day"></i>
-            </div>
-            <div class="flex-1">
-              <div class="text-white font-bold uppercase tracking-wider text-xs">Daily Challenge Quiz</div>
-              <div class="text-slate-400 text-xs">A fresh run to keep your streak alive.</div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-500 group-hover:text-white transition"></i>
-          </a>
-
-          <a href="/arcade.html" class="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-300">
-              <i class="fas fa-gamepad"></i>
-            </div>
-            <div class="flex-1">
-              <div class="text-white font-bold uppercase tracking-wider text-xs">Arcade Mini-Games</div>
-              <div class="text-slate-400 text-xs">Timeline, Hangman, Logic League, and more.</div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-500 group-hover:text-white transition"></i>
-          </a>
-
-          <a href="/timeline-history.html" class="group rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/15 hover:to-blue-500/15 transition p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white">
-              <i class="fas fa-hourglass-half"></i>
-            </div>
-            <div class="flex-1">
-              <div class="text-white font-black uppercase tracking-wider text-xs">Featured: Timeline Game</div>
-              <div class="text-slate-300 text-xs">Order events correctly — the fastest way to learn history.</div>
-            </div>
-            <span class="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-200 px-2 py-1 rounded-full border border-cyan-400/30 bg-cyan-400/10">
-              Play
-            </span>
-          </a>
-        </div>
-
-        <div class="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
-          <div class="text-[10px] uppercase tracking-[0.28em] text-slate-400 font-bold mb-2">
-            Quick Tip
-          </div>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Want higher scores? Pick one topic, play 2–3 short rounds, and learn from the explanations. Consistency beats speed-guessing.
-          </p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-      </div>
-    </div>
-  `;
-
-  footer.parentNode.insertBefore(section, footer);
-}
-
-document.addEventListener("DOMContentLoaded", injectGlobalResourceHubCard);
 
 console.log("Components.js loaded successfully.");
