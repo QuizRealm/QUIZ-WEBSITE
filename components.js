@@ -44,7 +44,6 @@ function getHeaderUserSnapshot() {
 
     return snapshot;
 }
-
 // =================================================================
 // 1. HEADER MARKUP GENERATOR
 // =================================================================
@@ -58,321 +57,167 @@ function getQuizHeaderMarkup() {
     const avatarUrl  = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(avatarSeed)}`;
 
     return `
-<header class="w-full sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg shadow-red-900/5 relative overflow-visible"
-        style="-webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);">
+<header class="w-full sticky top-0 z-50 backdrop-blur-2xl bg-[#030712]/90 border-b border-white/5 shadow-2xl shadow-black/50 relative">
+    
+    <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-50"></div>
+
+    <div class="max-w-[1400px] mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4">
         
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500/0 via-red-500/50 to-red-500/0 opacity-50"></div>
-
-        <div class="hidden sm:flex items-center justify-between text-[10px] font-mono text-slate-400 px-4 py-1 border-b border-white/5 bg-black/40">
-            <div class="flex items-center gap-2">
-                <i class="fas fa-snowflake text-[10px] text-white animate-spin-slow"></i>
-                <span class="text-red-200 font-bold tracking-wider">WINTER EVENT ACTIVE</span>
-                <span class="text-slate-600">|</span>
-                <span>Play daily • Compete globally</span>
+        <a href="index.html" class="flex items-center gap-3 group shrink-0">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-900 to-[#020617] border border-blue-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.15)] group-hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 group-hover:scale-105">
+                <i class="fas fa-ghost text-lg md:text-xl text-blue-400 group-hover:text-white transition-colors"></i>
             </div>
-            <div class="flex items-center gap-2">
-                <a href="christmas-hub.html" class="hover:text-green-400 transition flex items-center gap-1 group">
-                    <i class="fas fa-gift text-green-500 group-hover:animate-bounce"></i> Daily Gift Available
-                </a>
-            </div>
-        </div>
-
-<div class="max-w-[1400px] mx-auto px-3 sm:px-4 py-3
-            flex flex-col sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-3">
             
-<a href="index.html"
-   class="flex items-center gap-3 group
-          w-full sm:w-auto
-          justify-center sm:justify-start
-          shrink-0">
-                <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all relative border border-white/10">
-                    <div class="absolute -top-1.5 -right-1.5 bg-red-600 w-4 h-4 rounded-full border-2 border-[#020617] z-20"></div>
-                    <i class="fas fa-ghost text-xl md:text-2xl text-white relative z-10"></i>
+            <div class="flex flex-col justify-center">
+                <span class="font-arcade text-lg md:text-xl text-white leading-none tracking-[0.2em] drop-shadow-md">
+                    QUIZ<span class="text-blue-500">REALM</span>
+                </span>
+                <span class="text-[9px] md:text-[10px] text-slate-500 font-mono tracking-widest uppercase group-hover:text-blue-400 transition-colors">
+                    Professional Edition
+                </span>
+            </div>
+        </a>
+
+        <nav class="hidden xl:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5 shadow-inner">
+            
+            <a href="premium.html" class="relative group px-5 py-2 rounded-full overflow-hidden mr-2">
+                <div class="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 opacity-100 group-hover:opacity-90 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8L3N2Zz4=')] opacity-20"></div>
+                <div class="relative flex items-center gap-2">
+                    <i class="fas fa-crown text-amber-900 text-xs animate-pulse"></i>
+                    <span class="text-xs font-black text-amber-950 uppercase tracking-widest">Premium</span>
                 </div>
+            </a>
+
+            <a href="categories.html" class="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2 group/cat">
+                <i class="fas fa-layer-group text-slate-500 group-hover/cat:text-blue-400 transition-colors"></i>
+                <span>Categories</span>
+            </a>
+
+            <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
+
+            <div class="relative group h-full">
+                <a href="arcade.html" class="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
+                    <i class="fas fa-gamepad text-slate-500 group-hover:text-pink-400 transition-colors"></i> 
+                    <span>Arcade</span>
+                    <i class="fas fa-chevron-down text-[8px] opacity-50 ml-1 group-hover:translate-y-0.5 transition-transform"></i>
+                </a>
+
+                <div class="absolute top-full left-1/2 -translate-x-1/2 pt-6 w-[340px] hidden group-hover:block z-[100]">
+                    <div class="bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_50px_-12px_rgba(0,0,0,0.8)] p-3 overflow-hidden">
+                        <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-widest border-b border-white/5 mb-2 flex justify-between items-center">
+                            <span>Arcade Collection</span>
+                            <i class="fas fa-gamepad text-slate-700"></i>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-1">
+                            ${getArcadeLinksMarkup()}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="flex items-center gap-4 shrink-0">
+            
+            <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/40 border border-amber-500/20 shadow-inner">
+                <div class="w-5 h-5 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/50">
+                    <i class="fas fa-coins text-[10px] text-amber-400"></i>
+                </div>
+                <span id="headerCoins" class="text-xs font-mono font-bold text-amber-100">${coins.toLocaleString()}</span>
+            </div>
+            <span id="headerXP" class="hidden">${xp}</span>
+
+            <button onclick="window.location.href='profile.html'" 
+                class="flex items-center gap-3 pl-1 pr-1 md:pr-4 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group relative overflow-hidden">
                 
-                <div class="flex flex-col justify-center">
-<span class="font-arcade
-             text-xl sm:text-lg md:text-2xl
-             text-white leading-none tracking-widest
-             drop-shadow-md">
-                        QUIZ<span class="text-blue-500">REALM</span>
-                    </span>
-                    <div class="flex items-center gap-2 mt-0.5">
-                        <span class="px-1.5 py-0.5 rounded bg-white/10 text-[9px] font-bold text-slate-300 uppercase tracking-wider border border-white/5">
-                            HOME
-                        </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 p-[1px] relative z-10 shadow-lg">
+                    <img id="headerAvatar" src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                </div>
+
+                <div class="hidden md:flex flex-col items-start leading-none relative z-10">
+                    <span class="text-[11px] font-bold text-slate-200 group-hover:text-white">My Profile</span>
+                    <span class="text-[9px] text-slate-500 uppercase tracking-wide">Lvl <span id="headerLevel">${level}</span></span>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <div class="xl:hidden fixed bottom-0 left-0 right-0 z-[80] bg-[#020617]/95 backdrop-blur-xl border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
+        <div class="flex justify-around items-center px-2 py-3">
+            
+            <a href="categories.html" class="flex flex-col items-center gap-1 group w-16">
+                <i class="fas fa-layer-group text-lg text-slate-500 group-hover:text-blue-400 transition-colors"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Topics</span>
+            </a>
+
+            <a href="arcade.html" class="flex flex-col items-center gap-1 group w-16">
+                <i class="fas fa-gamepad text-lg text-slate-500 group-hover:text-pink-400 transition-colors"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Arcade</span>
+            </a>
+
+            <a href="premium.html" class="relative -top-6">
+                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300 to-yellow-600 p-[2px] shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+                    <div class="w-full h-full rounded-full bg-[#0f172a] flex flex-col items-center justify-center relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-transparent"></div>
+                        <i class="fas fa-crown text-xl text-amber-400 mb-0.5 group-active:scale-95 transition-transform"></i>
+                        <span class="text-[8px] font-black text-amber-400 uppercase tracking-tighter">Gold</span>
                     </div>
                 </div>
             </a>
 
-            <nav class="hidden xl:flex items-center gap-2 bg-white/5 p-1.5 rounded-xl border border-white/5 relative">
-                
-                <a href="christmas-hub.html" class="relative flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-red-900/80 to-red-800/80 border border-red-500/30 hover:border-red-400 hover:shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all group mr-2">
-                    <i class="fas fa-tree text-green-400 group-hover:animate-bounce"></i>
-                    <span class="text-xs font-bold text-white uppercase tracking-wide">Xmas Special</span>
-                </a>
+            <a href="index.html" class="flex flex-col items-center gap-1 group w-16">
+                <i class="fas fa-home text-lg text-slate-500 group-hover:text-emerald-400 transition-colors"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Home</span>
+            </a>
 
-                <div class="w-[1px] h-6 bg-white/10 mx-1"></div>
-
-                <a href="categories.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center gap-2 group relative overflow-hidden">
-                    <div class="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                    <i class="fas fa-layer-group text-blue-400 group-hover:text-blue-200 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]"></i> 
-                    <span class="relative z-10 group-hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">Categories</span>
-                </a>
-
-                <a href="daily.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center gap-2 relative group">
-                    <i class="fas fa-clock text-emerald-400 group-hover:rotate-12 transition"></i> Daily
-                    <span class="absolute top-1.5 right-1 flex h-2 w-2">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                    </span>
-                </a>
-
-                <div class="relative group h-full">
-                    <a href="arcade.html" class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center gap-2 h-full">
-                        <i class="fas fa-gamepad text-pink-400"></i> The Arcade <i class="fas fa-chevron-down text-[8px] opacity-50 ml-1"></i>
-                    </a>
-
-                    <div class="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-72 hidden group-hover:block hover:block z-[100]">
-   <div class="bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl p-2 flex flex-col gap-1 backdrop-blur-xl">
-    <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-widest border-b border-white/5 mb-1">Arcade Library</div>
-    
-    <a href="fusion-core.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-400 border border-green-500/20 group-hover/item:bg-green-500 group-hover/item:text-black transition">
-            <i class="fas fa-microchip"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Logic League</span>
-            <span class="text-[9px] text-slate-500">Mastermind Puzzle</span>
-        </div>
-    </a>
-
-    <a href="nexus.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-yellow-500/10 flex items-center justify-center text-yellow-400 border border-yellow-500/20 group-hover/item:bg-yellow-500 group-hover/item:text-black transition">
-            <i class="fas fa-th"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Connections</span>
-            <span class="text-[9px] text-slate-500">Lateral Grouping</span>
-        </div>
-    </a>
-
-    <a href="mini-crossword.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover/item:bg-blue-500 group-hover/item:text-black transition">
-            <i class="fas fa-border-all"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Mini Crossword</span>
-            <span class="text-[9px] text-slate-500">5x5 Speed Puzzle</span>
-        </div>
-    </a>
-
-    <a href="word-ladder.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-pink-500/10 flex items-center justify-center text-pink-400 border border-pink-500/20 group-hover/item:bg-pink-500 group-hover/item:text-black transition">
-            <i class="fas fa-stairs"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Word Ladder</span>
-            <span class="text-[9px] text-slate-500">Bridge the Gap</span>
-        </div>
-    </a>
-
-    <a href="tango-logic.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20 group-hover/item:bg-indigo-500 group-hover/item:text-black transition">
-            <i class="fas fa-chess-board"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Tango Logic</span>
-            <span class="text-[9px] text-slate-500">Binary Constraints</span>
-        </div>
-    </a>
-
-    <a href="timeline-history.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20 group-hover/item:bg-amber-500 group-hover/item:text-black transition">
-            <i class="fas fa-hourglass-half"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">History Timeline</span>
-            <span class="text-[9px] text-slate-500">Order Events</span>
-        </div>
-    </a>
-
-    <a href="cryptex.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-lime-500/10 flex items-center justify-center text-lime-400 border border-lime-500/20 group-hover/item:bg-lime-500 group-hover/item:text-black transition">
-            <i class="fas fa-lock"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Cryptex</span>
-            <span class="text-[9px] text-slate-500">Code Breaker</span>
-        </div>
-    </a>
-
-    <a href="odd-one-out.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-teal-500/10 flex items-center justify-center text-teal-400 border border-teal-500/20 group-hover/item:bg-teal-500 group-hover/item:text-black transition">
-            <i class="fas fa-shapes"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Odd One Out</span>
-            <span class="text-[9px] text-slate-500">Pattern Spotting</span>
-        </div>
-    </a>
-
-    <a href="two-truths-trap.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-rose-500/10 flex items-center justify-center text-rose-400 border border-rose-500/20 group-hover/item:bg-rose-500 group-hover/item:text-black transition">
-            <i class="fas fa-mask"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Two Truths</span>
-            <span class="text-[9px] text-slate-500">Find the Trap</span>
-        </div>
-    </a>
-
-    <a href="spelling.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-orange-500/10 flex items-center justify-center text-orange-400 border border-orange-500/20 group-hover/item:bg-orange-500 group-hover/item:text-black transition">
-            <i class="fab fa-forumbee"></i> </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Spelling Bee</span>
-            <span class="text-[9px] text-slate-500">7 Letters</span>
-        </div>
-    </a>
-
-    <a href="rapid.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20 group-hover/item:bg-red-500 group-hover/item:text-black transition">
-            <i class="fas fa-bolt"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Rapid Fire</span>
-            <span class="text-[9px] text-slate-500">Speed Trivia</span>
-        </div>
-    </a>
-
-    <a href="hangman.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 group-hover/item:bg-emerald-500 group-hover/item:text-black transition">
-            <i class="fas fa-font"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Hangman</span>
-            <span class="text-[9px] text-slate-500">Classic Word Game</span>
-        </div>
-    </a>
-
-    <a href="minigames.html" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group/item">
-        <div class="w-8 h-8 rounded bg-fuchsia-500/10 flex items-center justify-center text-fuchsia-400 border border-fuchsia-500/20 group-hover/item:bg-fuchsia-500 group-hover/item:text-black transition">
-            <i class="fas fa-pencil-alt"></i>
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white text-xs font-bold uppercase">Pictionary Live</span>
-            <span class="text-[9px] text-slate-500">Creative Draw</span>
-        </div>
-    </a>
-
-</div>
-</div>
-                
-
-            </nav>
-
-<div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                
-                <a href="christmas-hub.html" class="xl:hidden w-10 h-10 rounded-xl bg-gradient-to-br from-red-900 to-black border border-red-500/30 flex items-center justify-center text-red-400 animate-pulse active:scale-95 transition">
-                    <i class="fas fa-gift"></i>
-                </a>
-
-                <div class="hidden md:flex flex-col items-end mr-1">
-                    <div class="flex items-center gap-1 text-[10px] text-amber-300">
-                        <i class="fas fa-coins text-[11px]"></i>
-                        <span id="headerCoins">${coins.toLocaleString()}</span>
-                    </div>
-                    <span id="headerXP" class="hidden">${xp}</span>
+            <a href="profile.html" class="flex flex-col items-center gap-1 group w-16">
+                <div class="relative">
+                    <i class="fas fa-user text-lg text-slate-500 group-hover:text-purple-400 transition-colors"></i>
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-[#020617]"></span>
                 </div>
+                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Me</span>
+            </a>
 
-                <button onclick="window.location.href='profile.html'" 
-                    class="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group">
-                    
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-300 to-yellow-500 flex items-center justify-center text-black font-bold shadow-lg ring-2 ring-black/50 overflow-hidden">
-                        <img id="headerAvatar" src="${avatarUrl}" alt="Player Avatar" class="w-full h-full object-cover">
-                    </div>
-
-                    <div class="hidden sm:flex flex-col items-start leading-none">
-                        <span class="text-xs font-bold text-white group-hover:text-blue-200">My Profile</span>
-                        <span class="text-[10px] text-slate-400">
-                            Level <span id="headerLevel">${level}</span>
-                        </span>
-                    </div>
-                </button>
-            </div>
         </div>
-
-         <!-- MOBILE BOTTOM NAV (iPhone-safe + title restored) -->
-<div class="md:hidden fixed bottom-0 left-0 right-0 z-[80] border-t border-white/10 bg-[#020617]/95 backdrop-blur-xl"
-     style="padding-bottom: env(safe-area-inset-bottom);">
-
-  <div class="max-w-[900px] mx-auto px-3 pt-2 pb-2">
-
-    <!-- Title row (always visible) -->
-    <div class="flex items-center justify-between mb-2">
-      <a href="index.html"
-         class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 active:scale-[0.98] transition">
-        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-900 border border-white/10 flex items-center justify-center">
-          <i class="fas fa-ghost text-white text-sm"></i>
-        </span>
-
-        <!-- IMPORTANT: do NOT rely on font-arcade on mobile -->
-        <div class="leading-none">
-          <div class="text-white font-extrabold tracking-widest text-[12px]">
-            QUIZ<span class="text-blue-400">REALM</span>
-          </div>
-          <div class="text-[9px] text-slate-400 tracking-widest uppercase mt-0.5">
-            Play • Learn • Compete
-          </div>
-        </div>
-      </a>
-
-      <!-- Sticky Home button (extra, visible, not redundant) -->
-      <a href="index.html"
-         class="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-200 active:scale-[0.98] transition">
-        <i class="fas fa-house"></i>
-      </a>
     </div>
 
-    <!-- Buttons row (your important ones) -->
-    <nav class="grid grid-cols-4 gap-2">
-      <a href="categories.html"
-         class="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white/5 border border-white/10 text-white active:scale-[0.98] transition">
-        <i class="fas fa-layer-group text-base text-blue-300 mb-1"></i>
-        <span class="text-[10px] font-extrabold tracking-widest uppercase">Categories</span>
-      </a>
-
-      <a href="arcade.html"
-         class="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white/5 border border-white/10 text-white active:scale-[0.98] transition">
-        <i class="fas fa-gamepad text-base text-pink-300 mb-1"></i>
-        <span class="text-[10px] font-extrabold tracking-widest uppercase">Arcade</span>
-      </a>
-
-      <a href="daily.html"
-         class="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white/5 border border-white/10 text-white active:scale-[0.98] transition relative">
-        <i class="fas fa-calendar-day text-base text-emerald-300 mb-1"></i>
-        <span class="text-[10px] font-extrabold tracking-widest uppercase">Daily</span>
-        <span class="absolute top-2 right-3 w-2 h-2 bg-red-500 rounded-full"></span>
-      </a>
-
-      <a href="profile.html"
-         class="flex flex-col items-center justify-center py-2.5 rounded-xl bg-white/5 border border-white/10 text-white active:scale-[0.98] transition">
-        <i class="fas fa-user text-base text-amber-300 mb-1"></i>
-        <span class="text-[10px] font-extrabold tracking-widest uppercase">Me</span>
-      </a>
-    </nav>
-
-  </div>
-</div>
-
-        
-    </header>`;
+</header>`;
 }
 
+// Helper to keep the main function clean, containing all your specific arcade links
+function getArcadeLinksMarkup() {
+    // Array of your existing arcade games to maintain logic
+    const games = [
+        { url: 'fusion-core.html', icon: 'fa-microchip', color: 'green', title: 'Logic League', sub: 'Mastermind' },
+        { url: 'nexus.html', icon: 'fa-th', color: 'yellow', title: 'Connections', sub: 'Grouping' },
+        { url: 'mini-crossword.html', icon: 'fa-border-all', color: 'blue', title: 'Mini Cross', sub: '5x5 Puzzle' },
+        { url: 'word-ladder.html', icon: 'fa-stairs', color: 'pink', title: 'Word Ladder', sub: 'Bridge Gap' },
+        { url: 'tango-logic.html', icon: 'fa-chess-board', color: 'indigo', title: 'Tango Logic', sub: 'Binary' },
+        { url: 'timeline-history.html', icon: 'fa-hourglass-half', color: 'amber', title: 'Timeline', sub: 'History' },
+        { url: 'cryptex.html', icon: 'fa-lock', color: 'lime', title: 'Cryptex', sub: 'Code Break' },
+        { url: 'odd-one-out.html', icon: 'fa-shapes', color: 'teal', title: 'Odd One Out', sub: 'Pattern' },
+        { url: 'two-truths-trap.html', icon: 'fa-mask', color: 'rose', title: 'Two Truths', sub: 'Find Trap' },
+        { url: 'spelling.html', icon: 'fab fa-forumbee', color: 'orange', title: 'Spelling', sub: '7 Letters' },
+        { url: 'rapid.html', icon: 'fa-bolt', color: 'red', title: 'Rapid Fire', sub: 'Speed' },
+        { url: 'hangman.html', icon: 'fa-font', color: 'emerald', title: 'Hangman', sub: 'Classic' },
+        { url: 'minigames.html', icon: 'fa-pencil-alt', color: 'fuchsia', title: 'Pictionary', sub: 'Draw' }
+    ];
+
+    return games.map(g => `
+        <a href="${g.url}" class="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 transition group/item">
+            <div class="w-6 h-6 rounded bg-${g.color}-500/10 flex items-center justify-center text-${g.color}-400 border border-${g.color}-500/20 group-hover/item:bg-${g.color}-500 group-hover/item:text-black transition">
+                <i class="${g.icon} text-[10px]"></i>
+            </div>
+            <div class="flex flex-col overflow-hidden">
+                <span class="text-slate-200 text-[10px] font-bold uppercase truncate">${g.title}</span>
+                <span class="text-[8px] text-slate-600 truncate">${g.sub}</span>
+            </div>
+        </a>
+    `).join('');
+}
 // =================================================================
 // 2. FOOTER MARKUP GENERATOR
 // =================================================================

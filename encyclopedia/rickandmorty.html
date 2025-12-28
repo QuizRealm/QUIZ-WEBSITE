@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+
+  <title>Rick and Morty: Multiverse Database | Characters, Lore & Portal Tech | QuizRealm</title>
+  <meta name="description" content="The ultimate encyclopedia for Rick and Morty. Decode the Central Finite Curve, analyze Rick C-137's inventions, explore the Citadel of Ricks, and test your IQ. From Evil Morty to Plumbus physics, we cover it all.">
+  <meta name="keywords" content="Rick and Morty, Rick C-137, Evil Morty, Portal Gun, Citadel of Ricks, Pickle Rick, Dan Harmon, Adult Swim, Mr. Meeseeks, Interdimensional Cable, Sci-Fi Trivia">
+
+  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+  
+  <meta name="msapplication-TileColor" content="#0b0e07">
+  <meta name="theme-color" content="#0b0e07">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&family=Creepster&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arcade: ['Bungee', 'cursive'],
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace'],
+            ooze: ['Creepster', 'cursive'] // Added for R&M feel
+          },
+          colors: {
+            bgDarker: '#020602', // Deep Space Black
+            accentGreen: '#84cc16', // Portal Green
+            accentNeonGreen: '#39ff14', // Radioactive
+            accentPurple: '#a855f7', // Space/Nebula
+            accentBlue: '#0ea5e9', // Rick's Hair
+            accentYellow: '#facc15', // Morty's Shirt
+            accentPink: '#ec4899' // Summer/Beth
+          },
+          animation: {
+            'spin-slow': 'spin 12s linear infinite',
+            'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #020602;
+      /* Portal Fluid Gradient */
+      background-image: radial-gradient(circle at 50% 0%, #1a2e05, #020602 85%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .grid-bg {
+      background-size: 50px 50px;
+      background-image:
+        linear-gradient(to right, rgba(132, 204, 22, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(132, 204, 22, 0.05) 1px, transparent 1px);
+      mask-image: linear-gradient(to bottom, black 30%, transparent 95%);
+    }
+
+    .glass {
+      background: rgba(10, 20, 10, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(132, 204, 22, 0.15); /* Green Border */
+      box-shadow: 0 18px 60px -40px rgba(0, 0, 0, 0.9);
+    }
+
+    /* 9:16 box */
+    .ratio-9-16 { position: relative; width: 100%; padding-top: 177.7778%; }
+    .ratio-9-16 > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .ratio-16-9 { position: relative; width: 100%; padding-top: 56.25%; }
+    .ratio-16-9 > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+    /* Promo Card Styling */
+    .qr-card-container { width: 100%; }
+    .qr-promo-card {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(10, 15, 10, 0.6);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 24px 70px -50px rgba(0, 0, 0, 0.95);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .qr-promo-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(132, 204, 22, 0.6); /* Green hover */
+      background: rgba(20, 30, 20, 0.7);
+      box-shadow: 0 0 20px rgba(132, 204, 22, 0.2);
+    }
+    .qr-badge {
+      position: absolute;
+      top: 14px; left: 14px;
+      z-index: 5;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: #000;
+      background: linear-gradient(90deg, #84cc16, #39ff14); /* Toxic Green Gradient */
+      border: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    .qr-card-image {
+      border-bottom: 1px solid rgba(132, 204, 22, 0.2);
+      background: radial-gradient(circle at top, rgba(132, 204, 22, 0.2), rgba(2, 6, 23, 0.9));
+    }
+    .qr-img-fill { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .qr-card-content { padding: 18px 18px 20px; }
+    .qr-card-title {
+      font-family: 'Bungee', cursive;
+      font-size: 18px;
+      line-height: 1.1;
+      color: #fff;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      text-shadow: 0 0 5px rgba(132, 204, 22, 0.5);
+    }
+    .qr-card-desc {
+      font-size: 13px;
+      color: rgba(226, 232, 240, 0.85);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .qr-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: #000;
+      background: linear-gradient(90deg, #84cc16, #22c55e);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      transition: transform .18s ease, filter .18s ease;
+      text-decoration: none;
+    }
+    .qr-btn:hover { transform: translateY(-2px); filter: brightness(1.2); box-shadow: 0 0 15px rgba(132, 204, 22, 0.4); }
+
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(132, 204, 22, 0.05);
+      border: 1px solid rgba(132, 204, 22, 0.2);
+      color: rgba(226, 232, 240, 0.92);
+      transition: background .15s ease, border-color .15s ease, transform .15s ease;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .pill-link:hover {
+      background: rgba(132, 204, 22, 0.15);
+      border-color: #39ff14;
+      transform: translateY(-1px);
+      color: #fff;
+      text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
+    }
+    
+    /* Custom R&M Text Highlighting */
+    .text-portal { color: #84cc16; text-shadow: 0 0 10px rgba(132, 204, 22, 0.4); }
+    .text-space { color: #a855f7; }
+    .text-rick { color: #0ea5e9; }
+    .text-morty { color: #facc15; }
+    
+    /* Glitch Effect for Headers */
+    .glitch-text:hover {
+      animation: pulse-fast 0.2s infinite;
+      color: #39ff14;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased selection:bg-accentGreen selection:text-black">
+
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  
+  <div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
+  
+  <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-[-1] opacity-30">
+     <div class="absolute top-[10%] left-[20%] w-64 h-64 bg-accentGreen rounded-full blur-[120px] animate-pulse"></div>
+     <div class="absolute bottom-[20%] right-[10%] w-96 h-96 bg-accentPurple rounded-full blur-[150px] opacity-60"></div>
+  </div>
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-10 md:py-14 space-y-10">
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <a class="pill-link" href="/index.html"><i class="fas fa-house"></i> Home</a>
+        <a class="pill-link" href="/categories.html"><i class="fas fa-dna"></i> Categories</a>
+        <a class="pill-link" href="/mode.html?category=rickandmorty"><i class="fas fa-biohazard"></i> Play R&M</a>
+      </div>
+      <div class="text-[10px] font-mono text-accentGreen uppercase tracking-widest animate-pulse">
+        Encyclopedia • Sci-Fi • C-137 Database
+      </div>
+    </div>
+
+    <section class="glass rounded-2xl p-6 md:p-8 overflow-hidden relative group">
+      <div class="absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br from-green-500 to-yellow-300 rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition duration-700"></div>
+
+      <div class="flex flex-col lg:flex-row gap-8 lg:items-center relative z-10">
+
+        <div class="flex-1 space-y-4">
+
+          <div class="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-accentNeonGreen">
+            <i class="fas fa-flask"></i>
+            Wubba Lubba Dub Dub • Adult Swim
+          </div>
+
+          <h1 class="font-arcade text-3xl md:text-5xl text-white leading-tight glitch-text cursor-default">
+            Rick and Morty:<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-yellow-300 to-green-400">The Infinite Knowledge Hub</span>
+          </h1>
+
+          <p class="text-slate-300 leading-relaxed max-w-2xl font-sans">
+            Welcome to the Citadel of Knowledge. This is the comprehensive database for the smartest (and most alcoholic) mammal in the galaxy. 
+            <strong class="text-white">Rick and Morty</strong> isn't just a show; it's a nihilistic exploration of the <strong class="text-portal">Central Finite Curve</strong>.
+          </p>
+
+          <p class="text-slate-400 text-sm leading-relaxed max-w-2xl font-mono border-l-2 border-accentPurple pl-3">
+            // WARNING: Exposure to this content may result in existential dread, an urge to visit Blips and Chitz, or accidental dimension hopping. Proceed with caution.
+          </p>
+
+          <div class="flex flex-wrap gap-3 pt-4">
+
+            <a href="/rickandmortyhub.html"
+               class="px-6 py-3 rounded-xl bg-gradient-to-r from-lime-500 to-green-600 text-black font-bold hover:scale-105 transition inline-flex items-center gap-2 border border-green-400 shadow-[0_0_15px_rgba(132,204,22,0.5)]">
+              <i class="fas fa-play"></i>
+              Enter Portal (Start Quiz)
+            </a>
+
+            <a href="/encyclopedia/rick-and-morty-visuals.html"
+               class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition inline-flex items-center gap-2 hover:border-accentBlue">
+              <i class="fas fa-eye"></i>
+              Visual Database
+            </a>
+
+            <a href="/timeline-history.html?category=rickandmorty"
+               class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition inline-flex items-center gap-2 hover:border-accentPurple">
+              <i class="fas fa-stream"></i>
+              Timeline C-137
+            </a>
+
+          </div>
+
+          <div class="flex flex-wrap gap-3 pt-2 opacity-70">
+            <span class="text-xs font-mono text-accentBlue"><i class="fas fa-atom"></i> Quantum Physics</span>
+            <span class="text-xs font-mono text-accentPink"><i class="fas fa-heart-broken"></i> Family Therapy</span>
+            <span class="text-xs font-mono text-accentGreen"><i class="fas fa-skull"></i> Pickle Rick</span>
+          </div>
+
+        </div>
+
+        <div class="w-full lg:w-[340px] lg:flex-shrink-0">
+          <div class="rounded-2xl overflow-hidden border border-accentGreen/30 shadow-[0_0_60px_rgba(132,204,22,0.15)] relative">
+            <div class="ratio-9-16 bg-black">
+              <img src="/assets/rickandmorty.png" alt="Rick and Morty Poster Art" class="hover:scale-110 transition duration-700">
+            </div>
+            <div class="absolute bottom-4 right-4 bg-black/80 backdrop-blur px-3 py-1 rounded-lg border border-green-500 text-green-400 font-mono text-xs">
+              Dimension C-137
+            </div>
+          </div>
+          <div class="mt-3 text-xs text-slate-500 italic text-center lg:text-left font-mono">
+            "Nobody exists on purpose. Nobody belongs anywhere."
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <div class="lg:col-span-8 space-y-8">
+
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="glass rounded-xl p-4 text-center border-b-2 border-b-accentGreen group hover:bg-green-900/10 transition">
+            <div class="text-2xl font-bold text-white group-hover:text-accentGreen">7+</div>
+            <div class="text-xs text-slate-400 uppercase font-mono">Seasons</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center border-b-2 border-b-accentPurple group hover:bg-purple-900/10 transition">
+            <div class="text-2xl font-bold text-white group-hover:text-accentPurple">∞</div>
+            <div class="text-xs text-slate-400 uppercase font-mono">Realities</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center border-b-2 border-b-accentBlue group hover:bg-blue-900/10 transition">
+            <div class="text-2xl font-bold text-white group-hover:text-accentBlue">90%+</div>
+            <div class="text-xs text-slate-400 uppercase font-mono">Critic Score</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center border-b-2 border-b-accentPink group hover:bg-pink-900/10 transition">
+            <div class="text-2xl font-bold text-white group-hover:text-accentPink">1000s</div>
+            <div class="text-xs text-slate-400 uppercase font-mono">Ricks</div>
+          </div>
+        </section>
+
+        <section class="glass rounded-2xl p-6 space-y-4 relative overflow-hidden">
+           <div class="absolute -left-10 top-0 w-1 bg-gradient-to-b from-transparent via-accentGreen to-transparent h-full"></div>
+          
+          <h2 class="text-xl font-bold text-white border-l-4 border-accentGreen pl-3 flex items-center gap-2">
+            The Central Finite Curve <i class="fas fa-globe text-accentGreen text-sm"></i>
+          </h2>
+          <p class="text-slate-300 leading-relaxed">
+            The multiverse is infinite, but Rick Sanchez didn't want to deal with infinite geniuses. He built the <strong class="text-portal">Central Finite Curve</strong>—a walled-off subset of infinite realities where <strong>Rick is the smartest man in the universe</strong>.
+          </p>
+          <p class="text-slate-300 leading-relaxed">
+            Outside this curve lies true chaos: universes where Ricks are dumb, where Ricks are suppressed, or where things far scarier than Rick exist. <strong class="text-accentYellow">Evil Morty's</strong> grand plan was simply to break this crib and escape to the true multiverse.
+          </p>
+        </section>
+
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white border-l-4 border-accentBlue pl-3">Family & Foes</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
+            
+            <div class="rounded-xl border border-blue-500/20 bg-blue-950/20 p-4 relative overflow-hidden group hover:border-blue-400/50 transition">
+              <div class="font-bold text-white relative z-10 text-lg">Rick Sanchez (C-137)</div>
+              <div class="text-sm text-slate-300 mt-1 relative z-10">The "Rickest Rick." Cynical, alcoholic, god-like intelligence. Driven by the murder of his wife Diane by Rick Prime.</div>
+              <i class="fas fa-flask absolute bottom-2 right-2 text-blue-500/10 text-4xl group-hover:text-blue-500/30 transition"></i>
+            </div>
+
+            <div class="rounded-xl border border-yellow-500/20 bg-yellow-950/20 p-4 hover:border-yellow-400/50 transition group">
+              <div class="font-bold text-white">Morty Smith (Prime)</div>
+              <div class="text-sm text-slate-300 mt-1">Rick's grandson from the "Prime" universe. Unlike other Mortys, he is becoming independent and dangerous.</div>
+              <i class="fas fa-child absolute bottom-2 right-2 text-yellow-500/10 text-4xl group-hover:text-yellow-500/30 transition"></i>
+            </div>
+
+            <div class="rounded-xl border border-green-500/20 bg-green-950/20 p-4 hover:border-green-400/50 transition">
+              <div class="font-bold text-white">Evil Morty</div>
+              <div class="text-sm text-slate-300 mt-1">A Morty tired of being a sidekick. He hacked the Citadel, destroyed the Curve, and holds the Golden Portal Gun.</div>
+            </div>
+
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Jerry Smith</div>
+              <div class="text-sm text-slate-300 mt-1">Unemployed, beekeeping enthusiast. Somehow survives cosmic horrors through sheer incompetence and cowardice.</div>
+            </div>
+            
+            <div class="rounded-xl border border-pink-500/20 bg-pink-950/20 p-4">
+              <div class="font-bold text-white">Space Beth</div>
+              <div class="text-sm text-slate-300 mt-1">The "cool" version of Beth who fights the Federation. It is still unknown if she is the clone or the original.</div>
+            </div>
+
+            <div class="rounded-xl border border-purple-500/20 bg-purple-950/20 p-4">
+              <div class="font-bold text-white">Mr. Poopybutthole</div>
+              <div class="text-sm text-slate-300 mt-1">Long-time family friend. Suffered a tragic karate-chop accident. Ooh-wee!</div>
+            </div>
+            
+          </div>
+        </section>
+
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white border-l-4 border-accentPurple pl-3">Tech & Locations</h2>
+          
+          <div class="space-y-4">
+            <div class="flex gap-4 items-start">
+              <div class="w-12 h-12 rounded-lg bg-green-900/40 flex items-center justify-center flex-shrink-0 text-green-400 border border-green-500/30 shadow-[0_0_10px_rgba(132,204,22,0.2)]">
+                <i class="fas fa-bullseye text-xl"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white">The Portal Gun</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  Rick's signature tool. It utilizes localized fluid to rip holes in spacetime, allowing instantaneous travel between dimensions. <span class="text-accentGreen">Green portals</span> are within the Curve; <span class="text-accentYellow">Gold portals</span> go beyond.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex gap-4 items-start">
+              <div class="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0 text-gray-300 border border-gray-600">
+                <i class="fas fa-city text-xl"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white">The Citadel of Ricks</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  A massive space station where Ricks and Mortys from thousands of realities formed a government. It has been destroyed and rebuilt multiple times. Capital of the bureaucracy Rick hates.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex gap-4 items-start">
+              <div class="w-12 h-12 rounded-lg bg-blue-900/40 flex items-center justify-center flex-shrink-0 text-blue-400 border border-blue-500/30">
+                <i class="fas fa-box-open text-xl"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white">Meeseeks Box</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  A gadget that summons a blue humanoid named Mr. Meeseeks. Their singular purpose is to complete one task and then vanish. "Existence is pain" for a Meeseeks.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="glass rounded-2xl p-6 bg-gradient-to-r from-green-900/30 to-transparent border border-green-500/20">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-white font-arcade">Prove Your Intelligence</h2>
+              <p class="text-slate-400 text-sm">Are you a Rick, or just a Jerry? Take the test.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <a href="/mode.html?category=rickandmorty" class="px-6 py-3 rounded-xl bg-accentGreen text-black font-bold hover:scale-105 transition shadow-[0_0_20px_rgba(132,204,22,0.4)] border border-white/20">
+                Take the Quiz
+              </a>
+              <a href="/categories.html" class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition">
+                More Sci-Fi
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">Frequently Asked Questions</h2>
+
+          <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div class="font-bold text-white text-accentGreen">Is Rick Prime dead?</div>
+            <div class="text-sm text-slate-300 mt-1">
+              Yes. In Season 7, Rick C-137 finally hunted down and killed Rick Prime (the one who killed Diane), ending his lifelong quest for revenge but leaving him empty.
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div class="font-bold text-white text-accentBlue">What does "Wubba Lubba Dub Dub" mean?</div>
+            <div class="text-sm text-slate-300 mt-1">
+              In Birdperson's language, it translates to: <em>"I am in great pain, please help me."</em>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div class="font-bold text-white text-accentPurple">What is the "Omega Device"?</div>
+            <div class="text-sm text-slate-300 mt-1">
+              A weapon built by Rick Prime capable of erasing someone from *every* conceivable universe simultaneously. It was used to erase Diane Sanchez from existence.
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-24 h-fit">
+
+        <div class="qr-card-container">
+          <div class="qr-promo-card">
+            <div class="qr-badge">Personality Test</div>
+
+            <div class="qr-card-image">
+              <div class="ratio-16-9">
+                <img src="/assets/rick_quiz_cover.png" alt="Rick and Morty Character Quiz" class="qr-img-fill">
+              </div>
+            </div>
+
+            <div class="qr-card-content">
+              <h3 class="qr-card-title text-accentNeonGreen">WHICH RICK ARE YOU?</h3>
+              <p class="qr-card-desc">
+                Are you C-137, Doofus Rick, or maybe Toxic Rick? Analyze your narcissism levels now.
+              </p>
+              <a href="/toxic-analysis.html" class="qr-btn">
+                Analyze DNA <i class="fas fa-dna"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-2xl p-6 border-l-4 border-l-accentYellow">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="fas fa-gamepad text-accentYellow"></i>
+            <div class="text-sm font-bold text-white uppercase tracking-widest">Arcade</div>
+          </div>
+          <h4 class="font-bold text-white">Roy: A Life Well Lived</h4>
+          <p class="text-sm text-slate-300 leading-relaxed mt-2">
+            Can you survive the trivia version of Roy? Don't go back to the carpet store. Identify the alien species from a single screenshot.
+          </p>
+          <a href="/timeline-history.html"
+             class="mt-4 inline-flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl border border-white/15 text-white hover:bg-white/5 transition font-bold group">
+            Start Simulation <i class="fas fa-arrow-right group-hover:translate-x-1 transition"></i>
+          </a>
+        </div>
+        
+        <div class="glass rounded-2xl p-6 border-l-4 border-l-accentPurple">
+          <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-3">Database Access</div>
+          <div class="space-y-2">
+             <a href="#" class="block p-3 rounded-lg bg-white/5 hover:bg-accentPurple/20 hover:text-accentPurple transition text-sm font-bold">
+               <i class="fas fa-tv mr-2"></i> Interdimensional Cable
+             </a>
+             <a href="#" class="block p-3 rounded-lg bg-white/5 hover:bg-accentGreen/20 hover:text-accentGreen transition text-sm font-bold">
+               <i class="fas fa-flask mr-2"></i> Rick's Invention List
+             </a>
+             <a href="#" class="block p-3 rounded-lg bg-white/5 hover:bg-accentBlue/20 hover:text-accentBlue transition text-sm font-bold">
+               <i class="fas fa-user-secret mr-2"></i> Council of Ricks
+             </a>
+          </div>
+        </div>
+
+        <div class="glass rounded-2xl p-6">
+          <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-3">Quick Navigation</div>
+          <div class="grid grid-cols-1 gap-3">
+            <a class="pill-link w-full justify-center" href="/index.html"><i class="fas fa-house"></i> Home</a>
+            <a class="pill-link w-full justify-center" href="/categories.html"><i class="fas fa-layer-group"></i> Categories</a>
+            <a class="pill-link w-full justify-center" href="/mode.html?category=rickandmorty"><i class="fas fa-play"></i> Play</a>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>

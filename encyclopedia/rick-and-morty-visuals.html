@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rick and Morty: Visual Database | Premium Archive</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            tech: ['Rajdhani', 'sans-serif'],
+            display: ['Orbitron', 'sans-serif'],
+            code: ['Share Tech Mono', 'monospace'],
+          },
+          colors: {
+            void: '#020602',
+            portal: '#00ff00', 
+            toxic: '#bdff00',
+            cyan: '#00f3ff',
+            glass: 'rgba(255, 255, 255, 0.03)'
+          },
+          backgroundImage: {
+            'grid-pattern': "linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
+          },
+          animation: {
+            'bounce-slow': 'bounce 3s infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #020602; color: #fff; overflow-x: hidden; }
+    
+    /* Premium Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00f3ff; }
+
+    /* Hover Lift Effect */
+    .premium-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .premium-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+      z-index: 20;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-cyan selection:text-black font-tech">
+
+  <div class="fixed inset-0 bg-grid-pattern bg-[length:30px_30px] z-[-1] mask-image:linear-gradient(to bottom, black 40%, transparent)"></div>
+
+  <quiz-header></quiz-header>
+
+  <main class="w-full max-w-[1800px] mx-auto px-4 md:px-8 pb-20">
+
+    <section class="relative h-[85vh] w-full rounded-[30px] overflow-hidden border border-white/10 group mt-4 mb-16 shadow-2xl">
+      <div class="absolute inset-0">
+        <img src="/assets/rickcover.png" class="w-full h-full object-cover transition duration-[3s] group-hover:scale-105 filter brightness-75">
+        <div class="absolute inset-0 bg-gradient-to-t from-void via-void/40 to-transparent"></div>
+      </div>
+
+      <div class="absolute bottom-0 left-0 w-full p-8 md:p-16 flex flex-col items-start justify-end h-full">
+        <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-cyan/10 border border-cyan/30 backdrop-blur-md mb-4 animate-fade-in-up">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan"></span>
+          </span>
+          <span class="text-cyan font-code text-xs uppercase tracking-[0.2em]">Secure Archive Connected</span>
+        </div>
+
+        <h1 class="font-display text-5xl md:text-7xl lg:text-9xl text-white mb-6 leading-[0.9] tracking-tighter drop-shadow-2xl">
+          VISUAL <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-blue-600">DATABASE</span>
+        </h1>
+        
+        <p class="text-lg text-slate-300 mb-8 max-w-xl leading-relaxed font-tech border-l-2 border-cyan pl-4 opacity-80">
+          High-fidelity schematics and captured memories from Dimension C-137. 
+          Scroll down to access the personnel files.
+        </p>
+
+        <a href="/rickandmortyhub.html" class="group/btn relative inline-flex items-center gap-4 px-8 py-4 bg-white text-black font-display font-bold text-lg rounded-lg overflow-hidden transition-all">
+          <span class="relative z-10">ENTER HUB</span>
+          <i class="fas fa-arrow-right relative z-10 group-hover/btn:translate-x-1 transition-transform"></i>
+          <div class="absolute inset-0 bg-cyan transform scale-x-0 group-hover/btn:scale-x-100 transition-transform origin-left"></div>
+        </a>
+      </div>
+
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce-slow opacity-60">
+        <span class="text-[10px] uppercase tracking-widest font-code text-white">Scroll for Data</span>
+        <i class="fas fa-chevron-down text-cyan"></i>
+      </div>
+    </section>
+
+
+    <div class="mb-8 flex items-end justify-between px-2">
+      <div>
+        <h2 class="font-display text-3xl md:text-4xl text-white">PERSONNEL FILES</h2>
+        <p class="font-code text-portal text-xs md:text-sm tracking-[0.3em] uppercase">Vertical Assets (9:16)</p>
+      </div>
+      <div class="text-right hidden sm:block">
+        <div class="h-1 w-24 bg-portal/50 rounded-full mb-1"></div>
+        <p class="font-code text-[10px] text-slate-500">20 ENTRIES</p>
+      </div>
+    </div>
+
+    <div id="portrait-gallery" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 mb-24 relative">
+      </div>
+
+
+    <section class="relative w-full rounded-2xl overflow-hidden border border-white/10 bg-glass mb-24 group shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+      <div class="grid grid-cols-1 lg:grid-cols-5 min-h-[400px]">
+        
+        <div class="lg:col-span-3 relative overflow-hidden h-64 lg:h-auto">
+          <img src="/assets/rick_quiz_cover.png" class="absolute inset-0 w-full h-full object-cover transition duration-1000 group-hover:scale-105 filter group-hover:contrast-110">
+          <div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-void via-transparent to-transparent opacity-90"></div>
+        </div>
+
+        <div class="lg:col-span-2 p-8 lg:p-12 flex flex-col justify-center bg-void/50 backdrop-blur-sm border-t lg:border-t-0 lg:border-l border-white/5 relative">
+          <div class="absolute top-0 right-0 p-4 opacity-10 text-8xl text-cyan leading-none font-display">?</div>
+
+          <h3 class="font-display text-3xl lg:text-4xl text-white mb-4 leading-tight">
+            Knowledge <br><span class="text-cyan">Checkpoint</span>
+          </h3>
+          
+          <p class="text-slate-400 text-sm md:text-base mb-8 leading-relaxed font-tech">
+            Visual recognition is one thing. Intellectual capacity is another. 
+            Test your alignment or verify your C-137 knowledge compatibility.
+          </p>
+
+          <div class="space-y-3">
+            <a href="/rickandmortyhub.html" class="block w-full text-center py-3 bg-cyan text-black font-bold uppercase text-xs tracking-[0.2em] rounded hover:bg-white transition-colors">
+              Access Hub
+            </a>
+            <a href="/mind-blowers.html" class="block w-full text-center py-3 border border-white/20 text-white font-bold uppercase text-xs tracking-[0.2em] rounded hover:bg-white/5 transition-colors">
+              Memory Game
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <div class="mb-8 flex items-end justify-between px-2 pt-8 border-t border-white/5">
+      <div>
+        <h2 class="font-display text-3xl md:text-4xl text-white">MEMORY BANK</h2>
+        <p class="font-code text-cyan text-xs md:text-sm tracking-[0.3em] uppercase">Widescreen Captures (16:9)</p>
+      </div>
+      <div class="text-right hidden sm:block">
+        <div class="h-1 w-24 bg-cyan/50 rounded-full mb-1"></div>
+        <p class="font-code text-[10px] text-slate-500">21 ENTRIES</p>
+      </div>
+    </div>
+
+    <div id="landscape-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-32">
+      </div>
+
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
+      
+      <a href="/rickandmortyhub.html" class="relative group rounded-2xl overflow-hidden border border-toxic/20 aspect-[16/9] md:aspect-auto md:h-64">
+        <div class="absolute inset-0 bg-toxic/5 group-hover:bg-toxic/10 transition"></div>
+        <img src="/assets/slime-texture.png" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay group-hover:scale-110 transition duration-700">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+          <h3 class="font-display text-3xl text-toxic mb-2 drop-shadow-md">TOXICITY SCAN</h3>
+          <p class="text-xs font-code text-white uppercase tracking-widest border border-toxic px-3 py-1 rounded-full group-hover:bg-toxic group-hover:text-black transition">Analyze Personality</p>
+        </div>
+      </a>
+
+      <a href="/interdimensional-tv.html" class="relative group rounded-2xl overflow-hidden border border-purple-500/20 aspect-[16/9] md:aspect-auto md:h-64 bg-black">
+        <div class="absolute inset-0 opacity-20 bg-[url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif')] bg-cover mix-blend-screen"></div>
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+          <h3 class="font-display text-3xl text-purple-400 mb-2 drop-shadow-md">INTERDIMENSIONAL TV</h3>
+          <p class="text-xs font-code text-white uppercase tracking-widest border border-purple-400 px-3 py-1 rounded-full group-hover:bg-purple-400 group-hover:text-black transition">Tune In</p>
+        </div>
+      </a>
+
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <div id="lightbox" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/98 backdrop-blur opacity-0 pointer-events-none transition-opacity duration-300">
+    <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white/50 hover:text-white hover:rotate-90 transition duration-300 z-50 text-4xl"><i class="fas fa-times"></i></button>
+    
+    <div class="relative max-w-7xl w-full p-4 flex flex-col items-center">
+      <img id="lightbox-img" src="" class="max-h-[85vh] w-auto rounded shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10">
+      
+      <div class="mt-6 flex gap-4">
+        <a id="download-btn" href="#" download class="px-8 py-3 bg-white text-black font-bold uppercase text-xs tracking-widest rounded hover:bg-cyan hover:shadow-[0_0_20px_#00f3ff] transition">
+          Download Image
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- 1. PORTRAITS (rm_01 to rm_20) ---
+    // 5 Columns, Premium Style
+    const portraitContainer = document.getElementById('portrait-gallery');
+    
+    for (let i = 1; i <= 20; i++) {
+        const num = i.toString().padStart(2, '0');
+        const div = document.createElement('div');
+        // 'aspect-[9/16]' enforces vertical shape
+        // 'brightness-75 group-hover:brightness-100' creates the spotlight effect
+        div.className = "premium-card group relative aspect-[9/16] rounded-lg overflow-hidden border border-white/10 bg-white/5 cursor-zoom-in";
+        
+        div.innerHTML = `
+            <img src="/assets/rm_${num}.png" 
+                 class="w-full h-full object-cover transition duration-500 filter brightness-75 group-hover:brightness-110 group-hover:scale-105" 
+                 loading="lazy"
+                 onclick="openLightbox(this.src)">
+            
+            <div class="absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div>
+                  <div class="text-[10px] font-code text-portal mb-1">FILE #${num}</div>
+                  <div class="h-0.5 w-8 bg-portal"></div>
+                </div>
+            </div>
+        `;
+        portraitContainer.appendChild(div);
+    }
+
+    // --- 2. LANDSCAPES (mb_01 to mb_21) ---
+    const landscapeContainer = document.getElementById('landscape-gallery');
+    
+    for (let i = 1; i <= 21; i++) {
+        const num = i.toString().padStart(2, '0');
+        const div = document.createElement('div');
+        div.className = "premium-card group relative aspect-video rounded-xl overflow-hidden border border-white/10 bg-white/5 cursor-zoom-in";
+        
+        div.innerHTML = `
+            <img src="/assets/mb_${num}.png" 
+                 class="w-full h-full object-cover transition duration-700 opacity-80 group-hover:opacity-100 group-hover:scale-105" 
+                 loading="lazy"
+                 onclick="openLightbox(this.src)">
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
+                <div class="w-full flex justify-between items-end border-b border-white/20 pb-2">
+                    <span class="text-cyan font-code text-xs tracking-widest">MEMORY_${num}</span>
+                    <i class="fas fa-expand text-white/50"></i>
+                </div>
+            </div>
+        `;
+        landscapeContainer.appendChild(div);
+    }
+
+    // --- LIGHTBOX LOGIC ---
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    const dlBtn = document.getElementById('download-btn');
+
+    window.openLightbox = function(src) {
+        lbImg.src = src;
+        dlBtn.href = src;
+        lightbox.classList.remove('opacity-0', 'pointer-events-none');
+        document.body.style.overflow = 'hidden';
+    }
+
+    window.closeLightbox = function() {
+        lightbox.classList.add('opacity-0', 'pointer-events-none');
+        document.body.style.overflow = 'auto';
+    }
+
+    lightbox.addEventListener('click', (e) => {
+        if(e.target === lightbox || e.target.id === 'lightbox') closeLightbox();
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>

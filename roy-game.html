@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roy: A Life Well Lived | Multiverse Simulation | QuizRealm</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { 
+            sans: ['Outfit', 'sans-serif'], 
+            display: ['Space Grotesk', 'sans-serif'] 
+          },
+          colors: { 
+            brandGreen: '#39ff14', 
+            brandBlue: '#00f3ff',
+            voidBlack: '#030304' 
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { 
+      background-color: #030304; 
+      color: #fff;
+      background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #030304 80%);
+    }
+    .glass-panel { 
+      background: rgba(255, 255, 255, 0.03); 
+      backdrop-filter: blur(20px); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+    }
+    .timer-glow {
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    }
+    .choice-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .choice-card:hover {
+      background: rgba(255, 255, 255, 0.07);
+      transform: translateY(-2px);
+      border-color: #39ff14;
+    }
+    .stat-indicator { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); overflow: hidden; }
+    .stat-progress { height: 100%; transition: width 0.6s ease; }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow flex items-center justify-center px-4 py-12">
+    
+    <div id="game-window" class="w-full max-w-4xl min-h-[600px] glass-panel rounded-[2rem] p-8 md:p-12 relative flex flex-col justify-between overflow-hidden shadow-2xl">
+      
+      <div id="start-screen" class="flex flex-col items-center text-center space-y-8 animate-in fade-in zoom-in duration-700">
+        <div class="w-24 h-24 rounded-full border-2 border-brandGreen flex items-center justify-center text-brandGreen text-3xl mb-4">
+          <i class="fas fa-user-astronaut animate-bounce"></i>
+        </div>
+        <h1 class="font-display text-5xl md:text-7xl font-extrabold tracking-tighter">ROY.</h1>
+        <p class="text-slate-400 text-lg md:text-xl max-w-xl">
+          One life. Infinite choices. 
+          Will you die a legend in space, or will you go back to the carpet store?
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-2xl text-sm font-medium text-slate-500 pt-8">
+          <div class="flex items-center gap-2 justify-center"><i class="fas fa-clock text-brandBlue"></i> 15s Per Choice</div>
+          <div class="flex items-center gap-2 justify-center"><i class="fas fa-dna text-brandGreen"></i> 10 Stages</div>
+          <div class="flex items-center gap-2 justify-center"><i class="fas fa-trophy text-yellow-500"></i> Legacy Score</div>
+        </div>
+
+        <button onclick="playGame()" class="group relative px-12 py-5 bg-white text-black font-bold rounded-2xl hover:bg-brandGreen transition-all duration-300">
+          ENTER SIMULATION
+          <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+        </button>
+      </div>
+
+      <div id="active-game" class="hidden flex-grow flex flex-col justify-between h-full">
+        
+        <div class="flex flex-wrap items-center justify-between gap-6 mb-12 border-b border-white/5 pb-6">
+          <div class="flex items-center gap-4">
+            <span class="font-display text-4xl font-bold" id="display-age">0</span>
+            <span class="text-xs uppercase tracking-[0.2em] text-slate-500">Years Old</span>
+          </div>
+          
+          <div class="flex gap-8">
+            <div class="w-24">
+              <div class="text-[10px] uppercase text-slate-500 mb-1">Health</div>
+              <div class="stat-indicator"><div id="bar-health" class="stat-progress bg-red-500" style="width: 100%"></div></div>
+            </div>
+            <div class="w-24">
+              <div class="text-[10px] uppercase text-slate-500 mb-1">Wealth</div>
+              <div class="stat-indicator"><div id="bar-wealth" class="stat-progress bg-brandGreen" style="width: 10%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-grow space-y-10">
+          <h2 id="scenario-text" class="text-2xl md:text-4xl font-semibold leading-tight text-white transition-all duration-500">
+            Scanning multiversal entry point...
+          </h2>
+
+          <div id="choices-grid" class="grid grid-cols-1 gap-4">
+            </div>
+        </div>
+
+        <div class="mt-12">
+          <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div id="timer-bar" class="h-full bg-brandBlue timer-glow transition-all duration-100 linear" style="width: 100%"></div>
+          </div>
+          <div class="mt-2 text-center text-[10px] font-bold text-slate-600 tracking-widest uppercase">Deciding Moment</div>
+        </div>
+      </div>
+
+      <div id="results-screen" class="hidden flex flex-col items-center animate-in fade-in slide-in-from-bottom-10 duration-1000">
+  
+  <div class="text-center mb-10">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-500 font-code text-[10px] uppercase tracking-[0.3em] mb-4">
+      <span class="relative flex h-2 w-2">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+      </span>
+      Simulation Concluded
+    </div>
+    <h2 class="font-display text-5xl md:text-7xl font-black tracking-tighter text-white">LIFE SUMMARY</h2>
+  </div>
+
+  <div class="relative mb-12 group">
+    <div class="absolute inset-0 bg-brandBlue rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
+    
+    <div class="relative w-48 h-48 md:w-56 md:h-56 rounded-full border-2 border-white/10 bg-voidBlack/60 backdrop-blur-3xl flex flex-col items-center justify-center shadow-2xl overflow-hidden">
+      <div class="absolute inset-0 border-t-2 border-brandBlue/40 rounded-full animate-spin-slow"></div>
+      
+      <div class="text-[10px] font-code text-slate-500 uppercase tracking-widest mb-1">Legacy Score</div>
+      <div id="final-score" class="text-5xl md:text-6xl font-display font-black text-white">880</div>
+      <div id="final-rank-label" class="mt-2 text-[10px] font-bold px-3 py-1 bg-brandGreen text-black rounded-full uppercase tracking-tighter">THE RICKEST RICK</div>
+    </div>
+  </div>
+
+  <div class="w-full max-w-lg glass-panel rounded-2xl p-6 mb-8 relative border-l-4 border-l-brandBlue">
+    <i class="fas fa-quote-left absolute top-4 left-4 text-white/5 text-4xl"></i>
+    <p id="life-summary" class="text-slate-300 text-lg md:text-xl font-medium italic relative z-10">
+      "You lived, you loved, and you somehow managed to sell a record-breaking amount of carpets."
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mb-12">
+    
+    <div class="glass-panel p-6 rounded-3xl flex items-center gap-5 group hover:border-white/20 transition">
+      <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 group-hover:text-white transition">
+        <i class="fas fa-hourglass-end text-xl"></i>
+      </div>
+      <div>
+        <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Final Age</div>
+        <div id="final-age" class="text-2xl font-bold text-white">78</div>
+      </div>
+    </div>
+
+    <div class="glass-panel p-6 rounded-3xl flex items-center gap-5 group hover:border-brandGreen/30 transition">
+      <div class="w-12 h-12 rounded-2xl bg-brandGreen/10 flex items-center justify-center text-brandGreen">
+        <i class="fas fa-wallet text-xl"></i>
+      </div>
+      <div>
+        <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Fortune</div>
+        <div id="final-wealth" class="text-2xl font-bold text-white">$240k</div>
+      </div>
+    </div>
+
+    <div class="glass-panel p-6 rounded-3xl flex items-center gap-5 group hover:border-brandBlue/30 transition">
+      <div class="w-12 h-12 rounded-2xl bg-brandBlue/10 flex items-center justify-center text-brandBlue">
+        <i class="fas fa-brain text-xl"></i>
+      </div>
+      <div>
+        <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Intellect</div>
+        <div id="final-intellect" class="text-2xl font-bold text-white">B+</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="w-full flex flex-col md:flex-row items-center justify-center gap-6 pt-4 border-t border-white/5">
+    
+    <a href="/rickandmortyhub.html" class="group relative w-full md:w-auto px-10 py-5 bg-white text-black font-black rounded-2xl transition-all duration-300 hover:bg-brandGreen hover:scale-105 flex items-center justify-center gap-3">
+      <i class="fas fa-th-large"></i> 
+      Back To Main Screen
+      <div class="absolute -top-1 -right-1 w-3 h-3 bg-brandGreen rounded-full animate-ping opacity-0 group-hover:opacity-100"></div>
+    </a>
+
+    <button onclick="location.reload()" class="w-full md:w-auto px-10 py-5 glass-panel text-white font-bold rounded-2xl hover:bg-white/10 transition flex items-center justify-center gap-3">
+      <i class="fas fa-sync-alt"></i> RE-SYNC LIFE
+    </button>
+    
+    <button class="text-slate-500 hover:text-white transition-colors text-xs font-code uppercase tracking-widest flex items-center gap-2">
+      <i class="fas fa-share-alt"></i> Share Legacy
+    </button>
+
+  </div>
+</div>
+    </div>
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <script>
+    /* 1. SCENARIO DATA (10 Stages) */
+    const lifePath = [
+      {
+        id: "infancy",
+        text: "You are two years old. Your parents are busy. You see a pair of shiny keys and a bowl of green peas.",
+        choices: [
+          { text: "Try to swallow the keys", score: 10, health: -10, wealth: 0, intel: 5 },
+          { text: "Throw the peas at your dad", score: 20, health: 0, wealth: 0, intel: 10 },
+          { text: "Try to stack the peas into a tower", score: 50, health: 0, wealth: 0, intel: 40 }
+        ]
+      },
+      {
+        id: "school",
+        text: "Primary school. A bully is demanding your lunch money behind the gym.",
+        choices: [
+          { text: "Give him the money and run", score: 10, health: 0, wealth: -10, intel: 10 },
+          { text: "Bite his leg", score: 30, health: -10, wealth: 0, intel: 5 },
+          { text: "Offer him interest-bearing loans", score: 80, health: 0, wealth: 20, intel: 50 }
+        ]
+      },
+      {
+        id: "teen",
+        text: "You're 16. A weird old man in a lab coat offers you a 'science internship' in a garage.",
+        choices: [
+          { text: "Accept immediately. Reality is boring.", score: 100, health: -10, wealth: 0, intel: 100 },
+          { text: "Decline and join the football team", score: 40, health: 20, wealth: 0, intel: -10 },
+          { text: "Call the police on him", score: 20, health: 0, wealth: 0, intel: 20 }
+        ]
+      },
+      {
+        id: "early_adult",
+        text: "First job. The local carpet store is hiring, but there's a rumor about a 'rebel alliance' needing pilots.",
+        choices: [
+          { text: "Join the Carpet Store (Safety)", score: 50, health: 10, wealth: 30, intel: 10 },
+          { text: "Join the Rebels (Danger)", score: 150, health: -30, wealth: -20, intel: 60 },
+          { text: "Go to College for Philosophy", score: 40, health: 0, wealth: -50, intel: 80 }
+        ]
+      },
+      {
+        id: "love",
+        text: "You meet someone incredible at a music festival. They want to move to a farm.",
+        choices: [
+          { text: "Go to the farm. Live simply.", score: 80, health: 20, wealth: -10, intel: 20 },
+          { text: "Stay in the city. Pursue power.", score: 100, health: -10, wealth: 80, intel: 50 },
+          { text: "Ghost them and travel the galaxy", score: 60, health: 0, wealth: -30, intel: 70 }
+        ]
+      },
+      {
+        id: "midlife",
+        text: "You're 45. You've hit a wall. You feel like a character in a game.",
+        choices: [
+          { text: "Buy a red sport-spaceship", score: 40, health: 0, wealth: -80, intel: 10 },
+          { text: "Devote yourself to the arts", score: 120, health: 0, wealth: -20, intel: 90 },
+          { text: "Take a vacation to Blips & Chitz", score: 200, health: -20, wealth: -50, intel: 40 }
+        ]
+      },
+      {
+        id: "conflict",
+        text: "A local war breaks out over a piece of space-rock. You are drafted.",
+        choices: [
+          { text: "Desert and live as a hermit", score: 90, health: 10, wealth: -50, intel: 60 },
+          { text: "Fight for your planet", score: 180, health: -60, wealth: 20, intel: 30 },
+          { text: "Profit from both sides", score: 150, health: 0, wealth: 200, intel: 100 }
+        ]
+      },
+      {
+        id: "legacy",
+        text: "You are old now. You have the chance to write a book about your life.",
+        choices: [
+          { text: "Write the truth", score: 100, health: 0, wealth: 10, intel: 80 },
+          { text: "Fabricate a heroic lie", score: 60, health: 0, wealth: 50, intel: 40 },
+          { text: "Burn your journals", score: 200, health: 0, wealth: 0, intel: 100 }
+        ]
+      },
+      {
+        id: "decline",
+        text: "Your body is failing. A scientist offers to upload your mind to a digital cloud.",
+        choices: [
+          { text: "Upload me. I want to live forever.", score: 300, health: -100, wealth: -100, intel: 200 },
+          { text: "No. Let me die with dignity.", score: 150, health: -100, wealth: 0, intel: 50 },
+          { text: "Ask for more time (Heavily Bribery)", score: 50, health: -50, wealth: -200, intel: 20 }
+        ]
+      },
+      {
+        id: "finale",
+        text: "The lights are fading. What is your final thought?",
+        choices: [
+          { text: "I regret nothing", score: 500, health: 0, wealth: 0, intel: 0 },
+          { text: "I should have worked harder", score: 50, health: 0, wealth: 0, intel: 0 },
+          { text: "It was all just a simulation...", score: 1000, health: 0, wealth: 0, intel: 500 }
+        ]
+      }
+    ];
+
+    /* 2. GAME ENGINE */
+    let currentStep = 0;
+    let stats = { age: 0, health: 100, wealth: 1000, intel: 10, score: 0 };
+    let timer;
+
+    function playGame() {
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('active-game').classList.remove('hidden');
+      // Firebase/GTM Tracking
+      if(window.logGameStart) window.logGameStart('Roy');
+      
+      renderStep();
+    }
+
+    function renderStep() {
+      if (currentStep >= lifePath.length || stats.health <= 0) {
+        showResults();
+        return;
+      }
+
+      const step = lifePath[currentStep];
+      const textEl = document.getElementById('scenario-text');
+      const grid = document.getElementById('choices-grid');
+      
+      textEl.innerText = step.text;
+      grid.innerHTML = '';
+
+      step.choices.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = "choice-card w-full p-5 rounded-2xl bg-white/5 border border-white/10 text-left text-sm md:text-base hover:text-brandGreen flex justify-between items-center";
+        btn.innerHTML = `<span>${c.text}</span> <i class="fas fa-chevron-right text-xs opacity-30"></i>`;
+        btn.onclick = () => handleChoice(c);
+        grid.appendChild(btn);
+      });
+
+      startTimer();
+      updateHUD();
+    }
+
+    function handleChoice(choice) {
+      clearInterval(timer);
+      
+      // Update Stats
+      stats.score += choice.score;
+      stats.health += choice.health;
+      stats.wealth += choice.wealth;
+      stats.intel += choice.intel;
+      stats.age += Math.floor(Math.random() * 8) + 5;
+
+      currentStep++;
+      
+      // Data Engine Tracking
+      if(window.recordImpression) window.recordImpression('roy_choice', { step: currentStep, age: stats.age });
+
+      renderStep();
+    }
+
+    function startTimer() {
+      let timeLeft = 150; // 15 seconds
+      const bar = document.getElementById('timer-bar');
+      clearInterval(timer);
+      
+      timer = setInterval(() => {
+        timeLeft--;
+        bar.style.width = (timeLeft / 150) * 100 + '%';
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          handleChoice({ text: "Hesitated", score: 0, health: -5, wealth: 0, intel: -5 });
+        }
+      }, 100);
+    }
+
+    function updateHUD() {
+      document.getElementById('display-age').innerText = stats.age;
+      document.getElementById('bar-health').style.width = Math.max(0, stats.health) + '%';
+      document.getElementById('bar-wealth').style.width = Math.min(100, (stats.wealth / 5000) * 100) + '%';
+    }
+
+    function showResults() {
+      document.getElementById('active-game').classList.add('hidden');
+      document.getElementById('results-screen').classList.remove('hidden');
+
+      document.getElementById('final-age').innerText = stats.age;
+      document.getElementById('final-wealth').innerText = "$" + Math.max(0, stats.wealth) + "k";
+      document.getElementById('final-score').innerText = stats.score;
+      
+      let rank = "C";
+      if(stats.intel > 150) rank = "A+";
+      else if(stats.intel > 100) rank = "A";
+      else if(stats.intel > 50) rank = "B";
+      document.getElementById('final-intellect').innerText = rank;
+
+      // Final Impression
+      if(window.logGameEnd) window.logGameEnd('Roy', { finalScore: stats.score });
+    }
+  </script>
+</body>
+</html>

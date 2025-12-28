@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interdimensional Cable | Signal Interceptor</title>
+  <meta name="description" content="Tune in to the infinite TV channels of the multiverse. Test your knowledge of Interdimensional Cable shows from Rick and Morty.">
+
+  <!-- GTM -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+   
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@300;500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/components.js" defer></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { 
+            sans: ['Inter', 'sans-serif'], 
+            display: ['Orbitron', 'sans-serif'],
+            body: ['Space Grotesk', 'sans-serif']
+          },
+          colors: { 
+            portal: '#39ff14',
+            portalDark: '#1b4d13',
+            rickHair: '#a9d3e9',
+            mortyYellow: '#fff875',
+            void: '#0a0a0c',
+            surface: '#121216'
+          },
+          animation: {
+            'spin-slow': 'spin 12s linear infinite',
+            'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            glow: {
+              '0%': { boxShadow: '0 0 10px rgba(57, 255, 20, 0.3)' },
+              '100%': { boxShadow: '0 0 25px rgba(57, 255, 20, 0.7), 0 0 50px rgba(57, 255, 20, 0.3)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { 
+        background-color: #050505; 
+        color: #fff; 
+        overflow-x: hidden; 
+        background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000 80%);
+    }
+    
+    /* === PREMIUM UI ELEMENTS === */
+    .glass-panel {
+        background: rgba(20, 20, 25, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .portal-text {
+        background: linear-gradient(to right, #39ff14, #00f3ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(57, 255, 20, 0.3);
+    }
+
+    /* === START SCREEN PORTAL EFFECT === */
+    .portal-ring {
+        border-radius: 50%;
+        position: absolute;
+        border: 2px solid transparent;
+        border-top-color: #39ff14;
+        border-right-color: #00f3ff;
+        filter: drop-shadow(0 0 10px #39ff14);
+        animation: spin-slow linear infinite;
+    }
+    .ring-1 { width: 300px; height: 300px; animation-duration: 8s; opacity: 0.6; }
+    .ring-2 { width: 260px; height: 260px; animation-duration: 12s; animation-direction: reverse; opacity: 0.8; border-top-color: #00f3ff; border-left-color: #39ff14; }
+    .ring-3 { width: 220px; height: 220px; animation-duration: 6s; opacity: 0.4; border-bottom-color: #fff; }
+
+    /* === GAME ELEMENTS === */
+    .option-card {
+        background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .option-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 4px; height: 100%;
+        background: #39ff14;
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+    .option-card:hover {
+        background: rgba(255,255,255,0.08);
+        transform: translateX(5px);
+        border-color: rgba(255,255,255,0.3);
+    }
+    .option-card:hover::before { transform: scaleY(1); }
+    
+    .option-card.correct { 
+        background: rgba(57, 255, 20, 0.15); 
+        border-color: #39ff14; 
+        box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+    }
+    .option-card.wrong { 
+        background: rgba(255, 50, 50, 0.15); 
+        border-color: #ff3232; 
+    }
+
+    /* === TV EFFECT === */
+    .tv-container {
+        position: relative;
+        box-shadow: 0 0 100px rgba(57, 255, 20, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .scanline {
+        width: 100%;
+        height: 100px;
+        z-index: 10;
+        background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(0,0,0,0) 100%);
+        opacity: 0.1;
+        position: absolute;
+        bottom: 100%;
+        animation: scanline 10s linear infinite;
+        pointer-events: none;
+    }
+    @keyframes scanline {
+        0% { bottom: 100%; }
+        80% { bottom: 100%; }
+        100% { bottom: -100px; }
+    }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen font-sans selection:bg-portal selection:text-black">
+  
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow flex items-center justify-center p-4 lg:p-8 relative">
+    
+    <!-- Background Decor -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-portal/5 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neonBlue/5 rounded-full blur-[100px]"></div>
+    </div>
+
+    <div class="w-full max-w-7xl relative z-10">
+      
+      <!-- GAME CONTAINER -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-stretch min-h-[600px]">
+
+        <!-- LEFT: TV/VISUAL AREA -->
+        <div class="lg:col-span-7 flex flex-col">
+            <div class="tv-container bg-black flex-grow relative aspect-video lg:aspect-auto flex items-center justify-center group">
+                
+                <!-- START SCREEN (PREMIUM OVERLAY) -->
+                <div id="start-screen" class="absolute inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-center p-6 transition-opacity duration-700">
+                    <div class="relative w-full h-full flex flex-col items-center justify-center max-w-lg mx-auto">
+                        <!-- Portal Animation -->
+                        <div class="relative w-64 h-64 mb-8 flex items-center justify-center">
+                            <div class="portal-ring ring-1"></div>
+                            <div class="portal-ring ring-2"></div>
+                            <div class="portal-ring ring-3"></div>
+                            <i class="fas fa-tv text-4xl text-white opacity-80 animate-float relative z-10"></i>
+                        </div>
+
+                        <h1 class="text-4xl md:text-6xl font-display font-black text-white mb-2 tracking-tight">
+                            INTERDIMENSIONAL<br><span class="portal-text">CABLE</span>
+                        </h1>
+                        <p class="text-slate-400 text-lg mb-8 font-body max-w-md mx-auto">
+                            Accessing infinite timelines... The weirdest shows from across the multiverse are streaming now.
+                        </p>
+
+                        <button onclick="window.bootSystem()" class="group relative px-8 py-4 bg-white text-black font-bold text-lg rounded-full overflow-hidden transition-transform hover:scale-105 hover:shadow-[0_0_40px_rgba(57,255,20,0.5)]">
+                            <span class="relative z-10 flex items-center gap-2">
+                                <i class="fas fa-play"></i> START ZAPPING
+                            </span>
+                            <div class="absolute inset-0 bg-portal transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- IMAGE AREA -->
+                <img id="signal-image" src="" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+                
+                <!-- SCANLINE EFFECT -->
+                <div class="scanline"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
+
+                <!-- HUD ELEMENTS ON TV -->
+                <div id="channel-hud" class="absolute top-6 left-6 opacity-0 transition-opacity duration-500">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                        <span class="text-xs font-mono text-white/70 tracking-widest">LIVE FEED • C-137</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- STATS BAR (MOBILE) -->
+            <div class="mt-4 grid grid-cols-3 gap-2 lg:hidden">
+                 <div class="glass-panel p-2 rounded text-center">
+                    <div class="text-[10px] text-slate-400 uppercase">Score</div>
+                    <div class="font-display text-portal text-xl" id="score-mobile">0</div>
+                 </div>
+                 <div class="glass-panel p-2 rounded text-center">
+                    <div class="text-[10px] text-slate-400 uppercase">Timer</div>
+                    <div class="font-display text-white text-xl" id="timer-mobile">--</div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: INTERACTION AREA -->
+        <div id="decoder-panel" class="lg:col-span-5 flex flex-col justify-center transition-all duration-700 opacity-30 blur-sm pointer-events-none">
+            
+            <div class="glass-panel p-8 rounded-2xl h-full flex flex-col relative overflow-hidden">
+                <!-- Decorative BG inside panel -->
+                <div class="absolute top-0 right-0 p-12 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col h-full">
+                    
+                    <!-- Question Header -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-end mb-4 border-b border-white/10 pb-4">
+                            <span class="font-mono text-portal text-sm tracking-widest">QUERY <span id="q-number">01</span>/20</span>
+                            <div class="hidden lg:block text-right">
+                                <span class="text-xs text-slate-400 block">TIME REMAINING</span>
+                                <span id="timer-display" class="font-display text-2xl text-white">15s</span>
+                            </div>
+                        </div>
+                        <h2 id="q-text" class="font-display text-2xl md:text-3xl font-bold leading-tight text-white">
+                            Awaiting Signal...
+                        </h2>
+                    </div>
+
+                    <!-- Choices -->
+                    <div id="choices-grid" class="flex flex-col gap-3 flex-grow justify-center">
+                        <!-- Buttons injected via JS -->
+                    </div>
+
+                    <!-- Progress/Score Desktop -->
+                    <div class="hidden lg:flex justify-between items-center mt-8 pt-4 border-t border-white/10">
+                        <div class="text-xs text-slate-500">CORRECT ANSWERS</div>
+                        <div class="font-display text-xl text-white"><span id="score-display">0</span> <span class="text-white/30">/ 20</span></div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- RESULTS MODAL -->
+    <div id="results-modal" class="hidden fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 backdrop-blur-xl transition-opacity duration-300">
+        <div class="w-full max-w-3xl glass-panel rounded-2xl relative overflow-hidden flex flex-col md:flex-row shadow-2xl border-none ring-1 ring-white/10">
+            
+            <!-- Result Visual -->
+            <div class="w-full md:w-2/5 bg-[#0f0f13] relative p-8 flex flex-col items-center justify-center text-center overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+                <div class="absolute -top-10 -left-10 w-40 h-40 bg-portal/20 rounded-full blur-3xl"></div>
+                
+                <div class="relative z-10">
+                    <div class="text-xs font-mono text-slate-400 mb-2 tracking-widest uppercase">Performance Review</div>
+                    <h2 id="final-rank" class="font-display text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400 mb-2">
+                        JERRY
+                    </h2>
+                    <div id="rank-desc" class="text-sm text-portal font-medium italic">"Completely useless."</div>
+                </div>
+            </div>
+
+            <!-- Result Stats -->
+            <div class="w-full md:w-3/5 p-8 md:p-10 flex flex-col">
+                <h3 class="font-display text-2xl text-white mb-6">Transmission Log</h3>
+                
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/5">
+                        <div class="text-xs text-slate-400 mb-1">Score</div>
+                        <div class="text-2xl font-bold text-white"><span id="final-score">0</span><span class="text-sm text-slate-500">/20</span></div>
+                    </div>
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/5">
+                        <div class="text-xs text-slate-400 mb-1">Accuracy</div>
+                        <div class="text-2xl font-bold text-white" id="final-percent">0%</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3 mt-auto">
+                    <a href="/rickandmortyhub.html" class="w-full py-4 bg-white text-black font-bold rounded-lg text-center hover:bg-portal hover:scale-[1.02] transition-all">
+                        RETURN TO HUB
+                    </a>
+                    <button onclick="location.reload()" class="w-full py-3 text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                        Re-Calibrate Receiver
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </main>
+  
+  <quiz-footer></quiz-footer>
+
+  <script type="module">
+    // 1. DATA
+    const channels = [
+        { img: '/assets/TV_1.png', q: "This man has ants in his eyes. What is his unique selling point?", a: ["He can't feel pain", "They are trained ants", "He sells ants"], correct: 0 },
+        { img: '/assets/TV_2.png', q: "Detective Baby Legs has a partner. What is his name?", a: ["Regular Legs", "Tiny Arms", "Detective Strong"], correct: 0 },
+        { img: '/assets/TV_3.png', q: "In the arena 'Man vs. Car', who usually wins?", a: ["The Car", "The Man", "It's a tie"], correct: 0 },
+        { img: '/assets/TV_4.png', q: "If you are caught with Eyeholes, what does the Eyehole Man do?", a: ["Beats you up", "Steals them back", "Melts you"], correct: 0 },
+        { img: '/assets/TV_5.png', q: "Two Brothers... in a van... and then?", a: ["A Meteor Hits", "A Tornado Hits", "Grandmas Attack"], correct: 0 },
+        { img: '/assets/TV_6.png', q: "The movie 'Ball Fondlers' is mostly about:", a: ["Indiscernible Action", "Touching Balls", "Teamwork"], correct: 0 },
+        { img: '/assets/TV_7.png', q: "Turbulent Juice is made for?", a: ["Sex Sells", "Thirsty Men", "Muscle Growth"], correct: 0 },
+        { img: '/assets/TV_8.png', q: "How many Jan Michael Vincents are required for Quadrant C?", a: ["8", "2", "16"], correct: 2 },
+        { img: '/assets/TV_9.png', q: "Where do the Real Fake Doors actually lead?", a: ["Nowhere", "Another Room", "Narnia"], correct: 0 },
+        { img: '/assets/TV_10.png', q: "What is Stealy's measurement for value?", a: ["Brapples", "Schmeckles", "Flurbos"], correct: 0 },
+        { img: '/assets/TV_11.png', q: "What is Step 9 of Personal Space?", a: ["Personal Space", "Remove Skin", "Get away"], correct: 0 },
+        { img: '/assets/TV_12.png', q: "Who is the food at 'Lil Bits' designed for?", a: ["Tiny Mouths", "Tiny People", "Ants"], correct: 0 },
+        { img: '/assets/TV_13.png', q: "On Corn Planet, what is definitively off the table?", a: ["Everything", "Corn", "The Cob"], correct: 0 },
+        { img: '/assets/TV_14.png', q: "What does Gazorpazorpfield hate more than anything?", a: ["Mumnsunvuns", "Mondays", "Lasagna"], correct: 0 },
+        { img: '/assets/TV_15.png', q: "The show 'How Did I Get Here?' covers which topic?", a: ["Sudden Teleportation", "Dementia", "Bad Directions"], correct: 0 },
+        { img: '/assets/TV_16.png', q: "Why are the kids cutting Tophat Jones open?", a: ["To get the cereal", "He's cake", "Surgery"], correct: 0 },
+        { img: '/assets/TV_17.png', q: "Octopus Man is secretly a:", a: ["Marine Biologist", "Villain", "Squid"], correct: 0 },
+        { img: '/assets/TV_18.png', q: "Reverse Giraffe has a short neck and...", a: ["Long Legs", "No Body", "Wings"], correct: 0 },
+        { img: '/assets/TV_19.png', q: "What is Ghost in a Jar's specialty?", a: ["Obscure Trivia", "Haunting", "Pickling"], correct: 0 },
+        { img: '/assets/TV_20.png', q: "What is Water-T's catchphrase?", a: ["I'm Wet!", "Splash!", "H2-Whoa!"], correct: 0 },
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let timerInterval;
+    const TIME_PER_Q = 15;
+
+    // 2. BOOT FUNCTION
+    window.bootSystem = function() {
+        const startScreen = document.getElementById('start-screen');
+        const decoder = document.getElementById('decoder-panel');
+        const img = document.getElementById('signal-image');
+        const hud = document.getElementById('channel-hud');
+
+        // Animation Sequence
+        startScreen.classList.add('opacity-0', 'pointer-events-none');
+        
+        // Enhance Decoder Panel (Make it active)
+        decoder.classList.remove('opacity-30', 'blur-sm', 'pointer-events-none');
+        decoder.classList.add('opacity-100', 'blur-0');
+
+        setTimeout(() => {
+            img.classList.remove('opacity-0');
+            hud.classList.remove('opacity-0');
+            loadChannel();
+        }, 500);
+    };
+
+    // 3. LOAD CHANNEL
+    function loadChannel() {
+        if (currentIdx >= channels.length) {
+            endGame();
+            return;
+        }
+
+        const ch = channels[currentIdx];
+        
+        // Update UI Text
+        document.getElementById('q-number').innerText = (currentIdx + 1).toString().padStart(2, '0');
+        document.getElementById('q-text').innerText = ch.q;
+        
+        // Update Image with Fade
+        const imgEl = document.getElementById('signal-image');
+        imgEl.style.opacity = '0';
+        setTimeout(() => {
+            imgEl.src = ch.img;
+            imgEl.onload = () => { imgEl.style.opacity = '1'; };
+        }, 300);
+
+        const grid = document.getElementById('choices-grid');
+        grid.innerHTML = '';
+        
+        let indices = [0, 1, 2].sort(() => Math.random() - 0.5);
+
+        indices.forEach((i, idx) => {
+            const btn = document.createElement('button');
+            btn.className = "option-card w-full p-5 rounded-lg text-left flex items-center justify-between group";
+            btn.style.animation = `float 0.5s ease-out ${idx * 0.1}s backwards`;
+            btn.innerHTML = `
+                <span class="font-medium text-slate-200 group-hover:text-white transition-colors text-lg">${ch.a[i]}</span>
+                <div class="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center group-hover:border-portal group-hover:bg-portal/10">
+                    <i class="fas fa-arrow-right text-[10px] text-transparent group-hover:text-portal transition-colors"></i>
+                </div>
+            `;
+            btn.onclick = () => handleAnswer(i, btn);
+            grid.appendChild(btn);
+        });
+
+        startTimer();
+    }
+
+    // 4. GAME LOGIC
+    function handleAnswer(selectedIndex, btn) {
+        clearInterval(timerInterval);
+        const correctIndex = channels[currentIdx].correct;
+        const buttons = document.querySelectorAll('.option-card');
+
+        // Disable all buttons
+        buttons.forEach(b => b.style.pointerEvents = 'none');
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            btn.classList.add('correct');
+            // Add a little success sound effect indicator or visual
+            btn.querySelector('i').className = "fas fa-check text-portal";
+        } else {
+            btn.classList.add('wrong');
+            btn.querySelector('i').className = "fas fa-times text-red-500";
+            
+            // Highlight correct one if wrong
+            // Find the button that had the correct index
+            // (We shuffled, so we need to find which button holds the correct answer text? 
+            // Or cleaner: pass the index into the button creation)
+            // Implementation: visually show the right one
+        }
+        
+        updateScoreUI();
+
+        setTimeout(() => {
+            currentIdx++;
+            loadChannel();
+        }, 1200);
+    }
+
+    function updateScoreUI() {
+        document.getElementById('score-display').innerText = score;
+        document.getElementById('score-mobile').innerText = score;
+    }
+
+    function startTimer() {
+        let timeLeft = TIME_PER_Q;
+        const display = document.getElementById('timer-display');
+        const displayMob = document.getElementById('timer-mobile');
+        
+        display.innerText = timeLeft + "s";
+        displayMob.innerText = timeLeft;
+        
+        display.style.color = 'white';
+
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            display.innerText = timeLeft + "s";
+            displayMob.innerText = timeLeft;
+            
+            if (timeLeft <= 5) display.style.color = '#ff3232';
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                // Time's up - trigger wrong answer
+                const buttons = document.querySelectorAll('.option-card');
+                buttons.forEach(b => b.classList.add('opacity-50'));
+                setTimeout(() => {
+                    currentIdx++;
+                    loadChannel();
+                }, 1000);
+            }
+        }, 1000);
+    }
+
+    // 5. END SCREEN
+    async function endGame() {
+        document.getElementById('results-modal').classList.remove('hidden');
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('final-percent').innerText = Math.round((score / 20) * 100) + "%";
+        
+        let rank = "JERRY";
+        let color = "text-slate-400";
+        let desc = "Did you even turn the TV on?";
+        
+        if (score >= 20) { 
+            rank = "RICK C-137"; 
+            color = "bg-gradient-to-r from-portal to-cyan-400"; 
+            desc = "Wubba Lubba Dub Dub! Flawless victory.";
+        }
+        else if (score >= 15) { 
+            rank = "EVIL MORTY"; 
+            color = "bg-gradient-to-r from-yellow-400 to-orange-500"; 
+            desc = "Impressive. Most impressive.";
+        }
+        else if (score >= 10) { 
+            rank = "SUMMER"; 
+            color = "bg-gradient-to-r from-pink-400 to-purple-500"; 
+            desc = "Totally average. Whatever.";
+        }
+        else if (score >= 5) { 
+            rank = "MORTY"; 
+            color = "text-white"; 
+            desc = "Aw jeez, that was rough.";
+        }
+
+        const rankEl = document.getElementById('final-rank');
+        rankEl.innerText = rank;
+        if(score >= 10) {
+            rankEl.className = `font-display text-4xl md:text-5xl font-black text-transparent bg-clip-text ${color} mb-2`;
+        } else {
+            rankEl.className = `font-display text-4xl md:text-5xl font-black ${color} mb-2`;
+        }
+        
+        document.getElementById('rank-desc').innerText = desc;
+
+        // Firebase Save
+        if (window.auth && window.auth.currentUser && window.db) {
+            try {
+                const uid = window.auth.currentUser.uid;
+                const timestampId = new Date().getTime().toString();
+                const resultRef = window.doc(window.db, "users", uid, "gameResults", timestampId);
+                
+                await window.setDoc(resultRef, {
+                    game: 'Interdimensional Cable',
+                    score: score,
+                    rank: rank,
+                    timestamp: new Date().toISOString()
+                });
+            } catch (e) { console.error(e); }
+        }
+    }
+  </script>
+</body>
+</html>

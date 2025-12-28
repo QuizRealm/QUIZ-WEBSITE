@@ -5557,6 +5557,74 @@ const iphone17Bank = {
     { question: "What new connectivity standard does iPhone 17 come with to connect with smartwatches?", options: ["Ultra-Wideband Gen 2", "Bluetooth", "ZigBee", "Infrared"], correctIndex: 0 }
   ]
 };
+const rickandmortyBank = {
+  easy: [
+    { question: "Who is Morty's grandfather?", options: ["Rick Sanchez", "Jerry Smith", "Birdperson", "Mr. Goldenfold"], correctIndex: 0 },
+    { question: "What is Rick's catchphrase?", options: ["Wubba Lubba Dub Dub", "And that's the way the news goes", "Grass tastes bad", "Lick, lick, lick my balls"], correctIndex: 0 },
+    { question: "What is the name of Rick's daughter?", options: ["Beth", "Summer", "Jessica", "Unity"], correctIndex: 0 },
+    { question: "What color is the portal gun's fluid?", options: ["Green", "Blue", "Red", "Purple"], correctIndex: 0 },
+    { question: "Who is Morty's sister?", options: ["Summer", "Beth", "Tammy", "Annie"], correctIndex: 0 },
+    { question: "What is the name of the family dog?", options: ["Snuffles", "Barky", "Spot", "Rover"], correctIndex: 0 },
+    { question: "What food does Rick turn himself into?", options: ["A pickle", "A cucumber", "A banana", "A hot dog"], correctIndex: 0 },
+    { question: "Who is Rick's best friend?", options: ["Birdperson", "Squanchy", "Jerry", "Mr. Poopybutthole"], correctIndex: 0 },
+    { question: "What is the name of the blue creatures who exist to serve a single purpose?", options: ["Mr. Meeseeks", "Mr. Poopybutthole", "Cromulons", "Gromflomites"], correctIndex: 0 },
+    { question: "Who is Morty's crush at school?", options: ["Jessica", "Annie", "Trish", "Stacy"], correctIndex: 0 },
+    { question: "What is Jerry's favorite movie?", options: ["Titanic", "Star Wars", "Citizen Kane", "Avatar"], correctIndex: 0 },
+    { question: "What is the name of the arcade Rick and Morty visit?", options: ["Blips and Chitz", "Dave and Buster's", "Pizza Planet", "The Palace"], correctIndex: 0 },
+    { question: "Who is the principal of Harry Herpson High School?", options: ["Principal Vagina", "Principal Lewis", "Principal Skinner", "Principal Brown"], correctIndex: 0 },
+    { question: "What is the name of the superhero team Rick joins?", options: ["The Vindicators", "The Avengers", "The Justice League", "The Guardians"], correctIndex: 0 },
+    { question: "What is the name of the park built inside a homeless man?", options: ["Anatomy Park", "Jurassic Park", "Body World", "Micro Park"], correctIndex: 0 },
+    { question: "What is the name of the planet where everything is on a cob?", options: ["Cob Planet", "Corn World", "Maize Maze", "The Farm"], correctIndex: 0 },
+    { question: "Who shoots Mr. Poopybutthole?", options: ["Beth", "Jerry", "Summer", "Morty"], correctIndex: 0 },
+    { question: "What is the name of the dimension Rick and Morty are originally from?", options: ["Dimension C-137", "Dimension 35-C", "Dimension J-19", "Dimension Alpha"], correctIndex: 0 },
+    { question: "What instrument does Jerry play?", options: ["None", "Guitar", "Drums", "Piano"], correctIndex: 0 },
+    { question: "What is the name of the alien who interns for Rick?", options: ["Glootie", "Snuffles", "Terry", "Noob-Noob"], correctIndex: 0 }
+  ],
+  medium: [
+    { question: "What is the name of the parasite that implants fake memories?", options: ["Memory Parasites", "Brain Leeches", "Mind Worms", "Thought Ticks"], correctIndex: 0 },
+    { question: "What sauce is Rick obsessed with?", options: ["Szechuan Sauce", "BBQ Sauce", "Ranch", "Honey Mustard"], correctIndex: 0 },
+    { question: "What is the name of the hive mind that Rick dates?", options: ["Unity", "Trinity", "Harmony", "Serenity"], correctIndex: 0 },
+    { question: "What is the name of the daycare for Jerrys?", options: ["Jerryboree", "Jerry's Kids", "The Jerry Center", "Daycare for Dads"], correctIndex: 0 },
+    { question: "Who becomes the first Morty President of the Citadel?", options: ["Evil Morty", "Cop Morty", "Lawyer Morty", "Big Morty"], correctIndex: 0 },
+    { question: "What song saves Earth from the Cromulons?", options: ["Get Schwifty", "Head Bent Over", "Raised Up Posterior", "Show Me What You Got"], correctIndex: 0 },
+    { question: "What is the name of the assassin Rick buys a gun from?", options: ["Krombopulos Michael", "Jaguar", "Scary Terry", "Cornvelious Daniel"], correctIndex: 0 },
+    { question: "What does 'Wubba Lubba Dub Dub' mean in Birdperson's language?", options: ["I am in great pain, please help me", "Let's party", "Peace among worlds", "I love my grandkids"], correctIndex: 0 },
+    { question: "What is the name of the microverse battery creator inside Rick's battery?", options: ["Zeep Xanflorp", "Kyle", "Chris", "Teeny"], correctIndex: 0 },
+    { question: "What is the name of Summer's ex-boyfriend?", options: ["Ethan", "Brad", "Chad", "Toby"], correctIndex: 0 },
+    { question: "What does the sun do on the planet the family moves to in the Season 2 finale?", options: ["It screams", "It blinks", "It laughs", "It cries"], correctIndex: 0 },
+    { question: "Who provides the voice for the spaceship's AI?", options: ["Keep Summer Safe", "GLaDOS", "Siri", "Alexa"], correctIndex: 0 },
+    { question: "What is the name of the cereal Rick eats?", options: ["Strawberry Smiggles", "Eyeholes", "Plumbus Puffs", "Simple Rick's"], correctIndex: 0 },
+    { question: "What is the name of the game Roy plays in Blips and Chitz?", options: ["Roy: A Life Well Lived", "Troy: The Odyssey", "Boy: The Journey", "Joy: The Game"], correctIndex: 0 },
+    { question: "What is the name of the cloud of gas that sings 'Goodbye Moonmen'?", options: ["Fart", "Cloudy", "Gas", "Nebula"], correctIndex: 0 },
+    { question: "What is the name of the cat that talks?", options: ["Talking Cat", "Chatty Kitty", "Felix", "Garfield"], correctIndex: 0 },
+    { question: "What is the name of the app Jerry develops with Glootie?", options: ["Lovefinderrz", "HookUp", "SoulMate", "DateMatch"], correctIndex: 0 },
+    { question: "What is the name of the dragon Rick bonds with?", options: ["Balthromaw", "Smaug", "Drogon", "Spyro"], correctIndex: 0 },
+    { question: "What is the name of the train conductor in the Story Train?", options: ["Story Lord", "Train Master", "Narrator", "Plot Twist"], correctIndex: 0 },
+    { question: "What is the name of the planet where the Purge happens?", options: ["The Festival", "Purge Planet", "Murder World", "Crime City"], correctIndex: 0 }
+  ],
+  hard: [
+    { question: "What is the name of the Zigerion leader?", options: ["Prince Nebulon", "King Pluton", "Emperor Zig", "Lord Scam"], correctIndex: 0 },
+    { question: "What is the name of the parasite that turns into a pencil?", options: ["Pencilvester", "Pen Pal", "Graphite Gary", "Woody"], correctIndex: 0 },
+    { question: "What is the name of the drug Rick inhales at the party with Squanchy?", options: ["Kalaxian Crystals", "Mega Seeds", "Flurbo Dust", "Space Dust"], correctIndex: 0 },
+    { question: "What is the name of the disease Dr. Xenon Bloom studies?", options: ["Boneitis", "Space Pox", "Rickitis", "Gromflomite Flu"], correctIndex: 0 },
+    { question: "What is the name of the galactic federation agent who tries to get the formula for concentrated dark matter?", options: ["Cornvelious Daniel", "Gromflomite Prime", "Agent Smith", "Tammy Gueterman"], correctIndex: 0 },
+    { question: "What is the name of the sentient arm Morty gets?", options: ["Armothy", "Handy", "Lefty", "Muscle Man"], correctIndex: 0 },
+    { question: "What is the name of the crystal that shows you how you die?", options: ["Death Crystal", "Fate Stone", "Mortality Gem", "End Rock"], correctIndex: 0 },
+    { question: "What is the name of the giant incest baby?", options: ["Naruto", "Boruto", "Sasuke", "Goku"], correctIndex: 0 },
+    { question: "What is the name of the vampire in 'Tiny Rick'?", options: ["Coach Feratu", "Count Chocula", "Mr. Alucard", "Vampy McVampface"], correctIndex: 0 },
+    { question: "What is the name of the Zeus-like character Rick fights?", options: ["Reggie", "Zeus", "Odin", "Thor"], correctIndex: 0 },
+    { question: "What is the name of the leader of the Vindicators?", options: ["Supernova", "Million Ants", "Vance Maximus", "Alan Rails"], correctIndex: 0 },
+    { question: "What is the name of the talking toilet?", options: ["Tony", "John", "Mike", "Dave"], correctIndex: 0 },
+    { question: "What is the name of the dimension where chairs sit on people?", options: ["Chair Dimension", "Furniture World", "Reverse World", "Seat Planet"], correctIndex: 0 },
+    { question: "What is the name of the crow-horse hybrid?", options: ["Crow Horse", "Horse Crow", "Pegasus", "Bird Steed"], correctIndex: 0 },
+    { question: "What is the name of the time-traveling testicle monsters?", options: ["Time Cops", "Space Patrol", "Dimension Police", "Reality Guards"], correctIndex: 0 },
+    { question: "What is the name of the snake planet's terminator?", options: ["Snake Terminator", "Robo-Snake", "Sslither", "Cobra-Bot"], correctIndex: 0 },
+    { question: "What is the name of the alien race that wars with the 'nipple-people'?", options: ["Target-nippled people", "Cone-nippled people", "Ring-nippled people", "Flat-nippled people"], correctIndex: 0 },
+    { question: "What is the name of the substance that Rick and Morty smuggle through customs in the pilot?", options: ["Mega Seeds", "Kalaxian Crystals", "Isotope 322", "Dark Matter"], correctIndex: 0 },
+    { question: "What is the name of the lawyer Morty asks for in the crystal trial?", options: ["Judge Morty", "Lawyer Morty", "Pog", "Meeseeks"], correctIndex: 0 },
+    { question: "What is the name of the planet where Rick uses the bathroom?", options: ["The Shy Pooper planet", "Toilet World", "Privacy Planet", "Restroom Realm"], correctIndex: 0 }
+  ]
+};
 
 
 ;
@@ -5590,6 +5658,7 @@ const QUESTION_BANKS = {
     theoffice: theOfficeBank,
     blackmirror: blackMirrorBank,
     peakyblinders: peakyBlindersBank,
+    rickandmorty: rickandmortyBank,
     thecrown: theCrownBank,
     succession: successionBank,
     madmen: madMenBank,
@@ -5791,6 +5860,11 @@ const CATEGORY_DESCRIPTIONS = {
         title: "Stranger Things", 
         short: "Demogorgons, the Upside Down, and 1980s Indiana.", 
         long: "Transport yourself to Hawkins, Indiana. This quiz covers the mythology of the Upside Down, the powers of Eleven, the specific details of the 1980s pop culture references, and the complex friendships that hold the group together. Don't let the shadow monster distract you—accurate recall is critical."
+    },
+    rickandmorty: {
+        title: "Rick and Morty",
+        short: "Interdimensional adventures with the smartest man in the universe.",
+        long: "Get ready for high-concept sci-fi rigmarole! This category tests your knowledge of the multiverse, from Dimension C-137 to the Citadel of Ricks. We cover the inventions of Rick Sanchez, the anxieties of Morty Smith, and the struggles of the rest of the Smith family. Expect questions about specific alien species, memorable quotes, and the philosophical themes hidden beneath the burps and portal fluid."
     },
     derry: {
         title: "Welcome to Derry",
@@ -6130,6 +6204,14 @@ const CATEGORY_CONFIG = {
     img: "assets/strangerthings.webp",
     desc: "Enter the Upside Down. Trivia on Eleven, the Demogorgon, Hawkins Lab, and 80s nostalgia.",
     longDesc: "Grab your walkie-talkie and get to the basement! This category explores the supernatural mysteries of Hawkins, Indiana. We cover the Dungeons & Dragons lore that inspires the monster names, the experiments conducted on Eleven at Hawkins Lab, and the history of the Upside Down. Questions will test your memory of the Mind Flayer, Vecna, and the Russian involvement. We also dive into the 80s pop culture references, the relationships between the party members, and the heroic moments of Steve 'The Hair' Harrington."
+  },
+  rickandmorty: {
+    label: "Rick and Morty",
+    icon: "🧪",
+    pill: "Animation",
+    group: "tv",
+    img: "assets/rickandmorty.png",
+    desc: "Wubba Lubba Dub Dub! Trivia on Rick, Morty, and their interdimensional adventures."
   },
   derry: {
     label: "Welcome to Derry",
