@@ -1,8 +1,9 @@
 /* ============================================================
-   QUIZREALM • UNIVERSAL GAME ENGINE (HYBRID V7 - GHOST DATA FIX)
-   - Fixed: 'lastLogin' was never updating
-   - Fixed: 'heroes' collection now gets Server Timestamps
-   - Fixed: Ghost profiles now sync correctly to 'heroes'
+   QUIZREALM • UNIVERSAL GAME ENGINE (HYBRID V8 - IDENTITY PROTOCOL)
+   - Added: Mandatory Nickname / Login Popup
+   - Added: Random Name Generator
+   - Added: Google Auth Integration
+   - Fixed: User data now saves Nickname instead of "Anonymous"
    ============================================================ */
 
 (function () {
@@ -24,11 +25,15 @@
         { lvl: 100, title: "The Singularity" }
     ];
 
+    // Random Name Assets
+    const NAME_ADJECTIVES = ["Neon", "Cyber", "Rogue", "Void", "Iron", "Shadow", "Crimson", "Electric", "Silent", "Rapid"];
+    const NAME_NOUNS = ["Wolf", "Ghost", "Glitch", "Blade", "Viper", "Phantom", "Ronin", "Stalker", "Surfer", "Titan"];
+
     // 2. INTERNAL ENGINE STATE
     const Engine = {
         state: {
             uid: null,
-            isAnonymous: false, // Added to track Ghost Status
+            isAnonymous: false, 
             nickname: null,
             avatarSeed: "Player",
             xp: 0,
@@ -36,7 +41,7 @@
             rank: "The Drifter",
             badges: [],
             streak: 0,
-            lastLogin: null, // This will now be updated
+            lastLogin: null, 
             lastDailyDate: null,
             coins: 0
         },
@@ -71,29 +76,154 @@
                     if (firebaseUser) {
                         console.log("👤 User Connected:", firebaseUser.uid);
                         
-                        // --- FIX: UPDATE STATE IMMEDIATELY ---
-                      this.state.uid = firebaseUser.uid;
-
-                        // --- LINK WITH UX CORE ---
-                        // This ensures the tracker script uses the exact same ID as the Game Engine
+                        this.state.uid = firebaseUser.uid;
                         localStorage.setItem('qr_persistent_uid', firebaseUser.uid); 
 
                         this.state.isAnonymous = firebaseUser.isAnonymous;
                         this.state.lastLogin = new Date().toISOString();
                         
-                        // 1. Ensure Ghost Profile Exists in BOTH collections
-                        await this._checkGhostProfile(firebaseUser);
+                        // If user has a Google Display Name, use it automatically
+                        if (!this.state.nickname && firebaseUser.displayName) {
+                            this.state.nickname = firebaseUser.displayName;
+                        }
 
-                        // 2. Sync Stats
+                        // 1. Sync Stats from Cloud
                         await this._syncWithCloud(firebaseUser);
+
+                        // 2. CHECK IDENTITY (Trigger Popup if needed)
+                        this._enforceIdentityProtocol();
+
+                        // 3. Update Ghost Profile in Background
+                        await this._checkGhostProfile(firebaseUser);
                         
                     } else {
+                        // User signed out
                         this.updateHeaderUI();
                         this.updateProfileUI();
+                        // Trigger login prompt again if they sign out on a protected page
+                        // Optional: this._enforceIdentityProtocol(); 
                     }
                 });
             } catch (err) { console.error("Auth Listener Error:", err); }
         },
+
+        // --------------------------------------------------------
+        // 🆕 IDENTITY PROTOCOL (NICKNAME POPUP)
+        // --------------------------------------------------------
+        _enforceIdentityProtocol() {
+            // If we have a valid nickname that isn't the default "Ghost Guest" or null, we are good.
+            if (this.state.nickname && this.state.nickname !== "Ghost Guest" && this.state.nickname !== "Player") {
+                return;
+            }
+
+            // Otherwise, Show the Popup
+            this._renderIdentityPopup();
+        },
+
+        _renderIdentityPopup() {
+            // Check if popup already exists
+            if (document.getElementById('qr-identity-popup')) return;
+
+            const popup = document.createElement('div');
+            popup.id = 'qr-identity-popup';
+            popup.className = "fixed inset-0 z-[20000] flex items-center justify-center bg-black/95 backdrop-blur-md animate-fade-in";
+            
+            popup.innerHTML = `
+                <div class="relative w-full max-w-md bg-[#0f172a] border border-blue-500/30 rounded-2xl shadow-[0_0_50px_rgba(59,130,246,0.2)] p-6 md:p-8 overflow-hidden">
+                    
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500"></div>
+                    <div class="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
+
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-black text-white font-header uppercase tracking-wider mb-2">Identify Yourself</h2>
+                        <p class="text-slate-400 text-sm">Enter the Realm. Choose a callsign or sign in to save your progress forever.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <input type="text" id="qr-nick-input" placeholder="Enter Nickname..." maxlength="15"
+                                class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white text-center font-bold tracking-wide focus:outline-none focus:border-blue-500 transition-colors placeholder:text-slate-600 uppercase">
+                            
+                            <button id="qr-btn-random" class="absolute right-2 top-2 bottom-2 px-3 bg-white/5 hover:bg-white/10 rounded-lg text-xs text-blue-400 font-bold uppercase transition" title="Generate Random">
+                                <i class="fas fa-dice"></i> Random
+                            </button>
+                        </div>
+
+                        <button id="qr-btn-confirm" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-widest shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98]">
+                            Enter as Guest
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-3 my-6">
+                        <div class="h-[1px] bg-white/10 flex-1"></div>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase">Or Secure Your Data</span>
+                        <div class="h-[1px] bg-white/10 flex-1"></div>
+                    </div>
+
+                    <button id="qr-btn-google" class="w-full py-3 rounded-xl bg-white text-black font-bold uppercase tracking-wide flex items-center justify-center gap-3 hover:bg-slate-200 transition-colors">
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
+                        Sign In with Google
+                    </button>
+
+                    <p class="text-[10px] text-center text-slate-600 mt-4">
+                        *If you skip, you remain a Ghost. Data may be lost on browser clear.
+                    </p>
+                </div>
+            `;
+
+            document.body.appendChild(popup);
+
+            // --- EVENT LISTENERS ---
+            
+            // 1. Random Name Generator
+            document.getElementById('qr-btn-random').onclick = () => {
+                const adj = NAME_ADJECTIVES[Math.floor(Math.random() * NAME_ADJECTIVES.length)];
+                const noun = NAME_NOUNS[Math.floor(Math.random() * NAME_NOUNS.length)];
+                const num = Math.floor(Math.random() * 99);
+                document.getElementById('qr-nick-input').value = `${adj}_${noun}_${num}`;
+            };
+
+            // 2. Confirm Guest Nickname
+            document.getElementById('qr-btn-confirm').onclick = async () => {
+                const input = document.getElementById('qr-nick-input');
+                let name = input.value.trim();
+                
+                if (!name) return; // Do nothing if empty
+                if (name.length > 15) name = name.substring(0, 15);
+
+                // Update State
+                this.state.nickname = name;
+                
+                // Force Update Database
+                await this._checkGhostProfile({ uid: this.state.uid, isAnonymous: true, displayName: name });
+                await this._saveCloudSafe();
+                
+                // Update UI
+                this.updateHeaderUI();
+                this.updateProfileUI();
+
+                // Close Popup
+                popup.remove();
+                this.showToast("Identity Confirmed", `Welcome, ${name}`);
+            };
+
+            // 3. Google Sign In
+            document.getElementById('qr-btn-google').onclick = async () => {
+                try {
+                    const provider = new window.firebase.auth.GoogleAuthProvider();
+                    await window.auth.signInWithPopup(provider);
+                    // The onAuthStateChanged listener will handle the rest (closing popup, syncing data)
+                    popup.remove();
+                } catch (e) {
+                    console.error("Google Sign In Failed", e);
+                    alert("Sign in failed. Please try again.");
+                }
+            };
+        },
+
+        // --------------------------------------------------------
+        // DATA & PROFILE LOGIC
+        // --------------------------------------------------------
 
         async _checkGhostProfile(user) {
             if (!window.doc || !window.getDoc || !window.setDoc) return;
@@ -101,25 +231,20 @@
             // A. Update 'users' collection (Legal/Device Data)
             const userRef = window.doc(window.db, "users", user.uid);
             try {
-                const snap = await window.getDoc(userRef);
-                
-                // Always update 'lastActive' even if profile exists
+                // If we have a nickname in state, use it. Otherwise use user.displayName, otherwise fallback.
+                const currentName = this.state.nickname || user.displayName || "Ghost Guest";
+
                 const ghostData = {
                     uid: user.uid,
                     isAnonymous: user.isAnonymous,
                     lastActive: new Date().toISOString(),
-                    nickname: user.isAnonymous ? "Ghost Guest" : (user.displayName || "Hero"),
+                    nickname: currentName, // THIS IS THE KEY FIX
                     deviceModel: navigator.userAgent, 
                     platform: navigator.platform,
                     screenRes: `${window.screen.width}x${window.screen.height}`
                 };
 
-                if (!snap.exists()) {
-                    ghostData.joinedAt = new Date().toISOString(); // Only set join date once
-                    console.log("👻 Creating New Ghost Profile...");
-                }
-
-                // Merge true ensures we don't overwrite existing fields like 'joinedAt' if they exist
+                // Merge true ensures we don't overwrite existing fields like 'joinedAt'
                 await window.setDoc(userRef, ghostData, { merge: true });
 
             } catch (e) { console.warn("Ghost profile check skipped:", e); }
@@ -139,6 +264,8 @@
                     total: totalQuestions,
                     xpEarned: this.state.xp,
                     timestamp: serverTimestamp(),
+                    // Save nickname with the score for leaderboards later
+                    playerNickname: this.state.nickname || "Anonymous", 
                     avgReactionTime: extraStats.avgTime || 0,
                     ghostClicks: extraStats.ghostClicks || 0,
                     deviceModel: navigator.userAgent,
@@ -182,17 +309,20 @@
                 this.state = {
                     ...this.state,
                     ...cloudData,
-                    // Keep the highest values to prevent data loss on device switch
+                    // Keep the highest values
                     xp: Math.max(this.state.xp || 0, cloudData.xp || 0),
                     streak: Math.max(this.state.streak || 0, cloudData.streak || 0),
                     badges: [...new Set([...(cloudData.badges||[]), ...(this.state.badges||[])])]
                 };
+                
+                // If cloud has a nickname, adopt it
+                if (cloudData.nickname) {
+                    this.state.nickname = cloudData.nickname;
+                }
             }
             
             this._recalculateLevel(false); 
             this._saveLocal();
-            
-            // --- FIX: Force Cloud Update Immediately ---
             this._saveCloudSafe(); 
 
             this.updateHeaderUI();
@@ -203,16 +333,15 @@
             if (!this.state.uid || !window.setDoc) return;
             
             try {
-                // Dynamically import serverTimestamp for accuracy
                 const { serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
                 
                 const ref = window.doc(window.db, "heroes", this.state.uid);
                 
-                // We construct the payload manually to ensure timestamps are added
                 const payload = {
                     ...this.state,
-                    lastSynced: serverTimestamp(), // Takes server time
-                    clientTime: new Date().toISOString() // Takes device time (good for checking timezones)
+                    nickname: this.state.nickname || "Anonymous", // Ensure nickname is saved
+                    lastSynced: serverTimestamp(), 
+                    clientTime: new Date().toISOString() 
                 };
 
                 await window.setDoc(ref, payload, { merge: true });
@@ -365,7 +494,7 @@
                 const s = this.state;
                 const map = {
                     "profileLevel": s.level, "profileRank": s.rank, "profileXP": `${(s.xp || 0).toLocaleString()} XP`,
-                    "profileName": s.nickname || "QuizRealm Hero", "statScore": (s.xp || 0).toLocaleString(),
+                    "profileName": s.nickname || "Ghost Guest", "statScore": (s.xp || 0).toLocaleString(),
                     "statStreak": s.streak || 0, "statBadges": s.badges?.length || 0,
                     "resScore": s.xp 
                 };
@@ -401,7 +530,7 @@
     };
 
     // ------------------------------------------------------------
-    // BACKWARD COMPATIBILITY & EXPORT
+    // EXPORT
     // ------------------------------------------------------------
     Object.defineProperty(Engine, "xp", {
         get() { return Engine.state.xp || 0; },
