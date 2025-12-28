@@ -1,9 +1,9 @@
 /* ==========================================================================
-   QUIZREALM • GAME ENGINE CORE (ENTERPRISE EDITION V16)
+   QUIZREALM • GAME ENGINE CORE (ENTERPRISE V16.1)
    --------------------------------------------------------------------------
-   • Architecture: Modular State Management
-   • Features: Hybrid Sync, XP Queue, Achievement System, Fail-Safe Logging
-   • Security: Throttled Writes, Local Fallback
+   • Fix: Restored "Identity Popup" for new players.
+   • Architecture: Modular State Management (Auth, Cloud, Local, UI).
+   • Stability: Handles network failures and quotas gracefully.
    ========================================================================== */
 
 (function () {
@@ -12,10 +12,9 @@
     // --- CONFIGURATION ---
     const CONFIG = {
         STORAGE_KEY: "QR_PROFILE",
-        BACKUP_KEY: "QR_BACKUP_V1",
-        CLOUD_SAVE_DELAY: 15000, // 15s Throttle (Aggressive but safe)
+        CLOUD_SAVE_DELAY: 15000, 
         DEBUG: true,
-        VERSION: "16.0.0"
+        VERSION: "16.1.0"
     };
 
     // --- CONSTANTS ---
@@ -51,14 +50,11 @@
         streak: 0,
         coins: 0,
         badges: [],
-        lastLogin: Date.now(),
-        settings: { sound: true, haptics: true }
+        lastLogin: Date.now()
     };
 
-    // --- INTERNAL VARS ---
     let _lastCloudSave = 0;
     let _isSaving = false;
-    let _pendingXP = 0; // Queue for XP if network fails
 
     // ==========================================================================
     // MODULE: CORE ENGINE
@@ -68,20 +64,24 @@
         init() {
             this.log("🚀 Initializing Engine v" + CONFIG.VERSION);
             
-            // 1. Load Local Data Immediately
+            // 1. Load Local Data
             LocalManager.load();
             this._recalculateLevel(false);
             
-            // 2. Setup Event Listeners
+            // 2. Check Identity (Fix: Show Popup if default name)
+            if (!State.nickname || State.nickname === "Guest Hero") {
+                UIManager.showIdentityModal();
+            }
+
+            // 3. Setup Listeners
             this._setupWindowListeners();
             
-            // 3. Initialize UI
+            // 4. Initialize UI
             this.updateHeaderUI();
             
-            // 4. Connect to Cloud (Lazy Load)
+            // 5. Connect to Cloud
             this._waitForFirebase();
 
-            // 5. Expose Global API
             window.GameEngine = this;
         },
 
@@ -89,7 +89,7 @@
             if (CONFIG.DEBUG) console.log(`[QR-Engine] ${msg}`, data);
         },
 
-        // --- AUTHENTICATION HANDLER ---
+        // --- AUTH ---
         _waitForFirebase() {
             let attempts = 0;
             const check = setInterval(() => {
@@ -100,7 +100,6 @@
                     this._attachAuthListener();
                 } else if (attempts > 50) {
                     clearInterval(check);
-                    console.warn("[QR-Engine] Firebase unavailable. Running in OFFLINE MODE.");
                 }
             }, 200);
         },
@@ -109,21 +108,10 @@
             try {
                 window.auth.onAuthStateChanged(async (user) => {
                     if (user) {
-                        this.log("👤 User Authenticated:", user.uid);
                         State.uid = user.uid;
                         State.isAnonymous = user.isAnonymous;
-                        
-                        // Sync Phase
                         await CloudManager.syncDown();
-                        
-                        // If user is brand new (no nickname), set one
-                        if (!State.nickname || State.nickname === "Guest Hero") {
-                            if (user.displayName) State.nickname = user.displayName;
-                            else State.nickname = Utils.generateName();
-                            CloudManager.syncUp(true); // Force save init data
-                        }
                     } else {
-                        this.log("👻 Guest Mode Active");
                         State.uid = null;
                         State.isAnonymous = true;
                     }
@@ -132,36 +120,26 @@
             } catch (e) { console.error("Auth Listener Failed:", e); }
         },
 
-        // --- XP & LEVELING SYSTEM ---
+        // --- XP & LEVELING ---
         addXP(amount) {
             const val = Number(amount);
             if (!val || val <= 0) return;
 
             const oldLevel = State.level;
-            
-            // Update State
             State.xp += val;
             State.coins = Math.floor(State.xp / 10);
             
             this.log(`✨ XP Gained: +${val}. Total: ${State.xp}`);
-
-            // Level Calc
             this._recalculateLevel(true);
 
-            // Save Pipeline
             LocalManager.save();
             CloudManager.queueSave();
-            
-            // UI Feedback
             this.updateHeaderUI();
             UIManager.showToast(`+${val} XP`, `Total: ${State.xp}`);
         },
 
         _recalculateLevel(animate) {
             const oldLevel = State.level;
-            
-            // Formula: Level = Sqrt(XP / 100)
-            // Example: 100xp = Lvl 1, 400xp = Lvl 2, 10000xp = Lvl 10
             const rawLevel = Math.floor(Math.sqrt(State.xp / 100));
             const newLevel = Math.max(1, rawLevel);
             
@@ -169,9 +147,8 @@
             State.rank = this._getRankTitle(newLevel);
 
             if (animate && newLevel > oldLevel) {
-                this.log("🎉 LEVEL UP!");
                 UIManager.showLevelUp(newLevel, State.rank);
-                CloudManager.syncUp(true); // Force save on level up
+                CloudManager.syncUp(true); 
             }
         },
 
@@ -183,195 +160,132 @@
             return currentTitle;
         },
 
-        // --- ACHIEVEMENT SYSTEM ---
+        // --- ACHIEVEMENTS ---
         unlockAchievement(badgeId) {
             if (!badgeId) return;
             if (!State.badges) State.badges = [];
 
-            // Check duplicate
-            if (State.badges.includes(badgeId)) {
-                this.log("🏆 Badge already unlocked:", badgeId);
-                return;
-            }
+            if (State.badges.includes(badgeId)) return;
 
-            // Unlock
             State.badges.push(badgeId);
-            this.log("🏆 NEW BADGE:", badgeId);
-            
-            // Reward
             this.addXP(250); 
             
-            // Save & Notify
             LocalManager.save();
             CloudManager.syncUp(true);
             UIManager.showToast("Achievement Unlocked!", badgeId.replace(/_/g, " ").toUpperCase());
         },
 
-        // --- GAME RESULT HANDLER (CRITICAL) ---
+        // --- GAME RESULTS ---
         async saveGameResult(gameName, score, total, extra = {}) {
             this.log(`📝 Saving Result: ${gameName} [${score}/${total}]`);
 
-            // 1. Instant Gratification (Local XP)
             const xpReward = (Number(score) || 0) * 10;
             if (xpReward > 0) this.addXP(xpReward);
 
-            // 2. Cloud History (Fire & Forget Logic)
             if (State.uid && window.db) {
                 try {
-                    // Dynamic import to prevent crash if network is flaky
                     const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
                     
-                    const historyPayload = {
+                    await addDoc(collection(window.db, "users", State.uid, "history"), {
                         game: gameName,
                         score: Number(score),
                         total: Number(total),
                         xpEarned: xpReward,
                         timestamp: serverTimestamp(),
                         playerNickname: State.nickname,
-                        difficulty: extra.difficulty || 'Normal',
-                        platform: navigator.platform || 'Web'
-                    };
-
-                    // We do NOT await this heavily to prevent UI blocking
-                    addDoc(collection(window.db, "users", State.uid, "history"), historyPayload)
-                        .then(() => this.log("✅ History Saved to Cloud"))
-                        .catch(err => this.log("⚠️ History Save Failed (Quota?):", err.message));
-                        
+                        difficulty: extra.difficulty || 'Normal'
+                    });
                 } catch (err) {
-                    console.error("Cloud SDK Error:", err);
+                    console.error("Cloud Save Warning:", err);
                 }
             }
-
-            return true; // Always return true to let game continue
+            return true;
         },
 
-        // --- UI BINDINGS ---
         updateHeaderUI() {
-            // Helper to safe-set text
             const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
-            
             set("headerLevel", State.level);
             set("headerXP", State.xp);
             set("headerCoins", State.coins.toLocaleString());
-            
             const img = document.getElementById("headerAvatar");
             if(img) img.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(State.avatarSeed)}`;
         },
 
         _setupWindowListeners() {
-            // Listen for cross-tab updates
             window.addEventListener('storage', (e) => {
                 if (e.key === CONFIG.STORAGE_KEY) {
-                    this.log("🔄 Detected storage change from another tab. Reloading...");
                     LocalManager.load();
                     this.updateHeaderUI();
                 }
             });
-            
-            // Listen for custom events
             window.addEventListener('userUpdate', () => {
                 LocalManager.load();
                 this.updateHeaderUI();
             });
         },
 
-        // Public Accessor
         getUserSnapshot() { return { ...State }; }
     };
 
     // ==========================================================================
-    // MODULE: LOCAL MANAGER (Persistence)
+    // MODULE: LOCAL MANAGER
     // ==========================================================================
     const LocalManager = {
         save() {
             try {
                 const json = JSON.stringify(State);
                 localStorage.setItem(CONFIG.STORAGE_KEY, json);
-                // Backup for safety
-                if (Math.random() > 0.8) localStorage.setItem(CONFIG.BACKUP_KEY, json); 
-            } catch (e) { console.error("Local Save Error:", e); }
+            } catch (e) {}
         },
-
         load() {
             try {
                 const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
-                if (raw) {
-                    const data = JSON.parse(raw);
-                    // Deep merge to ensure no missing keys
-                    Object.assign(State, data);
-                }
-            } catch (e) {
-                console.warn("Corrupt local data, resetting state.");
-                localStorage.removeItem(CONFIG.STORAGE_KEY);
-            }
-        },
-        
-        reset() {
-            localStorage.removeItem(CONFIG.STORAGE_KEY);
-            localStorage.removeItem(CONFIG.BACKUP_KEY);
+                if (raw) Object.assign(State, JSON.parse(raw));
+            } catch (e) {}
         }
     };
 
     // ==========================================================================
-    // MODULE: CLOUD MANAGER (Firebase)
+    // MODULE: CLOUD MANAGER
     // ==========================================================================
     const CloudManager = {
-        
         async syncDown() {
             if (!State.uid || !window.db) return;
-            
             try {
                 const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-                const ref = doc(window.db, "heroes", State.uid);
-                const snap = await getDoc(ref);
+                const snap = await getDoc(doc(window.db, "heroes", State.uid));
 
                 if (snap.exists()) {
                     const cloudData = snap.data();
-                    Engine.log("☁️ Cloud Data Received", cloudData);
-                    
-                    // SMART MERGE STRATEGY
-                    // 1. Take MAX of XP (prevents progress loss)
                     State.xp = Math.max(State.xp, cloudData.xp || 0);
                     State.coins = Math.max(State.coins, cloudData.coins || 0);
                     
-                    // 2. Take Cloud Strings if valid
                     if (cloudData.nickname) State.nickname = cloudData.nickname;
                     if (cloudData.avatarSeed) State.avatarSeed = cloudData.avatarSeed;
                     
-                    // 3. Merge Arrays (Badges)
-                    if (cloudData.badges && Array.isArray(cloudData.badges)) {
-                        const merged = new Set([...State.badges, ...cloudData.badges]);
-                        State.badges = Array.from(merged);
+                    if (cloudData.badges) {
+                        State.badges = Array.from(new Set([...State.badges, ...cloudData.badges]));
                     }
 
-                    LocalManager.save(); // Update local with new cloud data
+                    LocalManager.save();
                     Engine._recalculateLevel(false);
                 }
-            } catch (e) {
-                console.warn("Cloud Sync Down Failed:", e);
-            }
+            } catch (e) {}
         },
 
         queueSave() {
             const now = Date.now();
-            if (now - _lastCloudSave < CONFIG.CLOUD_SAVE_DELAY) {
-                // Too soon, skip unless critical. Data is safe in LocalStorage.
-                return;
-            }
+            if (now - _lastCloudSave < CONFIG.CLOUD_SAVE_DELAY) return;
             this.syncUp(false);
         },
 
         async syncUp(force) {
-            if (!State.uid || !window.db) return;
-            if (_isSaving) return;
-
+            if (!State.uid || !window.db || _isSaving) return;
             _isSaving = true;
             
             try {
                 const { doc, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-                const ref = doc(window.db, "heroes", State.uid);
-                
-                const payload = {
+                await setDoc(doc(window.db, "heroes", State.uid), {
                     nickname: State.nickname,
                     avatarSeed: State.avatarSeed,
                     xp: State.xp,
@@ -379,97 +293,100 @@
                     rank: State.rank,
                     coins: State.coins,
                     badges: State.badges,
-                    lastSynced: serverTimestamp(),
-                    clientVersion: CONFIG.VERSION
-                };
-
-                await setDoc(ref, payload, { merge: true });
-                
+                    lastSynced: serverTimestamp()
+                }, { merge: true });
                 _lastCloudSave = Date.now();
-                Engine.log("☁️ Cloud Save Complete");
-                
-            } catch (e) {
-                console.error("Cloud Save Failed:", e);
-                // Fail silently, user has local data
-            } finally {
-                _isSaving = false;
-            }
+            } catch (e) {} finally { _isSaving = false; }
         }
     };
 
     // ==========================================================================
-    // MODULE: UI MANAGER (Visuals)
+    // MODULE: UI MANAGER (POPUP RESTORED)
     // ==========================================================================
     const UIManager = {
-        showToast(title, msg) {
-            const id = 'toast-' + Date.now();
-            const div = document.createElement("div");
-            div.id = id;
-            div.className = "fixed bottom-5 right-5 z-[9999] bg-slate-900 border border-slate-700 p-4 rounded-xl shadow-2xl flex items-center gap-4 animate-bounce";
-            div.innerHTML = `
-                <div class="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <div>
-                    <h4 class="font-bold text-white text-xs uppercase tracking-wide">${title}</h4>
-                    <p class="text-xs text-slate-400 mt-0.5">${msg}</p>
-                </div>
-            `;
-            document.body.appendChild(div);
+        showIdentityModal() {
+            if (document.getElementById('qr-identity-popup')) return;
             
-            // Cleanup
-            setTimeout(() => {
-                const el = document.getElementById(id);
-                if(el) {
-                    el.style.opacity = '0';
-                    setTimeout(() => el.remove(), 500);
-                }
-            }, 3000);
+            const popup = document.createElement('div');
+            popup.id = 'qr-identity-popup';
+            popup.className = "fixed inset-0 z-[20000] flex items-center justify-center bg-black/95 backdrop-blur-md animate-fade-in";
+            popup.innerHTML = `
+                <div class="relative w-full max-w-md bg-[#0f172a] border border-blue-500/30 rounded-2xl shadow-2xl p-8 m-4">
+                    <h2 class="text-2xl font-black text-white text-center mb-2">IDENTIFY YOURSELF</h2>
+                    <p class="text-slate-400 text-sm text-center mb-6">Enter a callsign to track your stats.</p>
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <input type="text" id="qr-nick-input" placeholder="Nickname..." maxlength="15"
+                                class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white text-center font-bold uppercase focus:border-blue-500 outline-none">
+                            <button id="qr-btn-random" class="absolute right-2 top-2 bottom-2 px-3 bg-white/5 rounded text-xs text-blue-400 font-bold hover:bg-white/10">RND</button>
+                        </div>
+                        <button id="qr-btn-confirm" class="w-full py-3 rounded-xl bg-blue-600 text-white font-bold uppercase shadow-lg hover:bg-blue-500 transition">Confirm Identity</button>
+                    </div>
+                    <div class="my-4 text-center">
+                        <button id="qr-btn-google" class="text-xs text-slate-400 underline hover:text-white transition">Or Sign In with Google</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(popup);
+
+            // 1. Random Name Logic
+            const input = document.getElementById('qr-nick-input');
+            input.value = Utils.generateName(); // Pre-fill with random name
+
+            document.getElementById('qr-btn-random').onclick = () => {
+                input.value = Utils.generateName();
+            };
+
+            // 2. Confirm Logic
+            document.getElementById('qr-btn-confirm').onclick = () => {
+                const name = input.value.trim() || "Ghost_Agent";
+                State.nickname = name.substring(0, 15);
+                LocalManager.save();
+                CloudManager.syncUp(true);
+                Engine.updateHeaderUI();
+                
+                // Also update profile UI if on profile page
+                const profileName = document.getElementById('profileName');
+                if(profileName) profileName.textContent = State.nickname;
+
+                popup.remove();
+            };
+
+            // 3. Google Login Logic (Dynamic Import Fix)
+            document.getElementById('qr-btn-google').onclick = async () => {
+                try {
+                    const { signInWithPopup, GoogleAuthProvider } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+                    const provider = new GoogleAuthProvider();
+                    await signInWithPopup(window.auth, provider);
+                    popup.remove();
+                } catch (e) { alert("Login failed: " + e.message); }
+            };
+        },
+
+        showToast(title, msg) {
+            const div = document.createElement("div");
+            div.className = "fixed bottom-5 right-5 z-[9999] bg-slate-900 border border-slate-700 p-4 rounded-xl shadow-2xl flex items-center gap-4 animate-bounce";
+            div.innerHTML = `<div class="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400"><i class="fas fa-bell"></i></div><div><h4 class="font-bold text-white text-xs uppercase">${title}</h4><p class="text-xs text-slate-400">${msg}</p></div>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
         },
 
         showLevelUp(level, rank) {
-            const overlay = document.createElement('div');
-            overlay.className = "fixed inset-0 z-[10000] flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fade-in cursor-pointer";
-            overlay.onclick = () => overlay.remove();
-            
-            overlay.innerHTML = `
-                <div class="text-center animate-bounce">
-                    <h2 class="text-yellow-400 font-bold text-xl mb-4 tracking-[0.3em] uppercase">Level Up!</h2>
-                    <div class="relative inline-block">
-                        <div class="absolute inset-0 bg-blue-500 blur-3xl opacity-20 rounded-full"></div>
-                        <div class="text-9xl font-black text-white relative z-10 drop-shadow-2xl">${level}</div>
-                    </div>
-                    <div class="mt-6">
-                        <div class="text-slate-500 text-xs uppercase tracking-widest mb-1">New Rank Unlocked</div>
-                        <div class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 uppercase tracking-widest border-t border-white/10 pt-2">${rank}</div>
-                    </div>
-                    <p class="text-slate-600 text-[10px] mt-12 animate-pulse">Tap anywhere to continue</p>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-            
-            // Audio Effect (Optional)
-            try {
-                const audio = new Audio('assets/levelup.mp3'); // Ensure this file exists or remove this block
-                audio.volume = 0.5;
-                audio.play().catch(() => {});
-            } catch(e) {}
+            const div = document.createElement("div");
+            div.className = "fixed inset-0 z-[10000] flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fade-in cursor-pointer";
+            div.onclick = () => div.remove();
+            div.innerHTML = `<div class="text-center animate-bounce"><h2 class="text-yellow-400 font-bold text-xl mb-4 tracking-[0.3em] uppercase">Level Up!</h2><div class="text-9xl font-black text-white relative z-10 drop-shadow-2xl">${level}</div><div class="mt-6"><div class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 uppercase tracking-widest border-t border-white/10 pt-2">${rank}</div></div></div>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
         }
     };
 
-    // ==========================================================================
-    // MODULE: UTILITIES
-    // ==========================================================================
     const Utils = {
         generateName() {
             const a = NAME_GEN.adj[Math.floor(Math.random() * NAME_GEN.adj.length)];
             const n = NAME_GEN.noun[Math.floor(Math.random() * NAME_GEN.noun.length)];
-            const num = Math.floor(Math.random() * 999);
-            return `${a} ${n} ${num}`;
+            return `${a} ${n} ${Math.floor(Math.random() * 999)}`;
         }
     };
 
-    // --- BOOTSTRAP ---
     Engine.init();
-
 })();
