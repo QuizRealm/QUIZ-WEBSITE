@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Ick Factor • Cringe Audit | QuizRealm</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+    <script type="module" src="game-engine.js"></script>
+    <script type="module" src="assets/ux-core.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        'display': ['Unbounded', 'sans-serif'], 
+                        'sans': ['Space Grotesk', 'sans-serif'] 
+                    },
+                    colors: { 
+                        'ick-pink': '#ff006e',
+                        'ick-yellow': '#fbff00',
+                        'ick-black': '#111111'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #ff006e; color: #111111; font-family: 'Space Grotesk', sans-serif; }
+        
+        .neo-brutalism {
+            background: white;
+            border: 4px solid #111111;
+            box-shadow: 8px 8px 0px #111111;
+        }
+
+        .option-btn {
+            background: #fbff00;
+            border: 3px solid #111111;
+            box-shadow: 4px 4px 0px #111111;
+            transition: all 0.2s;
+        }
+        .option-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px #111111;
+        }
+        .option-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #111111;
+        }
+
+        .progress-bar { background: #111111; height: 12px; border: 3px solid #111111; overflow: hidden; }
+        .progress-fill { background: #fbff00; height: 100%; width: 0%; transition: width 0.4s ease; }
+
+        .shimmer {
+            background: linear-gradient(90deg, #ff006e, #fbff00, #ff006e);
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen selection:bg-ick-yellow">
+    <quiz-header style="color: #111111;"></quiz-header>
+
+    <main class="flex-grow w-full max-w-2xl mx-auto px-6 py-12 lg:py-24">
+
+        <div id="start-screen" class="text-center space-y-8">
+            <div class="inline-block p-4 neo-brutalism rotate-3 mb-6">
+                <h1 class="font-display text-5xl md:text-7xl font-black uppercase italic leading-none">
+                    The <br> <span class="bg-ick-pink text-white px-2">Ick</span> <br> Factor.
+                </h1>
+            </div>
+
+            <p class="font-bold text-xl uppercase tracking-tighter max-w-xs mx-auto">
+                How easily do you get the 'Ick'? Let's measure your petty tolerance levels.
+            </p>
+
+            <button onclick="window.startQuiz()" class="option-btn px-12 py-5 text-xl font-display uppercase italic tracking-tighter w-full">
+                Judge Me
+            </button>
+        </div>
+
+        <div id="quiz-interface" class="hidden space-y-10">
+            <div class="space-y-2">
+                <div class="flex justify-between font-display text-[10px] uppercase font-black">
+                    <span id="q-category">Judgment Phase</span>
+                    <span id="progress-text">01 / 13</span>
+                </div>
+                <div class="progress-bar"><div id="progress-bar" class="progress-fill"></div></div>
+            </div>
+
+            <h2 id="question-text" class="font-display text-2xl md:text-4xl uppercase leading-none border-b-4 border-ick-black pb-8">
+                Loading...
+            </h2>
+
+            <div id="options-container" class="grid grid-cols-1 gap-6"></div>
+        </div>
+
+        <div id="result-screen" class="hidden text-center space-y-10">
+            <div class="neo-brutalism p-8 space-y-4 -rotate-2">
+                <span class="font-display text-[10px] uppercase font-black bg-ick-pink text-white px-2">Diagnostic Result</span>
+                <h2 id="result-title" class="font-display text-4xl md:text-6xl uppercase italic leading-none">Archetype</h2>
+                <p id="result-summary" class="font-bold text-lg leading-tight uppercase">Summary...</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="neo-brutalism p-4">
+                    <div class="text-[10px] font-black uppercase mb-1">Pedantic</div>
+                    <div id="ped-val" class="font-display text-2xl">...</div>
+                </div>
+                <div class="neo-brutalism p-4">
+                    <div class="text-[10px] font-black uppercase mb-1">Tolerance</div>
+                    <div id="tol-val" class="font-display text-2xl">...</div>
+                </div>
+                <div class="neo-brutalism p-4">
+                    <div class="text-[10px] font-black uppercase mb-1">Cringe</div>
+                    <div id="cri-val" class="font-display text-2xl">...</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <button onclick="shareResult()" class="option-btn px-10 py-5 font-display uppercase italic text-sm">Share My Standards</button>
+                <a href="index-funnels.html" class="font-bold uppercase underline">Back to Reality</a>
+            </div>
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script type="module">
+        const questions = [
+            { q: "Someone runs to catch a bus but the driver pulls away as they reach the door. You:", cat: "Secondhand Embarrassment",
+              a: [
+                  { text: "Feel terrible for them. The driver is a villain.", scores: { cri: 0, ped: 0, tol: 30 } },
+                  { text: "Pure ICK. Why were they running like that?", scores: { cri: 30, ped: 10, tol: 0 } },
+                  { text: "Should have left the house earlier.", scores: { cri: 10, ped: 20, tol: 10 } }
+              ] 
+            },
+            { q: "A grown adult uses a 'baby voice' to talk to their pet in public. You:", cat: "Social Cringe",
+              a: [
+                  { text: "It's cute. They love their pet.", scores: { cri: 0, ped: 0, tol: 25 } },
+                  { text: "I need to leave this room immediately.", scores: { cri: 30, ped: 15, tol: 0 } },
+                  { text: "I Judge, but I don't leave.", scores: { cri: 15, ped: 10, tol: 10 } }
+              ] 
+            },
+            { q: "Someone claps when the airplane lands. You:", cat: "Public Standards",
+              a: [
+                  { text: "Celebrate! We made it!", scores: { cri: 0, ped: 0, tol: 30 } },
+                  { text: "Instant breakup/friendship termination.", scores: { cri: 40, ped: 20, tol: 0 } },
+                  { text: "Cringe in silence while staring at the floor.", scores: { cri: 20, ped: 10, tol: 5 } }
+              ] 
+            },
+            { q: "Your date's card gets declined while paying for dinner. You:", cat: "Romance",
+              a: [
+                  { text: "Pay it for them. No big deal, technology is glitchy.", scores: { cri: 0, ped: 0, tol: 30 } },
+                  { text: "The Ick has arrived. It's game over.", scores: { cri: 35, ped: 10, tol: 0 } },
+                  { text: "Awkwardly wait for them to call the bank.", scores: { cri: 15, ped: 20, tol: 5 } }
+              ] 
+            },
+            { q: "How do you feel about people who make 'Main Character' TikToks in public?", cat: "Digital Ick",
+              a: [
+                  { text: "Love the confidence! Content is king.", scores: { cri: 0, ped: 0, tol: 30 } },
+                  { text: "I pray for their downfall.", scores: { cri: 40, ped: 30, tol: 0 } },
+                  { text: "I watch from a distance with deep confusion.", scores: { cri: 20, ped: 10, tol: 10 } }
+              ] 
+            },
+            { q: "Someone uses the wrong 'your/you're' in a text. You:", cat: "Grammar",
+              a: [
+                  { text: "I didn't even notice.", scores: { cri: 0, ped: 0, tol: 30 } },
+                  { text: "Correct them immediately. It's basic literacy.", scores: { cri: 10, ped: 40, tol: 0 } },
+                  { text: "I notice, but I'm too polite to say anything.", scores: { cri: 5, ped: 20, tol: 15 } }
+              ] 
+            },
+            { q: "An adult is wearing Disney-themed clothing. You:", cat: "Aesthetic",
+              a: [
+                  { text: "Let people enjoy things.", scores: { cri: 0, ped: 0, tol: 30 } },
+                  { text: "Grow up. This is a red flag.", scores: { cri: 35, ped: 25, tol: 0 } },
+                  { text: "Not my style, but okay.", scores: { cri: 10, ped: 10, tol: 15 } }
+              ] 
+            },
+            { q: "Someone is eating with their mouth open. You:", cat: "Manners",
+              a: [
+                  { text: "Tune it out.", scores: { cri: 0, ped: 0, tol: 25 } },
+                  { text: "I am currently planning my exit strategy.", scores: { cri: 40, ped: 30, tol: 0 } },
+                  { text: "I stare at them until they stop.", scores: { cri: 20, ped: 20, tol: 5 } }
+              ] 
+            },
+            { q: "Singing along too loudly at a concert when they aren't even good:", cat: "Performance",
+              a: [
+                  { text: "They're having fun! Sing louder!", scores: { cri: 0, ped: 0, tol: 30 } },
+                  { text: "You are ruining the professional audio.", scores: { cri: 30, ped: 25, tol: 0 } },
+                  { text: "Move a few rows away.", scores: { cri: 15, ped: 10, tol: 10 } }
+              ] 
+            },
+            { q: "Someone refers to their coffee as a 'Bean Juice':", cat: "Language",
+              a: [
+                  { text: "Quirky! I love it.", scores: { cri: 0, ped: 0, tol: 25 } },
+                  { text: "Unbearable cringe. Prison.", scores: { cri: 40, ped: 20, tol: 0 } },
+                  { text: "A bit much, but fine.", scores: { cri: 15, ped: 10, tol: 10 } }
+              ] 
+            },
+            { q: "Wearing sunglasses indoors at night:", cat: "Aesthetic",
+              a: [
+                  { text: "Rockstar vibes.", scores: { cri: 0, ped: 0, tol: 25 } },
+                  { text: "You look like you're trying too hard.", scores: { cri: 35, ped: 15, tol: 0 } },
+                  { text: "Are you okay? Did you have eye surgery?", scores: { cri: 10, ped: 10, tol: 15 } }
+              ] 
+            },
+            { q: "What is the ultimate Ick?", cat: "Final Boss",
+              a: [
+                  { text: "Being mean to service staff.", scores: { cri: 10, ped: 10, tol: 0 } },
+                  { text: "Chasing a ping-pong ball across a room.", scores: { cri: 50, ped: 0, tol: 0 } },
+                  { text: "Using 'uwu' in a serious argument.", scores: { cri: 60, ped: 20, tol: 0 } }
+              ] 
+            },
+            { q: "Are your standards too high?", cat: "Self-Reflection",
+              a: [
+                  { text: "No, people just need to be better.", scores: { cri: 10, ped: 30, tol: 0 } },
+                  { text: "Yes, I am a hater and I accept it.", scores: { cri: 10, ped: 10, tol: 10 } },
+                  { text: "I am a saint of patience.", scores: { cri: 0, ped: 0, tol: 40 } }
+              ] 
+            }
+        ];
+
+        const archetypes = {
+            "Saint": { title: "The Saint", summary: "You are the human equivalent of a golden retriever.", desc: "You have zero Ick factor. You let people enjoy things, forgive social blunders instantly, and probably haven't judged anyone since the mid-2000s. You are a peaceful soul, but people might accidentally walk all over you." },
+            "Selective": { title: "Selective Judge", summary: "You have normal human standards.", desc: "You get the Ick for the big stuff (baby voices, airplane clapping), but you can handle the small stuff. You have a balanced social threshold and a healthy sense of 'cringe'." },
+            "Elite": { title: "The Elite Snob", summary: "Your standards are higher than your altitude.", desc: "You have high Pedantic and Cringe scores. You notice everything—every typo, every unpolished shoe, every slightly-too-loud laugh. You aren't mean; you just have 'taste.' Unfortunately, 'taste' is lonely." },
+            "Hater": { title: "Full-Time Hater", summary: "Everything is an Ick. Everyone is Cringe.", desc: "Your tolerance is non-existent. You are probably judgment-scrolling right now. You find physical movements, breathing styles, and vowel sounds annoying. You are the final boss of the Ick Factor." }
+        };
+
+        let currentQ = 0;
+        let totals = { cri: 0, ped: 0, tol: 0 };
+
+        window.startQuiz = function() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-interface').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) { finishQuiz(); return; }
+            const q = questions[currentQ];
+            document.getElementById('q-category').innerText = q.cat;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
+            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            q.a.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full p-6 text-left font-display uppercase italic tracking-tighter text-sm";
+                btn.innerText = opt.text;
+                btn.onclick = () => {
+                    totals.cri += opt.scores.cri;
+                    totals.ped += opt.scores.ped;
+                    totals.tol += opt.scores.tol;
+                    currentQ++;
+                    renderQuestion();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function finishQuiz() {
+            let key = "Selective";
+            const { cri, ped, tol } = totals;
+            if (tol > 300) key = "Saint";
+            else if (cri > 350) key = "Hater";
+            else if (ped > 250) key = "Elite";
+            
+            const data = archetypes[key];
+            document.getElementById('quiz-interface').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('result-title').innerText = data.title;
+            document.getElementById('result-summary').innerText = data.summary;
+            
+            document.getElementById('ped-val').innerText = ped > 150 ? "High" : "Low";
+            document.getElementById('tol-val').innerText = tol > 150 ? "Infinite" : "Zero";
+            document.getElementById('cri-val').innerText = cri > 150 ? "Lethal" : "Safe";
+
+            if (window.saveTestResult) window.saveTestResult({ testId: 'ick_factor', archetype: key, metrics: totals });
+        }
+
+        window.shareResult = () => {
+            if(navigator.share) navigator.share({title: 'My Ick Factor', text: 'My Ick Archetype is ' + document.getElementById('result-title').innerText, url: window.location.href});
+            else alert("Link copied to clipboard");
+        }
+    </script>
+</body>
+</html>

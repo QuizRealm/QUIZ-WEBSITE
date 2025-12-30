@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fortune Magnet • Probability Engineering | QuizRealm</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+    <script type="module" src="game-engine.js"></script>
+    <script type="module" src="assets/ux-core.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        'header': ['Space Grotesk', 'sans-serif'], 
+                        'body': ['Inter', 'sans-serif'] 
+                    },
+                    colors: { 
+                        'eng-orange': '#ff4d00', /* Reusing the Hazard Orange you liked */
+                        'slate-base': '#0f172a',
+                        'slate-panel': '#1e293b',
+                        'text-muted': '#94a3b8'
+                    },
+                    boxShadow: {
+                        'sharp': '6px 6px 0px rgba(255, 77, 0, 0.2)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        
+        /* The "Hazard" Editorial Pattern */
+        .eng-stripes {
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(255, 77, 0, 0.03),
+                rgba(255, 77, 0, 0.03) 10px,
+                transparent 10px,
+                transparent 20px
+            );
+        }
+
+        .content-card {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Buttons */
+        .btn-option {
+            background: white; color: #0f172a;
+            border-left: 4px solid transparent;
+            transition: all 0.2s ease-out;
+            position: relative;
+            z-index: 10;
+        }
+        .btn-option:hover {
+            border-left-color: #ff4d00;
+            transform: translateX(8px);
+            background: #f1f5f9;
+        }
+
+        .btn-primary {
+            background: #ff4d00; color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background: white; color: #ff4d00;
+            box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+        }
+
+        /* Luck Matrix Visualizer */
+        .matrix-grid {
+            display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+            gap: 2px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
+            height: 200px; width: 100%; max-width: 300px; margin: 0 auto;
+        }
+        .matrix-cell {
+            background: #0f172a; display: flex; align-items: center; justify-content: center;
+            font-size: 10px; text-transform: uppercase; color: #475569; font-weight: bold;
+            transition: all 0.5s;
+        }
+        .matrix-cell.active {
+            background: #ff4d00; color: white; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .fade-in { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen eng-stripes">
+    <quiz-header style="color: white;"></quiz-header>
+
+    <main class="flex-grow w-full max-w-5xl mx-auto px-6 py-12 lg:py-20">
+
+        <div id="start-screen" class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center fade-in">
+            
+            <div class="space-y-8">
+                <div class="inline-flex items-center gap-2 border border-eng-orange/50 px-3 py-1 rounded-full text-eng-orange text-[10px] font-bold uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-eng-orange animate-pulse"></span>
+                    <span>Algorithm Active</span>
+                </div>
+                
+                <h1 class="font-header text-6xl lg:text-7xl font-bold leading-[0.9]">
+                    Fortune <br><span class="text-eng-orange">Magnet.</span>
+                </h1>
+
+                <p class="text-text-muted text-lg leading-relaxed border-l-2 border-white/20 pl-6">
+                    Is "Luck" magic, or is it math? <br>
+                    This 13-point audit measures your <strong>Locus of Control</strong> and <strong>Opportunity Radar</strong> to determine if you are engineering your own fortune.
+                </p>
+
+                <button onclick="window.startQuiz()" class="btn-primary w-full md:w-auto px-10 py-5 text-sm rounded-sm shadow-sharp">
+                    Calculate Probability
+                </button>
+            </div>
+
+            <div class="content-card p-10 rounded-xl shadow-sharp">
+                <h3 class="font-header text-xl font-bold mb-8 flex items-center gap-3 border-b border-white/10 pb-4">
+                    <i class="fas fa-dice-d20 text-eng-orange"></i> Probability Mechanics
+                </h3>
+                <div class="space-y-6 text-sm text-slate-300">
+                    <div>
+                        <h4 class="text-white font-bold mb-1"><span class="text-eng-orange mr-2">01.</span>Locus of Control</h4>
+                        <p class="text-text-muted leading-relaxed">Do things happen <em>to</em> you (External Locus), or do you <em>make</em> things happen (Internal Locus)? We measure your agency.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-1"><span class="text-eng-orange mr-2">02.</span>Luck Surface Area</h4>
+                        <p class="text-text-muted leading-relaxed">Luck strikes moving targets. We analyze how much "surface area" you expose to the world through risk and networking.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-1"><span class="text-eng-orange mr-2">03.</span>The Serendipity Filter</h4>
+                        <p class="text-text-muted leading-relaxed">Are you observant enough to see the $20 bill on the sidewalk, or are you too focused on your phone?</p>
+                    </div>
+                </div>
+                <div class="mt-8 pt-6 border-t border-white/10 flex justify-between items-center text-[10px] uppercase font-bold text-text-muted">
+                    <span>QuizRealm Intelligence Suite</span>
+                    <span>v.6.4</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-interface" class="hidden max-w-2xl mx-auto py-12">
+            <div class="mb-10">
+                <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-text-muted mb-4">
+                    <span id="q-category">Input Variable</span>
+                    <span id="progress-text">01 / 13</span>
+                </div>
+                <div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-eng-orange transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <h2 id="question-text" class="font-header text-3xl md:text-4xl font-bold leading-tight mb-10 text-white">
+                Loading...
+            </h2>
+
+            <div id="options-container" class="space-y-4">
+                </div>
+        </div>
+
+        <div id="result-screen" class="hidden fade-in py-8">
+            
+            <div class="text-center mb-16">
+                <span class="text-eng-orange font-bold uppercase tracking-[0.4em] text-xs mb-3 block">Calculated Archetype</span>
+                <h2 id="result-title" class="font-header text-6xl md:text-8xl font-bold mb-4 text-white">Loading...</h2>
+                <h3 id="result-subtitle" class="font-body text-xl text-text-muted font-light uppercase tracking-widest">...</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                
+                <div class="content-card p-8 rounded-xl flex flex-col items-center text-center">
+                    <h4 class="font-header text-xs uppercase tracking-widest text-text-muted mb-8 w-full text-left">Luck Matrix Position</h4>
+                    
+                    <div class="matrix-grid mb-4">
+                        <div id="cell-architect" class="matrix-cell">Architect<br>(High Control/Low Opp)</div>
+                        <div id="cell-alchemist" class="matrix-cell">Alchemist<br>(High Control/High Opp)</div>
+                        <div id="cell-passenger" class="matrix-cell">Passenger<br>(Low Control/Low Opp)</div>
+                        <div id="cell-gambler" class="matrix-cell">Gambler<br>(Low Control/High Opp)</div>
+                    </div>
+                    
+                    <p class="text-[10px] text-text-muted mt-4 max-w-xs">
+                        *Visual representation of your agency vs. your exposure to random positive events.
+                    </p>
+                </div>
+
+                <div class="content-card p-8 rounded-xl flex flex-col justify-center space-y-8">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-[10px] uppercase font-bold text-text-muted">Locus of Control (Agency)</span>
+                            <span id="stat-loc" class="text-xs font-bold text-white">0%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 w-full rounded-full"><div id="bar-loc" class="h-full bg-white rounded-full" style="width: 0%"></div></div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-[10px] uppercase font-bold text-text-muted">Opportunity Radar</span>
+                            <span id="stat-opp" class="text-xs font-bold text-white">0%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 w-full rounded-full"><div id="bar-opp" class="h-full bg-eng-orange rounded-full" style="width: 0%"></div></div>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/10">
+                         <span class="block text-[10px] uppercase text-text-muted mb-1">Luck Surface Area</span>
+                         <span id="stat-lsa" class="font-header text-3xl text-white">Calculating...</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="max-w-3xl mx-auto space-y-8">
+                <div class="content-card p-8 rounded-xl">
+                    <h4 class="font-header text-sm font-bold uppercase text-white mb-4 border-b border-white/10 pb-4">Analysis Log</h4>
+                    <p id="result-summary" class="text-lg text-white font-medium mb-6 leading-relaxed">Summary...</p>
+                    
+                    <button onclick="document.getElementById('full-report').classList.toggle('hidden')" class="w-full text-left text-[10px] font-bold uppercase tracking-widest text-eng-orange hover:text-white transition flex items-center gap-2">
+                        <span>Read Full Psychological Breakdown</span> <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div id="full-report" class="hidden mt-6 text-sm text-text-muted leading-loose space-y-4 border-t border-white/5 pt-4">
+                        <p id="result-desc">...</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="shareResult()" class="btn-primary px-8 py-4 rounded-sm w-full sm:w-auto">
+                        Share Probability
+                    </button>
+                    <a href="index-funnels.html" class="bg-slate-800 text-white px-8 py-4 rounded-sm font-bold uppercase tracking-widest text-sm hover:bg-slate-700 transition w-full sm:w-auto text-center">
+                        Return to Index
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script type="module">
+        const questions = [
+            { q: "You find a $20 bill on the sidewalk. You think:", cat: "Attribution",
+              a: [
+                  { text: "I'm lucky today!", scores: { loc: 0, opp: 10 } },
+                  { text: "It pays to look around instead of at my phone.", scores: { loc: 10, opp: 25 } },
+                  { text: "Someone poor probably lost this. I feel bad.", scores: { loc: 5, opp: 5 } }
+              ] 
+            },
+            { q: "You apply for a job and don't get it. The reason?", cat: "Failure Analysis",
+              a: [
+                  { text: "The system is rigged / bad luck.", scores: { loc: 0, opp: 0 } },
+                  { text: "I need to improve my resume or interview skills.", scores: { loc: 25, opp: 10 } },
+                  { text: "It wasn't meant to be / Universe protecting me.", scores: { loc: 5, opp: 5 } }
+              ] 
+            },
+            { q: "How often do you talk to strangers?", cat: "Surface Area",
+              a: [
+                  { text: "Never. Stranger danger.", scores: { loc: 10, opp: 0 } },
+                  { text: "Constantly. Everyone is a potential connection.", scores: { loc: 15, opp: 30 } },
+                  { text: "Only if I need something.", scores: { loc: 20, opp: 5 } }
+              ] 
+            },
+            { q: "A 'Lucky Break' is usually:", cat: "Philosophy",
+              a: [
+                  { text: "Preparation meeting opportunity.", scores: { loc: 25, opp: 25 } },
+                  { text: "Being in the right place at the right time.", scores: { loc: 5, opp: 15 } },
+                  { text: "Something that happens to other people.", scores: { loc: 0, opp: 0 } }
+              ] 
+            },
+            { q: "You have a big idea. What do you do?", cat: "Execution",
+              a: [
+                  { text: "Keep it secret so no one steals it.", scores: { loc: 10, opp: 0 } },
+                  { text: "Tell everyone to get feedback and help.", scores: { loc: 15, opp: 25 } },
+                  { text: "Wait for the perfect time to start.", scores: { loc: 5, opp: 5 } }
+              ] 
+            },
+            { q: "How do you view 'Risk'?", cat: "Risk Tolerance",
+              a: [
+                  { text: "Something to be avoided at all costs.", scores: { loc: 10, opp: 0 } },
+                  { text: "A necessary cost of entry for rewards.", scores: { loc: 20, opp: 25 } },
+                  { text: "Exciting! I love chaos.", scores: { loc: 5, opp: 20 } }
+              ] 
+            },
+            { q: "If you want to meet a specific person, you:", cat: "Networking",
+              a: [
+                  { text: "Hope our paths cross naturally.", scores: { loc: 0, opp: 5 } },
+                  { text: "Find their email and send a cold pitch.", scores: { loc: 30, opp: 10 } },
+                  { text: "Ask mutual friends for an intro.", scores: { loc: 20, opp: 20 } }
+              ] 
+            },
+            { q: "Optimism is:", cat: "Mindset",
+              a: [
+                  { text: "Delusional.", scores: { loc: 10, opp: 0 } },
+                  { text: "A strategic advantage.", scores: { loc: 20, opp: 20 } },
+                  { text: "A magical force.", scores: { loc: 5, opp: 10 } }
+              ] 
+            },
+            { q: "When you go to a party, you:", cat: "Serendipity",
+              a: [
+                  { text: "Stick with the people I know.", scores: { loc: 10, opp: 0 } },
+                  { text: "Stand near the bar/food where traffic is high.", scores: { loc: 15, opp: 25 } },
+                  { text: "Hide in the corner on my phone.", scores: { loc: 0, opp: 0 } }
+              ] 
+            },
+            { q: "You missed your flight. You:", cat: "Resilience",
+              a: [
+                  { text: "Panic and blame the traffic.", scores: { loc: 0, opp: 0 } },
+                  { text: "Rebook immediately and work from the lounge.", scores: { loc: 30, opp: 5 } },
+                  { text: "Chat with the agent and maybe get a free upgrade.", scores: { loc: 15, opp: 30 } }
+              ] 
+            },
+            { q: "Your daily routine is:", cat: "Structure",
+              a: [
+                  { text: "Rigid. I plan every minute.", scores: { loc: 30, opp: 0 } },
+                  { text: "Flexible. I leave room for randomness.", scores: { loc: 15, opp: 25 } },
+                  { text: "Non-existent. I go with the flow.", scores: { loc: 0, opp: 15 } }
+              ] 
+            },
+            { q: "Bad luck is:", cat: "Reframing",
+              a: [
+                  { text: "A curse.", scores: { loc: 0, opp: 0 } },
+                  { text: "Data. What did I learn?", scores: { loc: 25, opp: 15 } },
+                  { text: "Just a bad day.", scores: { loc: 10, opp: 10 } }
+              ] 
+            },
+            { q: "How much control do you have over your life?", cat: "Agency",
+              a: [
+                  { text: "10% (It's mostly fate/circumstance).", scores: { loc: 0, opp: 0 } },
+                  { text: "50% (I play the hand I'm dealt).", scores: { loc: 15, opp: 15 } },
+                  { text: "90% (I am the captain).", scores: { loc: 30, opp: 10 } }
+              ] 
+            }
+        ];
+
+        const archetypes = {
+            "Alchemist": { 
+                title: "The Alchemist", 
+                subtitle: "High Control / High Opportunity", 
+                summary: "You don't find luck; you manufacture it.", 
+                desc: "You have a High Internal Locus of Control combined with high Opportunity Recognition. You understand that 'luck' is simply a function of surface area. You put yourself in positions where good things are statistically likely to happen, and you have the skills to capitalize on them when they do. You are the engineer of your own serendipity." 
+            },
+            "Architect": { 
+                title: "The Architect", 
+                subtitle: "High Control / Low Opportunity", 
+                summary: "You work incredibly hard, but you often miss the easy wins.", 
+                desc: "You have a High Internal Locus of Control but Low Opportunity Recognition. You believe success comes *only* from grinding. You might be 'tunnel-visioning'—working so hard on your plan that you miss the lucky shortcuts or serendipitous meetings happening right next to you. Loosen your grip on the plan." 
+            },
+            "Gambler": { 
+                title: "The Gambler", 
+                subtitle: "Low Control / High Opportunity", 
+                summary: "You ride the waves of chaos, but you can't steer the ship.", 
+                desc: "You have Low Control but High Opportunity awareness. Good things happen to you often because you are open and social, but you struggle to retain or build upon them. You treat life like a lottery—fun when you win, devastating when you lose. You need to build structures to capture your luck." 
+            },
+            "Passenger": { 
+                title: "The Passenger", 
+                subtitle: "Low Control / Low Opportunity", 
+                summary: "You are waiting for a train at a bus stop.", 
+                desc: "You score low on both metrics. You likely feel that life happens *to* you. You don't take risks (limiting opportunity) and you don't take ownership (limiting control). You are safe, but you are stagnant. To change your luck, you must first believe you have the power to influence it." 
+            }
+        };
+
+        let currentQ = 0;
+        let totals = { loc: 0, opp: 0 };
+
+        window.startQuiz = function() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-interface').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) { finishQuiz(); return; }
+            const q = questions[currentQ];
+            document.getElementById('q-category').innerText = q.cat;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
+            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            q.a.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "btn-option w-full p-6 text-left rounded-sm font-bold text-slate-800 text-lg";
+                btn.innerText = opt.text;
+                btn.onclick = () => {
+                    totals.loc += opt.scores.loc;
+                    totals.opp += opt.scores.opp;
+                    currentQ++;
+                    renderQuestion();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function finishQuiz() {
+            let key = "Passenger";
+            const { loc, opp } = totals;
+            
+            // Logic for Matrix
+            if (loc > 150 && opp > 150) key = "Alchemist";
+            else if (loc > 150 && opp <= 150) key = "Architect";
+            else if (loc <= 150 && opp > 150) key = "Gambler";
+            else key = "Passenger";
+            
+            const data = archetypes[key];
+            document.getElementById('quiz-interface').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('result-title').innerText = data.title;
+            document.getElementById('result-subtitle').innerText = data.subtitle;
+            document.getElementById('result-summary').innerText = data.summary;
+            document.getElementById('result-desc').innerText = data.desc;
+            
+            // Visual Stats
+            document.getElementById('stat-loc').innerText = Math.min(100, Math.floor((loc/300)*100)) + "%";
+            document.getElementById('bar-loc').style.width = Math.min(100, Math.floor((loc/300)*100)) + "%";
+            
+            document.getElementById('stat-opp').innerText = Math.min(100, Math.floor((opp/300)*100)) + "%";
+            document.getElementById('bar-opp').style.width = Math.min(100, Math.floor((opp/300)*100)) + "%";
+
+            // Luck Surface Area (Composite Metric)
+            const lsa = Math.floor((loc + opp) / 2);
+            let lsaRating = "Low";
+            if(lsa > 100) lsaRating = "Moderate";
+            if(lsa > 200) lsaRating = "High";
+            if(lsa > 250) lsaRating = "Expansive";
+            document.getElementById('stat-lsa').innerText = lsaRating;
+
+            // Highlight Matrix Cell
+            document.querySelectorAll('.matrix-cell').forEach(el => el.classList.remove('active'));
+            document.getElementById(`cell-${key.toLowerCase()}`).classList.add('active');
+
+            if (window.saveTestResult) window.saveTestResult({ testId: 'fortune_magnet', archetype: key, metrics: totals });
+        }
+
+        window.shareResult = () => {
+            if(navigator.share) navigator.share({title: 'Fortune Magnet', text: 'My Luck Archetype is ' + document.getElementById('result-title').innerText, url: window.location.href});
+            else alert("Link copied to clipboard");
+        }
+    </script>
+</body>
+</html>

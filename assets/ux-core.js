@@ -9,12 +9,13 @@ import { getFirestore, collection, addDoc, updateDoc, doc, serverTimestamp, setD
 import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", // ⚠️ PASTE YOUR KEYS HERE
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDqRiQs_ezSxSpaYo0BO8WAcJF9LKvyOwo",
+  authDomain: "thequizrealm-ef52c.firebaseapp.com",
+  projectId: "thequizrealm-ef52c",
+  storageBucket: "thequizrealm-ef52c.firebasestorage.app",
+  messagingSenderId: "56820951002",
+  appId: "1:56820951002:web:3f7d419d62f6d7ee2102e3",
+  measurementId: "G-4JL3CD1WQT"
 };
 
 // --- INIT FIREBASE ---

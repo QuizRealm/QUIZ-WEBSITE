@@ -1,194 +1,43 @@
 // components.js - QUIZREALM GLOBAL LAYOUT (HEADER + FOOTER)
-
+// components.js - QUIZREALM GLOBAL LAYOUT
 console.log("Loading QuizRealm Components...");
 
-/* © 2025 QuizRealm Inc. - All Rights Reserved. */
-
-// Small helper: get the best current snapshot from GameEngine (or fallback)
+/* =========================================
+   1. HELPER: GET USER DATA
+   ========================================= */
 function getHeaderUserSnapshot() {
-    // Default values
-    let snapshot = {
-        level: 1,
-        coins: 0,
-        xp: 0,
-        avatarSeed: "Player"
-    };
+    let snapshot = { level: 1, coins: 0, xp: 0, avatarSeed: "Player" };
 
-    // Preferred source: GameEngine (single source of truth)
+    // Try GameEngine first
     try {
         if (window.GameEngine && typeof window.GameEngine.getUserSnapshot === "function") {
             const u = window.GameEngine.getUserSnapshot();
-            snapshot.level      = u.level  ?? 1;
-            snapshot.coins      = u.coins  ?? 0;
-            snapshot.xp         = u.xp     ?? 0;
+            snapshot.level = u.level ?? 1;
+            snapshot.coins = u.coins ?? 0;
+            snapshot.xp = u.xp ?? 0;
             snapshot.avatarSeed = u.avatarSeed || "Player";
             return snapshot;
         }
-    } catch (e) {
-        console.warn("Header: GameEngine snapshot failed, will try local fallback.", e);
-    }
+    } catch (e) { console.warn("Header: Engine snapshot failed.", e); }
 
-    // Very last fallback: localStorage (for very early load or engine missing)
+    // Fallback to LocalStorage
     try {
         const saved = localStorage.getItem("QR_PROFILE");
         if (saved) {
             const data = JSON.parse(saved);
-            snapshot.level      = data.level      ?? snapshot.level;
-            snapshot.coins      = data.coins      ?? snapshot.coins;
-            snapshot.xp         = data.xp         ?? snapshot.xp;
+            snapshot.level = data.level ?? snapshot.level;
+            snapshot.coins = data.coins ?? snapshot.coins;
+            snapshot.xp = data.xp ?? snapshot.xp;
             snapshot.avatarSeed = data.avatarSeed || snapshot.avatarSeed;
         }
-    } catch (e) {
-        console.warn("Header: Failed to parse QR_PROFILE fallback", e);
-    }
+    } catch (e) { console.warn("Header: LocalStorage parsing failed.", e); }
 
     return snapshot;
 }
 
-// =================================================================
-// 1. HEADER MARKUP GENERATOR
-// =================================================================
-function getQuizHeaderMarkup() {
-    const user = getHeaderUserSnapshot();
-
-    const level      = user.level || 1;
-    const coins      = user.coins || 0;
-    const xp         = user.xp || 0;
-    const avatarSeed = user.avatarSeed || "Player";
-    const avatarUrl  = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(avatarSeed)}`;
-
-    return `
-<header class="w-full sticky top-0 z-50 backdrop-blur-2xl bg-[#030712]/90 border-b border-white/5 shadow-2xl shadow-black/50 relative">
-    
-    <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-50"></div>
-
-    <div class="max-w-[1400px] mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4">
-        
-        <a href="index.html" class="flex items-center gap-3 group shrink-0">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-900 to-[#020617] border border-blue-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.15)] group-hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 group-hover:scale-105">
-                <i class="fas fa-ghost text-lg md:text-xl text-blue-400 group-hover:text-white transition-colors"></i>
-            </div>
-            
-            <div class="flex flex-col justify-center">
-                <span class="font-arcade text-lg md:text-xl text-white leading-none tracking-[0.2em] drop-shadow-md">
-                    QUIZ<span class="text-blue-500">REALM</span>
-                </span>
-                <span class="text-[9px] md:text-[10px] text-slate-500 font-mono tracking-widest uppercase group-hover:text-blue-400 transition-colors">
-                    Professional Edition
-                </span>
-            </div>
-        </a>
-
-        <nav class="hidden xl:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5 shadow-inner">
-            
-            <a href="premium.html" class="relative group px-5 py-2 rounded-full overflow-hidden mr-2">
-                <div class="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 opacity-100 group-hover:opacity-90 transition-opacity"></div>
-                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8L3N2Zz4=')] opacity-20"></div>
-                <div class="relative flex items-center gap-2">
-                    <i class="fas fa-crown text-amber-900 text-xs animate-pulse"></i>
-                    <span class="text-xs font-black text-amber-950 uppercase tracking-widest">Premium</span>
-                </div>
-            </a>
-
-            <a href="categories.html" class="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2 group/cat">
-                <i class="fas fa-layer-group text-slate-500 group-hover/cat:text-blue-400 transition-colors"></i>
-                <span>Categories</span>
-            </a>
-
-            <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
-
-            <div class="relative group h-full">
-                <a href="arcade.html" class="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
-                    <i class="fas fa-gamepad text-slate-500 group-hover:text-pink-400 transition-colors"></i> 
-                    <span>Arcade</span>
-                    <i class="fas fa-chevron-down text-[8px] opacity-50 ml-1 group-hover:translate-y-0.5 transition-transform"></i>
-                </a>
-
-                <div class="absolute top-full left-1/2 -translate-x-1/2 pt-6 w-[340px] hidden group-hover:block z-[100]">
-                    <div class="bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_50px_-12px_rgba(0,0,0,0.8)] p-3 overflow-hidden">
-                        <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-widest border-b border-white/5 mb-2 flex justify-between items-center">
-                            <span>Arcade Collection</span>
-                            <i class="fas fa-gamepad text-slate-700"></i>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-1">
-                            ${getArcadeLinksMarkup()}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <div class="flex items-center gap-4 shrink-0">
-            
-            <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/40 border border-amber-500/20 shadow-inner">
-                <div class="w-5 h-5 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/50">
-                    <i class="fas fa-coins text-[10px] text-amber-400"></i>
-                </div>
-                <span id="headerCoins" class="text-xs font-mono font-bold text-amber-100">${coins.toLocaleString()}</span>
-            </div>
-            <span id="headerXP" class="hidden">${xp}</span>
-
-            <button onclick="window.location.href='profile.html'" 
-                class="flex items-center gap-3 pl-1 pr-1 md:pr-4 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group relative overflow-hidden">
-                
-                <div class="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-
-                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 p-[1px] relative z-10 shadow-lg">
-                    <img id="headerAvatar" src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover rounded-full">
-                </div>
-
-                <div class="hidden md:flex flex-col items-start leading-none relative z-10">
-                    <span class="text-[11px] font-bold text-slate-200 group-hover:text-white">My Profile</span>
-                    <span class="text-[9px] text-slate-500 uppercase tracking-wide">Lvl <span id="headerLevel">${level}</span></span>
-                </div>
-            </button>
-        </div>
-    </div>
-
-    <div class="xl:hidden fixed bottom-0 left-0 right-0 z-[80] bg-[#020617]/95 backdrop-blur-xl border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
-        <div class="flex justify-around items-center px-2 py-3">
-            
-            <a href="categories.html" class="flex flex-col items-center gap-1 group w-16">
-                <i class="fas fa-layer-group text-lg text-slate-500 group-hover:text-blue-400 transition-colors"></i>
-                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Topics</span>
-            </a>
-
-            <a href="arcade.html" class="flex flex-col items-center gap-1 group w-16">
-                <i class="fas fa-gamepad text-lg text-slate-500 group-hover:text-pink-400 transition-colors"></i>
-                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Arcade</span>
-            </a>
-
-            <a href="premium.html" class="relative -top-6">
-                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300 to-yellow-600 p-[2px] shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-                    <div class="w-full h-full rounded-full bg-[#0f172a] flex flex-col items-center justify-center relative overflow-hidden group">
-                        <div class="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-transparent"></div>
-                        <i class="fas fa-crown text-xl text-amber-400 mb-0.5 group-active:scale-95 transition-transform"></i>
-                        <span class="text-[8px] font-black text-amber-400 uppercase tracking-tighter">Gold</span>
-                    </div>
-                </div>
-            </a>
-
-            <a href="index.html" class="flex flex-col items-center gap-1 group w-16">
-                <i class="fas fa-home text-lg text-slate-500 group-hover:text-emerald-400 transition-colors"></i>
-                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Home</span>
-            </a>
-
-            <a href="profile.html" class="flex flex-col items-center gap-1 group w-16">
-                <div class="relative">
-                    <i class="fas fa-user text-lg text-slate-500 group-hover:text-purple-400 transition-colors"></i>
-                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-[#020617]"></span>
-                </div>
-                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Me</span>
-            </a>
-
-        </div>
-    </div>
-
-</header>`;
-}
-
-// Helper to keep the main function clean
+/* =========================================
+   2. HELPER: ARCADE LINKS
+   ========================================= */
 function getArcadeLinksMarkup() {
     const games = [
         { url: 'fusion-core.html', icon: 'fa-microchip', color: 'green', title: 'Logic League', sub: 'Mastermind' },
@@ -219,6 +68,198 @@ function getArcadeLinksMarkup() {
     `).join('');
 }
 
+/* =========================================
+   3. MAIN HEADER COMPONENT
+   ========================================= */
+function getQuizHeaderMarkup() {
+    const user = getHeaderUserSnapshot();
+    const level = user.level || 1;
+    const coins = user.coins || 0;
+    const xp = user.xp || 0;
+    const avatarUrl = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(user.avatarSeed)}`;
+
+    return `
+    <header class="w-full sticky top-0 z-50 backdrop-blur-2xl bg-[#030712]/90 border-b border-white/5 shadow-2xl shadow-black/50 relative">
+        <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-50"></div>
+
+        <div class="max-w-[1400px] mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4">
+            
+            <a href="index.html" class="flex items-center gap-3 group shrink-0">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-900 to-[#020617] border border-blue-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.15)] group-hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 group-hover:scale-105">
+                    <i class="fas fa-ghost text-lg md:text-xl text-blue-400 group-hover:text-white transition-colors"></i>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <span class="font-arcade text-lg md:text-xl text-white leading-none tracking-[0.2em] drop-shadow-md">
+                        QUIZ<span class="text-blue-500">REALM</span>
+                    </span>
+                    <span class="text-[9px] md:text-[10px] text-slate-500 font-mono tracking-widest uppercase group-hover:text-blue-400 transition-colors">
+                        Professional Edition
+                    </span>
+                </div>
+            </a>
+
+            <nav class="hidden xl:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5 shadow-inner">
+                
+                <a href="premium.html" class="relative group px-5 py-2 rounded-full overflow-hidden mr-1">
+                    <div class="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 opacity-100 group-hover:opacity-90 transition-opacity"></div>
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8L3N2Zz4=')] opacity-20"></div>
+                    <div class="relative flex items-center gap-2">
+                        <i class="fas fa-crown text-amber-900 text-xs animate-pulse"></i>
+                        <span class="text-xs font-black text-amber-950 uppercase tracking-widest">Premium</span>
+                    </div>
+                </a>
+
+                <a href="identity-lab.html" class="relative group px-4 py-2 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] mr-1">
+                    <div class="absolute inset-0 bg-gradient-to-r from-violet-900/40 to-fuchsia-900/40 border border-violet-500/30 group-hover:border-fuchsia-400/60 transition-colors rounded-full"></div>
+                    <div class="relative flex items-center gap-2">
+                        <i class="fas fa-fingerprint text-fuchsia-400 group-hover:text-white transition-colors text-[10px]"></i>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-fuchsia-200 group-hover:text-white transition-colors">Identity Lab</span>
+                    </div>
+                </a>
+
+                <a href="categories.html" class="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2 group/cat">
+                    <i class="fas fa-layer-group text-slate-500 group-hover/cat:text-blue-400 transition-colors"></i>
+                    <span>Categories</span>
+                </a>
+
+                <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
+
+                <div class="relative group h-full">
+                    <a href="arcade.html" class="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
+                        <i class="fas fa-gamepad text-slate-500 group-hover:text-pink-400 transition-colors"></i> 
+                        <span>Arcade</span>
+                        <i class="fas fa-chevron-down text-[8px] opacity-50 ml-1 group-hover:translate-y-0.5 transition-transform"></i>
+                    </a>
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 pt-6 w-[340px] hidden group-hover:block z-[100]">
+                        <div class="bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_50px_-12px_rgba(0,0,0,0.8)] p-3 overflow-hidden">
+                            <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-widest border-b border-white/5 mb-2 flex justify-between items-center">
+                                <span>Arcade Collection</span>
+                                <i class="fas fa-gamepad text-slate-700"></i>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1">
+                                ${getArcadeLinksMarkup()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="flex items-center gap-4 shrink-0">
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/40 border border-amber-500/20 shadow-inner">
+                    <div class="w-5 h-5 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/50">
+                        <i class="fas fa-coins text-[10px] text-amber-400"></i>
+                    </div>
+                    <span id="headerCoins" class="text-xs font-mono font-bold text-amber-100">${coins.toLocaleString()}</span>
+                </div>
+                
+                <button onclick="window.location.href='profile.html'" class="flex items-center gap-3 pl-1 pr-1 md:pr-4 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 p-[1px] relative z-10 shadow-lg">
+                        <img id="headerAvatar" src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <div class="hidden md:flex flex-col items-start leading-none relative z-10">
+                        <span class="text-[11px] font-bold text-slate-200 group-hover:text-white">My Profile</span>
+                        <span class="text-[9px] text-slate-500 uppercase tracking-wide">Lvl <span id="headerLevel">${level}</span></span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <div class="xl:hidden fixed bottom-0 left-0 right-0 z-[80] bg-[#020617]/95 backdrop-blur-xl border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
+            <div class="flex justify-around items-center px-2 py-3">
+                <a href="categories.html" class="flex flex-col items-center gap-1 group w-16">
+                    <i class="fas fa-layer-group text-lg text-slate-500 group-hover:text-blue-400 transition-colors"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Topics</span>
+                </a>
+                <a href="arcade.html" class="flex flex-col items-center gap-1 group w-16">
+                    <i class="fas fa-gamepad text-lg text-slate-500 group-hover:text-pink-400 transition-colors"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Arcade</span>
+                </a>
+                <a href="premium.html" class="relative -top-6">
+                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300 to-yellow-600 p-[2px] shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+                        <div class="w-full h-full rounded-full bg-[#0f172a] flex flex-col items-center justify-center relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-transparent"></div>
+                            <i class="fas fa-crown text-xl text-amber-400 mb-0.5 group-active:scale-95 transition-transform"></i>
+                            <span class="text-[8px] font-black text-amber-400 uppercase tracking-tighter">Gold</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="identity-lab.html" class="flex flex-col items-center gap-1 group w-16">
+                    <i class="fas fa-fingerprint text-lg text-slate-500 group-hover:text-fuchsia-400 transition-colors"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">ID Lab</span>
+                </a>
+                <a href="profile.html" class="flex flex-col items-center gap-1 group w-16">
+                    <div class="relative">
+                        <i class="fas fa-user text-lg text-slate-500 group-hover:text-purple-400 transition-colors"></i>
+                    </div>
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Me</span>
+                </a>
+            </div>
+        </div>
+    </header>
+    `;
+}
+
+/* =========================================
+   4. COMPONENT INJECTION
+   ========================================= */
+class QuizHeader extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = getQuizHeaderMarkup();
+    }
+}
+
+class QuizFooter extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+        <footer class="bg-[#020617] border-t border-white/5 pt-16 pb-8">
+            <div class="max-w-[1400px] mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                    <div class="col-span-1 md:col-span-2">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-900 to-[#020617] border border-blue-500/20 flex items-center justify-center">
+                                <i class="fas fa-ghost text-blue-400"></i>
+                            </div>
+                            <span class="font-arcade text-xl text-white tracking-[0.2em]">QUIZ<span class="text-blue-500">REALM</span></span>
+                        </div>
+                        <p class="text-slate-500 text-sm leading-relaxed max-w-md">
+                            The world's most advanced quiz engine. Combining psychology, pop culture, and cognitive training.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Ecosystem</h4>
+                        <ul class="space-y-3 text-sm text-slate-500">
+                            <li><a href="identity-lab.html" class="hover:text-blue-400 transition">Identity Lab</a></li>
+                            <li><a href="arcade.html" class="hover:text-blue-400 transition">The Arcade</a></li>
+                            <li><a href="categories.html" class="hover:text-blue-400 transition">Knowledge Base</a></li>
+                            <li><a href="premium.html" class="hover:text-amber-400 transition">QuizRealm Gold</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Company</h4>
+                        <ul class="space-y-3 text-sm text-slate-500">
+                            <li><a href="about.html" class="hover:text-white transition">About Protocol</a></li>
+                            <li><a href="privacy.html" class="hover:text-white transition">Privacy & Data</a></li>
+                            <li><a href="contact.html" class="hover:text-white transition">Contact Support</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
+                    <p>&copy; 2025 QuizRealm Inc. All systems operational.</p>
+                    <div class="flex gap-6">
+                        <a href="#" class="hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="hover:text-white transition"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        `;
+    }
+}
+
+customElements.define('quiz-header', QuizHeader);
+customElements.define('quiz-footer', QuizFooter);
 // =================================================================
 // 2. FOOTER MARKUP GENERATOR
 // =================================================================

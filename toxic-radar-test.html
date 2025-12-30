@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Toxic Radar • Environmental Scan | QuizRealm</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+    <script type="module" src="game-engine.js"></script>
+    <script type="module" src="assets/ux-core.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        'header': ['Space Grotesk', 'sans-serif'], 
+                        'body': ['Inter', 'sans-serif'] 
+                    },
+                    colors: { 
+                        'hazard-orange': '#ff4d00',
+                        'slate-base': '#0f172a',
+                        'slate-panel': '#1e293b',
+                        'text-muted': '#94a3b8'
+                    },
+                    boxShadow: {
+                        'sharp': '6px 6px 0px rgba(255, 77, 0, 0.2)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        
+        /* Striped Warning Background */
+        .hazard-stripes {
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(255, 77, 0, 0.03),
+                rgba(255, 77, 0, 0.03) 10px,
+                transparent 10px,
+                transparent 20px
+            );
+        }
+
+        .content-card {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        /* Interactive Elements */
+        .btn-option {
+            background: white; color: #0f172a;
+            border-left: 4px solid transparent;
+            transition: all 0.2s ease-out;
+        }
+        .btn-option:hover {
+            border-left-color: #ff4d00;
+            transform: translateX(8px);
+            background: #f1f5f9;
+        }
+
+        .btn-primary {
+            background: #ff4d00; color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background: white; color: #ff4d00;
+            box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+        }
+
+        /* Spectrum Meter */
+        .spectrum-bar {
+            height: 12px; background: #334155; border-radius: 99px; position: relative; overflow: hidden;
+        }
+        .spectrum-indicator {
+            position: absolute; top: 0; bottom: 0; width: 4px; background: white;
+            box-shadow: 0 0 10px white; transition: left 1s ease; left: 0%;
+        }
+        .spectrum-gradient {
+            background: linear-gradient(90deg, #22c55e 0%, #eab308 50%, #ff4d00 100%);
+            width: 100%; height: 100%; opacity: 0.8;
+        }
+
+        .fade-in { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen hazard-stripes">
+    <quiz-header style="color: white;"></quiz-header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-6 py-12 lg:py-20">
+
+        <div id="start-screen" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center fade-in">
+            <div class="space-y-8">
+                <div class="inline-flex items-center gap-2 border border-hazard-orange/50 px-3 py-1 rounded-full text-hazard-orange text-[10px] font-bold uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-hazard-orange animate-pulse"></span>
+                    <span>System Active</span>
+                </div>
+                
+                <h1 class="font-header text-6xl lg:text-8xl font-bold leading-[0.9]">
+                    Toxic <br><span class="text-hazard-orange">Radar.</span>
+                </h1>
+
+                <p class="text-text-muted text-lg leading-relaxed border-l-2 border-white/20 pl-6">
+                    A clinical audit of your environment. Are you surrounded by drama because of bad luck, or because you are the magnet?
+                </p>
+
+                <button onclick="window.startQuiz()" class="btn-primary w-full md:w-auto px-10 py-5 text-sm rounded-sm">
+                    Run Calibration
+                </button>
+            </div>
+
+            <div class="content-card p-8 rounded-xl shadow-sharp">
+                <h3 class="font-header text-xl font-bold mb-6 flex items-center gap-3">
+                    <i class="fas fa-crosshairs text-hazard-orange"></i> Assessment Scope
+                </h3>
+                <ul class="space-y-4 text-sm text-slate-300">
+                    <li class="flex items-start gap-3">
+                        <span class="text-hazard-orange font-bold">01.</span>
+                        <span><strong>Detection Accuracy:</strong> Can you spot a narcissist before they speak, or only after they ruin your life?</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-hazard-orange font-bold">02.</span>
+                        <span><strong>Permissibility Index:</strong> Do you have "porous" boundaries that invite energy vampires?</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-hazard-orange font-bold">03.</span>
+                        <span><strong>Self-Reflection:</strong> Are <em>you</em> the drama? (We check for that too).</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="quiz-interface" class="hidden max-w-2xl mx-auto">
+            <div class="mb-10">
+                <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-text-muted mb-4">
+                    <span id="q-category">Scan Phase</span>
+                    <span id="progress-text">01 / 13</span>
+                </div>
+                <div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-hazard-orange transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <h2 id="question-text" class="font-header text-3xl md:text-4xl font-bold leading-tight mb-8">
+                Loading...
+            </h2>
+
+            <div id="options-container" class="space-y-4">
+                </div>
+        </div>
+
+        <div id="result-screen" class="hidden fade-in">
+            
+            <div class="text-center mb-12">
+                <span class="text-hazard-orange font-bold uppercase tracking-[0.4em] text-xs mb-2 block">Archetype Identified</span>
+                <h2 id="result-title" class="font-header text-6xl md:text-7xl font-bold mb-4">Loading...</h2>
+                <p id="result-summary" class="text-xl text-slate-300 max-w-2xl mx-auto font-light">Summary...</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                
+                <div class="content-card p-8 rounded-xl">
+                    <h4 class="font-header text-sm uppercase tracking-widest text-text-muted mb-6">Toxicity Spectrum Position</h4>
+                    
+                    <div class="relative pt-6 pb-2">
+                        <div class="spectrum-bar">
+                            <div class="spectrum-gradient"></div>
+                            <div id="spectrum-marker" class="spectrum-indicator"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] uppercase font-bold mt-3 text-slate-500">
+                            <span>Hazmat (Safe)</span>
+                            <span>Magnet (Risk)</span>
+                            <span>Radioactive (Toxic)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card p-8 rounded-xl grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="block text-[10px] uppercase text-text-muted mb-1">Blindspot Index</span>
+                        <span id="stat-blind" class="font-header text-2xl text-white">...</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] uppercase text-text-muted mb-1">Boundaries</span>
+                        <span id="stat-bound" class="font-header text-2xl text-white">...</span>
+                    </div>
+                    <div class="col-span-2 border-t border-white/10 pt-4 mt-2">
+                        <span class="block text-[10px] uppercase text-text-muted mb-1">Recommendation</span>
+                        <span id="stat-rec" class="font-bold text-hazard-orange text-sm">...</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="max-w-3xl mx-auto space-y-8">
+                <button onclick="document.getElementById('full-report').classList.toggle('hidden')" class="w-full border-y border-white/10 py-4 text-center text-xs font-bold uppercase tracking-widest hover:text-hazard-orange transition">
+                    View Full Analysis Log
+                </button>
+                
+                <div id="full-report" class="hidden text-left text-slate-400 text-sm leading-loose space-y-4 px-4">
+                    <p id="result-desc">...</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="shareResult()" class="btn-primary px-8 py-4 rounded-sm w-full sm:w-auto">
+                        Share Status
+                    </button>
+                    <a href="index-funnels.html" class="bg-slate-800 text-white px-8 py-4 rounded-sm font-bold uppercase tracking-widest text-sm hover:bg-slate-700 transition w-full sm:w-auto text-center">
+                        Return to Index
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script type="module">
+        const questions = [
+            { q: "A friend gossips to you about everyone else. You assume:", cat: "Intel Gathering",
+              a: [
+                  { text: "They are absolutely gossiping about me too.", scores: { det: 25, tol: 0, self: 0 } },
+                  { text: "They just trust me with the tea.", scores: { det: 0, tol: 25, self: 0 } },
+                  { text: "I have some drama to add to the pile.", scores: { det: 10, tol: 10, self: 25 } }
+              ] 
+            },
+            { q: "Someone gives you a 'backhanded compliment' (e.g., 'You look good... for your age').", cat: "Aggression",
+              a: [
+                  { text: "Call them out immediately.", scores: { det: 25, tol: 0, self: 0 } },
+                  { text: "Laugh awkwardly and feel bad later.", scores: { det: 10, tol: 25, self: 0 } },
+                  { text: "Insult them back, but harder.", scores: { det: 10, tol: 0, self: 25 } }
+              ] 
+            },
+            { q: "Your partner is 'brutally honest'. You interpret this as:", cat: "Relationships",
+              a: [
+                  { text: "Cruelty disguised as a virtue.", scores: { det: 25, tol: 0, self: 0 } },
+                  { text: "Helpful feedback I probably need.", scores: { det: 0, tol: 25, self: 0 } },
+                  { text: "An excuse for me to be brutal back.", scores: { det: 0, tol: 10, self: 25 } }
+              ] 
+            },
+            { q: "How often do you find yourself in drama?", cat: "Frequency",
+              a: [
+                  { text: "Rarely. I cut people off at the first sign.", scores: { det: 20, tol: 0, self: 0 } },
+                  { text: "Always. It seems to follow me.", scores: { det: 0, tol: 20, self: 10 } },
+                  { text: "I am the main character, so yes.", scores: { det: 0, tol: 0, self: 30 } }
+              ] 
+            },
+            { q: "When someone sets a boundary with you, you feel:", cat: "Reaction",
+              a: [
+                  { text: "Respectful. Good for them.", scores: { det: 20, tol: 0, self: 0 } },
+                  { text: "Rejected and hurt.", scores: { det: 0, tol: 20, self: 5 } },
+                  { text: "Angry. Who do they think they are?", scores: { det: 0, tol: 0, self: 25 } }
+              ] 
+            },
+            { q: "A 'nice guy' does something nice but clearly expects a reward. You:", cat: "Analysis",
+              a: [
+                  { text: "Spot the transaction and decline.", scores: { det: 25, tol: 0, self: 0 } },
+                  { text: "Feel guilty if I don't give them what they want.", scores: { det: 5, tol: 25, self: 0 } },
+                  { text: "Take the nice thing and ghost them.", scores: { det: 10, tol: 0, self: 20 } }
+              ] 
+            },
+            { q: "You overhear a coworker lying to the boss. You:", cat: "Ethics",
+              a: [
+                  { text: "Note it. Trust them with nothing.", scores: { det: 25, tol: 0, self: 0 } },
+                  { text: "Assume they had a good reason.", scores: { det: 0, tol: 25, self: 0 } },
+                  { text: "Store the info for leverage later.", scores: { det: 0, tol: 0, self: 25 } }
+              ] 
+            },
+            { q: "Your reaction to a 'Love Bomber' (too much affection too soon) is:", cat: "Seduction",
+              a: [
+                  { text: "Suspicion. What do they want?", scores: { det: 25, tol: 0, self: 0 } },
+                  { text: "Validation. Finally someone sees me!", scores: { det: 0, tol: 30, self: 0 } },
+                  { text: "Boredom. I prefer the chase.", scores: { det: 10, tol: 0, self: 10 } }
+              ] 
+            },
+            { q: "The phrase 'I hate drama' usually means:", cat: "Translation",
+              a: [
+                  { text: "They start all the drama.", scores: { det: 25, tol: 0, self: 0 } },
+                  { text: "They are peaceful like me.", scores: { det: 0, tol: 25, self: 0 } },
+                  { text: "I say this all the time.", scores: { det: 0, tol: 0, self: 25 } }
+              ] 
+            },
+            { q: "You apologize when:", cat: "Accountability",
+              a: [
+                  { text: "I actually did something wrong.", scores: { det: 20, tol: 0, self: 0 } },
+                  { text: "Constantly, just to keep the peace.", scores: { det: 0, tol: 30, self: 0 } },
+                  { text: "Rarely. People are too sensitive.", scores: { det: 0, tol: 0, self: 25 } }
+              ] 
+            },
+            { q: "If someone is rude to a waiter, you:", cat: "Observation",
+              a: [
+                  { text: "The date/friendship is over.", scores: { det: 25, tol: 0, self: 0 } },
+                  { text: "Apologize for them silently.", scores: { det: 10, tol: 20, self: 0 } },
+                  { text: "Join in. The service was bad.", scores: { det: 0, tol: 0, self: 25 } }
+              ] 
+            },
+            { q: "How many of your exes are 'Crazy'?", cat: "Pattern Rec",
+              a: [
+                  { text: "Maybe one. The rest were just incompatible.", scores: { det: 20, tol: 0, self: 0 } },
+                  { text: "None, I was the problem.", scores: { det: 10, tol: 20, self: 0 } },
+                  { text: "All of them. Every single one.", scores: { det: 0, tol: 0, self: 30 } }
+              ] 
+            },
+            { q: "Final Check: This test feels like:", cat: "Meta",
+              a: [
+                  { text: "A useful tool.", scores: { det: 10, tol: 10, self: 0 } },
+                  { text: "An attack.", scores: { det: 0, tol: 0, self: 20 } },
+                  { text: "Confusing.", scores: { det: 0, tol: 20, self: 0 } }
+              ] 
+            }
+        ];
+
+        const archetypes = {
+            "Hazmat": { title: "Hazmat Suit", summary: "You spot red flags from miles away. Your boundaries are steel.", desc: "You have High Detection and Low Tolerance. You do not engage with drama; you delete it. This keeps you safe, but ensure you don't isolate yourself from genuine human connection in the process.", rec: "Maintain Course" },
+            "Magnet": { title: "The Open Door", summary: "You are a good person in a bad environment. You let too much slide.", desc: "You have Low Detection and High Tolerance. You tend to project your own kindness onto others, assuming they didn't 'mean it.' This makes you a prime target for energy vampires.", rec: "Close the Gate" },
+            "Radioactive": { title: "Radioactive", summary: "The call is coming from inside the house.", desc: "High Self-Toxicity scores. You likely view relationships as power struggles. You struggle with accountability and often feel like the victim in situations you created.", rec: "Shadow Work" },
+            "Fixer": { title: "The Fixer", subtitle: "Savior Complex", summary: "You see the red flags, but you think you can paint them white.", desc: "High Detection, High Tolerance. You know they are toxic, but you think you can heal them. You view broken people as projects. This is a dangerous game.", rec: "Stop Saving" }
+        };
+
+        let currentQ = 0;
+        let totals = { det: 0, tol: 0, self: 0 };
+
+        window.startQuiz = function() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-interface').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) { finishQuiz(); return; }
+            const q = questions[currentQ];
+            document.getElementById('q-category').innerText = q.cat;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
+            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            q.a.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "btn-option w-full p-6 text-left rounded-lg text-lg font-bold text-slate-800";
+                btn.innerText = opt.text;
+                btn.onclick = () => {
+                    totals.det += opt.scores.det;
+                    totals.tol += opt.scores.tol;
+                    totals.self += opt.scores.self;
+                    currentQ++;
+                    renderQuestion();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function finishQuiz() {
+            let key = "Magnet";
+            const { det, tol, self } = totals;
+            if (self > 150) key = "Radioactive";
+            else if (det > 200 && tol < 100) key = "Hazmat";
+            else if (det > 150 && tol > 150) key = "Fixer";
+            else if (det < 100) key = "Magnet";
+            
+            const data = archetypes[key];
+            document.getElementById('quiz-interface').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('result-title').innerText = data.title;
+            document.getElementById('result-summary').innerText = data.summary;
+            document.getElementById('result-desc').innerText = data.desc;
+            document.getElementById('stat-rec').innerText = data.rec;
+            
+            // Visual Stats
+            document.getElementById('stat-blind').innerText = det < 100 ? "Critical" : "Clear";
+            document.getElementById('stat-bound').innerText = tol > 150 ? "Weak" : "Strong";
+            
+            // Spectrum Bar Logic (0 = Hazmat/Left, 100 = Radioactive/Right)
+            let spectrumPos = 50; // default middle
+            if (key === "Hazmat") spectrumPos = 10;
+            if (key === "Magnet") spectrumPos = 40;
+            if (key === "Fixer") spectrumPos = 60;
+            if (key === "Radioactive") spectrumPos = 90;
+            
+            document.getElementById('spectrum-marker').style.left = spectrumPos + "%";
+
+            if (window.saveTestResult) window.saveTestResult({ testId: 'toxic_radar', archetype: key, metrics: totals });
+        }
+
+        window.shareResult = () => {
+            if(navigator.share) navigator.share({title: 'Toxic Radar', text: 'My Toxicity Archetype is ' + document.getElementById('result-title').innerText, url: window.location.href});
+            else alert("Link copied to clipboard");
+        }
+    </script>
+</body>
+</html>

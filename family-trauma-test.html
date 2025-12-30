@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Family Origins Archive • Psychological History | QuizRealm</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+    <script type="module" src="game-engine.js"></script>
+    <script type="module" src="assets/ux-core.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        'serif': ['Crimson Pro', 'serif'], 
+                        'sans': ['Public Sans', 'sans-serif'] 
+                    },
+                    colors: { 
+                        'sepia-bg': '#f4ece1',
+                        'ink': '#2c2a27',
+                        'archive-red': '#8b2635'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f4ece1; color: #2c2a27; font-family: 'Public Sans', sans-serif; }
+        
+        .paper-texture {
+            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+        }
+
+        .archive-border {
+            border: 1px solid rgba(44, 42, 39, 0.2);
+            padding: 2rem;
+            position: relative;
+        }
+        .archive-border::after {
+            content: "CONFIDENTIAL";
+            position: absolute; top: 10px; right: 10px;
+            font-size: 10px; font-weight: bold; opacity: 0.2; letter-spacing: 2px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.5);
+            border-bottom: 2px solid #2c2a27;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        .option-btn:hover {
+            background: white;
+            padding-left: 2rem;
+            border-bottom-color: #8b2635;
+        }
+
+        .progress-line { background: rgba(44, 42, 39, 0.1); height: 1px; width: 100%; }
+        .progress-ink { background: #8b2635; height: 1px; width: 0%; transition: width 0.4s ease; }
+
+        .fade-in { animation: fadeIn 1.2s ease forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen paper-texture">
+    <quiz-header style="color: #2c2a27;"></quiz-header>
+
+    <main class="flex-grow w-full max-w-3xl mx-auto px-6 py-12 lg:py-20">
+
+        <div id="start-screen" class="space-y-12 fade-in">
+            <div class="text-center space-y-4">
+                <span class="text-[10px] font-bold uppercase tracking-[0.5em] opacity-40">Section VII // Behavioral Inheritance</span>
+                <h1 class="font-serif text-5xl md:text-7xl italic leading-none">
+                    Family <br>Origins Archive.
+                </h1>
+            </div>
+
+            <div class="archive-border space-y-6">
+                <p class="font-serif italic text-lg leading-relaxed">
+                    "We do not end at our skin; we are the sum of the houses we grew up in and the voices that shaped our first mistakes."
+                </p>
+                <div class="h-px w-full bg-ink/10"></div>
+                <p class="text-sm uppercase tracking-widest leading-loose opacity-60">
+                    A 13-point clinical audit of birth order, attachment patterns, and ancestral debt.
+                </p>
+                <button onclick="window.startQuiz()" class="bg-ink text-sepia-bg w-full py-5 font-serif italic text-xl hover:bg-archive-red transition-colors duration-500">
+                    Open File
+                </button>
+            </div>
+        </div>
+
+        <div id="quiz-interface" class="hidden space-y-12">
+            <div class="space-y-4">
+                <div class="flex justify-between font-serif italic text-sm">
+                    <span id="q-category">Historical Context</span>
+                    <span id="progress-text">01 / 13</span>
+                </div>
+                <div class="progress-line"><div id="progress-bar" class="progress-ink"></div></div>
+            </div>
+
+            <h2 id="question-text" class="font-serif text-3xl md:text-4xl text-ink leading-tight">
+                Loading...
+            </h2>
+
+            <div id="options-container" class="grid grid-cols-1 gap-4"></div>
+        </div>
+
+        <div id="result-screen" class="hidden space-y-10 fade-in">
+            <div class="archive-border bg-white/30 p-10 space-y-6">
+                <h2 class="font-serif text-5xl italic" id="result-title">Archetype</h2>
+                <h3 id="result-subtitle" class="uppercase text-[10px] tracking-widest font-bold text-archive-red">Subtitle</h3>
+                <p id="result-summary" class="font-serif text-lg italic leading-relaxed text-ink/80">Summary...</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-ink/10">
+                <div class="bg-sepia-bg p-6 border border-ink/5">
+                    <span class="text-[10px] font-bold uppercase opacity-40">Attachment Style</span>
+                    <div id="attach-val" class="font-serif text-2xl italic">...</div>
+                </div>
+                <div class="bg-sepia-bg p-6 border border-ink/5">
+                    <span class="text-[10px] font-bold uppercase opacity-40">Primary Role</span>
+                    <div id="role-val" class="font-serif text-2xl italic">...</div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <button onclick="document.getElementById('full-report').classList.toggle('hidden')" class="text-xs font-bold uppercase underline opacity-60">Read Clinical Breakdown</button>
+                <div id="full-report" class="hidden text-left p-8 bg-white border border-ink/10 text-sm leading-loose text-ink/70">
+                    <p id="result-desc"></p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 pt-8">
+                    <button onclick="shareResult()" class="bg-ink text-sepia-bg px-10 py-4 font-serif italic text-lg">Share Archive</button>
+                    <a href="index-funnels.html" class="border border-ink/20 px-10 py-4 text-xs font-bold uppercase tracking-widest text-center">Return to Lab</a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script type="module">
+        const questions = [
+            { q: "At the dinner table when you were 8, you were mostly:", cat: "Environment",
+              a: [
+                  { text: "The entertainer keeping everyone happy.", scores: { res: 20, app: 25 } },
+                  { text: "The quiet observer hoping not to be seen.", scores: { res: 5, app: 0 } },
+                  { text: "The debater challenging the rules.", scores: { res: 25, app: 5 } }
+              ] 
+            },
+            { q: "If you brought home a 'B' on a test, your parents would:", cat: "Expectations",
+              a: [
+                  { text: "Ask why it wasn't an 'A'.", scores: { res: 10, app: 30 } },
+                  { text: "Not even notice the paper.", scores: { res: 20, app: 0 } },
+                  { text: "Tell me they were proud of my effort anyway.", scores: { res: 30, app: 10 } }
+              ] 
+            },
+            { q: "When a sibling got in trouble, you:", cat: "Dynamics",
+              a: [
+                  { text: "Tried to fix the situation for them.", scores: { res: 15, app: 20 } },
+                  { text: "Felt a secret relief that it wasn't me.", scores: { res: 5, app: 10 } },
+                  { text: "I was an only child; I was the focus of all trouble.", scores: { res: 10, app: 15 } }
+              ] 
+            },
+            { q: "How much of your parents' emotional state was your responsibility?", cat: "Enmeshment",
+              a: [
+                  { text: "All of it. I was their therapist.", scores: { res: 10, app: 30 } },
+                  { text: "None. They were the adults.", scores: { res: 30, app: 0 } },
+                  { text: "Some. I tried to stay out of the splash zone.", scores: { res: 15, app: 10 } }
+              ] 
+            },
+            { q: "Your current relationship style is best described as:", cat: "Attachment",
+              a: [
+                  { text: "I need constant reassurance I'm loved.", scores: { res: 5, app: 25 } },
+                  { text: "I push people away when they get too close.", scores: { res: 20, app: 0 } },
+                  { text: "I am comfortable with intimacy and distance.", scores: { res: 30, app: 5 } }
+              ] 
+            },
+            { q: "When you succeed today, who is the first person you want to tell?", cat: "Approval",
+              a: [
+                  { text: "My parents, to prove I finally made it.", scores: { res: 10, app: 35 } },
+                  { text: "A close friend or partner.", scores: { res: 25, app: 10 } },
+                  { text: "No one. I keep my wins to myself.", scores: { res: 15, app: 0 } }
+              ] 
+            },
+            { q: "What was the 'unspoken rule' in your house?", cat: "Rules",
+              a: [
+                  { text: "Don't ever make us look bad to the neighbors.", scores: { res: 10, app: 30 } },
+                  { text: "Children are meant to be seen, not heard.", scores: { res: 5, app: 20 } },
+                  { text: "Be honest, even if it hurts.", scores: { res: 30, app: 5 } }
+              ] 
+            },
+            { q: "When you see your family now, you feel:", cat: "Present",
+              a: [
+                  { text: "Guilty for not visiting more.", scores: { res: 10, app: 25 } },
+                  { text: "Regressed back into a 10-year-old version of myself.", scores: { res: 5, app: 20 } },
+                  { text: "Ground and grateful.", scores: { res: 35, app: 5 } }
+              ] 
+            },
+            { q: "How do you handle conflict in your adult life?", cat: "Conflict",
+              a: [
+                  { text: "I am a people-pleaser. I hate the noise.", scores: { res: 5, app: 30 } },
+                  { text: "I shut down and go silent for days.", scores: { res: 15, app: 0 } },
+                  { text: "I address it directly and calmly.", scores: { res: 35, app: 10 } }
+              ] 
+            },
+            { q: "Your childhood was mostly:", cat: "Memory",
+              a: [
+                  { text: "A performance for others.", scores: { res: 10, app: 25 } },
+                  { text: "A series of mysteries I couldn't solve.", scores: { res: 15, app: 10 } },
+                  { text: "A safe place to grow.", scores: { res: 35, app: 0 } }
+              ] 
+            },
+            { q: "The word 'Home' feels like:", cat: "Emotion",
+              a: [
+                  { text: "An obligation.", scores: { res: 10, app: 20 } },
+                  { text: "A battlefield.", scores: { res: 25, app: 0 } },
+                  { text: "A sanctuary.", scores: { res: 35, app: 5 } }
+              ] 
+            },
+            { q: "Who were you 'supposed' to be?", cat: "Identity",
+              a: [
+                  { text: "The smart one.", scores: { res: 15, app: 25 } },
+                  { text: "The easy one who never caused trouble.", scores: { res: 5, app: 30 } },
+                  { text: "Just myself.", scores: { res: 35, app: 0 } }
+              ] 
+            },
+            { q: "Finally, do you forgive them?", cat: "Resolution",
+              a: [
+                  { text: "Yes, they did their best with what they had.", scores: { res: 40, app: 0 } },
+                  { text: "I'm not there yet.", scores: { res: 15, app: 10 } },
+                  { text: "There is nothing to forgive.", scores: { res: 30, app: 0 } }
+              ] 
+            }
+        ];
+
+        const archetypes = {
+            "Peacekeeper": { title: "The Peacekeeper", subtitle: "The Emotional Anchor", summary: "You spent your childhood managing the climate of the house. You are a master of reading the room.", desc: "You developed hyper-vigilance early on. Because your environment was emotionally unpredictable, you became an expert at soothing others to ensure your own safety. In adulthood, you likely struggle with people-pleasing and find it difficult to identify your own needs." },
+            "Achiever": { title: "The High Achiever", subtitle: "The Performance Artist", summary: "Your value was tied to your output. If you weren't winning, you weren't visible.", desc: "You internalize love as something earned rather than given. You are likely highly successful in your career but suffer from chronic Imposter Syndrome. You are terrified of rest because, to you, rest feels like obsolescence." },
+            "Ghost": { title: "The Lost Child", subtitle: "The Silent Observer", summary: "You learned that the best way to survive was to become invisible.", desc: "Because the house was too loud or too crowded, you carved out a world in your own head. You are highly imaginative and self-reliant, but you may struggle with intimacy because you don't believe anyone is actually looking for you." },
+            "CycleBreaker": { title: "The Cycle Breaker", subtitle: "The Truth-Teller", summary: "You were the one who pointed out the elephant in the room. It wasn't a popular role.", desc: "You have high resilience but likely carry the 'Black Sheep' label. You are the one who refuses to carry the ancestral baggage into the next generation. You are often the most healed person in the family, yet the one most estranged from it." },
+            "Secure": { title: "The Secure Branch", subtitle: "The Integrated Self", summary: "Your foundation was stable enough to support your own weight.", desc: "You scored high on resilience and low on approval-need. You likely had 'Good Enough' parenting that allowed you to fail without losing your sense of self. You are able to visit home without losing your identity." }
+        };
+
+        let currentQ = 0;
+        let totals = { res: 0, app: 0 };
+
+        window.startQuiz = function() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-interface').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) { finishQuiz(); return; }
+            const q = questions[currentQ];
+            document.getElementById('q-category').innerText = q.cat;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
+            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            q.a.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full p-6 text-sm italic font-serif";
+                btn.innerText = opt.text;
+                btn.onclick = () => {
+                    totals.res += opt.scores.res;
+                    totals.app += opt.scores.app;
+                    currentQ++;
+                    renderQuestion();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function finishQuiz() {
+            let key = "Secure";
+            const { res, app } = totals;
+            if (app > 250) key = "Achiever";
+            else if (app > 150 && res < 100) key = "Peacekeeper";
+            else if (res > 250 && app < 100) key = "CycleBreaker";
+            else if (res < 100 && app < 100) key = "Ghost";
+            
+            const data = archetypes[key];
+            document.getElementById('quiz-interface').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('result-title').innerText = data.title;
+            document.getElementById('result-summary').innerText = data.summary;
+            document.getElementById('result-desc').innerText = data.desc;
+            
+            document.getElementById('attach-val').innerText = app > 150 ? "Anxious" : (res < 100 ? "Avoidant" : "Secure");
+            document.getElementById('role-val').innerText = key;
+
+            if (window.saveTestResult) window.saveTestResult({ testId: 'family_origins', archetype: key, metrics: totals });
+        }
+
+        window.shareResult = () => {
+            if(navigator.share) navigator.share({title: 'Family Origins Archive', text: 'My Archive Profile is ' + document.getElementById('result-title').innerText, url: window.location.href});
+            else alert("Link copied to clipboard");
+        }
+    </script>
+</body>
+</html>

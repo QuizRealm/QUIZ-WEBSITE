@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Vibe Check • Cognitive Color Palette | QuizRealm</title>
+    <meta name="description" content="What color is your energy? A 13-question diagnostic of your vibe, chaos levels, and social battery.">
+    <meta name="theme-color" content="#a78bfa">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+    <script type="module" src="game-engine.js"></script>
+    <script type="module" src="assets/ux-core.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        'header': ['Fredoka', 'sans-serif'], 
+                        'body': ['Quicksand', 'sans-serif'] 
+                    },
+                    colors: { 
+                        'pop-purple': '#a78bfa', // Violet 400
+                        'pop-pink': '#f472b6', // Pink 400
+                        'pop-cyan': '#22d3ee', // Cyan 400
+                        'pop-yellow': '#facc15', // Yellow 400
+                        'pop-bg': '#f5f3ff' // Light violet bg
+                    },
+                    borderRadius: {
+                        'xl': '1.5rem',
+                        '2xl': '2rem',
+                        '3xl': '3rem'
+                    },
+                    boxShadow: {
+                        'pop': '0 10px 30px -10px rgba(167, 139, 250, 0.3)'
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'blob': 'blob 7s infinite'
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f5f3ff; color: #4c1d95; font-family: 'Quicksand', sans-serif; overflow-x: hidden; }
+        
+        /* Soft Animated Background */
+        .aurora-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden;
+            background: linear-gradient(to bottom right, #f5f3ff, #ede9fe);
+        }
+        .blob-1 { position: absolute; top: -10%; left: -10%; width: 40%; height: 40%; background: rgba(167, 139, 250, 0.3); filter: blur(70px); border-radius: 50%; animation: blob 7s infinite alternate; }
+        .blob-2 { position: absolute; bottom: -10%; right: -10%; width: 40%; height: 40%; background: rgba(34, 211, 238, 0.3); filter: blur(70px); border-radius: 50%; animation: blob 7s infinite alternate-reverse 2s; }
+        .blob-3 { position: absolute; bottom: 30%; left: 20%; width: 30%; height: 30%; background: rgba(244, 114, 182, 0.2); filter: blur(70px); border-radius: 50%; animation: blob 8s infinite alternate 1s; }
+
+        /* Pop UI Elements */
+        .pop-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(167, 139, 250, 0.2);
+            border-radius: 2rem;
+        }
+
+        .pop-btn-option {
+            background: white;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy ease */
+        }
+        .pop-btn-option:hover {
+            transform: scale(1.02) translateY(-2px);
+            border-color: #a78bfa;
+            box-shadow: 0 10px 25px -10px rgba(167, 139, 250, 0.4);
+        }
+        
+        .pop-cta {
+            background: linear-gradient(45deg, #a78bfa, #f472b6);
+            color: white; font-family: 'Fredoka', sans-serif;
+            box-shadow: 0 10px 30px -10px rgba(167, 139, 250, 0.5);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .pop-cta:hover { transform: scale(1.05); box-shadow: 0 15px 40px -10px rgba(167, 139, 250, 0.7); }
+
+        /* Progress Bar */
+        .progress-container { background: rgba(167, 139, 250, 0.1); height: 12px; border-radius: 99px; overflow:hidden; }
+        .progress-fill { background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6); height: 100%; border-radius: 99px; transition: width 0.5s ease-in-out; }
+
+        /* Animations */
+        .slide-up { animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    
+    <div class="aurora-bg">
+        <div class="blob-1"></div>
+        <div class="blob-2"></div>
+        <div class="blob-3"></div>
+    </div>
+
+    <quiz-header style="color: #4c1d95;"></quiz-header>
+
+    <main class="flex-grow w-full max-w-3xl mx-auto px-6 py-12 relative z-10">
+
+        <div id="start-screen" class="text-center space-y-8 slide-up">
+            
+            <div class="relative w-32 h-32 mx-auto mb-6">
+                <div class="absolute inset-0 bg-pop-purple/20 rounded-full blur-xl animate-pulse"></div>
+                <div class="relative bg-white rounded-[2rem] w-full h-full flex items-center justify-center text-5xl text-pop-purple shadow-pop animate-bounce-slow">
+                    <i class="fas fa-wave-square"></i>
+                </div>
+            </div>
+
+            <div>
+                <h1 class="font-header text-5xl md:text-7xl text-pop-purple mb-4 leading-tight">
+                    The Vibe <span class="text-pop-pink">Check.</span>
+                </h1>
+                <p class="text-purple-900/70 text-lg font-semibold max-w-lg mx-auto leading-relaxed">
+                    What color is your cognitive energy? <br>
+                    A 13-question diagnostic of your <span class="text-pop-cyan">chaos levels</span>, <span class="text-pop-pink">social battery</span>, and <span class="text-pop-yellow">dopamine drivers</span>.
+                </p>
+            </div>
+
+            <div class="flex justify-center gap-2 text-sm font-bold text-pop-purple/60 py-4">
+                <span class="bg-white/60 px-4 py-2 rounded-full"><i class="fas fa-bolt text-pop-yellow mr-2"></i>Fast Paced</span>
+                <span class="bg-white/60 px-4 py-2 rounded-full"><i class="fas fa-brain text-pop-cyan mr-2"></i>Scientific-ish</span>
+            </div>
+
+            <button onclick="window.startQuiz()" class="pop-cta px-12 py-5 text-xl rounded-3xl font-bold w-full sm:w-auto">
+                Find My Palette
+            </button>
+        </div>
+
+        <div id="quiz-interface" class="hidden h-full min-h-[60vh] flex flex-col justify-center">
+            
+            <div class="mb-10">
+                <div class="flex justify-between items-end mb-4 px-2 font-bold text-pop-purple/70">
+                    <span id="q-category">Energy Scan</span>
+                    <span id="progress-text">01 / 13</span>
+                </div>
+                <div class="progress-container">
+                    <div id="progress-bar" class="progress-fill" style="width: 5%"></div>
+                </div>
+            </div>
+
+            <h2 id="question-text" class="font-header text-3xl md:text-4xl text-pop-purple mb-10 leading-tight slide-up bg-white/60 p-6 rounded-2xl shadow-sm">
+                Loading...
+            </h2>
+
+            <div id="options-container" class="space-y-4 slide-up" style="animation-delay: 0.1s;">
+                </div>
+        </div>
+
+        <div id="result-screen" class="hidden text-center max-w-2xl mx-auto">
+            
+            <div class="slide-up pop-card p-10 mb-8">
+                <span class="text-sm font-bold uppercase tracking-widest text-pop-purple/60 mb-4 block">Your Cognitive Palette Is</span>
+                
+                <h2 class="font-header text-5xl md:text-6xl text-pop-purple mb-2 leading-tight">
+                    <span id="result-title" class="text-transparent bg-clip-text bg-gradient-to-r from-pop-purple to-pop-pink">Loading...</span>
+                </h2>
+                
+                <h3 id="result-subtitle" class="text-pop-cyan font-body font-bold text-lg md:text-xl mb-6">
+                    Loading...
+                </h3>
+
+                <p id="result-summary" class="text-lg text-purple-900/80 leading-relaxed font-semibold">
+                    Calculating your vibe...
+                </p>
+            </div>
+
+            <div class="slide-up" style="animation-delay: 0.2s;">
+                <button onclick="document.getElementById('full-report').classList.toggle('hidden')" class="bg-white/70 px-8 py-3 rounded-full text-sm font-bold text-pop-purple uppercase tracking-widest hover:bg-white transition mb-6 shadow-sm">
+                    See The Breakdown <i class="fas fa-chevron-down ml-2"></i>
+                </button>
+                
+                <div id="full-report" class="hidden text-left pop-card p-8 text-purple-900/70 text-sm leading-loose space-y-4 mb-8">
+                    <p id="result-desc">Full description...</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 pt-6 border-t border-pop-purple/10">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-pop-purple/50">Energy Output</span>
+                            <div class="h-2 bg-pop-purple/10 rounded-full mt-1"><div id="meter-energy" class="h-full bg-pop-yellow rounded-full" style="width:0%"></div></div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-pop-purple/50">Social Battery</span>
+                            <div class="h-2 bg-pop-purple/10 rounded-full mt-1"><div id="meter-social" class="h-full bg-pop-pink rounded-full" style="width:0%"></div></div>
+                        </div>
+                         <div>
+                            <span class="text-[10px] uppercase font-bold text-pop-purple/50">Chaos Index</span>
+                            <div class="h-2 bg-pop-purple/10 rounded-full mt-1"><div id="meter-chaos" class="h-full bg-pop-cyan rounded-full" style="width:0%"></div></div>
+                        </div>
+                         <div>
+                            <span class="text-[10px] uppercase font-bold text-pop-purple/50">Vibe Check Time</span>
+                            <div id="meter-time" class="font-bold text-pop-purple mt-1">0s</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="shareResult()" class="pop-cta px-8 py-4 rounded-3xl font-bold w-full sm:w-auto flex-1">
+                        Share My Vibe <i class="fas fa-share-alt ml-2"></i>
+                    </button>
+                    <a href="arcade.html" class="bg-white border-2 border-pop-purple/30 text-pop-purple px-8 py-4 rounded-3xl font-bold hover:bg-pop-purple/10 transition w-full sm:w-auto flex-1">
+                        Cognitive Arcade
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script type="module">
+        // ================= CONFIG =================
+        // Scores: Energy (E), Social (S), Chaos (C)
+        const questions = [
+            { q: "Your alarm goes off at 7 AM. You...", cat: "Morning Routine",
+              a: [
+                  { text: "Am already up and caffeinated.", scores: { E: 20, S: 0, C: 0 } },
+                  { text: "Snooze until panic sets in at 7:45.", scores: { E: 5, S: 0, C: 20 } },
+                  { text: "Scroll on my phone in bed for an hour.", scores: { E: 0, S: 10, C: 5 } }
+              ] 
+            },
+            { q: "In a group project, your role is usually...", cat: "Work Style",
+              a: [
+                  { text: "The Leader who does 90% of the work.", scores: { E: 25, S: 5, C: 0 } },
+                  { text: "The 'Vibe Manager' (I send memes).", scores: { E: 10, S: 25, C: 15 } },
+                  { text: "The ghost who appears at the final presentation.", scores: { E: 0, S: 0, C: 10 } }
+              ] 
+            },
+            { q: "A surprise free Friday night appears! You...", cat: "Social Battery",
+              a: [
+                  { text: "Find the biggest party possible.", scores: { E: 20, S: 25, C: 20 } },
+                  { text: "Order takeout and talk to no one.", scores: { E: 5, S: -10, C: 0 } },
+                  { text: "Have a deep 3-hour talk with one friend.", scores: { E: 10, S: 15, C: 5 } }
+              ] 
+            },
+            { q: "How many browser tabs do you have open right now?", cat: "Digital Chaos",
+              a: [
+                  { text: "Maybe 3 or 4, perfectly organized.", scores: { E: 5, S: 0, C: -10 } },
+                  { text: "Over 20. I can't even see the icons.", scores: { E: 15, S: 0, C: 25 } },
+                  { text: "Just one... but it's a 4-hour video essay.", scores: { E: 10, S: 0, C: 5 } }
+              ] 
+            },
+            { q: "Your approach to making plans is...", cat: "Planning",
+              a: [
+                  { text: "A shared calendar invite sent weeks ago.", scores: { E: 15, S: 10, C: -20 } },
+                  { text: "\"WYD right now?\" texts at 10 PM.", scores: { E: 20, S: 20, C: 25 } },
+                  { text: "Saying yes then hoping they cancel.", scores: { E: 5, S: -5, C: 5 } }
+              ] 
+            },
+            { q: "When you walk into a crowded room, you feel...", cat: "Environment",
+              a: [
+                  { text: "Energized. Time to perform.", scores: { E: 20, S: 25, C: 10 } },
+                  { text: "Overwhelmed. Where is the exit?", scores: { E: 5, S: -20, C: 0 } },
+                  { text: "Observant. Scanning for the vibe.", scores: { E: 10, S: 5, C: 5 } }
+              ] 
+            },
+             { q: "Your phone is currently at...", cat: "Preparedness",
+              a: [
+                  { text: "100% and I have a portable charger.", scores: { E: 10, S: 0, C: -15 } },
+                  { text: "4% and I don't know where my charger is.", scores: { E: 5, S: 5, C: 25 } },
+                  { text: "Somewhere between 40-80%. It's fine.", scores: { E: 5, S: 0, C: 0 } }
+              ] 
+            },
+            { q: "Your main goal in a conversation is to...", cat: "Communication",
+              a: [
+                  { text: "Make them laugh or be entertained.", scores: { E: 20, S: 25, C: 15 } },
+                  { text: "Make sure they feel heard and validated.", scores: { E: 5, S: 25, C: 0 } },
+                  { text: "Exchange useful information efficiently.", scores: { E: 10, S: 0, C: -10 } }
+              ] 
+            },
+            { q: "How do you handle an awkward silence?", cat: "Tension",
+              a: [
+                  { text: "Fill it immediately with anything.", scores: { E: 15, S: 15, C: 20 } },
+                  { text: "Let it sit. I don't mind.", scores: { E: 0, S: -10, C: 0 } },
+                  { text: "Check my phone nervously.", scores: { E: 5, S: 0, C: 5 } }
+              ] 
+            },
+            { q: "Your aesthetic is best described as...", cat: "Vibe",
+              a: [
+                  { text: "Maximalist. More is more.", scores: { E: 20, S: 10, C: 25 } },
+                  { text: "Cozy, soft, and minimal.", scores: { E: 0, S: -5, C: 0 } },
+                  { text: "Curated, sharp, and functional.", scores: { E: 15, S: 0, C: -15 } }
+              ] 
+            },
+             { q: "A friend cancels on you last minute. You feel...", cat: "Reaction",
+              a: [
+                  { text: "Relieved. Back to bed.", scores: { E: -5, S: -15, C: 0 } },
+                  { text: "Annoyed. Now I have to find a new plan.", scores: { E: 15, S: 5, C: 5 } },
+                  { text: "Worried about them. Are they okay?", scores: { E: 5, S: 25, C: 0 } }
+              ] 
+            },
+            { q: "Your relationship with caffeine is...", cat: "Fuel",
+              a: [
+                  { text: "It is my lifeblood. 3+ a day.", scores: { E: 25, S: 5, C: 20 } },
+                  { text: "One careful matcha in the morning.", scores: { E: 10, S: 5, C: -5 } },
+                  { text: "It makes me too anxious.", scores: { E: 5, S: -5, C: 5 } }
+              ] 
+            },
+            { q: "Finally, what drives you the most?", cat: "Driver",
+              a: [
+                  { text: "Fun and novelty.", scores: { E: 20, S: 15, C: 25 } },
+                  { text: "Connection and harmony.", scores: { E: 5, S: 30, C: 0 } },
+                  { text: "Achievement and clarity.", scores: { E: 25, S: 0, C: -20 } }
+              ] 
+            }
+        ];
+
+        const archetypes = {
+            "NeonChaos": {
+                title: "Neon Chaos",
+                subtitle: "The Human Glitter Bomb",
+                summary: "You are exhausting but delightful. You operate on pure impulse and high-octane social energy.",
+                desc: "High Energy, High Chaos, High Social. You are the life of the party, but your life is a mess of open tabs, dying phone batteries, and spontaneous plans. You run on dopamine and vibes."
+            },
+            "PastelGhost": {
+                title: "Pastel Ghost",
+                subtitle: "Seen at 10:45 AM, replied at 3 AM.",
+                summary: "Your energy is precious and you protect it fiercely. You prioritize comfort over everything.",
+                desc: "Low Energy, Low Social. You aren't anti-social, just selectively social. Your ideal state is horizontal on a couch. You are cozy, low-maintenance, and very hard to make plans with."
+            },
+            "CoolBlueLogic": {
+                title: "Cool Blue Logic",
+                subtitle: "\"Actually, if you look at the data...\"",
+                summary: "You are the anchor in the storm. You prefer structure, facts, and efficiency over messy feelings.",
+                desc: "High Energy, Low Chaos. You are organized, driven, and perhaps a little intense. You dislike spontaneity because you already have a better plan documented in a spreadsheet."
+            },
+            "GoldenGlow": {
+                title: "Golden Retriever Glow",
+                subtitle: "\"Did we just become best friends?!\"",
+                summary: "You just want everyone to be happy. You have boundless social energy and zero boundaries.",
+                desc: "High Social, Moderate Energy, Low Chaos. You are the ultimate hype person. You derive your energy almost entirely from other people's happiness, sometimes at your own expense."
+            },
+            "MoodyMauve": {
+                title: "Moody Mauve",
+                subtitle: "\"It's not a phase, it's an aesthetic.\"",
+                summary: "You feel things deeply and you want everyone to know it. You curate a vibe of mysterious depth.",
+                desc: "Moderate Energy, High Social focus (but focused on depth over breadth). You prefer deep 3 AM talks over parties. You are artistic, introspective, and maybe slightly pretentious."
+            },
+            "CrimsonHustle": {
+                title: "Crimson Hustle",
+                subtitle: "\"Sleep is for people without a 5-year plan.\"",
+                summary: "Your vibe is intensity. You are highly driven, highly caffeinated, and always optimizing.",
+                desc: "Highest Energy, Lowest Chaos. You view life as a series of objectives to crush. You are incredibly productive but probably need a nap and a hobby that isn't 'networking'."
+            },
+            "MintFresh": {
+                title: "Mint Fresh",
+                subtitle: "Suspiciously well-adjusted.",
+                summary: "You are balanced. You have energy but aren't manic. You are social but have boundaries. How?",
+                desc: "Balanced scores across the board. You are the rare healthy human. You likely drink enough water, have a reasonable screen time, and actually meditate. You're the friend everyone else asks for advice."
+            }
+        };
+
+        // ================= LOGIC =================
+        let currentQ = 0;
+        let totalScores = { E: 0, S: 0, C: 0 };
+        let startTime = 0;
+
+        // Exposed functions
+        window.startQuiz = function() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-interface').classList.remove('hidden');
+            startTime = Date.now();
+            renderQuestion();
+        }
+
+        window.shareResult = function() {
+            if(navigator.share) {
+                navigator.share({ title: "My Vibe Check", text: "My cognitive palette is " + document.getElementById('result-title').innerText, url: window.location.href });
+            } else {
+                alert("Result link copied to clipboard.");
+            }
+        }
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) {
+                finishQuiz();
+                return;
+            }
+
+            const q = questions[currentQ];
+            document.getElementById('q-category').innerText = q.cat;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-text').innerText = String(currentQ + 1).padStart(2, '0') + " / " + questions.length;
+            
+            // Progress Bar
+            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            q.a.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "pop-btn-option w-full p-6 text-left text-lg font-body text-pop-purple rounded-2xl font-bold";
+                btn.innerText = opt.text;
+                btn.onclick = () => handleAnswer(opt.scores);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(scores) {
+            totalScores.E += scores.E;
+            totalScores.S += scores.S;
+            totalScores.C += scores.C;
+            currentQ++;
+            renderQuestion();
+        }
+
+        function finishQuiz() {
+            const durationSec = ((Date.now() - startTime) / 1000).toFixed(0);
+            
+            // Determine Archetype based on score profiles
+            let resultKey = "MintFresh";
+            const { E, S, C } = totalScores;
+
+            if (E > 200 && C > 150 && S > 150) resultKey = "NeonChaos";
+            else if (E > 220 && C < 0) resultKey = "CrimsonHustle";
+            else if (S > 200 && E > 100) resultKey = "GoldenGlow";
+            else if (E < 50 && S < 50) resultKey = "PastelGhost";
+            else if (C < -50 && E > 100) resultKey = "CoolBlueLogic";
+            else if (S > 100 && C > 50 && E < 150) resultKey = "MoodyMauve";
+            else resultKey = "MintFresh"; // Balanced or messy scores
+
+            const data = archetypes[resultKey];
+
+            // UI Render
+            document.getElementById('quiz-interface').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            document.getElementById('result-title').innerText = data.title;
+            document.getElementById('result-subtitle').innerText = data.subtitle;
+            document.getElementById('result-summary').innerText = data.summary;
+            document.getElementById('result-desc').innerText = data.desc;
+
+            // Render Metrics Meters (Normalizing scores roughly 0-300 to 0-100%)
+            document.getElementById('meter-energy').style.width = Math.min(100, Math.max(0, (E / 250) * 100)) + "%";
+            document.getElementById('meter-social').style.width = Math.min(100, Math.max(0, (S / 250) * 100)) + "%";
+            // Chaos can be negative, adjust normalization
+            document.getElementById('meter-chaos').style.width = Math.min(100, Math.max(0, ((C + 100) / 300) * 100)) + "%";
+            document.getElementById('meter-time').innerText = durationSec + "s";
+
+            // Save Data Payload (5 metrics + standards)
+            const payload = {
+                testId: "vibe_check_palette",
+                timestamp: new Date().toISOString(),
+                archetype: resultKey,
+                metrics: {
+                    energy_output: E,
+                    social_battery: S,
+                    chaos_index: C,
+                    attention_span: C < 0 ? "High" : (C > 150 ? "Low" : "Medium"), // Derived metric
+                    vibe_score: Math.floor((E+S+C)/3), // Derived composite score
+                    time_taken: parseInt(durationSec)
+                }
+            };
+
+            // Use global save handler
+            if (window.saveTestResult) {
+                try {
+                    window.saveTestResult(payload);
+                    console.log("Saved Vibe Check Profile");
+                } catch(e) { console.warn("Save Error", e); }
+            } else {
+                console.log("Mock Save:", payload);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Delusion Meter • Reality Audit | QuizRealm</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+    <script type="module" src="game-engine.js"></script>
+    <script type="module" src="assets/ux-core.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        'serif': ['Cormorant Garamond', 'serif'], 
+                        'sans': ['Inter', 'sans-serif'] 
+                    },
+                    colors: { 
+                        'midnight': '#0f172a',
+                        'slate-dark': '#1e293b',
+                        'frost': '#f1f5f9',
+                        'accent-silver': '#94a3b8'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(8px);
+        }
+
+        .progress-container { background: rgba(255, 255, 255, 0.05); height: 2px; }
+        .progress-fill { background: #94a3b8; height: 100%; transition: width 0.4s ease; }
+
+        .reveal { animation: fadeIn 0.8s ease forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen selection:bg-slate-500">
+    <quiz-header style="color: #f1f5f9;"></quiz-header>
+
+    <main class="flex-grow w-full max-w-2xl mx-auto px-6 py-12 lg:py-24">
+
+        <div id="start-screen" class="text-center space-y-12 reveal">
+            <div class="space-y-4">
+                <h1 class="font-serif text-6xl md:text-8xl italic leading-none text-white">
+                    Delusion <br>Meter.
+                </h1>
+                <p class="text-accent-silver text-sm uppercase tracking-[0.4em]">Reality Calibration v.2.0</p>
+            </div>
+
+            <p class="text-slate-400 font-light leading-relaxed max-w-sm mx-auto">
+                Are you a visionary architect of your own future, or have you simply lost the thread of reality?
+            </p>
+
+            <button onclick="window.startQuiz()" class="border border-white/20 text-white px-12 py-4 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-midnight transition-all duration-500">
+                Begin Audit
+            </button>
+        </div>
+
+        <div id="quiz-interface" class="hidden space-y-12">
+            <div class="space-y-4">
+                <div class="flex justify-between items-end text-[10px] font-bold uppercase tracking-widest text-accent-silver">
+                    <span id="q-category">Cognitive Bias</span>
+                    <span id="progress-text">01 / 13</span>
+                </div>
+                <div class="progress-container"><div id="progress-bar" class="progress-fill"></div></div>
+            </div>
+
+            <h2 id="question-text" class="font-serif text-3xl md:text-4xl italic text-white leading-tight">
+                Loading...
+            </h2>
+
+            <div id="options-container" class="grid grid-cols-1 gap-4"></div>
+        </div>
+
+        <div id="result-screen" class="hidden text-center space-y-10 reveal">
+            <div class="glass-card p-12 space-y-6 rounded-sm">
+                <span class="text-[10px] uppercase font-bold tracking-[0.3em] text-accent-silver">Final Analysis</span>
+                <h2 id="result-title" class="font-serif text-5xl md:text-7xl italic text-white">Archetype</h2>
+                <p id="result-summary" class="text-slate-400 font-light italic leading-relaxed">Summary...</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-px bg-white/10 border border-white/10">
+                <div class="bg-midnight p-6">
+                    <div class="text-[10px] uppercase text-accent-silver mb-1">Reality Tether</div>
+                    <div id="tether-status" class="font-serif text-2xl italic">...</div>
+                </div>
+                <div class="bg-midnight p-6">
+                    <div class="text-[10px] uppercase text-accent-silver mb-1">Manifesting Force</div>
+                    <div id="bias-status" class="font-serif text-2xl italic">...</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+                <button onclick="shareResult()" class="bg-white text-midnight px-10 py-4 text-[10px] font-bold uppercase tracking-widest">Share Profile</button>
+                <a href="index-funnels.html" class="border border-white/20 text-white px-10 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition">Return Home</a>
+            </div>
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script type="module">
+        const questions = [
+            { q: "A world-renowned expert says your idea won't work. You think:", cat: "Authority",
+              a: [
+                  { text: "They're probably right; back to the drawing board.", scores: { man: 0, real: 25 } },
+                  { text: "They just don't see the vision yet.", scores: { man: 20, real: 10 } },
+                  { text: "They are threatened by my genius.", scores: { man: 30, real: 0 } }
+              ] 
+            },
+            { q: "Your bank account is at $5.00. You feel:", cat: "Finance",
+              a: [
+                  { text: "Extreme stress; I need a job immediately.", scores: { man: 0, real: 30 } },
+                  { text: "Calm. The money is 'in transit' from the universe.", scores: { man: 25, real: 5 } },
+                  { text: "I don't check the app. If I don't see it, it isn't real.", scores: { man: 15, real: 0 } }
+              ] 
+            },
+            { q: "How often do you imagine your future award acceptance speech?", cat: "Aspiration",
+              a: [
+                  { text: "Never. I focus on today's tasks.", scores: { man: 0, real: 25 } },
+                  { text: "Once in a while for motivation.", scores: { man: 15, real: 15 } },
+                  { text: "Every morning. I have the outfit picked out.", scores: { man: 30, real: 5 } }
+              ] 
+            },
+            { q: "Someone criticizes your personality. You assume:", cat: "Social",
+              a: [
+                  { text: "I have things to work on.", scores: { man: 0, real: 25 } },
+                  { text: "We just aren't vibrationally aligned.", scores: { man: 20, real: 10 } },
+                  { text: "They are obsessed with me and projecting.", scores: { man: 25, real: 0 } }
+              ] 
+            },
+            { q: "Luck is...", cat: "Probability",
+              a: [
+                  { text: "Statistical probability.", scores: { man: 0, real: 30 } },
+                  { text: "Something I can attract with my mind.", scores: { man: 25, real: 5 } },
+                  { text: "A reward for being a good person.", scores: { man: 15, real: 10 } }
+              ] 
+            },
+            { q: "You forgot a deadline. Your excuse is:", cat: "Accountability",
+              a: [
+                  { text: "I messed up and I'm sorry.", scores: { man: 0, real: 25 } },
+                  { text: "The timing wasn't cosmically right.", scores: { man: 20, real: 5 } },
+                  { text: "I was busy doing high-level thinking.", scores: { man: 25, real: 0 } }
+              ] 
+            },
+            { q: "When you look in the mirror, you see:", cat: "Image",
+              a: [
+                  { text: "Exactly what is there.", scores: { man: 0, real: 30 } },
+                  { text: "A work in progress.", scores: { man: 15, real: 20 } },
+                  { text: "The main character of a global franchise.", scores: { man: 30, real: 0 } }
+              ] 
+            },
+            { q: "If a plan fails, it's because:", cat: "Failure",
+              a: [
+                  { text: "I executed poorly.", scores: { man: 0, real: 25 } },
+                  { text: "The universe has something better for me.", scores: { man: 25, real: 10 } },
+                  { text: "Haters sabotaged me.", scores: { man: 15, real: 0 } }
+              ] 
+            },
+            { q: "Your daily screen time is:", cat: "Digital",
+              a: [
+                  { text: "Low. I am grounded in reality.", scores: { man: 0, real: 25 } },
+                  { text: "High, but it's for research.", scores: { man: 10, real: 10 } },
+                  { text: "I live on the internet; real life is boring.", scores: { man: 20, real: 0 } }
+              ] 
+            },
+            { q: "Red flags in a romantic partner are:", cat: "Intimacy",
+              a: [
+                  { text: "Reasons to leave immediately.", scores: { man: 0, real: 30 } },
+                  { text: "Challenges I can heal with my love.", scores: { man: 25, real: 5 } },
+                  { text: "Misunderstandings from their past.", scores: { man: 15, real: 10 } }
+              ] 
+            },
+            { q: "If you want to be a millionaire, you should:", cat: "Manifest",
+              a: [
+                  { text: "Save, invest, and work 80 hours a week.", scores: { man: 0, real: 30 } },
+                  { text: "Feel like a millionaire now to attract the frequency.", scores: { man: 30, real: 0 } },
+                  { text: "Wait for a sign.", scores: { man: 15, real: 10 } }
+              ] 
+            },
+            { q: "Negative news is:", cat: "Focus",
+              a: [
+                  { text: "Important to stay informed.", scores: { man: 0, real: 25 } },
+                  { text: "Low-vibrational noise I avoid.", scores: { man: 25, real: 5 } },
+                  { text: "Fake or exaggerated.", scores: { man: 15, real: 0 } }
+              ] 
+            },
+            { q: "This test is:", cat: "Final",
+              a: [
+                  { text: "A fun way to reflect.", scores: { man: 5, real: 20 } },
+                  { text: "An attack on my lifestyle.", scores: { man: 10, real: 0 } },
+                  { text: "A confirmation of my power.", scores: { man: 30, real: 0 } }
+              ] 
+            }
+        ];
+
+        const archetypes = {
+            "Grounded": { title: "Grounded", summary: "You are firmly attached to the physical world. Perhaps too much.", desc: "You value data, logic, and physical evidence above all else. While this makes you reliable, you may be missing out on the magic of big-picture dreaming." },
+            "Visionary": { title: "Visionary", summary: "The sweet spot. You dream big but keep your boots on.", desc: "You have a high Manifestation score but a solid Reality Tether. You understand that while thoughts lead to things, actions are the bridge." },
+            "Manifestor": { title: "Manifestor", summary: "You are 90% vibration, 10% physical matter.", desc: "You spend more time in your dream life than your real life. Your optimism is infectious, but your reality tether is fraying." },
+            "Delusional": { title: "Main Character", summary: "Reality is merely a suggestion to you.", desc: "You ignore all negative feedback and assume the world revolves around your narrative. You are the star of a movie the rest of us aren't in." }
+        };
+
+        let currentQ = 0;
+        let totals = { man: 0, real: 0 };
+        let startTime = 0;
+
+        window.startQuiz = function() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-interface').classList.remove('hidden');
+            startTime = Date.now();
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) { finishQuiz(); return; }
+            const q = questions[currentQ];
+            
+            // UI UPDATES
+            document.getElementById('q-category').innerText = q.cat;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
+            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            q.a.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full p-6 text-left text-sm uppercase tracking-widest font-bold";
+                btn.innerText = opt.text;
+                btn.onclick = () => {
+                    totals.man += opt.scores.man;
+                    totals.real += opt.scores.real;
+                    currentQ++; // FIXED: Incrementing question counter
+                    renderQuestion();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function finishQuiz() {
+            let key = "Visionary";
+            if (totals.real > 250) key = "Grounded";
+            else if (totals.man > 250 && totals.real < 100) key = "Delusional";
+            else if (totals.man > 180) key = "Manifestor";
+            
+            const data = archetypes[key];
+            document.getElementById('quiz-interface').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('result-title').innerText = data.title;
+            document.getElementById('result-summary').innerText = data.summary;
+            
+            document.getElementById('tether-status').innerText = totals.real > 150 ? "Solid" : "Fragmented";
+            document.getElementById('bias-status').innerText = totals.man > 150 ? "Infinite" : "Moderate";
+
+            if (window.saveTestResult) window.saveTestResult({ testId: 'delusion_meter', archetype: key, metrics: { manifestation: totals.man, reality: totals.real } });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Identity Lab • Protocols | QuizRealm</title>
+    <meta name="theme-color" content="#000000">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+    <script type="module" src="game-engine.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        'header': ['Space Grotesk', 'sans-serif'], 
+                        'body': ['Inter', 'sans-serif'] 
+                    },
+                    colors: { 
+                        'void': '#020202',
+                        'surface': '#0a0a0a',
+                        'border': '#1a1a1a',
+                        'highlight': '#e5e5e5',
+                        'gold': '#ffb700',
+                        'gold-dark': '#e0a100',
+                        'orange-burn': '#ff4d00'
+                    },
+                    boxShadow: {
+                        'glow-gold': '0 0 25px rgba(255, 183, 0, 0.2)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020202; color: #e5e5e5; font-family: 'Inter', sans-serif; }
+        
+        /* --- CARD INTERACTIONS --- */
+        
+        /* 1. Default State: Grayscale */
+        .test-card img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: filter 0.5s ease, transform 0.6s ease;
+            filter: grayscale(100%) contrast(1.1);
+        }
+
+        /* 2. Zone Activation: Hovering the GRID triggers COLOR for all cards inside */
+        .cards-grid:hover .test-card img {
+            filter: grayscale(0%) contrast(1);
+        }
+
+        /* 3. Focus: Hovering a SPECIFIC card scales it */
+        .test-card:hover img {
+            transform: scale(1.1);
+        }
+
+        /* 4. Card Borders & Shadows */
+        .test-card {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .test-card:hover {
+            border-color: #ffb700;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.9), 0 0 15px rgba(255, 183, 0, 0.1);
+        }
+
+        /* Card Visual Wrapper */
+        .card-visual {
+            position: relative; overflow: hidden;
+        }
+        .card-visual::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(to top, #0a0a0a 10%, transparent 100%);
+        }
+
+        /* Buttons & Badges */
+        .btn-launch {
+            width: 100%; background: #ffb700; color: #000;
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; text-transform: uppercase;
+            padding: 12px 0; text-align: center; font-size: 0.75rem; letter-spacing: 0.15em;
+            transition: all 0.2s ease-out; border-radius: 2px;
+        }
+        .btn-launch:hover { background: #e0a100; box-shadow: 0 0 20px rgba(255, 183, 0, 0.5); transform: scale(1.02); }
+
+        .pulse-dot {
+            width: 6px; height: 6px; background: #ffb700; border-radius: 50%; display: inline-block;
+            box-shadow: 0 0 8px #ffb700; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+    <quiz-header></quiz-header>
+
+    <main class="relative z-10 w-full max-w-[1400px] mx-auto px-6 py-16">
+
+        <header class="relative w-full max-w-[1400px] mx-auto pt-4 pb-32 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+            
+            <div class="lg:col-span-7 space-y-8 relative z-20">
+                <div class="flex items-center gap-4 mb-2">
+                    <span class="pulse-dot"></span>
+                    <span class="text-xs font-mono text-gold uppercase tracking-widest">System Online • 11 Modules Active</span>
+                </div>
+                
+                <h1 class="text-6xl md:text-8xl font-header font-medium leading-[0.95] text-white">
+                    Define Your <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold via-orange-burn to-gold">Parameters.</span>
+                </h1>
+                
+                <p class="text-xl text-gray-400 font-light max-w-xl leading-relaxed border-l-2 border-gold/30 pl-6">
+                    Most people live their entire lives without knowing their own source code. 
+                    <span class="text-white font-medium">Select a diagnostic protocol below to begin the audit.</span>
+                </p>
+
+                <div class="flex gap-8 pt-4 text-[10px] uppercase tracking-widest text-gray-500 font-mono">
+                    <div><span class="block text-white text-lg font-header">1.2M+</span> Profiles</div>
+                    <div><span class="block text-white text-lg font-header">4.9/5</span> Accuracy</div>
+                    <div><span class="block text-white text-lg font-header">100%</span> Private</div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 relative hidden lg:block h-[500px]">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gold/10 rounded-full blur-[100px] animate-pulse"></div>
+                <div class="relative w-full h-full animate-float">
+                    <img src="assets/brain.png" alt="Abstract Identity" class="w-full h-full object-contain drop-shadow-2xl mix-blend-lighten opacity-90 hover:opacity-100 transition duration-700">
+                </div>
+            </div>
+
+        </header>
+
+        <div class="flex items-end justify-between mb-10 border-b border-white/5 pb-4">
+            <h2 class="text-sm font-bold uppercase tracking-widest text-white flex items-center gap-3">
+                <i class="fas fa-brain text-gold"></i> Psychological Profiling
+            </h2>
+            <span class="text-[10px] text-gold font-mono tracking-widest">SEC_01</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-32 cards-grid">
+
+            <a href="red-flag-test.html" class="test-card group h-[420px]">
+                <div class="card-visual h-[55%]">
+                    <img src="/assets/redflag.png" alt="Red Flag">
+                    <div class="absolute top-4 left-4 bg-orange-burn text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wider skew-x-[-10deg]">High Priority</div>
+                </div>
+                <div class="card-content">
+                    <div>
+                        <h3 class="text-2xl font-header text-white mb-2 leading-none group-hover:text-gold transition">Red Flag Radar</h3>
+                        <p class="text-sm text-gray-400 leading-snug">Are you the toxic one? A 13-point audit of your relationship behaviors.</p>
+                    </div>
+                    <div class="mt-6">
+                        <button class="btn-launch">Launch Diagnostic</button>
+                    </div>
+                </div>
+            </a>
+
+            <a href="seduction-test.html" class="test-card group h-[420px]">
+                <div class="card-visual h-[55%]">
+                    <img src="/assets/seductionstyle.png" alt="Seduction">
+                </div>
+                <div class="card-content">
+                    <div>
+                        <h3 class="text-2xl font-header text-white mb-2 leading-none group-hover:text-gold transition">Seduction Style</h3>
+                        <p class="text-sm text-gray-400 leading-snug">Siren, Coquette, or Charmer? Decode your subconscious power dynamic.</p>
+                    </div>
+                    <div class="mt-6">
+                        <button class="btn-launch">Analyze Style</button>
+                    </div>
+                </div>
+            </a>
+
+            <a href="delusion-test.html" class="test-card group h-[420px]">
+                <div class="card-visual h-[55%]">
+                    <img src="/assets/delusion.png" alt="Delusion">
+                </div>
+                <div class="card-content">
+                    <div>
+                        <h3 class="text-2xl font-header text-white mb-2 leading-none group-hover:text-gold transition">The Reality Index</h3>
+                        <p class="text-sm text-gray-400 leading-snug">Are you a visionary, or just clinically detached from reality?</p>
+                    </div>
+                    <div class="mt-6">
+                        <button class="btn-launch">Check Tether</button>
+                    </div>
+                </div>
+            </a>
+
+            <a href="toxic-radar-test.html" class="test-card group h-[420px]">
+                <div class="card-visual h-[55%]">
+                    <img src="/assets/toxic.png" alt="Toxic Radar">
+                </div>
+                <div class="card-content">
+                    <div>
+                        <h3 class="text-2xl font-header text-white mb-2 leading-none group-hover:text-gold transition">Toxic Radar</h3>
+                        <p class="text-sm text-gray-400 leading-snug">Why do you attract drama? Measuring your 'Blindspot Index'.</p>
+                    </div>
+                    <div class="mt-6">
+                        <button class="btn-launch">Run Scan</button>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="flex items-end justify-between mb-10 border-b border-white/5 pb-4">
+            <h2 class="text-sm font-bold uppercase tracking-widest text-white flex items-center gap-3">
+                <i class="fas fa-users text-gold"></i> Social Dynamics
+            </h2>
+            <span class="text-[10px] text-gold font-mono tracking-widest">SEC_02</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-32 cards-grid">
+
+            <a href="social-battery-test.html" class="test-card group h-[420px]">
+                <div class="card-visual h-[55%]">
+                    <img src="/assets/social.png" alt="Battery">
+                </div>
+                <div class="card-content">
+                    <div>
+                        <h3 class="text-2xl font-header text-white mb-2 leading-none group-hover:text-gold transition">Social Battery</h3>
+                        <p class="text-sm text-gray-400 leading-snug">Introvert or Extrovert? Measure your exact recharge rate.</p>
+                    </div>
+                    <div class="mt-6">
+                        <button class="btn-launch">Measure Energy</button>
+                    </div>
+                </div>
+            </a>
+
+            <a href="ick-test.html" class="test-card group h-[420px]">
+                <div class="card-visual h-[55%]">
+                    <img src="/assets/ick.png" alt="Ick">
+                </div>
+                <div class="card-content">
+                    <div>
+                        <h3 class="text-2xl font-header text-white mb-2 leading-none group-hover:text-gold transition">Tolerance Threshold</h3>
+                        <p class="text-sm text-gray-400 leading-snug">Are your standards too high, or is everyone else just annoying?</p>
+                    </div>
+                    <div class="mt-6">
+                        <button class="btn-launch">Test Patience</button>
+                    </div>
+                </div>
+            </a>
+
+            <a href="apology-test.html" class="test-card group h-[420px]">
+                <div class="card-visual h-[55%]">
+                    <img src="/assets/apology.png" alt="Apology">
+                </div>
+                <div class="card-content">
+                    <div>
+                        <h3 class="text-2xl font-header text-white mb-2 leading-none group-hover:text-gold transition">Conflict Profile</h3>
+                        <p class="text-sm text-gray-400 leading-snug">How do you fight? Accountability vs. Ego management.</p>
+                    </div>
+                    <div class="mt-6">
+                        <button class="btn-launch">Audit Conflict</button>
+                    </div>
+                </div>
+            </a>
+
+            <a href="family-trauma-test.html" class="test-card group h-[420px]">
+                <div class="card-visual h-[55%]">
+                    <img src="/assets/trauma.png" alt="Family">
+                </div>
+                <div class="card-content">
+                    <div>
+                        <h3 class="text-2xl font-header text-white mb-2 leading-none group-hover:text-gold transition">Ancestral Role</h3>
+                        <p class="text-sm text-gray-400 leading-snug">Birth order and attachment theory. Why are you the way you are?</p>
+                    </div>
+                    <div class="mt-6">
+                        <button class="btn-launch">Explore Origin</button>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="flex items-end justify-between mb-10 border-b border-white/5 pb-4">
+            <h2 class="text-sm font-bold uppercase tracking-widest text-white flex items-center gap-3">
+                <i class="fas fa-briefcase text-gold"></i> Career & Probability
+            </h2>
+            <span class="text-[10px] text-gold font-mono tracking-widest">SEC_03</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32 cards-grid">
+            
+            <a href="fortune-magnet-test.html" class="test-card h-72 flex-row group">
+                <div class="w-1/2 relative overflow-hidden">
+                    <img src="/assets/fortune.png" alt="Luck">
+                </div>
+                <div class="w-1/2 p-8 flex flex-col justify-center border-l border-white/5 bg-surface">
+                    <h3 class="text-3xl font-header text-white mb-3 group-hover:text-gold transition">Fortune Magnet</h3>
+                    <p class="text-sm text-gray-400 mb-8 leading-relaxed">Are you engineering your own luck? A test of Locus of Control.</p>
+                    <button class="btn-launch w-auto px-8">Calculate Probability</button>
+                </div>
+            </a>
+
+            <a href="career-burnout.html" class="test-card h-72 flex-row group">
+                <div class="w-1/2 relative overflow-hidden">
+                    <img src="/assets/burnout.png" alt="Burnout">
+                </div>
+                <div class="w-1/2 p-8 flex flex-col justify-center border-l border-white/5 bg-surface">
+                    <h3 class="text-3xl font-header text-white mb-3 group-hover:text-gold transition">Burnout Scale</h3>
+                    <p class="text-sm text-gray-400 mb-8 leading-relaxed">Exhaustion vs. Efficacy. Are you just tired, or are you done?</p>
+                    <button class="btn-launch w-auto px-8">Run System Check</button>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="bg-[#0a0a0a] p-8 md:p-16 border border-white/10 relative overflow-hidden rounded-sm group mb-20">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-gold/10 rounded-full blur-[150px] opacity-50 group-hover:opacity-100 transition duration-1000 pointer-events-none"></div>
+            
+            <div class="flex items-end justify-between mb-12 relative z-10">
+                <h2 class="text-4xl md:text-6xl font-header text-white font-bold leading-none">
+                    Fandom <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-orange-burn">Protocol.</span>
+                </h2>
+                <a href="#top" class="hidden md:block text-xs font-bold uppercase tracking-widest text-gold border-b border-gold/50 pb-1 hover:text-white transition">Return to Lab</a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10 cards-grid">
+                
+                <a href="friendsperson.html" class="test-card h-full group p-0 overflow-hidden flex flex-col">
+                    <div class="w-full aspect-video relative overflow-hidden border-b border-white/5">
+                        <img src="/assets/friends_central_perk.webp" alt="Friends">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent opacity-60"></div>
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow justify-end">
+                        <h3 class="font-bold text-white text-xl group-hover:text-gold transition">FRIENDS</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mt-2">Group Dynamics</p>
+                    </div>
+                </a>
+
+                <a href="TBBTPERSON.html" class="test-card h-full group p-0 overflow-hidden flex flex-col">
+                    <div class="w-full aspect-video relative overflow-hidden border-b border-white/5">
+                        <img src="assets/tbbtperson.webp" alt="Big Bang Theory">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent opacity-60"></div>
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow justify-end">
+                        <h3 class="font-bold text-white text-xl group-hover:text-gold transition">TBBT</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mt-2">Intellect Scale</p>
+                    </div>
+                </a>
+
+                <a href="AVATAR_TRIBE.html" class="test-card h-full group p-0 overflow-hidden flex flex-col">
+                    <div class="w-full aspect-video relative overflow-hidden border-b border-white/5">
+                        <img src="/assets/avatartribequiz.png" alt="Avatar">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent opacity-60"></div>
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow justify-end">
+                        <h3 class="font-bold text-white text-xl group-hover:text-gold transition">AVATAR</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mt-2">Elemental Triad</p>
+                    </div>
+                </a>
+
+                <a href="quiz-rickmorty.html" class="test-card h-full group p-0 overflow-hidden flex flex-col">
+                    <div class="w-full aspect-video relative overflow-hidden border-b border-white/5">
+                        <img src="/assets/rick_quiz_cover.png" alt="Rick and Morty">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent opacity-60"></div>
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow justify-end">
+                        <h3 class="font-bold text-white text-xl group-hover:text-gold transition">RICK & MORTY</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mt-2">Nihilism Index</p>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+    </main>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>
