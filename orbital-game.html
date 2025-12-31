@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The World Pulse • Global Pattern Analysis</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+    <script type="module" src="game-engine.js"></script>
+    <script type="module" src="assets/ux-core.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        'header': ['Space Grotesk', 'sans-serif'], 
+                        'body': ['Inter', 'sans-serif'] 
+                    },
+                    colors: { 
+                        'void': '#020202',
+                        'surface': '#0a0a0a',
+                        'panel': '#121212',
+                        'border': '#262626',
+                        'gold': '#ffb700',
+                        'gold-dim': '#9e7200',
+                        'success': '#10b981',
+                        'error': '#ef4444'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'timer': 'timer 5s linear forwards'
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+                        timer: { '0%': { width: '100%' }, '100%': { width: '0%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020202; color: #e5e5e5; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        /* Map Container */
+        .map-frame {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border: 1px solid #262626;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .map-image {
+            width: 100%; height: 100%; object-fit: contain;
+            /* Subtle zoom effect for "alive" feel */
+            animation: slowPan 30s alternate infinite;
+        }
+        @keyframes slowPan { from { transform: scale(1); } to { transform: scale(1.05); } }
+        
+        /* Watermark */
+        .watermark {
+            position: absolute; bottom: 19px; right: 10px;
+            width: 65px; height: 65px;
+            opacity: 0.99; pointer-events: none;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+        }
+
+        /* Option Buttons */
+        .option-btn {
+            width: 100%;
+            padding: 1rem 1rem;
+            background: #121212;
+            border: 1px solid #262626;
+            color: #a3a3a3;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.2s;
+            border-radius: 6px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .option-btn:hover:not(:disabled) {
+            background: #1e1e1e;
+            border-color: #404040;
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .option-btn.correct {
+            background: rgba(16, 185, 129, 0.15) !important;
+            border-color: #10b981 !important;
+            color: #10b981 !important;
+        }
+
+        .option-btn.wrong {
+            background: rgba(239, 68, 68, 0.15) !important;
+            border-color: #ef4444 !important;
+            color: #ef4444 !important;
+            opacity: 0.6;
+        }
+
+        /* Timer Bar */
+        .timer-container {
+            width: 100%; height: 2px; background: #262626; margin-top: auto;
+        }
+        .timer-bar {
+            height: 100%; background: #ffb700; width: 0%;
+        }
+
+        /* Bento Grid Cards */
+        .bento-card {
+            background: #0a0a0a; border: 1px solid #1a1a1a; padding: 1.5rem;
+            display: flex; flex-direction: column; justify-content: space-between;
+            transition: border-color 0.3s;
+        }
+        .bento-card:hover { border-color: #333; }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-[1400px] mx-auto px-4 py-8">
+        
+        <div id="startScreen" class="animate-fade-in space-y-20">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[500px]">
+                
+                <div class="lg:col-span-8 bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 md:p-12 relative overflow-hidden group flex flex-col justify-end">
+                    <div class="absolute inset-0 z-0">
+                        <img src="/assets/map_population denisty.png" class="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition duration-1000 grayscale group-hover:grayscale-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                    </div>
+                    
+                    <div class="relative z-10 max-w-2xl">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-gold text-[10px] font-bold uppercase tracking-widest">
+                                Data Visualization
+                            </span>
+                            <span class="text-xs text-gray-500 font-mono uppercase">Difficulty: Adaptive</span>
+                        </div>
+                        <h1 class="text-5xl md:text-7xl font-header font-bold text-white mb-6 leading-[0.9]">
+                            The World <span class="text-gold">Pulse.</span>
+                        </h1>
+                        <p class="text-lg text-gray-300 font-light mb-8 max-w-md">
+                            A visual challenge. We show you the data; you identify the human activity. From shipping routes to glacial shifts.
+                        </p>
+                        <button onclick="OrbitGame.start()" class="btn-primary bg-white text-black px-8 py-4 font-bold uppercase tracking-widest text-sm hover:bg-gold transition shadow-lg w-fit flex items-center gap-2">
+                            Start Challenge <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    
+                    <div class="bento-card rounded-2xl flex-1">
+                        <div class="mb-4">
+                            <i class="fas fa-info-circle text-gray-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-header text-white mb-2">What is this?</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed">
+                                A geography test for the modern age. We've stripped away the borders and labels. Can you recognize the world purely by its data footprint?
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bento-card rounded-2xl flex-1">
+                        <div class="mb-4">
+                            <i class="fas fa-list-ul text-gray-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-header text-white mb-3">Protocol</h3>
+                            <ul class="space-y-3 text-sm text-gray-400">
+                                <li class="flex items-center gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-xs font-mono">1</span>
+                                    <span>Analyze the Heatmap</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-xs font-mono">2</span>
+                                    <span>Select the correct Data Set</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-xs font-mono">3</span>
+                                    <span>8 Rounds. No Time Limit.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <section class="border-t border-white/10 pt-16">
+                <div class="flex items-end justify-between mb-8">
+                    <h2 class="text-2xl font-header text-white">Knowledge Base</h2>
+                    <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">Additional Resources</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <article class="bg-[#0a0a0a] border border-white/5 p-6 rounded-xl hover:border-white/10 transition">
+                        <h3 class="text-lg font-bold text-white mb-2">Why Map Literacy Matters</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                            In a data-driven world, understanding geospatial visualization is a critical skill. It allows us to see the invisible connections between economy, geography, and ecology.
+                        </p>
+                        <span class="text-[10px] text-gold uppercase tracking-widest">Read Briefing</span>
+                    </article>
+
+                    <article class="bg-[#0a0a0a] border border-white/5 p-6 rounded-xl hover:border-white/10 transition">
+                        <h3 class="text-lg font-bold text-white mb-2">The Data Behind The Maps</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                            These visualizations utilize open-source satellite telemetry and census data. By removing political borders, we reveal the true organic structure of civilization.
+                        </p>
+                        <span class="text-[10px] text-gold uppercase tracking-widest">Source Data</span>
+                    </article>
+
+                    <a href="arcade.html" class="bg-gradient-to-br from-[#1a1a1a] to-black border border-white/10 p-6 rounded-xl group hover:border-gold/50 transition relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fas fa-gamepad text-6xl text-white"></i>
+                        </div>
+                        <div class="relative z-10">
+                            <span class="px-2 py-1 bg-gold text-black text-[9px] font-bold uppercase rounded-sm mb-3 inline-block">More Games</span>
+                            <h3 class="text-xl font-bold text-white mb-2">Enter The Arcade</h3>
+                            <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                                Test your memory, logic, and speed with 12+ other cognitive modules.
+                            </p>
+                            <span class="text-xs font-bold text-white group-hover:text-gold transition flex items-center gap-2">
+                                Go to Arcade <i class="fas fa-arrow-right"></i>
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <div id="gameUI" class="hidden w-full h-[calc(100vh-140px)] min-h-[500px] flex flex-col md:flex-row gap-6 animate-fade-in">
+            
+            <div class="flex-grow relative h-1/2 md:h-full w-full md:w-2/3 bg-black border border-border rounded-xl overflow-hidden group">
+                <div class="absolute top-0 left-0 w-full p-4 z-20 flex justify-between items-start bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold mb-1 block">Subject No.</span>
+                        <span id="qCounter" class="text-2xl font-header text-white">01 / 08</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 mb-1 block">Accuracy</span>
+                        <span id="scoreDisplay" class="text-xl font-header text-white">100%</span>
+                    </div>
+                </div>
+
+                <img id="mapImage" src="" alt="Map Data" class="map-image opacity-0 transition-opacity duration-500">
+                
+                <img src="/assets/brain.png" class="watermark" alt="Identity Lab">
+
+                <div id="revealOverlay" class="absolute inset-x-0 bottom-0 bg-black/90 backdrop-blur-md border-t border-white/10 p-6 transform translate-y-full transition-transform duration-300 z-30">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <span class="text-[10px] font-mono uppercase text-gray-400 block mb-1">Pattern Identified</span>
+                            <h4 id="revealTitle" class="text-xl text-white font-header">Population Density</h4>
+                        </div>
+                        <button onclick="OrbitGame.nextQuestion()" class="px-6 py-2 bg-white text-black hover:bg-gold border border-white text-xs font-bold uppercase tracking-widest transition-colors rounded-sm">
+                            Next <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                    <div class="timer-container rounded-full overflow-hidden">
+                        <div id="timerBar" class="timer-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+           <div class="w-full md:w-1/3 h-auto md:h-full flex flex-col justify-center">
+                
+                <div class="mb-6 hidden md:block border-l-2 border-gold pl-4">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-widest mb-2">Identify The Pattern</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Analyze the illuminated areas on the map. Which global activity or natural phenomenon creates this specific distribution?
+                    </p>
+                </div>
+                
+                <div id="optionsGrid" class="flex flex-col gap-3">
+                    </div>
+            </div>
+
+        </div>
+
+        <div id="resultScreen" class="hidden max-w-2xl mx-auto text-center space-y-8 animate-slide-up pt-20">
+            <div id="resultIcon" class="text-6xl mb-6"></div>
+            
+            <h2 class="text-4xl md:text-5xl font-header text-white">Analysis Complete</h2>
+            
+            <div class="grid grid-cols-2 gap-8 border-y border-white/10 py-8 my-8">
+                <div>
+                    <span class="block text-xs font-mono uppercase text-gray-500 mb-2">Final Score</span>
+                    <span id="finalScore" class="text-4xl font-header text-gold">0/8</span>
+                </div>
+                <div>
+                    <span class="block text-xs font-mono uppercase text-gray-500 mb-2">Rating</span>
+                    <span id="finalRating" class="text-xl font-header text-white">Observer</span>
+                </div>
+            </div>
+
+            <p id="resultText" class="text-gray-400 leading-relaxed max-w-lg mx-auto"></p>
+
+            <div class="flex justify-center gap-4">
+                <button onclick="location.reload()" class="px-8 py-3 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest hover:bg-gold hover:text-black hover:border-gold transition-all rounded-sm">
+                    <i class="fas fa-redo mr-2"></i> Retry
+                </button>
+                <a href="arcade.html" class="px-8 py-3 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-all rounded-sm">
+                    Exit to Arcade
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // --- DATA CONFIGURATION (Updated Paths to /assets/ and .png) ---
+
+        const mapDatabase = [
+            // --- EASY TIER (Geographical & Distinct Natural Features) ---
+            { file: '/assets/map_glacier.png', answer: 'Global Glacial Mass', decoys: ['Fresh Water Reserves', 'Snowfall Intensity', 'Tundra Biomes'], difficulty: 'easy' },
+            { file: '/assets/map_deserts.png', answer: 'Arid Zones & Deserts', decoys: ['Solar Power Potential', 'Drought Severity', 'Heat Index'], difficulty: 'easy' },
+            { file: '/assets/map_rainforests.png', answer: 'Tropical Rainforests', decoys: ['Biodiversity Hotspots', 'Carbon Sinks', 'Monsoon Regions'], difficulty: 'easy' },
+            { file: '/assets/map_mountains.png', answer: 'Mountain Ranges', decoys: ['Tectonic Plate Boundaries', 'Mineral Deposits', 'High Altitude Zones'], difficulty: 'easy' },
+            { file: '/assets/map_rivers.png', answer: 'Major River Systems', decoys: ['Groundwater Reserves', 'Flood Zones', 'Inland Waterways'], difficulty: 'easy' },
+            { file: '/assets/map_forests.png', answer: 'Global Forest Cover', decoys: ['Vegetation Index', 'Protected Wildlife Areas', 'Timber Reserves'], difficulty: 'easy' },
+            { file: '/assets/map_coral.png', answer: 'Coral Reefs', decoys: ['Ocean Temperature', 'Marine Biodiversity', 'Shallow Water Zones'], difficulty: 'easy' },
+            { file: '/assets/map_population denisty.png', answer: 'Population Density', decoys: ['Light Pollution', 'Internet Connectivity', 'Urban Sprawl'], difficulty: 'easy' },
+
+            // --- HARD TIER (Infrastructure, Socio-Economic, & Abstract) ---
+            { file: '/assets/map_cities.png', answer: 'Major Urban Areas', decoys: ['Light Pollution', 'Industrial Zones', '5G Nodes'], difficulty: 'hard' },
+            { file: '/assets/map_cities2.png', answer: 'Global Megacities (>10M)', decoys: ['Capital Cities', 'Transport Hubs', 'Air Pollution Hotspots'], difficulty: 'hard' },
+            { file: '/assets/map_hospitals.png', answer: 'Global Hospitals', decoys: ['Universities', 'Police Stations', 'Urban Centers'], difficulty: 'hard' },
+            { file: '/assets/map_lifeindex.png', answer: 'Quality of Life Index', decoys: ['GDP Per Capita', 'Happiness Score', 'Healthcare Access'], difficulty: 'hard' },
+            { file: '/assets/map_libraries.png', answer: 'Public Libraries', decoys: ['Post Offices', 'Schools', 'Community Centers'], difficulty: 'hard' },
+            { file: '/assets/map_mcdonalds.png', answer: 'McDonald\'s Locations', decoys: ['Public Libraries', 'Hospitals', 'Starbucks Franchises'], difficulty: 'hard' },
+            { file: '/assets/map_cellular.png', answer: 'Cellular Coverage', decoys: ['Radio Frequencies', 'Population Centers', 'Wi-Fi Density'], difficulty: 'hard' },
+            { file: '/assets/map_fault line (volcanos).png', answer: 'Volcanic Activity', decoys: ['Earthquake Epicenters', 'Geothermal Energy', 'Lithium Deposits'], difficulty: 'hard' },
+            { file: '/assets/map_satalites orbit.png', answer: 'Satellite Orbits', decoys: ['Space Debris', 'GPS Nodes', 'Atmospheric Scanners'], difficulty: 'hard' },
+            { file: '/assets/map_air traffic.png', answer: 'Commercial Flight Paths', decoys: ['Bird Migration', 'Wind Currents', 'Global Tourism'], difficulty: 'hard' },
+            { file: '/assets/map_airtraffic.png', answer: 'Air Traffic Density', decoys: ['Cargo Logistics', '5G Network Coverage', 'Drone Activity'], difficulty: 'hard' },
+            { file: '/assets/financial centers.png', answer: 'Global Financial Hubs', decoys: ['Stock Exchanges', 'Banking Headquarters', 'High Net Worth Individuals'], difficulty: 'hard' },
+            { file: '/assets/map_powerplant.png', answer: 'Power Plants', decoys: ['Nuclear Facilities', 'Industrial Zones', 'Refineries'], difficulty: 'hard' },
+            { file: '/assets/map_shipping routs.png', answer: 'Global Shipping Routes', decoys: ['Submarine Cables', 'Ocean Currents', 'Plastic Waste Flow'], difficulty: 'hard' },
+            { file: '/assets/map_shipping routs 2.png', answer: 'Maritime Logistics', decoys: ['Naval Patrols', 'Oil Tanker Routes', 'Deep Sea Fishing'], difficulty: 'hard' },
+            { file: '/assets/map_internet.png', answer: 'Internet Backbone', decoys: ['Undersea Cables', 'Power Grid Lines', 'Railway Networks'], difficulty: 'hard' },
+            { file: '/assets/map_lighthouses.png', answer: 'Coastal Lighthouses', decoys: ['Naval Bases', 'Offshore Wind Farms', 'Tsunami Sensors'], difficulty: 'hard' },
+            { file: '/assets/map_ports.png', answer: 'Major Seaports', decoys: ['Coastal Cities', 'Fishing Zones', 'Naval Traffic'], difficulty: 'hard' },
+            { file: '/assets/map_airports.png', answer: 'International Airports', decoys: ['Logistics Hubs', 'Capital Cities', 'Military Bases'], difficulty: 'hard' },
+            { file: '/assets/map_roads.png', answer: 'Road Networks', decoys: ['Railways', 'Fiber Optic Lines', 'Pipeline Infrastructure'], difficulty: 'hard' }
+        ];
+
+        // --- GAME ENGINE ---
+        const OrbitGame = {
+            state: {
+                currentQ: 0,
+                score: 0,
+                totalQ: 8,
+                questions: [],
+                timer: null,
+                canClick: false
+            },
+
+            // 1. Initialize
+            start: () => {
+                document.getElementById('startScreen').classList.add('hidden');
+                document.getElementById('gameUI').classList.remove('hidden');
+                document.getElementById('gameUI').classList.add('animate-fade-in');
+                
+                OrbitGame.generateLevel();
+                OrbitGame.loadQuestion();
+            },
+
+            // 2. Create the random set (2 Easy + 6 Hard)
+            generateLevel: () => {
+                const easy = mapDatabase.filter(m => m.difficulty === 'easy').sort(() => 0.5 - Math.random()).slice(0, 2);
+                const hard = mapDatabase.filter(m => m.difficulty === 'hard').sort(() => 0.5 - Math.random()).slice(0, 6);
+                OrbitGame.state.questions = [...easy, ...hard];
+            },
+
+            // 3. Render Question
+            loadQuestion: () => {
+                const qData = OrbitGame.state.questions[OrbitGame.state.currentQ];
+                OrbitGame.state.canClick = true;
+
+                // Update Counters
+                document.getElementById('qCounter').innerText = `0${OrbitGame.state.currentQ + 1} / 0${OrbitGame.state.totalQ}`;
+                
+                // Reset UI
+                document.getElementById('revealOverlay').classList.remove('translate-y-0');
+                document.getElementById('revealOverlay').classList.add('translate-y-full');
+                document.getElementById('timerBar').style.animation = 'none';
+
+                // Load Image
+                const img = document.getElementById('mapImage');
+                img.style.opacity = '0';
+                setTimeout(() => {
+                    img.src = qData.file; 
+                    img.onload = () => img.style.opacity = '1';
+                }, 200);
+
+                // Generate Options
+                const allOptions = [...qData.decoys, qData.answer].sort(() => 0.5 - Math.random());
+                const grid = document.getElementById('optionsGrid');
+                grid.innerHTML = '';
+
+                allOptions.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerHTML = `<span>${opt}</span>`;
+                    btn.onclick = () => OrbitGame.handleAnswer(btn, opt === qData.answer);
+                    grid.appendChild(btn);
+                });
+            },
+
+            // 4. Handle Interaction
+            handleAnswer: (btn, isCorrect) => {
+                if (!OrbitGame.state.canClick) return;
+                OrbitGame.state.canClick = false;
+
+                // Visual Feedback
+                if (isCorrect) {
+                    btn.classList.add('correct');
+                    btn.innerHTML += `<i class="fas fa-check"></i>`;
+                    OrbitGame.state.score++;
+                } else {
+                    btn.classList.add('wrong');
+                    btn.innerHTML += `<i class="fas fa-times"></i>`;
+                    
+                    // Highlight correct one
+                    const buttons = document.querySelectorAll('.option-btn');
+                    const correctTxt = OrbitGame.state.questions[OrbitGame.state.currentQ].answer;
+                    buttons.forEach(b => {
+                        if (b.innerText === correctTxt) b.classList.add('correct');
+                    });
+                }
+
+                // Update Score Display
+                const accuracy = Math.round((OrbitGame.state.score / (OrbitGame.state.currentQ + 1)) * 100);
+                document.getElementById('scoreDisplay').innerText = `${accuracy}%`;
+
+                // Show Reveal Overlay & Start Timer
+                const reveal = document.getElementById('revealOverlay');
+                document.getElementById('revealTitle').innerText = OrbitGame.state.questions[OrbitGame.state.currentQ].answer;
+                reveal.classList.remove('translate-y-full');
+                reveal.classList.add('translate-y-0');
+
+                // Auto advance timer
+                const bar = document.getElementById('timerBar');
+                bar.style.animation = 'timer 5s linear forwards';
+                
+                OrbitGame.state.timer = setTimeout(() => {
+                    OrbitGame.nextQuestion();
+                }, 5000);
+            },
+
+            // 5. Next Step
+            nextQuestion: () => {
+                if (OrbitGame.state.timer) clearTimeout(OrbitGame.state.timer);
+                
+                OrbitGame.state.currentQ++;
+                
+                if (OrbitGame.state.currentQ < OrbitGame.state.totalQ) {
+                    OrbitGame.loadQuestion();
+                } else {
+                    OrbitGame.endGame();
+                }
+            },
+
+            // 6. Game Over
+            endGame: () => {
+                document.getElementById('gameUI').classList.add('hidden');
+                document.getElementById('resultScreen').classList.remove('hidden');
+
+                const score = OrbitGame.state.score;
+                document.getElementById('finalScore').innerText = `${score} / 8`;
+
+                let rating = "Novice";
+                let text = "You failed to identify the core patterns. The world remains mostly noise to you.";
+                let icon = `<i class="fas fa-eye-slash text-gray-600"></i>`;
+
+                if (score >= 3) {
+                    rating = "Analyst";
+                    text = "You can see the obvious shapes, but the subtle signals escape you.";
+                    icon = `<i class="fas fa-search text-gold-dim"></i>`;
+                }
+                if (score >= 6) {
+                    rating = "Architect";
+                    text = "Impressive. You understand how humanity has structured the planet.";
+                    icon = `<i class="fas fa-project-diagram text-gold"></i>`;
+                }
+                if (score === 8) {
+                    rating = "Omniscient";
+                    text = "Perfect recall. You see the world as it truly is: a system of data.";
+                    icon = `<i class="fas fa-eye text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"></i>`;
+                }
+
+                document.getElementById('finalRating').innerText = rating;
+                document.getElementById('resultText').innerText = text;
+                document.getElementById('resultIcon').innerHTML = icon;
+            }
+        };
+    </script>
+</body>
+</html>
