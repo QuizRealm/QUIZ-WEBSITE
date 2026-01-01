@@ -10,7 +10,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Family Origins Archive • Psychological History | QuizRealm</title>
-    
+    <meta name="description" content="A dark, archival-style audit of your family of origin. Birth order, emotional roles, and the quiet rules you grew up under — turned into a readable archetype.">
+    <meta name="theme-color" content="#020617">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,13 +26,15 @@
             theme: {
                 extend: {
                     fontFamily: { 
-                        'serif': ['Crimson Pro', 'serif'], 
-                        'sans': ['Public Sans', 'sans-serif'] 
+                        serif: ['Crimson Pro', 'serif'], 
+                        sans: ['Public Sans', 'sans-serif'] 
                     },
                     colors: { 
-                        'sepia-bg': '#f4ece1',
-                        'ink': '#2c2a27',
-                        'archive-red': '#8b2635'
+                        'archive-bg': '#020617',
+                        'archive-ink': '#e5e7eb',
+                        'archive-soft': '#020617',
+                        'archive-card': '#020617',
+                        'archive-red': '#f97373'
                     }
                 }
             }
@@ -38,113 +42,233 @@
     </script>
 
     <style>
-        body { background-color: #f4ece1; color: #2c2a27; font-family: 'Public Sans', sans-serif; }
-        
-        .paper-texture {
-            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+        body {
+            background:
+                radial-gradient(circle at top, rgba(248,250,252,0.06) 0, transparent 55%),
+                radial-gradient(circle at bottom, rgba(148,163,184,0.08) 0, #020617 60%);
+            color: #e5e7eb;
+            font-family: 'Public Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .serif-italic {
+            font-family: 'Crimson Pro', serif;
+            font-style: italic;
         }
 
         .archive-border {
-            border: 1px solid rgba(44, 42, 39, 0.2);
+            border: 1px solid rgba(148,163,184,0.45);
             padding: 2rem;
             position: relative;
+            background: radial-gradient(circle at top left, rgba(15,23,42,0.95), rgba(15,23,42,0.92));
+            box-shadow: 0 22px 45px -24px rgba(15,23,42,0.95);
+            border-radius: 1.5rem;
         }
         .archive-border::after {
-            content: "CONFIDENTIAL";
-            position: absolute; top: 10px; right: 10px;
-            font-size: 10px; font-weight: bold; opacity: 0.2; letter-spacing: 2px;
+            content: "CONFIDENTIAL FILE";
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 9px;
+            font-weight: 700;
+            opacity: 0.22;
+            letter-spacing: 0.3em;
         }
 
         .option-btn {
-            background: rgba(255, 255, 255, 0.5);
-            border-bottom: 2px solid #2c2a27;
+            background: radial-gradient(circle at left, rgba(148,163,184,0.18), rgba(15,23,42,0.95));
+            border: 1px solid rgba(148,163,184,0.4);
             transition: all 0.3s;
             text-align: left;
+            border-radius: 0.75rem;
+            color: #e5e7eb;
         }
         .option-btn:hover {
-            background: white;
-            padding-left: 2rem;
-            border-bottom-color: #8b2635;
+            background: radial-gradient(circle at left, rgba(248,250,252,0.15), rgba(15,23,42,1));
+            padding-left: 2.25rem;
+            border-color: #f97373;
+            box-shadow: 0 18px 40px -24px rgba(248,113,113,0.7);
+            transform: translateY(-2px);
         }
 
-        .progress-line { background: rgba(44, 42, 39, 0.1); height: 1px; width: 100%; }
-        .progress-ink { background: #8b2635; height: 1px; width: 0%; transition: width 0.4s ease; }
+        .progress-line {
+            background: rgba(15,23,42,0.85);
+            height: 2px;
+            width: 100%;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .progress-ink {
+            background: linear-gradient(90deg, #f97373, #facc15);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
 
-        .fade-in { animation: fadeIn 1.2s ease forwards; opacity: 0; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pill-label {
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.5);
+            padding: 0.25rem 0.9rem;
+            font-size: 0.6rem;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 
-<body class="flex flex-col min-h-screen paper-texture">
-    <quiz-header style="color: #2c2a27;"></quiz-header>
+<body class="flex flex-col min-h-screen">
+    <quiz-header style="color: #e5e7eb;"></quiz-header>
 
     <main class="flex-grow w-full max-w-3xl mx-auto px-6 py-12 lg:py-20">
 
-        <div id="start-screen" class="space-y-12 fade-in">
+        <!-- START SCREEN -->
+        <div id="start-screen" class="space-y-10 fade-in">
             <div class="text-center space-y-4">
-                <span class="text-[10px] font-bold uppercase tracking-[0.5em] opacity-40">Section VII // Behavioral Inheritance</span>
-                <h1 class="font-serif text-5xl md:text-7xl italic leading-none">
-                    Family <br>Origins Archive.
+                <span class="text-[10px] font-bold uppercase tracking-[0.5em] text-slate-500">
+                    SECTION VII // BEHAVIORAL INHERITANCE DOSSIER
+                </span>
+                <h1 class="font-serif text-4xl md:text-6xl lg:text-7xl serif-italic leading-tight text-slate-50">
+                    Family<br>Origins Archive.
                 </h1>
             </div>
 
             <div class="archive-border space-y-6">
-                <p class="font-serif italic text-lg leading-relaxed">
-                    "We do not end at our skin; we are the sum of the houses we grew up in and the voices that shaped our first mistakes."
+                <p class="font-serif serif-italic text-base md:text-lg leading-relaxed text-slate-200">
+                    "You are not just a person; you are a sequel. This file is about the prequel you didn’t get to write."
                 </p>
-                <div class="h-px w-full bg-ink/10"></div>
-                <p class="text-sm uppercase tracking-widest leading-loose opacity-60">
-                    A 13-point clinical audit of birth order, attachment patterns, and ancestral debt.
+                <div class="h-px w-full bg-slate-600/40"></div>
+                <p class="text-[11px] uppercase tracking-[0.35em] leading-relaxed text-slate-400">
+                    13 QUESTIONS ON BIRTH ORDER, UNPAID EMOTIONAL LABOR, AND THE RULES OF THE HOUSE YOU
+                    STILL FOLLOW WITHOUT REALIZING IT.
                 </p>
-                <button onclick="window.startQuiz()" class="bg-ink text-sepia-bg w-full py-5 font-serif italic text-xl hover:bg-archive-red transition-colors duration-500">
-                    Open File
+                <button
+                    onclick="window.startQuiz()"
+                    class="w-full py-4 md:py-5 mt-2 bg-slate-50 text-slate-900 font-serif serif-italic text-lg tracking-[0.15em] uppercase hover:bg-archive-red hover:text-slate-900 transition-colors duration-400 rounded-full flex items-center justify-center gap-3">
+                    <span>Open Archive File</span>
+                    <i class="fa-solid fa-folder-open text-xs"></i>
                 </button>
             </div>
+
+            <p class="text-[11px] text-slate-500 text-center max-w-xl mx-auto leading-relaxed">
+                This is a reflective tool, not a diagnosis. It won’t tell you what’s “wrong” with you. It will just
+                politely highlight where your personality is suspiciously similar to your childhood coping mechanisms.
+            </p>
         </div>
 
+        <!-- QUIZ INTERFACE -->
         <div id="quiz-interface" class="hidden space-y-12">
             <div class="space-y-4">
-                <div class="flex justify-between font-serif italic text-sm">
-                    <span id="q-category">Historical Context</span>
-                    <span id="progress-text">01 / 13</span>
+                <div class="flex justify-between items-end font-serif text-sm text-slate-300">
+                    <span id="q-category" class="serif-italic">Historical Context</span>
+                    <span id="progress-text" class="text-[10px] font-sans uppercase tracking-[0.35em] text-slate-500">
+                        01 / 13
+                    </span>
                 </div>
-                <div class="progress-line"><div id="progress-bar" class="progress-ink"></div></div>
+                <div class="progress-line">
+                    <div id="progress-bar" class="progress-ink"></div>
+                </div>
             </div>
 
-            <h2 id="question-text" class="font-serif text-3xl md:text-4xl text-ink leading-tight">
+            <h2 id="question-text" class="font-serif text-2xl md:text-3xl lg:text-4xl text-slate-50 leading-tight">
                 Loading...
             </h2>
 
             <div id="options-container" class="grid grid-cols-1 gap-4"></div>
         </div>
 
+        <!-- RESULT SCREEN -->
         <div id="result-screen" class="hidden space-y-10 fade-in">
-            <div class="archive-border bg-white/30 p-10 space-y-6">
-                <h2 class="font-serif text-5xl italic" id="result-title">Archetype</h2>
-                <h3 id="result-subtitle" class="uppercase text-[10px] tracking-widest font-bold text-archive-red">Subtitle</h3>
-                <p id="result-summary" class="font-serif text-lg italic leading-relaxed text-ink/80">Summary...</p>
+            <div class="archive-border space-y-5">
+                <div class="flex items-center justify-between text-xs text-slate-500 uppercase tracking-[0.35em]">
+                    <span>ARCHIVE SUMMARY</span>
+                    <span id="archive-tag" class="pill-label text-slate-300 border-slate-600/60">
+                        FILE: ORIGINS
+                    </span>
+                </div>
+                <div>
+                    <h2 class="font-serif text-4xl md:text-5xl lg:text-6xl serif-italic text-slate-50" id="result-title">
+                        Archetype
+                    </h2>
+                    <h3 id="result-subtitle" class="uppercase text-[10px] tracking-[0.35em] font-bold text-archive-red mt-3">
+                        Subtitle
+                    </h3>
+                </div>
+                <p id="result-summary" class="font-serif text-base md:text-lg serif-italic leading-relaxed text-slate-200">
+                    Summary...
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-ink/10">
-                <div class="bg-sepia-bg p-6 border border-ink/5">
-                    <span class="text-[10px] font-bold uppercase opacity-40">Attachment Style</span>
-                    <div id="attach-val" class="font-serif text-2xl italic">...</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-slate-800/60 rounded-2xl overflow-hidden">
+                <div class="bg-slate-950/60 p-6 border border-slate-800/60">
+                    <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
+                        Attachment Pattern (Unofficial)
+                    </span>
+                    <div id="attach-val" class="font-serif text-2xl md:text-3xl serif-italic mt-3 text-slate-50">
+                        ...
+                    </div>
                 </div>
-                <div class="bg-sepia-bg p-6 border border-ink/5">
-                    <span class="text-[10px] font-bold uppercase opacity-40">Primary Role</span>
-                    <div id="role-val" class="font-serif text-2xl italic">...</div>
+                <div class="bg-slate-950/60 p-6 border border-slate-800/60">
+                    <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
+                        Family Role Script
+                    </span>
+                    <div id="role-val" class="font-serif text-2xl md:text-3xl serif-italic mt-3 text-slate-50">
+                        ...
+                    </div>
                 </div>
             </div>
 
             <div class="space-y-6">
-                <button onclick="document.getElementById('full-report').classList.toggle('hidden')" class="text-xs font-bold uppercase underline opacity-60">Read Clinical Breakdown</button>
-                <div id="full-report" class="hidden text-left p-8 bg-white border border-ink/10 text-sm leading-loose text-ink/70">
+                <button
+                    onclick="document.getElementById('full-report').classList.toggle('hidden')"
+                    class="text-[11px] font-bold uppercase underline tracking-[0.3em] text-slate-400 hover:text-archive-red transition">
+                    Read Clinical-Style Breakdown
+                </button>
+
+                <div id="full-report" class="hidden text-left p-8 bg-slate-950/80 border border-slate-700/60 text-sm leading-loose text-slate-300 rounded-2xl space-y-4">
                     <p id="result-desc"></p>
+                    <p class="text-xs text-slate-500">
+                        Note: this archive is descriptive, not prescriptive. It doesn’t mean your story is fixed — it just maps
+                        the terrain you started from, so you can choose how different you want the sequel to be.
+                    </p>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-4 pt-8">
-                    <button onclick="shareResult()" class="bg-ink text-sepia-bg px-10 py-4 font-serif italic text-lg">Share Archive</button>
-                    <a href="index-funnels.html" class="border border-ink/20 px-10 py-4 text-xs font-bold uppercase tracking-widest text-center">Return to Lab</a>
+                <section class="text-left text-xs text-slate-400 space-y-2 bg-slate-950/60 border border-slate-800/70 rounded-2xl p-6">
+                    <h2 class="font-serif text-sm text-slate-100 tracking-[0.2em] uppercase mb-1">
+                        What this archive is actually measuring
+                    </h2>
+                    <p>
+                        Under the hood, this test looks at two main vectors: <strong>Resilience / Differentiation</strong>
+                        (how much you became your own person despite the house you grew up in) and
+                        <strong>Approval Imprint</strong> (how much your nervous system still thinks parental approval is
+                        oxygen).
+                    </p>
+                    <p>
+                        Your archetype is a story about the role you learned first: emotional support system, golden child,
+                        ghost child, truth-teller, or relatively secure branch of the family tree. It is not about blame —
+                        it’s about pattern recognition.
+                    </p>
+                </section>
+
+                <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                    <button
+                        onclick="shareResult()"
+                        class="bg-slate-50 text-slate-900 px-10 py-4 font-serif serif-italic text-base rounded-full hover:bg-archive-red hover:text-slate-900 transition flex-1 sm:flex-none">
+                        Share Archive Summary
+                    </button>
+                    <a
+                        href="index-funnels.html"
+                        class="border border-slate-600 px-10 py-4 text-[10px] font-bold uppercase tracking-[0.35em] text-center text-slate-300 rounded-full hover:bg-slate-900 hover:text-slate-50 transition">
+                        Return to Lab
+                    </a>
                 </div>
             </div>
         </div>
@@ -154,130 +278,308 @@
     <quiz-footer></quiz-footer>
 
     <script type="module">
+        // res = resilience / differentiation
+        // app = approval / inherited obligation
+
         const questions = [
-            { q: "At the dinner table when you were 8, you were mostly:", cat: "Environment",
-              a: [
-                  { text: "The entertainer keeping everyone happy.", scores: { res: 20, app: 25 } },
-                  { text: "The quiet observer hoping not to be seen.", scores: { res: 5, app: 0 } },
-                  { text: "The debater challenging the rules.", scores: { res: 25, app: 5 } }
-              ] 
+            {
+                q: "At the dinner table when you were around 8, you were mostly:",
+                cat: "Household Theater",
+                a: [
+                    {
+                        text: "The entertainer, cracking jokes to keep the temperature in the room stable.",
+                        scores: { res: 20, app: 25 }
+                    },
+                    {
+                        text: "The quiet observer, hoping no one suddenly remembered you existed.",
+                        scores: { res: 5,  app: 0 }
+                    },
+                    {
+                        text: "The debater, arguing with rules that clearly made no sense.",
+                        scores: { res: 25, app: 5 }
+                    }
+                ]
             },
-            { q: "If you brought home a 'B' on a test, your parents would:", cat: "Expectations",
-              a: [
-                  { text: "Ask why it wasn't an 'A'.", scores: { res: 10, app: 30 } },
-                  { text: "Not even notice the paper.", scores: { res: 20, app: 0 } },
-                  { text: "Tell me they were proud of my effort anyway.", scores: { res: 30, app: 10 } }
-              ] 
+            {
+                q: "You bring home a 'B' on a test. The general vibe is:",
+                cat: "Expectation Climate",
+                a: [
+                    {
+                        text: "“Why isn’t it an A?” said lovingly, with a side of pressure headache.",
+                        scores: { res: 10, app: 30 }
+                    },
+                    {
+                        text: "No one really notices. Your grades are your problem.",
+                        scores: { res: 20, app: 0 }
+                    },
+                    {
+                        text: "Genuine “We’re proud of you” energy, even if it’s not perfect.",
+                        scores: { res: 30, app: 10 }
+                    }
+                ]
             },
-            { q: "When a sibling got in trouble, you:", cat: "Dynamics",
-              a: [
-                  { text: "Tried to fix the situation for them.", scores: { res: 15, app: 20 } },
-                  { text: "Felt a secret relief that it wasn't me.", scores: { res: 5, app: 10 } },
-                  { text: "I was an only child; I was the focus of all trouble.", scores: { res: 10, app: 15 } }
-              ] 
+            {
+                q: "When a sibling (or another child) was clearly in trouble, you:",
+                cat: "Sibling Economics",
+                a: [
+                    {
+                        text: "Started damage control and tried to calm everyone down.",
+                        scores: { res: 15, app: 20 }
+                    },
+                    {
+                        text: "Felt secretly relieved it wasn’t your turn this time.",
+                        scores: { res: 5,  app: 10 }
+                    },
+                    {
+                        text: "Had no siblings. You were the entire cast and the scapegoat and the star.",
+                        scores: { res: 10, app: 15 }
+                    }
+                ]
             },
-            { q: "How much of your parents' emotional state was your responsibility?", cat: "Enmeshment",
-              a: [
-                  { text: "All of it. I was their therapist.", scores: { res: 10, app: 30 } },
-                  { text: "None. They were the adults.", scores: { res: 30, app: 0 } },
-                  { text: "Some. I tried to stay out of the splash zone.", scores: { res: 15, app: 10 } }
-              ] 
+            {
+                q: "How responsible did you feel for your parents’ emotional state?",
+                cat: "Emotional Labor",
+                a: [
+                    {
+                        text: "Way too responsible. I was their unpaid therapist with tiny legs.",
+                        scores: { res: 10, app: 30 }
+                    },
+                    {
+                        text: "Not at all. They handled their business separately.",
+                        scores: { res: 30, app: 0 }
+                    },
+                    {
+                        text: "Somewhat. I tried to stay out of the line of fire.",
+                        scores: { res: 15, app: 10 }
+                    }
+                ]
             },
-            { q: "Your current relationship style is best described as:", cat: "Attachment",
-              a: [
-                  { text: "I need constant reassurance I'm loved.", scores: { res: 5, app: 25 } },
-                  { text: "I push people away when they get too close.", scores: { res: 20, app: 0 } },
-                  { text: "I am comfortable with intimacy and distance.", scores: { res: 30, app: 5 } }
-              ] 
+            {
+                q: "Your adult relationship style feels most like:",
+                cat: "Attachment Echo",
+                a: [
+                    {
+                        text: "“Please don’t leave me, but also please answer in exactly 0.3 seconds.”",
+                        scores: { res: 5,  app: 25 }
+                    },
+                    {
+                        text: "“I like you, but getting too close feels like a trapdoor.”",
+                        scores: { res: 20, app: 0 }
+                    },
+                    {
+                        text: "“I can be close or independent without panicking.”",
+                        scores: { res: 30, app: 5 }
+                    }
+                ]
             },
-            { q: "When you succeed today, who is the first person you want to tell?", cat: "Approval",
-              a: [
-                  { text: "My parents, to prove I finally made it.", scores: { res: 10, app: 35 } },
-                  { text: "A close friend or partner.", scores: { res: 25, app: 10 } },
-                  { text: "No one. I keep my wins to myself.", scores: { res: 15, app: 0 } }
-              ] 
+            {
+                q: "When something goes right in your life today, your first instinct is to tell:",
+                cat: "Approval Circuit",
+                a: [
+                    {
+                        text: "A parent, or someone who feels like one. It’s still a report card.",
+                        scores: { res: 10, app: 35 }
+                    },
+                    {
+                        text: "A partner or close friend. My emotional home has moved.",
+                        scores: { res: 25, app: 10 }
+                    },
+                    {
+                        text: "No one. I celebrate quietly like a secret side quest.",
+                        scores: { res: 15, app: 0 }
+                    }
+                ]
             },
-            { q: "What was the 'unspoken rule' in your house?", cat: "Rules",
-              a: [
-                  { text: "Don't ever make us look bad to the neighbors.", scores: { res: 10, app: 30 } },
-                  { text: "Children are meant to be seen, not heard.", scores: { res: 5, app: 20 } },
-                  { text: "Be honest, even if it hurts.", scores: { res: 30, app: 5 } }
-              ] 
+            {
+                q: "The unspoken rule in your house growing up was basically:",
+                cat: "Invisible Laws",
+                a: [
+                    {
+                        text: "“Don’t embarrass us in public. Image over honesty.”",
+                        scores: { res: 10, app: 30 }
+                    },
+                    {
+                        text: "“Children should be low-maintenance, quiet, and grateful.”",
+                        scores: { res: 5,  app: 20 }
+                    },
+                    {
+                        text: "“Tell the truth, even if it makes things uncomfortable.”",
+                        scores: { res: 30, app: 5 }
+                    }
+                ]
             },
-            { q: "When you see your family now, you feel:", cat: "Present",
-              a: [
-                  { text: "Guilty for not visiting more.", scores: { res: 10, app: 25 } },
-                  { text: "Regressed back into a 10-year-old version of myself.", scores: { res: 5, app: 20 } },
-                  { text: "Ground and grateful.", scores: { res: 35, app: 5 } }
-              ] 
+            {
+                q: "Seeing your family now makes you feel mostly:",
+                cat: "Current Field",
+                a: [
+                    {
+                        text: "Guilty for not being there more, no matter how much I am there.",
+                        scores: { res: 10, app: 25 }
+                    },
+                    {
+                        text: "Like I time-travel back into my younger self in three seconds.",
+                        scores: { res: 5,  app: 20 }
+                    },
+                    {
+                        text: "Grounded. Complicated, but not unsafe.",
+                        scores: { res: 35, app: 5 }
+                    }
+                ]
             },
-            { q: "How do you handle conflict in your adult life?", cat: "Conflict",
-              a: [
-                  { text: "I am a people-pleaser. I hate the noise.", scores: { res: 5, app: 30 } },
-                  { text: "I shut down and go silent for days.", scores: { res: 15, app: 0 } },
-                  { text: "I address it directly and calmly.", scores: { res: 35, app: 10 } }
-              ] 
+            {
+                q: "In your adult life, conflict usually looks like:",
+                cat: "Conflict Script",
+                a: [
+                    {
+                        text: "I fold into people-pleasing mode as quickly as possible.",
+                        scores: { res: 5,  app: 30 }
+                    },
+                    {
+                        text: "I go silent, withdraw, and hope it evaporates.",
+                        scores: { res: 15, app: 0 }
+                    },
+                    {
+                        text: "I name it and talk it out, even if it’s awkward.",
+                        scores: { res: 35, app: 10 }
+                    }
+                ]
             },
-            { q: "Your childhood was mostly:", cat: "Memory",
-              a: [
-                  { text: "A performance for others.", scores: { res: 10, app: 25 } },
-                  { text: "A series of mysteries I couldn't solve.", scores: { res: 15, app: 10 } },
-                  { text: "A safe place to grow.", scores: { res: 35, app: 0 } }
-              ] 
+            {
+                q: "Your childhood, if you had to summarize the vibe, was mostly:",
+                cat: "Narrative Tone",
+                a: [
+                    {
+                        text: "A performance. Smile for guests, collapse later.",
+                        scores: { res: 10, app: 25 }
+                    },
+                    {
+                        text: "A confusing mystery I tried to decode from the sidelines.",
+                        scores: { res: 15, app: 10 }
+                    },
+                    {
+                        text: "Imperfect but generally safe. There was room to be a kid.",
+                        scores: { res: 35, app: 0 }
+                    }
+                ]
             },
-            { q: "The word 'Home' feels like:", cat: "Emotion",
-              a: [
-                  { text: "An obligation.", scores: { res: 10, app: 20 } },
-                  { text: "A battlefield.", scores: { res: 25, app: 0 } },
-                  { text: "A sanctuary.", scores: { res: 35, app: 5 } }
-              ] 
+            {
+                q: "The word “home” today feels most like:",
+                cat: "Home Imprint",
+                a: [
+                    {
+                        text: "A duty. Something I ‘have to’ deal with.",
+                        scores: { res: 10, app: 20 }
+                    },
+                    {
+                        text: "A minefield. I manage my steps carefully.",
+                        scores: { res: 25, app: 0 }
+                    },
+                    {
+                        text: "A place I can return to without shrinking.",
+                        scores: { res: 35, app: 5 }
+                    }
+                ]
             },
-            { q: "Who were you 'supposed' to be?", cat: "Identity",
-              a: [
-                  { text: "The smart one.", scores: { res: 15, app: 25 } },
-                  { text: "The easy one who never caused trouble.", scores: { res: 5, app: 30 } },
-                  { text: "Just myself.", scores: { res: 35, app: 0 } }
-              ] 
+            {
+                q: "Growing up, you were lowkey “cast” as:",
+                cat: "Assigned Role",
+                a: [
+                    {
+                        text: "The smart one. Results first, feelings later.",
+                        scores: { res: 15, app: 25 }
+                    },
+                    {
+                        text: "The easy one. Low needs, minimal disruption.",
+                        scores: { res: 5,  app: 30 }
+                    },
+                    {
+                        text: "Just yourself. Allowed to experiment without being boxed in.",
+                        scores: { res: 35, app: 0 }
+                    }
+                ]
             },
-            { q: "Finally, do you forgive them?", cat: "Resolution",
-              a: [
-                  { text: "Yes, they did their best with what they had.", scores: { res: 40, app: 0 } },
-                  { text: "I'm not there yet.", scores: { res: 15, app: 10 } },
-                  { text: "There is nothing to forgive.", scores: { res: 30, app: 0 } }
-              ] 
+            {
+                q: "If you zoom out now and think about your caregivers, do you forgive them?",
+                cat: "Resolution",
+                a: [
+                    {
+                        text: "Yes. They were flawed, but I see the context and I’m choosing to release it.",
+                        scores: { res: 40, app: 0 }
+                    },
+                    {
+                        text: "Not yet. The invoice is still open.",
+                        scores: { res: 15, app: 10 }
+                    },
+                    {
+                        text: "There’s nothing to forgive; we weren’t in a war zone.",
+                        scores: { res: 30, app: 0 }
+                    }
+                ]
             }
         ];
 
         const archetypes = {
-            "Peacekeeper": { title: "The Peacekeeper", subtitle: "The Emotional Anchor", summary: "You spent your childhood managing the climate of the house. You are a master of reading the room.", desc: "You developed hyper-vigilance early on. Because your environment was emotionally unpredictable, you became an expert at soothing others to ensure your own safety. In adulthood, you likely struggle with people-pleasing and find it difficult to identify your own needs." },
-            "Achiever": { title: "The High Achiever", subtitle: "The Performance Artist", summary: "Your value was tied to your output. If you weren't winning, you weren't visible.", desc: "You internalize love as something earned rather than given. You are likely highly successful in your career but suffer from chronic Imposter Syndrome. You are terrified of rest because, to you, rest feels like obsolescence." },
-            "Ghost": { title: "The Lost Child", subtitle: "The Silent Observer", summary: "You learned that the best way to survive was to become invisible.", desc: "Because the house was too loud or too crowded, you carved out a world in your own head. You are highly imaginative and self-reliant, but you may struggle with intimacy because you don't believe anyone is actually looking for you." },
-            "CycleBreaker": { title: "The Cycle Breaker", subtitle: "The Truth-Teller", summary: "You were the one who pointed out the elephant in the room. It wasn't a popular role.", desc: "You have high resilience but likely carry the 'Black Sheep' label. You are the one who refuses to carry the ancestral baggage into the next generation. You are often the most healed person in the family, yet the one most estranged from it." },
-            "Secure": { title: "The Secure Branch", subtitle: "The Integrated Self", summary: "Your foundation was stable enough to support your own weight.", desc: "You scored high on resilience and low on approval-need. You likely had 'Good Enough' parenting that allowed you to fail without losing your sense of self. You are able to visit home without losing your identity." }
+            Peacekeeper: {
+                title: "The Peacekeeper",
+                subtitle: "The Emotional Anchor",
+                summary: "You grew up as the weather system manager. If the room was calm, it was partially because of you.",
+                desc: "You learned early that your safety depended on everyone else’s mood being stable, so you became a specialist in smoothing, softening, and absorbing. As an adult, you’re excellent at reading micro-shifts in tone, but often terrible at noticing when you’re exhausted or resentful. Your nervous system is trained to scan for tension and dissolve it before it explodes — even when that means abandoning yourself."
+            },
+            Achiever: {
+                title: "The High Achiever",
+                subtitle: "The Performance Artist",
+                summary: "Your worth was measured in results, not existence. You learned to earn your oxygen.",
+                desc: "Winning, achieving, and over-performing were your way of staying safe and seen. Praise landed on your output, not on your baseline self. This scripts you as ambitious and competent in adulthood, but also strangely unable to rest without guilt. Failure doesn’t just feel like a bad outcome; it feels like a temporary eviction from worthiness."
+            },
+            Ghost: {
+                title: "The Lost Child",
+                subtitle: "The Silent Observer",
+                summary: "You survived by disappearing into the background and into your own head.",
+                desc: "Whether the house was loud, chaotic, or simply emotionally absent, you learned that invisibility was safer than participation. You became a specialist in inner worlds: daydreams, books, games, or fantasies where you actually mattered. As an adult, you can be deeply creative and self-reliant, but intimacy may feel unreal or undeserved, because you’re still half-expecting people not to notice you’re there."
+            },
+            CycleBreaker: {
+                title: "The Cycle Breaker",
+                subtitle: "The Truth-Teller",
+                summary: "You’re the one who looked at the family script and quietly said, “Absolutely not.”",
+                desc: "You noticed the double standards, the secrets, the emotional debts — and chose to stop the transmission. That likely got you framed as “difficult”, “dramatic”, or “ungrateful”. Underneath, your resilience score is high: you’re willing to lose approval in order to gain integrity. It’s a lonely role sometimes, but you are the branch that bends the family tree in a different direction."
+            },
+            Secure: {
+                title: "The Secure Branch",
+                subtitle: "The Good-Enough Childhood",
+                summary: "Your foundation wasn’t perfect, but it was solid enough that you didn’t fracture around it.",
+                desc: "You seem to have grown up with a blend of structure, affection, and room to be flawed without being exiled. You internalized the idea that you are allowed to exist even when you’re not performing. In adulthood, you can connect, disagree, leave, and return without everything feeling like a test. You’re not untouched by your history, but you’re not ruled by it either."
+            }
         };
 
         let currentQ = 0;
         let totals = { res: 0, app: 0 };
 
+        const $ = (id) => document.getElementById(id);
+
         window.startQuiz = function() {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('quiz-interface').classList.remove('hidden');
+            $("start-screen").style.display = 'none';
+            $("quiz-interface").classList.remove('hidden');
+            $("result-screen").classList.add('hidden');
+            currentQ = 0;
+            totals = { res: 0, app: 0 };
             renderQuestion();
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
         function renderQuestion() {
             if (currentQ >= questions.length) { finishQuiz(); return; }
-            const q = questions[currentQ];
-            document.getElementById('q-category').innerText = q.cat;
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
-            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
 
-            const container = document.getElementById('options-container');
+            const q = questions[currentQ];
+            $("q-category").innerText = q.cat;
+            $("question-text").innerText = q.q;
+            $("progress-text").innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
+            $("progress-bar").style.width = ((currentQ / questions.length) * 100) + "%";
+
+            const container = $("options-container");
             container.innerHTML = '';
             q.a.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = "option-btn w-full p-6 text-sm italic font-serif";
+                btn.className = "option-btn w-full p-6 text-sm md:text-[0.95rem] serif-italic";
                 btn.innerText = opt.text;
                 btn.onclick = () => {
                     totals.res += opt.scores.res;
@@ -290,30 +592,105 @@
         }
 
         function finishQuiz() {
-            let key = "Secure";
             const { res, app } = totals;
+
+            let key = "Secure";
+            // High approval-dependence: Achiever pattern
             if (app > 250) key = "Achiever";
-            else if (app > 150 && res < 100) key = "Peacekeeper";
-            else if (res > 250 && app < 100) key = "CycleBreaker";
-            else if (res < 100 && app < 100) key = "Ghost";
-            
+            // High approval + low resilience: classic Peacekeeper
+            else if (app > 150 && res < 130) key = "Peacekeeper";
+            // High resilience, low approval-need: Cycle breaker flavor
+            else if (res > 260 && app < 120) key = "CycleBreaker";
+            // Low both: Ghost / disengaged adaptation
+            else if (res < 120 && app < 120) key = "Ghost";
+
             const data = archetypes[key];
-            document.getElementById('quiz-interface').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('result-title').innerText = data.title;
-            document.getElementById('result-summary').innerText = data.summary;
-            document.getElementById('result-desc').innerText = data.desc;
-            
-            document.getElementById('attach-val').innerText = app > 150 ? "Anxious" : (res < 100 ? "Avoidant" : "Secure");
-            document.getElementById('role-val').innerText = key;
 
-            if (window.saveTestResult) window.saveTestResult({ testId: 'family_origins', archetype: key, metrics: totals });
+            $("quiz-interface").classList.add('hidden');
+            $("result-screen").classList.remove('hidden');
+
+            $("result-title").innerText = data.title;
+            $("result-subtitle").innerText = data.subtitle;
+            $("result-summary").innerText = data.summary;
+            $("result-desc").innerText = data.desc;
+            $("role-val").innerText = data.title;
+
+            // Attachment-style inference (very loose, non-clinical)
+            let attach = "Secure-ish";
+            if (app > 160 && res <= 200) attach = "Anxious-Leaning";
+            else if (res < 120 && app <= 140) attach = "Avoidant-Leaning";
+            else if (app > 160 && res < 120) attach = "Anxious / Fawn Hybrid";
+
+            $("attach-val").innerText = attach;
+
+            // Optional little tag: high app vs high res
+            let tag = "FILE: ORIGINS";
+            if (app > 220) tag = "FILE: APPROVAL IMPRINT";
+            else if (res > 260) tag = "FILE: CYCLE BREAK";
+            else if (res < 120 && app < 120) tag = "FILE: GHOST NODE";
+            $("archive-tag").innerText = tag;
+
+            if (window.saveTestResult) {
+                try {
+                    window.saveTestResult({
+                        testId: 'family_origins',
+                        archetype: key,
+                        metrics: {
+                            resilience_raw: res,
+                            approval_raw: app,
+                            attachment_label: attach,
+                            file_tag: tag
+                        }
+                    });
+                } catch (e) {
+                    console.warn("saveTestResult (family_origins) failed", e);
+                }
+            }
+
+            if (window.GameEngine && typeof window.GameEngine.trackEvent === "function") {
+                try {
+                    window.GameEngine.trackEvent("test_complete", {
+                        testId: "family_origins",
+                        archetype: key,
+                        res_raw: res,
+                        app_raw: app,
+                        attach: attach
+                    });
+                } catch (e) {}
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        window.shareResult = () => {
-            if(navigator.share) navigator.share({title: 'Family Origins Archive', text: 'My Archive Profile is ' + document.getElementById('result-title').innerText, url: window.location.href});
-            else alert("Link copied to clipboard");
-        }
+        window.shareResult = async () => {
+            const title = "Family Origins Archive • QuizRealm";
+            const arche = $("result-title").innerText;
+            const summary = $("result-summary").innerText;
+
+            const text =
+                `I just unlocked my “Family Origins Archive” profile on QuizRealm.\n` +
+                `Archetype: ${arche}.\n` +
+                `${summary}\n` +
+                `Apparently this is the role I was cast in as a child.`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title, text, url: window.location.href });
+                    return;
+                } catch (e) {}
+            }
+
+            const fallback = `${text}\n${window.location.href}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(fallback);
+                    alert("Archive summary + link copied to clipboard.");
+                    return;
+                } catch (e) {}
+            }
+
+            alert("Share this:\n\n" + fallback);
+        };
     </script>
 </body>
 </html>

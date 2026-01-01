@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -10,7 +11,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Delusion Meter • Reality Audit | QuizRealm</title>
-    
+    <meta name="description" content="The Delusion Meter is a 13-question reality audit. Are you grounded, a balanced visionary, or full main-character energy? Get a blunt, sharable profile of your manifesting vs reality habits.">
+    <meta name="theme-color" content="#020617">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -23,15 +26,23 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { 
-                        'serif': ['Cormorant Garamond', 'serif'], 
-                        'sans': ['Inter', 'sans-serif'] 
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Inter', 'sans-serif']
                     },
-                    colors: { 
-                        'midnight': '#0f172a',
-                        'slate-dark': '#1e293b',
-                        'frost': '#f1f5f9',
-                        'accent-silver': '#94a3b8'
+                    colors: {
+                        'ink-bg': '#020617',
+                        'ink-panel': '#020818',
+                        'ink-soft': '#0b1220',
+                        'ink-border': 'rgba(148,163,184,0.45)',
+                        'ink-accent': '#e5e7eb',
+                        'ink-muted': '#94a3b8',
+                        'ink-gold': '#fbbf24',
+                        'ink-rose': '#fb7185'
+                    },
+                    boxShadow: {
+                        'ink-card': '0 26px 80px rgba(0,0,0,0.9)',
+                        'ink-glow': '0 0 0 1px rgba(148,163,184,0.45), 0 36px 120px rgba(15,23,42,1)'
                     }
                 }
             }
@@ -39,255 +50,934 @@
     </script>
 
     <style>
-        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
-        
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        body {
+            background:
+                radial-gradient(circle at top, #1e293b 0, #020617 45%, #020617 100%);
+            color: #e5e7eb;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
-
-        .option-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+        .bg-texture::before {
+            content:"";
+            position:fixed;
+            inset:0;
+            background-image:
+                radial-gradient(circle at 0 0, rgba(148,163,184,0.12) 0, transparent 55%),
+                radial-gradient(circle at 100% 100%, rgba(15,23,42,0.9) 0, transparent 70%);
+            opacity:0.18;
+            mix-blend-mode:soft-light;
+            pointer-events:none;
+            z-index:-1;
         }
-        .option-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateX(8px);
+        .pill {
+            border-radius:999px;
+            border:1px solid rgba(148,163,184,0.6);
+            background:rgba(15,23,42,0.88);
         }
-
-        .progress-container { background: rgba(255, 255, 255, 0.05); height: 2px; }
-        .progress-fill { background: #94a3b8; height: 100%; transition: width 0.4s ease; }
-
-        .reveal { animation: fadeIn 0.8s ease forwards; opacity: 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card-frame {
+            border-radius:24px;
+            border:1px solid rgba(148,163,184,0.65);
+            background:
+                radial-gradient(circle at top left, rgba(248,250,252,0.08), transparent 60%),
+                linear-gradient(135deg, rgba(15,23,42,0.98), rgba(15,23,42,1));
+            box-shadow:0 26px 90px rgba(0,0,0,1);
+        }
+        .choice-btn {
+            background:rgba(15,23,42,0.85);
+            border-radius:18px;
+            border:1px solid rgba(148,163,184,0.6);
+            position:relative;
+            overflow:hidden;
+            transition:all 0.18s ease-out;
+            text-align:left;
+        }
+        .choice-btn::before {
+            content:"";
+            position:absolute;
+            inset:0;
+            background:linear-gradient(90deg, rgba(148,163,184,0.3), transparent);
+            opacity:0;
+            transform:translateX(-25%);
+            transition:opacity 0.2s ease-out, transform 0.2s ease-out;
+        }
+        .choice-btn:hover {
+            transform:translateX(4px);
+            border-color:rgba(248,250,252,0.8);
+        }
+        .choice-btn:hover::before {
+            opacity:1;
+            transform:translateX(0);
+        }
+        .progress-track {
+            background:rgba(15,23,42,0.9);
+            height:4px;
+            border-radius:999px;
+            overflow:hidden;
+        }
+        .progress-fill {
+            height:100%;
+            width:0%;
+            border-radius:999px;
+            background:linear-gradient(90deg,#fbbf24,#f97316,#fb7185,#fbbf24);
+            background-size:200% auto;
+            animation:shimmer 3s linear infinite;
+            transition:width 0.3s ease-out;
+        }
+        @keyframes shimmer {
+            to { background-position:200% center; }
+        }
+        .fade-up {
+            opacity:0;
+            transform:translateY(18px);
+            animation:fadeUp 0.45s ease-out forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity:1; transform:translateY(0); }
+        }
+        .stat-bar-bg {
+            background:rgba(15,23,42,0.95);
+            border-radius:999px;
+            overflow:hidden;
+        }
+        .stat-bar-fill {
+            height:100%;
+            width:0%;
+            border-radius:999px;
+            transition:width 0.35s ease-out;
+        }
+        .share-card-gradient {
+            background:
+                radial-gradient(circle at top left, rgba(248,250,252,0.14), transparent 60%),
+                radial-gradient(circle at bottom right, rgba(15,23,42,1), rgba(15,23,42,1));
+        }
     </style>
 </head>
 
-<body class="flex flex-col min-h-screen selection:bg-slate-500">
-    <quiz-header style="color: #f1f5f9;"></quiz-header>
+<body class="flex flex-col min-h-screen bg-texture selection:bg-slate-500 selection:text-slate-50">
+    <quiz-header></quiz-header>
 
-    <main class="flex-grow w-full max-w-2xl mx-auto px-6 py-12 lg:py-24">
+    <main class="flex-grow w-full max-w-5xl mx-auto px-4 md:px-6 py-12 md:py-16 lg:py-20">
 
-        <div id="start-screen" class="text-center space-y-12 reveal">
-            <div class="space-y-4">
-                <h1 class="font-serif text-6xl md:text-8xl italic leading-none text-white">
-                    Delusion <br>Meter.
-                </h1>
-                <p class="text-accent-silver text-sm uppercase tracking-[0.4em]">Reality Calibration v.2.0</p>
-            </div>
+        <!-- START SCREEN -->
+        <section id="start-screen" class="fade-up" style="animation-delay:0.04s">
+            <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,3fr),minmax(0,2.2fr)] gap-10 items-center">
+                <!-- Left: title & copy -->
+                <div class="space-y-8">
+                    <div class="inline-flex items-center gap-2 pill px-3 py-1 text-[10px] uppercase tracking-[0.32em] text-ink-muted">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span>Reality Audit · The Delusion Meter</span>
+                    </div>
 
-            <p class="text-slate-400 font-light leading-relaxed max-w-sm mx-auto">
-                Are you a visionary architect of your own future, or have you simply lost the thread of reality?
-            </p>
+                    <div>
+                        <h1 class="font-serif italic text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.9] text-slate-50">
+                            The<br>
+                            <span class="text-ink-gold">Delusion</span>
+                            Meter
+                        </h1>
+                        <p class="mt-4 text-sm sm:text-[15px] text-ink-muted max-w-xl leading-relaxed">
+                            This is your gentle reminder that “I’m manifesting it” is not a financial plan.
+                            We measure how you balance vision and facts: grounded realist, functional dreamer,
+                            or full main-character energy.
+                            <span class="block mt-3 text-[11px] uppercase tracking-[0.26em] text-slate-400">
+                                13 questions · 0 filters · Built for screenshots
+                            </span>
+                        </p>
+                    </div>
 
-            <button onclick="window.startQuiz()" class="border border-white/20 text-white px-12 py-4 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-midnight transition-all duration-500">
-                Begin Audit
-            </button>
-        </div>
+                    <div class="grid sm:grid-cols-[auto,1fr] gap-4 sm:gap-6 items-center">
+                        <button
+                            onclick="window.startQuiz()"
+                            class="px-10 py-4 rounded-[999px] text-[10px] md:text-[11px] tracking-[0.24em] uppercase font-semibold bg-slate-50 text-ink-bg shadow-ink-card hover:bg-white hover:translate-y-[-1px] hover:shadow-2xl transition-all flex items-center justify-center gap-2">
+                            <span>Start reality check</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
 
-        <div id="quiz-interface" class="hidden space-y-12">
-            <div class="space-y-4">
-                <div class="flex justify-between items-end text-[10px] font-bold uppercase tracking-widest text-accent-silver">
-                    <span id="q-category">Cognitive Bias</span>
-                    <span id="progress-text">01 / 13</span>
+                        <div class="flex flex-wrap gap-3 text-[11px] text-ink-muted">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-regular fa-clock text-ink-gold"></i>
+                                ~3 minutes
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-user-shield text-ink-gold"></i>
+                                No login · No email
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 text-[11px] text-ink-muted">
+                        <div class="pill px-3 py-1">
+                            Realism · Manifesting · Main character syndrome · Soft delusion
+                        </div>
+                        <div class="pill px-3 py-1">
+                            Designed for friends, group chats and reality checks.
+                        </div>
+                    </div>
                 </div>
-                <div class="progress-container"><div id="progress-bar" class="progress-fill"></div></div>
-            </div>
 
-            <h2 id="question-text" class="font-serif text-3xl md:text-4xl italic text-white leading-tight">
-                Loading...
-            </h2>
+                <!-- Right: share card preview -->
+                <div class="lg:pl-4">
+                    <div class="card-frame share-card-gradient p-6 sm:p-7 relative overflow-hidden shadow-ink-glow">
+                        <div class="absolute inset-x-0 -top-24 h-40 opacity-40 bg-gradient-to-b from-slate-100/40 via-transparent to-transparent blur-3xl"></div>
+                        <div class="relative space-y-4">
+                            <div class="flex items-center justify-between text-[11px] text-ink-muted mb-1">
+                                <span class="uppercase tracking-[0.32em]">Preview result card</span>
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-camera-rotate text-ink-gold"></i>
+                                    Screenshot-ready
+                                </span>
+                            </div>
 
-            <div id="options-container" class="grid grid-cols-1 gap-4"></div>
-        </div>
+                            <div class="rounded-2xl border border-white/15 bg-black/40 px-4 py-4 sm:px-5 sm:py-5">
+                                <div class="flex justify-between items-center mb-2 text-[11px]">
+                                    <span class="px-2.5 py-1 rounded-full bg-slate-100/5 border border-slate-100/20 uppercase tracking-[0.26em] text-ink-muted">
+                                        Delusion index
+                                    </span>
+                                    <span class="text-slate-200">
+                                        72% <span class="text-ink-gold font-semibold">Spicy</span>
+                                    </span>
+                                </div>
 
-        <div id="result-screen" class="hidden text-center space-y-10 reveal">
-            <div class="glass-card p-12 space-y-6 rounded-sm">
-                <span class="text-[10px] uppercase font-bold tracking-[0.3em] text-accent-silver">Final Analysis</span>
-                <h2 id="result-title" class="font-serif text-5xl md:text-7xl italic text-white">Archetype</h2>
-                <p id="result-summary" class="text-slate-400 font-light italic leading-relaxed">Summary...</p>
-            </div>
+                                <h2 class="font-serif italic text-2xl sm:text-3xl text-slate-50 leading-tight mb-1">
+                                    The <span class="text-ink-gold">Functional Delusionist</span>
+                                </h2>
+                                <p class="text-[11px] uppercase tracking-[0.26em] text-slate-400 mb-2">
+                                    Lives in the group chat, pays bills on time
+                                </p>
+                                <p class="text-[13px] text-slate-200 leading-relaxed">
+                                    You believe the universe has a soft spot for you – but you also set alarms,
+                                    show up, and occasionally open your banking app with both eyes.
+                                </p>
+                            </div>
 
-            <div class="grid grid-cols-2 gap-px bg-white/10 border border-white/10">
-                <div class="bg-midnight p-6">
-                    <div class="text-[10px] uppercase text-accent-silver mb-1">Reality Tether</div>
-                    <div id="tether-status" class="font-serif text-2xl italic">...</div>
+                            <p class="text-[11px] text-ink-muted leading-relaxed">
+                                The real test calculates your <strong>Delusion Index</strong> (manifesting bias)
+                                vs your <strong>Reality Tether</strong> (how often you touch grass) and gives you a
+                                profile you can send to the friend who “just trusts the process” a bit too much.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-midnight p-6">
-                    <div class="text-[10px] uppercase text-accent-silver mb-1">Manifesting Force</div>
-                    <div id="bias-status" class="font-serif text-2xl italic">...</div>
+            </div>
+        </section>
+
+        <!-- QUIZ INTERFACE -->
+        <section id="quiz-interface" class="hidden max-w-3xl mx-auto pt-1">
+            <div class="flex justify-between items-end mb-4 border-b border-slate-700 pb-3">
+                <div class="flex flex-col gap-1">
+                    <span id="q-category" class="font-serif italic text-[15px] text-slate-100">
+                        Cognitive Bias
+                    </span>
+                    <span class="text-[11px] text-ink-muted">
+                        Answer honestly. The test is already judging you.
+                    </span>
+                </div>
+                <span id="progress-text" class="text-[11px] font-mono text-ink-muted">
+                    01 / 13
+                </span>
+            </div>
+
+            <div class="progress-track mb-8">
+                <div id="progress-bar" class="progress-fill"></div>
+            </div>
+
+            <div class="space-y-7">
+                <h2 id="question-text" class="font-serif italic text-2xl sm:text-3xl md:text-4xl text-slate-50 leading-tight min-h-[4rem]">
+                    Loading...
+                </h2>
+
+                <div id="options-container" class="space-y-4">
+                    <!-- options injected here -->
+                </div>
+
+                <div class="mt-4 flex justify-between items-center text-[11px] text-ink-muted">
+                    <span>This is not medical advice. It is worse: honest.</span>
+                    <span id="timer-display">00:00</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULT SCREEN -->
+        <section id="result-screen" class="hidden pt-10 max-w-4xl mx-auto">
+
+            <!-- Shareable main card -->
+            <div id="share-card" class="card-frame share-card-gradient p-6 sm:p-8 mb-10">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                    <div class="flex items-center gap-2 text-[11px] uppercase tracking-[0.32em] text-ink-muted">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span>Reality audit complete</span>
+                    </div>
+                    <div id="severity-chip" class="pill px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-ink-accent">
+                        Softly delusional
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-[minmax(0,2.4fr),minmax(0,2fr)] gap-7 items-start">
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.3em] text-ink-muted mb-2">
+                            Your archetype
+                        </p>
+                        <h2 class="font-serif italic text-3xl sm:text-4xl md:text-5xl text-slate-50 leading-tight mb-1">
+                            The <span id="result-title" class="text-ink-gold">...</span>
+                        </h2>
+                        <p id="result-subtitle" class="text-[11px] uppercase tracking-[0.28em] text-slate-400 mb-4">
+                            Subtitle
+                        </p>
+
+                        <p id="result-summary" class="text-sm sm:text-[15px] text-slate-200 leading-relaxed mb-5">
+                            Summary...
+                        </p>
+
+                        <ul id="result-tags" class="flex flex-wrap gap-2 text-[11px] text-ink-accent">
+                            <!-- tags injected -->
+                        </ul>
+                    </div>
+
+                    <div class="bg-ink-soft/80 border border-slate-700/80 rounded-2xl p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-center text-[11px] text-ink-muted">
+                            <span>Delusion Index</span>
+                            <span id="delusion-score" class="text-ink-accent font-semibold text-sm">0%</span>
+                        </div>
+                        <div class="stat-bar-bg w-full h-1.5">
+                            <div id="delusion-bar" class="stat-bar-fill bg-gradient-to-r from-ink-gold via-ink-rose to-rose-600"></div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-[11px] text-ink-muted">
+                            <span>Reality Tether</span>
+                            <span id="reality-score" class="text-ink-accent font-semibold text-sm">0%</span>
+                        </div>
+                        <div class="stat-bar-bg w-full h-1.5">
+                            <div id="reality-bar" class="stat-bar-fill bg-gradient-to-r from-emerald-400 via-sky-400 to-slate-100"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-700 text-[11px] text-ink-muted">
+                            <div>
+                                <div class="uppercase tracking-[0.25em] text-[10px] mb-1">Reality tether</div>
+                                <div id="tether-status" class="font-serif italic text-[15px] text-slate-50">...</div>
+                            </div>
+                            <div>
+                                <div class="uppercase tracking-[0.25em] text-[10px] mb-1">Manifesting bias</div>
+                                <div id="bias-status" class="font-serif italic text-[15px] text-slate-50">...</div>
+                            </div>
+                        </div>
+
+                        <p class="pt-1 text-[11px] text-ink-muted">
+                            Screenshot this card and send it to the friend who says “the money is coming” while ignoring their notifications.
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-                <button onclick="shareResult()" class="bg-white text-midnight px-10 py-4 text-[10px] font-bold uppercase tracking-widest">Share Profile</button>
-                <a href="index-funnels.html" class="border border-white/20 text-white px-10 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition">Return Home</a>
+            <!-- Bars + explanation -->
+            <div class="grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr),minmax(0,2fr)] gap-7 mb-10">
+                <!-- Detailed bars -->
+                <div class="bg-ink-soft border border-slate-700 rounded-3xl p-6 shadow-ink-card">
+                    <h3 class="text-[11px] uppercase tracking-[0.32em] text-ink-muted mb-5">
+                        How much you live in your head vs in reality
+                    </h3>
+
+                    <div class="space-y-5 text-sm">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Manifesting / fantasy bias</span>
+                                <span id="stat-man-label" class="text-ink-gold text-[13px]">0</span>
+                            </div>
+                            <div class="stat-bar-bg w-full h-1.5">
+                                <div id="stat-man-bar" class="stat-bar-fill bg-gradient-to-r from-ink-gold to-rose-400"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Reality / data bias</span>
+                                <span id="stat-real-label" class="text-ink-gold text-[13px]">0</span>
+                            </div>
+                            <div class="stat-bar-bg w-full h-1.5">
+                                <div id="stat-real-bar" class="stat-bar-fill bg-gradient-to-r from-emerald-400 to-sky-400"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="mt-5 text-[12px] text-ink-muted leading-relaxed">
+                        Your answers to money, feedback, failure, news and relationships are converted into two scores:
+                        how much you lean on <strong>vision and story</strong> versus how much you respect
+                        <strong>facts and consequences</strong>. Neither side is “good” or “bad” – the problem starts
+                        when one of them completely disappears.
+                    </p>
+                </div>
+
+                <!-- Archetype explanation -->
+                <div class="bg-ink-soft border border-slate-700 rounded-3xl p-6 shadow-ink-card flex flex-col gap-4">
+                    <h3 class="text-[11px] uppercase tracking-[0.32em] text-ink-muted">
+                        What this says about your habits
+                    </h3>
+                    <p id="result-desc" class="text-sm text-slate-200 leading-relaxed">
+                        Full description loading...
+                    </p>
+
+                    <div id="quick-lines" class="mt-1 text-[12px] text-ink-muted space-y-1.5">
+                        <!-- bullet lines -->
+                    </div>
+
+                    <button
+                        onclick="window.toggleFullReport()"
+                        class="mt-3 pt-3 border-t border-slate-700 text-left text-[11px] uppercase tracking-[0.28em] text-ink-muted hover:text-slate-100 flex items-center justify-between">
+                        <span>Open full breakdown</span>
+                        <i class="fa-solid fa-chevron-down text-xs text-ink-gold"></i>
+                    </button>
+                </div>
             </div>
-        </div>
+
+            <!-- Full SEO / deep dive -->
+            <div id="full-report" class="hidden bg-ink-soft border border-slate-700 rounded-3xl p-6 md:p-7 mb-10 text-sm text-slate-200 leading-relaxed">
+                <h3 class="text-[11px] uppercase tracking-[0.32em] text-ink-muted mb-4">
+                    Deep dive: your Delusion Meter profile
+                </h3>
+                <p id="report-extra-1" class="mb-3">
+                    <!-- filled by JS -->
+                </p>
+                <p id="report-extra-2" class="mb-3">
+                    <!-- filled by JS -->
+                </p>
+                <p id="report-extra-3" class="italic text-ink-muted border-l border-ink-gold/70 pl-4">
+                    The Delusion Meter is for reflection and entertainment. It does not diagnose anything,
+                    but it is very good at exposing that friend who “doesn’t believe in deadlines” as a concept.
+                </p>
+            </div>
+
+            <!-- CTAs -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-12">
+                <div class="text-[12px] text-ink-muted max-w-md">
+                    <p class="uppercase tracking-[0.26em] text-[11px] text-slate-300 mb-1">
+                        Share or retake
+                    </p>
+                    <p>
+                        Your card is designed for stories, chats and group calls. Share it, argue with it,
+                        or retake the test next time you decide to “trust the universe” instead of opening your email.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <button
+                        onclick="window.shareResult()"
+                        class="px-6 py-3 rounded-[999px] bg-slate-50 text-ink-bg text-[10px] tracking-[0.24em] uppercase font-semibold flex items-center gap-2 shadow-ink-card hover:bg-white hover:translate-y-[-1px] transition-all">
+                        <i class="fa-solid fa-share-nodes text-xs"></i>
+                        Share result
+                    </button>
+                    <button
+                        onclick="window.retakeTest()"
+                        class="px-5 py-3 rounded-[999px] border border-slate-600 text-[10px] tracking-[0.24em] uppercase text-slate-200 hover:bg-white/5">
+                        Retake
+                    </button>
+                    <a href="index-funnels.html"
+                       class="px-5 py-3 rounded-[999px] border border-slate-600 text-[10px] tracking-[0.24em] uppercase text-slate-200 hover:bg-white/5 flex items-center gap-2">
+                        <i class="fa-solid fa-house text-xs"></i>
+                        Back to home
+                    </a>
+                </div>
+            </div>
+
+            <!-- SEO block -->
+            <section class="border-t border-slate-800 pt-8 pb-2 text-[13px] md:text-[14px] text-ink-muted space-y-4">
+                <h2 class="text-sm md:text-base font-semibold text-slate-100">
+                    What is “The Delusion Meter” actually measuring?
+                </h2>
+                <p>
+                    This reality audit looks at how you talk to yourself about money, success, feedback,
+                    relationships and bad news. Every answer nudges your score toward <strong>manifesting bias</strong>
+                    (living in your head) or <strong>reality bias</strong> (living in the spreadsheet).
+                </p>
+                <p>
+                    The goal is not to shame you for dreaming big or for being practical – it is to show you
+                    whether your inner monologue sounds more like a financial advisor or a TikTok sound about “being delulu”.
+                </p>
+
+                <h3 class="text-sm md:text-base font-semibold text-slate-100">
+                    How to use this reality audit
+                </h3>
+                <p>
+                    If your result is more on the grounded side, the challenge is to allow bigger, bolder goals
+                    without needing a guarantee first. If your result is on the delusional/main-character side,
+                    the challenge is to keep the vision but start matching it with boring, consistent action:
+                    budgets, routines, and actual plans instead of vibes alone.
+                </p>
+            </section>
+        </section>
 
     </main>
 
     <quiz-footer></quiz-footer>
 
     <script type="module">
+        // =================== DATA ===================
         const questions = [
             { q: "A world-renowned expert says your idea won't work. You think:", cat: "Authority",
               a: [
-                  { text: "They're probably right; back to the drawing board.", scores: { man: 0, real: 25 } },
-                  { text: "They just don't see the vision yet.", scores: { man: 20, real: 10 } },
-                  { text: "They are threatened by my genius.", scores: { man: 30, real: 0 } }
-              ] 
+                  { text: "They're probably right; back to the drawing board.", scores: { man: 0,  real: 25 } },
+                  { text: "They just don't see the vision yet.",                scores: { man: 20, real: 10 } },
+                  { text: "They are threatened by my genius.",                  scores: { man: 30, real: 0  } }
+              ]
             },
             { q: "Your bank account is at $5.00. You feel:", cat: "Finance",
               a: [
-                  { text: "Extreme stress; I need a job immediately.", scores: { man: 0, real: 30 } },
-                  { text: "Calm. The money is 'in transit' from the universe.", scores: { man: 25, real: 5 } },
-                  { text: "I don't check the app. If I don't see it, it isn't real.", scores: { man: 15, real: 0 } }
-              ] 
+                  { text: "Extreme stress; I need a job immediately.",          scores: { man: 0,  real: 30 } },
+                  { text: "Calm. The money is 'in transit' from the universe.", scores: { man: 25, real: 5  } },
+                  { text: "I don't check the app. If I don't see it, it isn't real.", scores:{ man: 15, real: 0 } }
+              ]
             },
             { q: "How often do you imagine your future award acceptance speech?", cat: "Aspiration",
               a: [
-                  { text: "Never. I focus on today's tasks.", scores: { man: 0, real: 25 } },
-                  { text: "Once in a while for motivation.", scores: { man: 15, real: 15 } },
-                  { text: "Every morning. I have the outfit picked out.", scores: { man: 30, real: 5 } }
-              ] 
+                  { text: "Never. I focus on today's tasks.",                   scores: { man: 0,  real: 25 } },
+                  { text: "Once in a while for motivation.",                    scores: { man: 15, real: 15 } },
+                  { text: "Every morning. I have the outfit picked out.",       scores: { man: 30, real: 5  } }
+              ]
             },
             { q: "Someone criticizes your personality. You assume:", cat: "Social",
               a: [
-                  { text: "I have things to work on.", scores: { man: 0, real: 25 } },
-                  { text: "We just aren't vibrationally aligned.", scores: { man: 20, real: 10 } },
-                  { text: "They are obsessed with me and projecting.", scores: { man: 25, real: 0 } }
-              ] 
+                  { text: "I have things to work on.",                          scores: { man: 0,  real: 25 } },
+                  { text: "We just aren't vibrationally aligned.",              scores: { man: 20, real: 10 } },
+                  { text: "They are obsessed with me and projecting.",          scores: { man: 25, real: 0  } }
+              ]
             },
             { q: "Luck is...", cat: "Probability",
               a: [
-                  { text: "Statistical probability.", scores: { man: 0, real: 30 } },
-                  { text: "Something I can attract with my mind.", scores: { man: 25, real: 5 } },
-                  { text: "A reward for being a good person.", scores: { man: 15, real: 10 } }
-              ] 
+                  { text: "Statistical probability.",                           scores: { man: 0,  real: 30 } },
+                  { text: "Something I can attract with my mind.",              scores: { man: 25, real: 5  } },
+                  { text: "A reward for being a good person.",                  scores: { man: 15, real: 10 } }
+              ]
             },
             { q: "You forgot a deadline. Your excuse is:", cat: "Accountability",
               a: [
-                  { text: "I messed up and I'm sorry.", scores: { man: 0, real: 25 } },
-                  { text: "The timing wasn't cosmically right.", scores: { man: 20, real: 5 } },
-                  { text: "I was busy doing high-level thinking.", scores: { man: 25, real: 0 } }
-              ] 
+                  { text: "I messed up and I'm sorry.",                         scores: { man: 0,  real: 25 } },
+                  { text: "The timing wasn't cosmically right.",                scores: { man: 20, real: 5  } },
+                  { text: "I was busy doing high-level thinking.",              scores: { man: 25, real: 0  } }
+              ]
             },
             { q: "When you look in the mirror, you see:", cat: "Image",
               a: [
-                  { text: "Exactly what is there.", scores: { man: 0, real: 30 } },
-                  { text: "A work in progress.", scores: { man: 15, real: 20 } },
-                  { text: "The main character of a global franchise.", scores: { man: 30, real: 0 } }
-              ] 
+                  { text: "Exactly what is there.",                             scores: { man: 0,  real: 30 } },
+                  { text: "A work in progress.",                                scores: { man: 15, real: 20 } },
+                  { text: "The main character of a global franchise.",          scores: { man: 30, real: 0  } }
+              ]
             },
             { q: "If a plan fails, it's because:", cat: "Failure",
               a: [
-                  { text: "I executed poorly.", scores: { man: 0, real: 25 } },
-                  { text: "The universe has something better for me.", scores: { man: 25, real: 10 } },
-                  { text: "Haters sabotaged me.", scores: { man: 15, real: 0 } }
-              ] 
+                  { text: "I executed poorly.",                                 scores: { man: 0,  real: 25 } },
+                  { text: "The universe has something better for me.",          scores: { man: 25, real: 10 } },
+                  { text: "Haters sabotaged me.",                               scores: { man: 15, real: 0  } }
+              ]
             },
             { q: "Your daily screen time is:", cat: "Digital",
               a: [
-                  { text: "Low. I am grounded in reality.", scores: { man: 0, real: 25 } },
-                  { text: "High, but it's for research.", scores: { man: 10, real: 10 } },
-                  { text: "I live on the internet; real life is boring.", scores: { man: 20, real: 0 } }
-              ] 
+                  { text: "Low. I am grounded in reality.",                     scores: { man: 0,  real: 25 } },
+                  { text: "High, but it's for research.",                       scores: { man: 10, real: 10 } },
+                  { text: "I live on the internet; real life is boring.",       scores: { man: 20, real: 0  } }
+              ]
             },
             { q: "Red flags in a romantic partner are:", cat: "Intimacy",
               a: [
-                  { text: "Reasons to leave immediately.", scores: { man: 0, real: 30 } },
-                  { text: "Challenges I can heal with my love.", scores: { man: 25, real: 5 } },
-                  { text: "Misunderstandings from their past.", scores: { man: 15, real: 10 } }
-              ] 
+                  { text: "Reasons to leave immediately.",                      scores: { man: 0,  real: 30 } },
+                  { text: "Challenges I can heal with my love.",                scores: { man: 25, real: 5  } },
+                  { text: "Misunderstandings from their past.",                 scores: { man: 15, real: 10 } }
+              ]
             },
             { q: "If you want to be a millionaire, you should:", cat: "Manifest",
               a: [
-                  { text: "Save, invest, and work 80 hours a week.", scores: { man: 0, real: 30 } },
-                  { text: "Feel like a millionaire now to attract the frequency.", scores: { man: 30, real: 0 } },
-                  { text: "Wait for a sign.", scores: { man: 15, real: 10 } }
-              ] 
+                  { text: "Save, invest, and work 80 hours a week.",            scores: { man: 0,  real: 30 } },
+                  { text: "Feel like a millionaire now to attract the frequency.", scores:{ man: 30, real: 0 } },
+                  { text: "Wait for a sign.",                                   scores: { man: 15, real: 10 } }
+              ]
             },
             { q: "Negative news is:", cat: "Focus",
               a: [
-                  { text: "Important to stay informed.", scores: { man: 0, real: 25 } },
-                  { text: "Low-vibrational noise I avoid.", scores: { man: 25, real: 5 } },
-                  { text: "Fake or exaggerated.", scores: { man: 15, real: 0 } }
-              ] 
+                  { text: "Important to stay informed.",                        scores: { man: 0,  real: 25 } },
+                  { text: "Low-vibrational noise I avoid.",                     scores: { man: 25, real: 5  } },
+                  { text: "Fake or exaggerated.",                               scores: { man: 15, real: 0  } }
+              ]
             },
             { q: "This test is:", cat: "Final",
               a: [
-                  { text: "A fun way to reflect.", scores: { man: 5, real: 20 } },
-                  { text: "An attack on my lifestyle.", scores: { man: 10, real: 0 } },
-                  { text: "A confirmation of my power.", scores: { man: 30, real: 0 } }
-              ] 
+                  { text: "A fun way to reflect.",                              scores: { man: 5,  real: 20 } },
+                  { text: "An attack on my lifestyle.",                         scores: { man: 10, real: 0  } },
+                  { text: "A confirmation of my power.",                        scores: { man: 30, real: 0  } }
+              ]
             }
         ];
 
+        // More nuanced archetypes (more result options)
         const archetypes = {
-            "Grounded": { title: "Grounded", summary: "You are firmly attached to the physical world. Perhaps too much.", desc: "You value data, logic, and physical evidence above all else. While this makes you reliable, you may be missing out on the magic of big-picture dreaming." },
-            "Visionary": { title: "Visionary", summary: "The sweet spot. You dream big but keep your boots on.", desc: "You have a high Manifestation score but a solid Reality Tether. You understand that while thoughts lead to things, actions are the bridge." },
-            "Manifestor": { title: "Manifestor", summary: "You are 90% vibration, 10% physical matter.", desc: "You spend more time in your dream life than your real life. Your optimism is infectious, but your reality tether is fraying." },
-            "Delusional": { title: "Main Character", summary: "Reality is merely a suggestion to you.", desc: "You ignore all negative feedback and assume the world revolves around your narrative. You are the star of a movie the rest of us aren't in." }
+            HyperRealist: {
+                title: "Hyper-Realist",
+                subtitle: "Spreadsheet soul",
+                summary: "You trust numbers more than narratives. If it isn’t on a bank statement, you don’t believe it.",
+                desc: "Your Reality Tether is extremely strong while your manifesting bias stays low. You take responsibility, budget, read the small print, and double-check everything. The upside: you’re hard to scam. The downside: you might accidentally talk yourself out of good risks because they do not come with a guarantee.",
+                bullets: [
+                    "You fact-check tweets before reacting.",
+                    "You are allergic to phrases like “the universe will provide”.",
+                    "You probably forgot the last time you daydreamed just for fun."
+                ]
+            },
+            GroundedRealist: {
+                title: "Grounded Realist",
+                subtitle: "Chronically correct",
+                summary: "You live in the real world, with real bills, real deadlines and real results.",
+                desc: "Your Reality Tether is clearly stronger than your delusion index, but not in a dramatic way. You adjust when the data changes, you listen to feedback, and you understand that effort actually matters. The risk is becoming the permanent grown-up in every room.",
+                bullets: [
+                    "Friends ask you for “the honest answer”, then regret it.",
+                    "You use words like “plan”, “timeline” and “budget” unironically.",
+                    "You are very hard to manipulate, but also hard to surprise."
+                ]
+            },
+            BalancedVisionary: {
+                title: "Balanced Visionary",
+                subtitle: "Delusion with receipts",
+                summary: "You dream big and then quietly do the boring parts to make it real.",
+                desc: "Your manifesting bias and reality bias are relatively balanced. You enjoy visualising the future, but you also open the calendar, take notes in meetings, and know what’s in your bank account. This is the sweet spot between “delulu” and “chronically online cynic”.",
+                bullets: [
+                    "You can talk about vision and also send a PDF on time.",
+                    "You use manifestation as a mindset, not as a replacement for action.",
+                    "People trust you with both ideas and execution."
+                ]
+            },
+            FunctionalDelusionist: {
+                title: "Functional Delusionist",
+                subtitle: "Main character with a job",
+                summary: "You absolutely believe things will work out for you, but you also show up enough that they sometimes do.",
+                desc: "Your Delusion Index is higher than your Reality Tether, but not completely detached. You still care about consequences – just not as much as the average adult. You live in a soft bubble of “it will be fine” and somehow, more often than not, it is.",
+                bullets: [
+                    "You open your banking app with one eye closed.",
+                    "You talk about “the vision” more than about “the plan”.",
+                    "You’ve survived enough chaos to start trusting your own luck."
+                ]
+            },
+            SoftManifestor: {
+                title: "Soft Manifestor",
+                subtitle: "Vision first, logistics later",
+                summary: "Your first instinct is always the story, the vibe, the future. Reality is something you remember eventually.",
+                desc: "Your manifesting bias is strong and your Reality Tether is present but weaker. You love affirmations, Pinterest boards and big speeches to your close friends. The danger is assuming the universe has read your Google Calendar.",
+                bullets: [
+                    "You call problems “plot twists”.",
+                    "You delay opening serious emails because they disrupt the aesthetic.",
+                    "You honestly believe things will work out – and sometimes rely on that too much."
+                ]
+            },
+            EscapistMystic: {
+                title: "Escapist Mystic",
+                subtitle: "Spiritual but highly avoidant",
+                summary: "You don’t escape reality; you rebrand it as “low vibration” and mute it.",
+                desc: "Your Delusion Index is very high while your Reality Tether is low. You use ideas like energy, vibes or destiny to avoid uncomfortable information. Notifications, bank statements and news articles all go straight into the “I’ll deal with it later” folder.",
+                bullets: [
+                    "You describe red flags as “lessons from the universe”.",
+                    "You think being “chill” is a personality and a strategy.",
+                    "Your optimism is impressive; your follow-through, less so."
+                ]
+            },
+            MainCharacter: {
+                title: "Main Character Energy",
+                subtitle: "Reality is a background extra",
+                summary: "You live in a movie that the rest of us only got a one-scene cameo in.",
+                desc: "Your manifesting/ego bias heavily outweighs your reality bias. You explain away criticism, ignore numbers you don’t like, and assume most obstacles are jealous haters. You are entertaining, magnetic, and mildly dangerous to stand near in a crisis.",
+                bullets: [
+                    "You can turn any event into your origin story.",
+                    "You are shocked when actions have consequences.",
+                    "You probably sent this result to at least three people already."
+                ]
+            }
         };
 
+        // =================== STATE ===================
         let currentQ = 0;
         let totals = { man: 0, real: 0 };
         let startTime = 0;
+        let timerActive = false;
 
-        window.startQuiz = function() {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('quiz-interface').classList.remove('hidden');
-            startTime = Date.now();
-            renderQuestion();
+        const $ = (id) => document.getElementById(id);
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60).toString().padStart(2, "0");
+            const s = (sec % 60).toString().padStart(2, "0");
+            return `${m}:${s}`;
         }
 
-        function renderQuestion() {
-            if (currentQ >= questions.length) { finishQuiz(); return; }
-            const q = questions[currentQ];
-            
-            // UI UPDATES
-            document.getElementById('q-category').innerText = q.cat;
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
-            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+        // Normalised percentages for bars (soft cap at 100)
+        function normaliseScore(raw) {
+            const capped = Math.max(0, Math.min(390, raw)); // 13 questions * max30
+            return Math.round((capped / 390) * 100);
+        }
 
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
+        function computeDelusionIndex() {
+            const manPct = normaliseScore(totals.man);
+            const realPct = normaliseScore(totals.real);
+            // Slightly bias delusion index to “how much more dream than data”
+            return Math.max(0, Math.min(100, Math.round((manPct * 1.1 + (100 - realPct) * 0.6) / 1.7)));
+        }
+
+        function computeRealityIndex() {
+            const manPct = normaliseScore(totals.man);
+            const realPct = normaliseScore(totals.real);
+            return Math.max(0, Math.min(100, Math.round((realPct * 1.1 + (100 - manPct) * 0.4) / 1.5)));
+        }
+
+        function pickArchetype() {
+            const man = totals.man;
+            const real = totals.real;
+            const manHigh = man >= 260;
+            const manMid = man >= 190;
+            const manLow = man < 120;
+            const realHigh = real >= 260;
+            const realMid = real >= 190;
+            const realLow = real < 120;
+
+            if (realHigh && manLow) return "HyperRealist";
+            if (realMid && man <= 180) return "GroundedRealist";
+            if (!manHigh && !realHigh && Math.abs(man - real) <= 60) return "BalancedVisionary";
+            if (manMid && realMid && man > real) return "BalancedVisionary";
+            if (manMid && real >= 120 && real < 190) return "FunctionalDelusionist";
+            if (manHigh && real >= 90 && real < 190) return "SoftManifestor";
+            if (manHigh && real < 80 && man - real > 80) return "MainCharacter";
+            if (manHigh && real < 120) return "EscapistMystic";
+            if (manMid && realLow) return "EscapistMystic";
+            return "FunctionalDelusionist";
+        }
+
+        function severityLabel(delusionScore, realityScore) {
+            if (delusionScore < 25 && realityScore > 60) return "Grounded to a fault";
+            if (delusionScore < 40 && realityScore > 50) return "Healthy realism";
+            if (delusionScore < 60) return "Functional delusion";
+            if (delusionScore < 80) return "High main-character energy";
+            return "Certified delulu (lovingly)";
+        }
+
+        function tetherPhrase(realPct) {
+            if (realPct >= 70) return "Anchored";
+            if (realPct >= 50) return "Mostly stable";
+            if (realPct >= 30) return "Wobbly";
+            return "One push from floating away";
+        }
+
+        function biasPhrase(delPct) {
+            if (delPct <= 25) return "Data-driven";
+            if (delPct <= 50) return "Balanced";
+            if (delPct <= 70) return "Story-first";
+            if (delPct <= 85) return "Vibes over evidence";
+            return "Reality optional";
+        }
+
+        function fillTags(key, delPct, realPct) {
+            const container = $("result-tags");
+            container.innerHTML = "";
+            const tags = [];
+
+            tags.push(`Delusion Index: ${delPct}%`);
+            tags.push(`Reality Tether: ${realPct}%`);
+
+            if (key === "MainCharacter") tags.push("Main character syndrome (mildly)");
+            if (key === "EscapistMystic") tags.push("Spiritual escapism expert");
+            if (key === "SoftManifestor") tags.push("Vision first · Excel later");
+            if (key === "BalancedVisionary") tags.push("Dreams with a to-do list");
+            if (key === "GroundedRealist") tags.push("Responsible friend energy");
+            if (key === "HyperRealist") tags.push("Human calculator vibes");
+            if (key === "FunctionalDelusionist") tags.push("Chaotic but strangely fine");
+
+            tags.slice(0, 4).forEach(t => {
+                const span = document.createElement("span");
+                span.className = "pill px-3 py-1";
+                span.textContent = t;
+                container.appendChild(span);
+            });
+        }
+
+        // =================== QUIZ FLOW ===================
+        window.startQuiz = function () {
+            $("start-screen").classList.add("hidden");
+            $("result-screen").classList.add("hidden");
+            $("quiz-interface").classList.remove("hidden");
+
+            currentQ = 0;
+            totals = { man: 0, real: 0 };
+            startTime = Date.now();
+            timerActive = true;
+            renderQuestion();
+            updateTimer();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        window.retakeTest = function () {
+            window.startQuiz();
+        };
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) {
+                finishQuiz();
+                return;
+            }
+
+            const q = questions[currentQ];
+            $("q-category").textContent = q.cat;
+            $("question-text").textContent = q.q;
+            $("progress-text").textContent = `${String(currentQ + 1).padStart(2, "0")} / ${questions.length}`;
+            $("progress-bar").style.width = `${(currentQ / questions.length) * 100}%`;
+
+            const container = $("options-container");
+            container.innerHTML = "";
+
             q.a.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "option-btn w-full p-6 text-left text-sm uppercase tracking-widest font-bold";
-                btn.innerText = opt.text;
+                const btn = document.createElement("button");
+                btn.className = "choice-btn w-full p-4 sm:p-5 text-xs sm:text-[13px] uppercase tracking-[0.16em] text-slate-100";
+                btn.textContent = opt.text;
                 btn.onclick = () => {
                     totals.man += opt.scores.man;
                     totals.real += opt.scores.real;
-                    currentQ++; // FIXED: Incrementing question counter
+                    currentQ++;
                     renderQuestion();
                 };
                 container.appendChild(btn);
             });
         }
 
-        function finishQuiz() {
-            let key = "Visionary";
-            if (totals.real > 250) key = "Grounded";
-            else if (totals.man > 250 && totals.real < 100) key = "Delusional";
-            else if (totals.man > 180) key = "Manifestor";
-            
-            const data = archetypes[key];
-            document.getElementById('quiz-interface').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('result-title').innerText = data.title;
-            document.getElementById('result-summary').innerText = data.summary;
-            
-            document.getElementById('tether-status').innerText = totals.real > 150 ? "Solid" : "Fragmented";
-            document.getElementById('bias-status').innerText = totals.man > 150 ? "Infinite" : "Moderate";
-
-            if (window.saveTestResult) window.saveTestResult({ testId: 'delusion_meter', archetype: key, metrics: { manifestation: totals.man, reality: totals.real } });
+        function updateTimer() {
+            if (!timerActive || $("quiz-interface").classList.contains("hidden")) return;
+            const diff = Math.floor((Date.now() - startTime) / 1000);
+            $("timer-display").textContent = formatTime(diff);
+            requestAnimationFrame(updateTimer);
         }
+
+        function finishQuiz() {
+            timerActive = false;
+            $("quiz-interface").classList.add("hidden");
+            $("result-screen").classList.remove("hidden");
+
+            const durationSec = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
+
+            const key = pickArchetype();
+            const data = archetypes[key];
+
+            const delPct = computeDelusionIndex();
+            const realPct = computeRealityIndex();
+
+            // Main labels
+            $("result-title").textContent = data.title;
+            $("result-subtitle").textContent = data.subtitle;
+            $("result-summary").textContent = data.summary;
+            $("result-desc").textContent = data.desc;
+
+            const severity = severityLabel(delPct, realPct);
+            $("severity-chip").textContent = severity;
+
+            // High level bars
+            $("delusion-score").textContent = `${delPct}%`;
+            $("delusion-bar").style.width = `${delPct}%`;
+            $("reality-score").textContent = `${realPct}%`;
+            $("reality-bar").style.width = `${realPct}%`;
+
+            $("tether-status").textContent = tetherPhrase(realPct);
+            $("bias-status").textContent = biasPhrase(delPct);
+
+            // Raw metric bars
+            const manPct = normaliseScore(totals.man);
+            const realPctRaw = normaliseScore(totals.real);
+
+            $("stat-man-label").textContent = totals.man;
+            $("stat-real-label").textContent = totals.real;
+            $("stat-man-bar").style.width = `${manPct}%`;
+            $("stat-real-bar").style.width = `${realPctRaw}%`;
+
+            fillTags(key, delPct, realPct);
+
+            const quick = $("quick-lines");
+            quick.innerHTML = "";
+            (data.bullets || []).forEach(line => {
+                const p = document.createElement("p");
+                p.textContent = "• " + line;
+                quick.appendChild(p);
+            });
+
+            $("report-extra-1").textContent =
+                "The Delusion Meter is not about diagnosing you – it is about exposing the stories you naturally tell yourself when life gets uncomfortable. " +
+                "Do you immediately look for your own responsibility, or do you reach for a cosmic explanation first?";
+            $("report-extra-2").textContent =
+                "You answered questions about money, failure, feedback, news and romance. Taken together, those answers show how you balance optimism and accountability. " +
+                "There is nothing wrong with ambition or daydreaming – the issue starts when reality becomes something you only visit when your phone battery dies.";
+
+            // Save to existing game engine handler
+            const payload = {
+                testId: "delusion_meter",
+                timestamp: new Date().toISOString(),
+                archetype: key,
+                metrics: {
+                    manifestation: totals.man,
+                    reality: totals.real,
+                    delusion_index: delPct,
+                    reality_index: realPct,
+                    time_taken: durationSec
+                }
+            };
+
+            if (window.saveTestResult) {
+                try {
+                    window.saveTestResult(payload);
+                } catch (e) {
+                    console.warn("saveTestResult failed", e);
+                }
+            }
+
+            if (window.GameEngine && typeof window.GameEngine.trackEvent === "function") {
+                try {
+                    window.GameEngine.trackEvent("test_complete", {
+                        testId: "delusion_meter",
+                        archetype: key,
+                        delusionIndex: delPct,
+                        realityIndex: realPct,
+                        timeTaken: durationSec
+                    });
+                } catch (e) {}
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        // ============== UI HELPERS ==============
+        window.toggleFullReport = function () {
+            $("full-report").classList.toggle("hidden");
+        };
+
+        window.shareResult = async function () {
+            const title = "My Delusion Meter Result • QuizRealm";
+            const arche = $("result-title").textContent;
+            const subtitle = $("result-subtitle").textContent;
+            const del = $("delusion-score").textContent;
+            const real = $("reality-score").textContent;
+
+            const text =
+                `I took The Delusion Meter on QuizRealm.\n` +
+                `Result: The ${arche} — ${subtitle}.\n` +
+                `Delusion Index: ${del} · Reality Tether: ${real}.\n` +
+                `What are you?`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title,
+                        text,
+                        url: window.location.href
+                    });
+                    return;
+                } catch (e) {
+                    // fall back
+                }
+            }
+
+            const fallback = `${text}\n${window.location.href}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(fallback);
+                    alert("Caption + link copied. Paste it into your story or chat.");
+                    return;
+                } catch (e) {
+                    // ignore
+                }
+            }
+
+            alert("Share this:\n\n" + fallback);
+        };
     </script>
 </body>
 </html>

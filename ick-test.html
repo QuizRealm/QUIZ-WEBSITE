@@ -10,6 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Ick Factor • Cringe Audit | QuizRealm</title>
+    <meta name="description" content="The Ick Factor: a brutally honest cringe audit that measures how fast you get the ick, how petty your standards are, and whether you’re a secret hater or just a reasonable human being. 13 questions. 8 archetypes. No mercy.">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
@@ -24,8 +25,8 @@
             theme: {
                 extend: {
                     fontFamily: { 
-                        'display': ['Unbounded', 'sans-serif'], 
-                        'sans': ['Space Grotesk', 'sans-serif'] 
+                        display: ['Unbounded', 'sans-serif'], 
+                        sans: ['Space Grotesk', 'sans-serif'] 
                     },
                     colors: { 
                         'ick-pink': '#ff006e',
@@ -38,7 +39,11 @@
     </script>
 
     <style>
-        body { background-color: #ff006e; color: #111111; font-family: 'Space Grotesk', sans-serif; }
+        body {
+            background-color: #ff006e;
+            color: #111111;
+            font-family: 'Space Grotesk', sans-serif;
+        }
         
         .neo-brutalism {
             background: white;
@@ -61,8 +66,18 @@
             box-shadow: 0px 0px 0px #111111;
         }
 
-        .progress-bar { background: #111111; height: 12px; border: 3px solid #111111; overflow: hidden; }
-        .progress-fill { background: #fbff00; height: 100%; width: 0%; transition: width 0.4s ease; }
+        .progress-bar {
+            background: #111111;
+            height: 12px;
+            border: 3px solid #111111;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #fbff00;
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
 
         .shimmer {
             background: linear-gradient(90deg, #ff006e, #fbff00, #ff006e);
@@ -70,6 +85,50 @@
             animation: shine 3s linear infinite;
         }
         @keyframes shine { to { background-position: 200% center; } }
+
+        .tag-pill {
+            border-radius: 999px;
+            border: 2px solid #111111;
+            padding: 4px 10px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 0.18em;
+        }
+        .stat-value {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 18px;
+        }
+
+        .detail-card {
+            background: #fff;
+            border: 4px solid #111111;
+            box-shadow: 6px 6px 0px #111111;
+        }
+
+        .mini-bar-bg {
+            width: 100%;
+            height: 6px;
+            border: 2px solid #111111;
+            background: #ffeef5;
+            position: relative;
+            overflow: hidden;
+        }
+        .mini-bar-fill {
+            position:absolute;
+            top:0;
+            left:0;
+            bottom:0;
+            width:0%;
+            background: linear-gradient(90deg,#111111,#ff006e);
+            transition: width 0.4s ease;
+        }
     </style>
 </head>
 
@@ -78,6 +137,7 @@
 
     <main class="flex-grow w-full max-w-2xl mx-auto px-6 py-12 lg:py-24">
 
+        <!-- START -->
         <div id="start-screen" class="text-center space-y-8">
             <div class="inline-block p-4 neo-brutalism rotate-3 mb-6">
                 <h1 class="font-display text-5xl md:text-7xl font-black uppercase italic leading-none">
@@ -86,14 +146,21 @@
             </div>
 
             <p class="font-bold text-xl uppercase tracking-tighter max-w-xs mx-auto">
-                How easily do you get the 'Ick'? Let's measure your petty tolerance levels.
+                How fast do you get the ick, and how petty is it, exactly? Let’s turn your silent judgment into data.
             </p>
 
-            <button onclick="window.startQuiz()" class="option-btn px-12 py-5 text-xl font-display uppercase italic tracking-tighter w-full">
+            <button
+                onclick="window.startQuiz()"
+                class="option-btn px-12 py-5 text-xl font-display uppercase italic tracking-tighter w-full">
                 Judge Me
             </button>
+
+            <p class="text-xs uppercase font-bold tracking-[0.25em] mt-2">
+                13 Questions · 8 Archetypes · Zero Emotional Support
+            </p>
         </div>
 
+        <!-- QUIZ -->
         <div id="quiz-interface" class="hidden space-y-10">
             <div class="space-y-2">
                 <div class="flex justify-between font-display text-[10px] uppercase font-black">
@@ -110,32 +177,101 @@
             <div id="options-container" class="grid grid-cols-1 gap-6"></div>
         </div>
 
+        <!-- RESULT -->
         <div id="result-screen" class="hidden text-center space-y-10">
             <div class="neo-brutalism p-8 space-y-4 -rotate-2">
-                <span class="font-display text-[10px] uppercase font-black bg-ick-pink text-white px-2">Diagnostic Result</span>
-                <h2 id="result-title" class="font-display text-4xl md:text-6xl uppercase italic leading-none">Archetype</h2>
-                <p id="result-summary" class="font-bold text-lg leading-tight uppercase">Summary...</p>
+                <span class="font-display text-[10px] uppercase font-black bg-ick-pink text-white px-2">
+                    Diagnostic Result
+                </span>
+                <h2 id="result-title" class="font-display text-4xl md:text-6xl uppercase italic leading-none">
+                    Archetype
+                </h2>
+                <p id="result-summary" class="font-bold text-lg leading-tight uppercase">
+                    Summary...
+                </p>
+                <p id="result-subtitle" class="text-xs uppercase tracking-[0.25em]">
+                    <!-- Optional subtitle tag -->
+                </p>
+                <div id="result-tags" class="flex flex-wrap gap-2 justify-center mt-3"></div>
             </div>
 
+            <!-- 6 AXES GRID -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="neo-brutalism p-4">
-                    <div class="text-[10px] font-black uppercase mb-1">Pedantic</div>
-                    <div id="ped-val" class="font-display text-2xl">...</div>
+                <div class="neo-brutalism p-4 flex flex-col gap-2">
+                    <div class="stat-label">Petty Ick</div>
+                    <div id="pet-val" class="stat-value">--</div>
+                    <div class="mini-bar-bg"><div id="pet-bar" class="mini-bar-fill"></div></div>
                 </div>
-                <div class="neo-brutalism p-4">
-                    <div class="text-[10px] font-black uppercase mb-1">Tolerance</div>
-                    <div id="tol-val" class="font-display text-2xl">...</div>
+                <div class="neo-brutalism p-4 flex flex-col gap-2">
+                    <div class="stat-label">Empathy</div>
+                    <div id="emp-val" class="stat-value">--</div>
+                    <div class="mini-bar-bg"><div id="emp-bar" class="mini-bar-fill"></div></div>
                 </div>
-                <div class="neo-brutalism p-4">
-                    <div class="text-[10px] font-black uppercase mb-1">Cringe</div>
-                    <div id="cri-val" class="font-display text-2xl">...</div>
+                <div class="neo-brutalism p-4 flex flex-col gap-2">
+                    <div class="stat-label">Snobbery</div>
+                    <div id="snb-val" class="stat-value">--</div>
+                    <div class="mini-bar-bg"><div id="snb-bar" class="mini-bar-fill"></div></div>
+                </div>
+                <div class="neo-brutalism p-4 flex flex-col gap-2">
+                    <div class="stat-label">2ndhand Embarr.</div>
+                    <div id="sec-val" class="stat-value">--</div>
+                    <div class="mini-bar-bg"><div id="sec-bar" class="mini-bar-fill"></div></div>
+                </div>
+                <div class="neo-brutalism p-4 flex flex-col gap-2">
+                    <div class="stat-label">Moral Ick</div>
+                    <div id="mor-val" class="stat-value">--</div>
+                    <div class="mini-bar-bg"><div id="mor-bar" class="mini-bar-fill"></div></div>
+                </div>
+                <div class="neo-brutalism p-4 flex flex-col gap-2">
+                    <div class="stat-label">Self-Awareness</div>
+                    <div id="swa-val" class="stat-value">--</div>
+                    <div class="mini-bar-bg"><div id="swa-bar" class="mini-bar-fill"></div></div>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-4">
-                <button onclick="shareResult()" class="option-btn px-10 py-5 font-display uppercase italic text-sm">Share My Standards</button>
-                <a href="index-funnels.html" class="font-bold uppercase underline">Back to Reality</a>
+            <!-- DETAIL CARD -->
+            <div class="detail-card p-6 text-left space-y-3">
+                <h3 class="font-display text-xl uppercase leading-none">
+                    Cringe Report
+                </h3>
+                <p id="result-desc" class="text-sm font-semibold leading-snug">
+                    ...
+                </p>
+                <div id="bullet-points" class="text-xs space-y-1">
+                    <!-- Filled dynamically -->
+                </div>
+                <p id="rec-line" class="mt-3 pt-3 border-t-4 border-ick-black text-xs font-bold uppercase tracking-[0.2em]">
+                    Recommendation: ...
+                </p>
             </div>
+
+            <!-- CTA -->
+            <div class="flex flex-col gap-4">
+                <button
+                    onclick="window.shareResult()"
+                    class="option-btn px-10 py-5 font-display uppercase italic text-sm">
+                    Share My Standards
+                </button>
+                <a href="index-funnels.html" class="font-bold uppercase underline">
+                    Back to Reality
+                </a>
+            </div>
+
+            <!-- SEO / Explanation Block -->
+            <section class="mt-6 text-left text-xs space-y-2 bg-white border-4 border-ick-black p-4">
+                <h2 class="font-display text-sm uppercase leading-none mb-1">
+                    What this Ick Factor test actually measures
+                </h2>
+                <p>
+                    We separate harmless preferences from full-time hater behavior across six axes:
+                    petty icks, empathy, snobbery, secondhand embarrassment, moral standards, and self-awareness.
+                    In other words: what triggers you, why it triggers you, and whether you realize you’re also cringe.
+                </p>
+                <p>
+                    Your archetype isn’t a compliment; it’s a label for how you silently score everyone around you
+                    for existing in public. Use it to adjust your standards – or at least to stop acting surprised by your own icks.
+                </p>
+            </section>
         </div>
 
     </main>
@@ -143,134 +279,507 @@
     <quiz-footer></quiz-footer>
 
     <script type="module">
+        // ========== QUESTION SET (6 axes: pet, emp, snb, sec, mor, swa) ==========
         const questions = [
-            { q: "Someone runs to catch a bus but the driver pulls away as they reach the door. You:", cat: "Secondhand Embarrassment",
-              a: [
-                  { text: "Feel terrible for them. The driver is a villain.", scores: { cri: 0, ped: 0, tol: 30 } },
-                  { text: "Pure ICK. Why were they running like that?", scores: { cri: 30, ped: 10, tol: 0 } },
-                  { text: "Should have left the house earlier.", scores: { cri: 10, ped: 20, tol: 10 } }
-              ] 
+            {
+                q: "Someone sprints for the bus, bangs on the door, and the driver still pulls away. You:",
+                cat: "Secondhand Embarrassment",
+                a: [
+                    {
+                        text: "Feel bad for them and hate the driver. Humanity still online.",
+                        scores: { pet: 0, emp: 25, snb: 0, sec: 10, mor: 20, swa: 10 }
+                    },
+                    {
+                        text: "Get full-body cringe. Why were they running like that in public.",
+                        scores: { pet: 25, emp: 0, snb: 10, sec: 25, mor: 0, swa: 5 }
+                    },
+                    {
+                        text: "Think: “Should’ve left earlier.” It’s a scheduling skill issue.",
+                        scores: { pet: 10, emp: 5, snb: 20, sec: 10, mor: 5, swa: 10 }
+                    }
+                ]
             },
-            { q: "A grown adult uses a 'baby voice' to talk to their pet in public. You:", cat: "Social Cringe",
-              a: [
-                  { text: "It's cute. They love their pet.", scores: { cri: 0, ped: 0, tol: 25 } },
-                  { text: "I need to leave this room immediately.", scores: { cri: 30, ped: 15, tol: 0 } },
-                  { text: "I Judge, but I don't leave.", scores: { cri: 15, ped: 10, tol: 10 } }
-              ] 
+            {
+                q: "A grown adult uses a baby voice with their pet in a crowded café.",
+                cat: "Social Cringe",
+                a: [
+                    {
+                        text: "It’s cute. Honestly, the dog deserves it more than most people.",
+                        scores: { pet: 0, emp: 20, snb: 0, sec: 8, mor: 0, swa: 15 }
+                    },
+                    {
+                        text: "Immediate ick. I need this person to stop emitting sound.",
+                        scores: { pet: 25, emp: 0, snb: 15, sec: 20, mor: 0, swa: 5 }
+                    },
+                    {
+                        text: "I judge them, but stay. Free entertainment with my coffee.",
+                        scores: { pet: 15, emp: 5, snb: 10, sec: 15, mor: 0, swa: 10 }
+                    }
+                ]
             },
-            { q: "Someone claps when the airplane lands. You:", cat: "Public Standards",
-              a: [
-                  { text: "Celebrate! We made it!", scores: { cri: 0, ped: 0, tol: 30 } },
-                  { text: "Instant breakup/friendship termination.", scores: { cri: 40, ped: 20, tol: 0 } },
-                  { text: "Cringe in silence while staring at the floor.", scores: { cri: 20, ped: 10, tol: 5 } }
-              ] 
+            {
+                q: "Someone claps when the airplane lands.",
+                cat: "Public Standards",
+                a: [
+                    {
+                        text: "Honestly, same. We didn’t die. That deserves a reaction.",
+                        scores: { pet: 0, emp: 20, snb: 0, sec: 8, mor: 0, swa: 15 }
+                    },
+                    {
+                        text: "If I came with them, I’m leaving without them. Friendship over.",
+                        scores: { pet: 30, emp: 0, snb: 20, sec: 20, mor: 0, swa: 5 }
+                    },
+                    {
+                        text: "I die quietly inside and pretend I don’t know them.",
+                        scores: { pet: 18, emp: 5, snb: 10, sec: 22, mor: 0, swa: 10 }
+                    }
+                ]
             },
-            { q: "Your date's card gets declined while paying for dinner. You:", cat: "Romance",
-              a: [
-                  { text: "Pay it for them. No big deal, technology is glitchy.", scores: { cri: 0, ped: 0, tol: 30 } },
-                  { text: "The Ick has arrived. It's game over.", scores: { cri: 35, ped: 10, tol: 0 } },
-                  { text: "Awkwardly wait for them to call the bank.", scores: { cri: 15, ped: 20, tol: 5 } }
-              ] 
+            {
+                q: "Your date’s card gets declined paying for dinner.",
+                cat: "Romantic Ick",
+                a: [
+                    {
+                        text: "I pay, we move on. Banks glitch, capitalism is a scam anyway.",
+                        scores: { pet: 0, emp: 20, snb: 0, sec: 10, mor: 10, swa: 15 }
+                    },
+                    {
+                        text: "The ick walks in, sits down, and never leaves.",
+                        scores: { pet: 25, emp: 0, snb: 15, sec: 20, mor: 0, swa: 5 }
+                    },
+                    {
+                        text: "I help them call the bank while slowly reconsidering my life choices.",
+                        scores: { pet: 12, emp: 10, snb: 10, sec: 15, mor: 0, swa: 12 }
+                    }
+                ]
             },
-            { q: "How do you feel about people who make 'Main Character' TikToks in public?", cat: "Digital Ick",
-              a: [
-                  { text: "Love the confidence! Content is king.", scores: { cri: 0, ped: 0, tol: 30 } },
-                  { text: "I pray for their downfall.", scores: { cri: 40, ped: 30, tol: 0 } },
-                  { text: "I watch from a distance with deep confusion.", scores: { cri: 20, ped: 10, tol: 10 } }
-              ] 
+            {
+                q: "Main-character TikToks in public (spinning, posing, fake laughing).",
+                cat: "Digital Ick",
+                a: [
+                    {
+                        text: "Cringe but brave. At least they’re doing something with their delusion.",
+                        scores: { pet: 8, emp: 15, snb: 0, sec: 18, mor: 0, swa: 15 }
+                    },
+                    {
+                        text: "I hope the algorithm punishes them. This is a crime.",
+                        scores: { pet: 30, emp: 0, snb: 25, sec: 25, mor: 0, swa: 5 }
+                    },
+                    {
+                        text: "I stare from a distance like a documentary narrator.",
+                        scores: { pet: 18, emp: 5, snb: 10, sec: 20, mor: 0, swa: 10 }
+                    }
+                ]
             },
-            { q: "Someone uses the wrong 'your/you're' in a text. You:", cat: "Grammar",
-              a: [
-                  { text: "I didn't even notice.", scores: { cri: 0, ped: 0, tol: 30 } },
-                  { text: "Correct them immediately. It's basic literacy.", scores: { cri: 10, ped: 40, tol: 0 } },
-                  { text: "I notice, but I'm too polite to say anything.", scores: { cri: 5, ped: 20, tol: 15 } }
-              ] 
+            {
+                q: "They text you: “Your amazing, I had such a grate time.”",
+                cat: "Grammar",
+                a: [
+                    {
+                        text: "I got the meaning. My soul survived the spelling.",
+                        scores: { pet: 5, emp: 18, snb: 0, sec: 5, mor: 0, swa: 15 }
+                    },
+                    {
+                        text: "I physically flinch and correct them in my head (or out loud).",
+                        scores: { pet: 18, emp: 0, snb: 30, sec: 10, mor: 0, swa: 8 }
+                    },
+                    {
+                        text: "I notice, immediately judge, and reply anyway.",
+                        scores: { pet: 15, emp: 8, snb: 18, sec: 8, mor: 0, swa: 12 }
+                    }
+                ]
             },
-            { q: "An adult is wearing Disney-themed clothing. You:", cat: "Aesthetic",
-              a: [
-                  { text: "Let people enjoy things.", scores: { cri: 0, ped: 0, tol: 30 } },
-                  { text: "Grow up. This is a red flag.", scores: { cri: 35, ped: 25, tol: 0 } },
-                  { text: "Not my style, but okay.", scores: { cri: 10, ped: 10, tol: 15 } }
-              ] 
+            {
+                q: "An adult is fully decked out in Disney merch in a non-Disney setting.",
+                cat: "Aesthetic Ick",
+                a: [
+                    {
+                        text: "Let people enjoy their emotional support mouse.",
+                        scores: { pet: 5, emp: 20, snb: 0, sec: 8, mor: 0, swa: 15 }
+                    },
+                    {
+                        text: "That’s a walking red flag with mouse ears.",
+                        scores: { pet: 25, emp: 0, snb: 25, sec: 18, mor: 0, swa: 8 }
+                    },
+                    {
+                        text: "Not my aesthetic, but if they’re kind, I don’t care.",
+                        scores: { pet: 8, emp: 15, snb: 8, sec: 8, mor: 5, swa: 12 }
+                    }
+                ]
             },
-            { q: "Someone is eating with their mouth open. You:", cat: "Manners",
-              a: [
-                  { text: "Tune it out.", scores: { cri: 0, ped: 0, tol: 25 } },
-                  { text: "I am currently planning my exit strategy.", scores: { cri: 40, ped: 30, tol: 0 } },
-                  { text: "I stare at them until they stop.", scores: { cri: 20, ped: 20, tol: 5 } }
-              ] 
+            {
+                q: "Someone chews with their mouth open. Loudly.",
+                cat: "Manners",
+                a: [
+                    {
+                        text: "I try to ignore it and focus on not committing a crime.",
+                        scores: { pet: 15, emp: 10, snb: 10, sec: 15, mor: 10, swa: 12 }
+                    },
+                    {
+                        text: "Absolutely not. I’m mentally packing my things.",
+                        scores: { pet: 28, emp: 0, snb: 20, sec: 20, mor: 15, swa: 8 }
+                    },
+                    {
+                        text: "I stare at them until the chewing becomes a moral lesson.",
+                        scores: { pet: 20, emp: 5, snb: 18, sec: 18, mor: 15, swa: 10 }
+                    }
+                ]
             },
-            { q: "Singing along too loudly at a concert when they aren't even good:", cat: "Performance",
-              a: [
-                  { text: "They're having fun! Sing louder!", scores: { cri: 0, ped: 0, tol: 30 } },
-                  { text: "You are ruining the professional audio.", scores: { cri: 30, ped: 25, tol: 0 } },
-                  { text: "Move a few rows away.", scores: { cri: 15, ped: 10, tol: 10 } }
-              ] 
+            {
+                q: "Someone screams every lyric at a concert even though they’re completely off-key.",
+                cat: "Performance Ick",
+                a: [
+                    {
+                        text: "Love that for them. Concerts are for chaos, not auditions.",
+                        scores: { pet: 5, emp: 20, snb: 0, sec: 15, mor: 0, swa: 15 }
+                    },
+                    {
+                        text: "You are not part of the official audio. Please stop.",
+                        scores: { pet: 25, emp: 0, snb: 25, sec: 20, mor: 0, swa: 8 }
+                    },
+                    {
+                        text: "I slightly move away so my ears and soul can breathe.",
+                        scores: { pet: 15, emp: 10, snb: 10, sec: 18, mor: 0, swa: 12 }
+                    }
+                ]
             },
-            { q: "Someone refers to their coffee as a 'Bean Juice':", cat: "Language",
-              a: [
-                  { text: "Quirky! I love it.", scores: { cri: 0, ped: 0, tol: 25 } },
-                  { text: "Unbearable cringe. Prison.", scores: { cri: 40, ped: 20, tol: 0 } },
-                  { text: "A bit much, but fine.", scores: { cri: 15, ped: 10, tol: 10 } }
-              ] 
+            {
+                q: "They post a selfie with the caption “Just a silly little guy”.",
+                cat: "Language Crimes",
+                a: [
+                    {
+                        text: "It’s cringe, but so am I. I scroll on.",
+                        scores: { pet: 12, emp: 15, snb: 5, sec: 15, mor: 0, swa: 18 }
+                    },
+                    {
+                        text: "Unfollow. Block. Report. Spiritual ick.",
+                        scores: { pet: 30, emp: 0, snb: 20, sec: 25, mor: 0, swa: 5 }
+                    },
+                    {
+                        text: "Eye-roll, screenshot to the group chat, then continue liking their posts.",
+                        scores: { pet: 20, emp: 8, snb: 15, sec: 18, mor: 0, swa: 10 }
+                    }
+                ]
             },
-            { q: "Wearing sunglasses indoors at night:", cat: "Aesthetic",
-              a: [
-                  { text: "Rockstar vibes.", scores: { cri: 0, ped: 0, tol: 25 } },
-                  { text: "You look like you're trying too hard.", scores: { cri: 35, ped: 15, tol: 0 } },
-                  { text: "Are you okay? Did you have eye surgery?", scores: { cri: 10, ped: 10, tol: 15 } }
-              ] 
+            {
+                q: "Sunglasses indoors at night:",
+                cat: "Aesthetic",
+                a: [
+                    {
+                        text: "Maybe they’re sensitive to light… or reality. I let it go.",
+                        scores: { pet: 8, emp: 18, snb: 5, sec: 10, mor: 0, swa: 15 }
+                    },
+                    {
+                        text: "You are trying way too hard. It’s giving unearned confidence.",
+                        scores: { pet: 25, emp: 0, snb: 22, sec: 18, mor: 0, swa: 8 }
+                    },
+                    {
+                        text: "I ask if they’re okay first, then judge them privately.",
+                        scores: { pet: 15, emp: 12, snb: 12, sec: 12, mor: 0, swa: 12 }
+                    }
+                ]
             },
-            { q: "What is the ultimate Ick?", cat: "Final Boss",
-              a: [
-                  { text: "Being mean to service staff.", scores: { cri: 10, ped: 10, tol: 0 } },
-                  { text: "Chasing a ping-pong ball across a room.", scores: { cri: 50, ped: 0, tol: 0 } },
-                  { text: "Using 'uwu' in a serious argument.", scores: { cri: 60, ped: 20, tol: 0 } }
-              ] 
+            {
+                q: "Ultimate Ick scenario:",
+                cat: "Final Boss",
+                a: [
+                    {
+                        text: "Being rude to service staff or anyone with less power.",
+                        scores: { pet: 8, emp: 5, snb: 8, sec: 8, mor: 35, swa: 18 }
+                    },
+                    {
+                        text: "Chasing a ping-pong ball across the room in front of people.",
+                        scores: { pet: 35, emp: 0, snb: 10, sec: 30, mor: 0, swa: 5 }
+                    },
+                    {
+                        text: "Typing “uwu” in a serious argument.",
+                        scores: { pet: 30, emp: 0, snb: 20, sec: 25, mor: 0, swa: 8 }
+                    }
+                ]
             },
-            { q: "Are your standards too high?", cat: "Self-Reflection",
-              a: [
-                  { text: "No, people just need to be better.", scores: { cri: 10, ped: 30, tol: 0 } },
-                  { text: "Yes, I am a hater and I accept it.", scores: { cri: 10, ped: 10, tol: 10 } },
-                  { text: "I am a saint of patience.", scores: { cri: 0, ped: 0, tol: 40 } }
-              ] 
+            {
+                q: "Be honest: are your standards too high?",
+                cat: "Self-Reflection",
+                a: [
+                    {
+                        text: "No. People just need to behave like I think they should.",
+                        scores: { pet: 20, emp: 0, snb: 25, sec: 15, mor: 10, swa: 5 }
+                    },
+                    {
+                        text: "Yes, I am a hater with a God-tier filter and I accept it.",
+                        scores: { pet: 25, emp: 5, snb: 20, sec: 15, mor: 0, swa: 20 }
+                    },
+                    {
+                        text: "I give people way too many chances. I know it, and I’m tired.",
+                        scores: { pet: 5, emp: 25, snb: 0, sec: 10, mor: 15, swa: 18 }
+                    }
+                ]
             }
         ];
 
+        // ========== ARCHETYPES (8) ==========
         const archetypes = {
-            "Saint": { title: "The Saint", summary: "You are the human equivalent of a golden retriever.", desc: "You have zero Ick factor. You let people enjoy things, forgive social blunders instantly, and probably haven't judged anyone since the mid-2000s. You are a peaceful soul, but people might accidentally walk all over you." },
-            "Selective": { title: "Selective Judge", summary: "You have normal human standards.", desc: "You get the Ick for the big stuff (baby voices, airplane clapping), but you can handle the small stuff. You have a balanced social threshold and a healthy sense of 'cringe'." },
-            "Elite": { title: "The Elite Snob", summary: "Your standards are higher than your altitude.", desc: "You have high Pedantic and Cringe scores. You notice everything—every typo, every unpolished shoe, every slightly-too-loud laugh. You aren't mean; you just have 'taste.' Unfortunately, 'taste' is lonely." },
-            "Hater": { title: "Full-Time Hater", summary: "Everything is an Ick. Everyone is Cringe.", desc: "Your tolerance is non-existent. You are probably judgment-scrolling right now. You find physical movements, breathing styles, and vowel sounds annoying. You are the final boss of the Ick Factor." }
+            GoldenRetriever: {
+                title: "Golden Retriever Friend",
+                subtitle: "Let people enjoy things, even badly",
+                summary: "Your ick reflex is slow, and your empathy is dangerously high.",
+                desc: "You barely flinch at cringe. You forgive grammar crimes, aesthetic disasters, and secondhand embarrassment that would send other people into therapy. You’re either extremely emotionally mature or lowkey a doormat. Possibly both.",
+                bullets: [
+                    "You can survive baby voice, clapping on planes, and Disney adults without combusting.",
+                    "Your friends use you as a safe space to confess their most embarrassing stories.",
+                    "You notice red flags but label them “quirks” until it’s way too late."
+                ],
+                rec: "Keep your kindness. Raise your standards. You’re allowed to have icks. At least one."
+            },
+            DoormatDiplomat: {
+                title: "Ick-Resistant Diplomat",
+                subtitle: "Chill on the outside, exhausted on the inside",
+                summary: "You act unbothered, but your nervous system is filing complaints.",
+                desc: "You let a lot slide in the name of peace. You can handle cringe, but you also absorb it like a sponge. People think you have no icks; in reality, you just don’t start fights over them.",
+                bullets: [
+                    "You are the emotional shock absorber in most social situations.",
+                    "You rarely cut people off; you just slowly reduce your response time to 3–5 business years.",
+                    "You have a PhD in politely distancing yourself from walking icks."
+                ],
+                rec: "You don’t have to publicly shame anyone, but you are allowed to quietly stop giving access to people who exhaust you."
+            },
+            BalancedJudge: {
+                title: "Balanced Judge",
+                subtitle: "Reasonable standards, controlled hatred",
+                summary: "You get the ick in logical places, not just because someone exists weirdly.",
+                desc: "You care more about morals than aesthetics. Being rude to staff or cruel to others is a dealbreaker. Baby voice and bad captions might annoy you, but they don’t end relationships on their own.",
+                bullets: [
+                    "You can tell the difference between “cringe but harmless” and “cringe and evil”.",
+                    "You judge, but you also understand context and intent.",
+                    "Your group chat rants are specific, not just “everyone sucks”."
+                ],
+                rec: "You’re one of the few people allowed to say “I have standards” without it being a red flag. Do not waste this power."
+            },
+            AestheticDictator: {
+                title: "Aesthetic Dictator",
+                subtitle: "Taste over feelings, always",
+                summary: "Your ick is less about ethics and more about fonts, outfits, and captions.",
+                desc: "You experience physical pain at bad outfits, cringe captions, and the wrong emoji. You correct grammar in your head for sport. If someone is kind but stylistically chaotic, your soul short-circuits.",
+                bullets: [
+                    "You think “letting people enjoy things” has limits and those limits are your Pinterest board.",
+                    "You are haunted by incorrect “your/you’re”.",
+                    "You will date someone morally okay but unfashionable and then resent them for existing in photos."
+                ],
+                rec: "It’s fine to have taste. Try adding “being a decent human” to your standards list, not just “curated aesthetic”."
+            },
+            RedFlagDetector: {
+                title: "Red Flag Forensics",
+                subtitle: "Ethical ick as a survival mechanism",
+                summary: "You don’t get icks for ping-pong balls; you get icks for character defects.",
+                desc: "Your moral standards are brutal and correct. You can tolerate cringe in style, but not in ethics. Service staff disrespect, manipulation, cruelty: instant, permanent ick. You’re not a hater, you’re a quality control system.",
+                bullets: [
+                    "You can ignore bad fashion but not bad behavior.",
+                    "Your ick radar is mostly calibrated around power dynamics and decency.",
+                    "You sleep well because you don’t keep terrible people around “for the plot”."
+                ],
+                rec: "Don’t lower your moral standards. Just make sure you’re not secretly excusing similar behavior from yourself."
+            },
+            EmbarrassmentSponge: {
+                title: "Secondhand Embarrassment Sponge",
+                subtitle: "You cringe on behalf of the whole world",
+                summary: "You feel other people’s cringe so intensely you might need hazard pay.",
+                desc: "You get overwhelmed by public awkwardness and badly executed confidence. You’re not necessarily mean; you just want people to stop humiliating themselves near your nervous system.",
+                bullets: [
+                    "You have looked away from a screen during a cringe scene in a movie.",
+                    "Watching TikToks in public gives you a stress reaction.",
+                    "You’ve abandoned someone mid-story because the secondhand embarrassment was too loud."
+                ],
+                rec: "Mute, scroll, walk away. You don’t have to spiritually adopt every embarrassing moment you witness."
+            },
+            QuietHater: {
+                title: "Quietly Judgmental",
+                subtitle: "Soft voice, harsh internal monologue",
+                summary: "Out loud you're tolerant. In your head, you run a 24/7 roast.",
+                desc: "You have standards, you have taste, and you have the self-awareness to know you’re a bit of a hater. You won’t usually say it to people’s faces—unless they’re very close or very annoying.",
+                bullets: [
+                    "You send more screenshots than actual texts.",
+                    "You know you’re petty sometimes and you’re… honestly fine with it.",
+                    "You can clock red flags and cringe patterns within five seconds of meeting someone."
+                ],
+                rec: "You’re funny. Just make sure your personality isn’t 90% criticism and 10% vibes."
+            },
+            HaterSupreme: {
+                title: "Full-Time Hater",
+                subtitle: "Everything is ick if you look hard enough",
+                summary: "Your tolerance for other humans is basically at factory reset: none.",
+                desc: "Tiny things give you catastrophic icks. Breathing patterns, walking styles, caption choices, how someone runs, how they clap, their favorite mug—nothing is safe. Empathy low, snobbery high, secondhand embarrassment radioactive.",
+                bullets: [
+                    "You say “I hate people” at least once a day, often before noon.",
+                    "You are chronically online and misanthropic, but also curious enough to take this test.",
+                    "Your standards are so specific you may accidentally be in love with nobody."
+                ],
+                rec: "Either lower your standards slightly or commit fully and move into the woods. Middle ground is emotional torture."
+            },
+            HypocriticalMainCharacter: {
+                title: "Hypocritical Main Character",
+                subtitle: "You are also cringe; you just do it better",
+                summary: "You roast other people for things you secretly also do—just with “taste”.",
+                desc: "You judge captions, outfits and behavior, but your own are “ironically” chaotic. You’re self-aware enough to joke about it, but not enough to fully stop. You are both the hater and the content.",
+                bullets: [
+                    "You cringe at main character behavior while lowkey curating your own.",
+                    "You say “I know I’m annoying” and then continue being annoying.",
+                    "You use self-awareness as a personality patch, not a personality change."
+                ],
+                rec: "Lean into the bit, but own it. If you’re going to be the problem, at least be a fun and honest one."
+            }
         };
 
+        // ========== STATE ==========
         let currentQ = 0;
-        let totals = { cri: 0, ped: 0, tol: 0 };
+        let totals = { pet: 0, emp: 0, snb: 0, sec: 0, mor: 0, swa: 0 };
 
-        window.startQuiz = function() {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('quiz-interface').classList.remove('hidden');
-            renderQuestion();
+        const $ = (id) => document.getElementById(id);
+
+        function normaliseScore(raw) {
+            const maxRaw = 13 * 35; // generous ceiling
+            const capped = Math.max(0, Math.min(maxRaw, raw));
+            return Math.round((capped / maxRaw) * 100);
         }
 
-        function renderQuestion() {
-            if (currentQ >= questions.length) { finishQuiz(); return; }
-            const q = questions[currentQ];
-            document.getElementById('q-category').innerText = q.cat;
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
-            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+        function labelFromPct(pct, type) {
+            if (type === 'pet') {
+                if (pct >= 75) return "Nuclear";
+                if (pct >= 50) return "High";
+                if (pct >= 25) return "Mild";
+                return "Almost None";
+            }
+            if (type === 'emp') {
+                if (pct >= 75) return "Saint";
+                if (pct >= 50) return "Soft";
+                if (pct >= 25) return "Selective";
+                return "Missing";
+            }
+            if (type === 'snb') {
+                if (pct >= 75) return "Elite";
+                if (pct >= 50) return "Sharp";
+                if (pct >= 25) return "Moderate";
+                return "Chill";
+            }
+            if (type === 'sec') {
+                if (pct >= 75) return "Radioactive";
+                if (pct >= 50) return "High";
+                if (pct >= 25) return "Manageable";
+                return "Low";
+            }
+            if (type === 'mor') {
+                if (pct >= 75) return "Uncompromising";
+                if (pct >= 50) return "Strong";
+                if (pct >= 25) return "Basic";
+                return "Flexible";
+            }
+            if (type === 'swa') {
+                if (pct >= 75) return "Painfully Aware";
+                if (pct >= 50) return "Aware-ish";
+                if (pct >= 25) return "Occasional";
+                return "Nonexistent";
+            }
+            return "--";
+        }
 
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
+        function pickArchetype(pet, emp, snb, sec, mor, swa) {
+            // Golden Retriever – low petty/snb, high empathy
+            if (pet <= 30 && snb <= 35 && emp >= 65) return "GoldenRetriever";
+
+            // Doormat Diplomat – low petty, very high empathy, mid moral
+            if (pet <= 40 && emp >= 70 && mor >= 35 && mor <= 70) return "DoormatDiplomat";
+
+            // Red Flag Detector – high moral, decent empathy, not too petty
+            if (mor >= 70 && emp >= 50 && pet <= 55) return "RedFlagDetector";
+
+            // Embarrassment Sponge – very high secondhand cringe
+            if (sec >= 70 && emp >= 40 && pet >= 45) return "EmbarrassmentSponge";
+
+            // Aesthetic Dictator – high snobbery + petty, low empathy
+            if (snb >= 70 && pet >= 55 && emp <= 45) return "AestheticDictator";
+
+            // Hater Supreme – extreme petty + snob + low empathy/self-awareness
+            if (pet >= 75 && snb >= 65 && emp <= 35 && swa <= 45) return "HaterSupreme";
+
+            // Hypocritical Main Character – high snob/petty + HIGH self-awareness
+            if (pet >= 55 && snb >= 55 && swa >= 60) return "HypocriticalMainCharacter";
+
+            // Quiet Hater – mid-high across petty/snb, decent empathy + self-awareness
+            if (pet >= 45 && snb >= 45 && emp >= 45 && swa >= 50) return "QuietHater";
+
+            // Balanced Judge – fallback “functional”
+            return "BalancedJudge";
+        }
+
+        function fillTags(key, pet, emp, snb, sec, mor, swa) {
+            const container = $("result-tags");
+            container.innerHTML = "";
+
+            const tags = [
+                `Petty ick: ${pet}%`,
+                `Empathy: ${emp}%`,
+                `Snobbery: ${snb}%`,
+                `2ndhand cringe: ${sec}%`,
+                `Moral filter: ${mor}%`,
+                `Self-aware: ${swa}%`
+            ];
+
+            if (key === "GoldenRetriever") tags.push("Human golden retriever");
+            if (key === "DoormatDiplomat") tags.push("Conflict avoider");
+            if (key === "BalancedJudge") tags.push("Reasonable human");
+            if (key === "AestheticDictator") tags.push("Taste police");
+            if (key === "RedFlagDetector") tags.push("Ethics over aesthetics");
+            if (key === "EmbarrassmentSponge") tags.push("Cringe empath");
+            if (key === "QuietHater") tags.push("Soft voice, harsh opinions");
+            if (key === "HaterSupreme") tags.push("Full-time hater");
+            if (key === "HypocriticalMainCharacter") tags.push("You are also the problem");
+
+            tags.slice(0, 5).forEach(t => {
+                const span = document.createElement("span");
+                span.className = "tag-pill";
+                span.textContent = t;
+                container.appendChild(span);
+            });
+        }
+
+        // ========== FLOW ==========
+        window.startQuiz = function () {
+            $("start-screen").classList.add("hidden");
+            $("result-screen").classList.add("hidden");
+            $("quiz-interface").classList.remove("hidden");
+
+            currentQ = 0;
+            totals = { pet: 0, emp: 0, snb: 0, sec: 0, mor: 0, swa: 0 };
+            $("progress-text").textContent = `01 / ${questions.length}`;
+            $("progress-bar").style.width = "0%";
+            renderQuestion();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) {
+                finishQuiz();
+                return;
+            }
+
+            const q = questions[currentQ];
+            $("q-category").textContent = q.cat;
+            $("question-text").textContent = q.q;
+            $("progress-text").textContent = `${String(currentQ + 1).padStart(2, "0")} / ${questions.length}`;
+            $("progress-bar").style.width = ((currentQ / questions.length) * 100) + "%";
+
+            const container = $("options-container");
+            container.innerHTML = "";
             q.a.forEach(opt => {
-                const btn = document.createElement('button');
+                const btn = document.createElement("button");
                 btn.className = "option-btn w-full p-6 text-left font-display uppercase italic tracking-tighter text-sm";
-                btn.innerText = opt.text;
+                btn.textContent = opt.text;
                 btn.onclick = () => {
-                    totals.cri += opt.scores.cri;
-                    totals.ped += opt.scores.ped;
-                    totals.tol += opt.scores.tol;
+                    totals.pet += opt.scores.pet || 0;
+                    totals.emp += opt.scores.emp || 0;
+                    totals.snb += opt.scores.snb || 0;
+                    totals.sec += opt.scores.sec || 0;
+                    totals.mor += opt.scores.mor || 0;
+                    totals.swa += opt.scores.swa || 0;
                     currentQ++;
                     renderQuestion();
                 };
@@ -279,29 +788,134 @@
         }
 
         function finishQuiz() {
-            let key = "Selective";
-            const { cri, ped, tol } = totals;
-            if (tol > 300) key = "Saint";
-            else if (cri > 350) key = "Hater";
-            else if (ped > 250) key = "Elite";
-            
+            $("quiz-interface").classList.add("hidden");
+            $("result-screen").classList.remove("hidden");
+
+            const petPct = normaliseScore(totals.pet);
+            const empPct = normaliseScore(totals.emp);
+            const snbPct = normaliseScore(totals.snb);
+            const secPct = normaliseScore(totals.sec);
+            const morPct = normaliseScore(totals.mor);
+            const swaPct = normaliseScore(totals.swa);
+
+            const key = pickArchetype(petPct, empPct, snbPct, secPct, morPct, swaPct);
             const data = archetypes[key];
-            document.getElementById('quiz-interface').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('result-title').innerText = data.title;
-            document.getElementById('result-summary').innerText = data.summary;
-            
-            document.getElementById('ped-val').innerText = ped > 150 ? "High" : "Low";
-            document.getElementById('tol-val').innerText = tol > 150 ? "Infinite" : "Zero";
-            document.getElementById('cri-val').innerText = cri > 150 ? "Lethal" : "Safe";
 
-            if (window.saveTestResult) window.saveTestResult({ testId: 'ick_factor', archetype: key, metrics: totals });
+            $("result-title").textContent = data.title;
+            $("result-summary").textContent = data.summary;
+            $("result-subtitle").textContent = data.subtitle || "";
+            $("result-desc").textContent = data.desc;
+
+            const bulletWrap = $("bullet-points");
+            bulletWrap.innerHTML = "";
+            (data.bullets || []).forEach(line => {
+                const p = document.createElement("p");
+                p.textContent = "• " + line;
+                bulletWrap.appendChild(p);
+            });
+            $("rec-line").textContent = "Recommendation: " + data.rec;
+
+            // Stats text
+            $("pet-val").textContent = labelFromPct(petPct, "pet");
+            $("emp-val").textContent = labelFromPct(empPct, "emp");
+            $("snb-val").textContent = labelFromPct(snbPct, "snb");
+            $("sec-val").textContent = labelFromPct(secPct, "sec");
+            $("mor-val").textContent = labelFromPct(morPct, "mor");
+            $("swa-val").textContent = labelFromPct(swaPct, "swa");
+
+            // Bars
+            $("pet-bar").style.width = petPct + "%";
+            $("emp-bar").style.width = empPct + "%";
+            $("snb-bar").style.width = snbPct + "%";
+            $("sec-bar").style.width = secPct + "%";
+            $("mor-bar").style.width = morPct + "%";
+            $("swa-bar").style.width = swaPct + "%";
+
+            fillTags(key, petPct, empPct, snbPct, secPct, morPct, swaPct);
+
+            // Save to game engine
+            const payload = {
+                testId: "ick_factor",
+                timestamp: new Date().toISOString(),
+                archetype: key,
+                metrics: {
+                    petty_raw: totals.pet,
+                    empathy_raw: totals.emp,
+                    snobbery_raw: totals.snb,
+                    secondhand_raw: totals.sec,
+                    moral_raw: totals.mor,
+                    self_awareness_raw: totals.swa,
+                    petty_pct: petPct,
+                    empathy_pct: empPct,
+                    snobbery_pct: snbPct,
+                    secondhand_pct: secPct,
+                    moral_pct: morPct,
+                    self_awareness_pct: swaPct
+                }
+            };
+
+            if (window.saveTestResult) {
+                try {
+                    window.saveTestResult(payload);
+                } catch (e) {
+                    console.warn("saveTestResult (ick_factor) failed", e);
+                }
+            }
+
+            if (window.GameEngine && typeof window.GameEngine.trackEvent === "function") {
+                try {
+                    window.GameEngine.trackEvent("test_complete", {
+                        testId: "ick_factor",
+                        archetype: key,
+                        petty_pct: petPct,
+                        empathy_pct: empPct,
+                        snobbery_pct: snbPct,
+                        secondhand_pct: secPct,
+                        moral_pct: morPct,
+                        self_awareness_pct: swaPct
+                    });
+                } catch (e) {}
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        window.shareResult = () => {
-            if(navigator.share) navigator.share({title: 'My Ick Factor', text: 'My Ick Archetype is ' + document.getElementById('result-title').innerText, url: window.location.href});
-            else alert("Link copied to clipboard");
-        }
+        // ========== SHARE ==========
+        window.shareResult = async function () {
+            const title = "My Ick Factor · Cringe Audit | QuizRealm";
+            const arche = $("result-title").textContent;
+            const summary = $("result-summary").textContent;
+
+            const text =
+                `I just took “The Ick Factor” on QuizRealm.\n` +
+                `Archetype: ${arche}.\n` +
+                `${summary}\n` +
+                `Apparently my standards are like this for a reason.`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title,
+                        text,
+                        url: window.location.href
+                    });
+                    return;
+                } catch (e) {
+                    // fall through
+                }
+            }
+
+            const fallback = `${text}\n${window.location.href}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(fallback);
+                    alert("Result + link copied. Paste it straight into the group chat you judge everyone in.");
+                    return;
+                } catch (e) {}
+            }
+
+            alert("Share this:\n\n" + fallback);
+        };
     </script>
 </body>
 </html>

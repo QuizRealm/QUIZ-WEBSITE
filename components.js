@@ -79,60 +79,68 @@ function getQuizHeaderMarkup() {
     const avatarUrl = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(user.avatarSeed)}`;
 
     return `
-    <header class="w-full sticky top-0 z-50 backdrop-blur-2xl bg-[#030712]/90 border-b border-white/5 shadow-2xl shadow-black/50 relative">
-        <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-50"></div>
+    <header class="w-full sticky top-0 z-50 backdrop-blur-2xl bg-[#020617]/90 border-b border-white/10 shadow-xl shadow-black/40 relative mb-0">
+        <!-- slim top accent line -->
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-60"></div>
 
-        <div class="max-w-[1400px] mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4">
+        <!-- MAIN BAR (reduced height for less gap) -->
+        <div class="max-w-[1400px] mx-auto px-3 sm:px-4 h-14 md:h-16 flex items-center justify-between gap-3">
             
-            <a href="index.html" class="flex items-center gap-3 group shrink-0">
-                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-900 to-[#020617] border border-blue-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.15)] group-hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 group-hover:scale-105">
-                    <i class="fas fa-ghost text-lg md:text-xl text-blue-400 group-hover:text-white transition-colors"></i>
+            <!-- BRAND -->
+            <a href="index.html" class="flex items-center gap-2.5 group shrink-0">
+                <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-900 to-[#020617] border border-blue-500/30 flex items-center justify-center shadow-[0_0_14px_rgba(59,130,246,0.35)] group-hover:shadow-[0_0_22px_rgba(59,130,246,0.6)] transition-all duration-300 group-hover:scale-105">
+                    <i class="fas fa-ghost text-base md:text-lg text-blue-400 group-hover:text-white transition-colors"></i>
                 </div>
-                <div class="flex flex-col justify-center">
-                    <span class="font-arcade text-lg md:text-xl text-white leading-none tracking-[0.2em] drop-shadow-md">
-                        QUIZ<span class="text-blue-500">REALM</span>
+                <div class="flex flex-col justify-center leading-none">
+                    <span class="font-arcade text-base md:text-lg text-white tracking-[0.18em]">
+                        QUIZ<span class="text-blue-400">REALM</span>
                     </span>
-                    <span class="text-[9px] md:text-[10px] text-slate-500 font-mono tracking-widest uppercase group-hover:text-blue-400 transition-colors">
-                        Professional Edition
+                    <span class="text-[9px] md:text-[10px] text-slate-500 font-mono tracking-[0.25em] uppercase group-hover:text-blue-300 transition-colors">
+                        Experience Engine
                     </span>
                 </div>
             </a>
 
-            <nav class="hidden xl:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5 shadow-inner">
+            <!-- DESKTOP NAV -->
+            <nav class="hidden xl:flex items-center gap-1 bg-white/5/0 px-1 py-0.5 rounded-full border border-white/5">
                 
-                <a href="premium.html" class="relative group px-5 py-2 rounded-full overflow-hidden mr-1">
-                    <div class="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 opacity-100 group-hover:opacity-90 transition-opacity"></div>
-                    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8L3N2Zz4=')] opacity-20"></div>
-                    <div class="relative flex items-center gap-2">
-                        <i class="fas fa-crown text-amber-900 text-xs animate-pulse"></i>
-                        <span class="text-xs font-black text-amber-950 uppercase tracking-widest">Premium</span>
+                <!-- Premium CTA -->
+                <a href="premium.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden mr-1">
+                    <div class="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 opacity-100 group-hover:opacity-95 transition-opacity"></div>
+                    <div class="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.35)_0,transparent_40%,transparent_60%,rgba(255,255,255,0.35)_100%)] opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
+                    <div class="relative flex items-center gap-1.5">
+                        <i class="fas fa-crown text-amber-900 text-xs"></i>
+                        <span class="text-[10px] font-black text-amber-950 uppercase tracking-[0.22em]">Premium</span>
                     </div>
                 </a>
 
-                <a href="identity-lab.html" class="relative group px-4 py-2 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] mr-1">
-                    <div class="absolute inset-0 bg-gradient-to-r from-violet-900/40 to-fuchsia-900/40 border border-violet-500/30 group-hover:border-fuchsia-400/60 transition-colors rounded-full"></div>
-                    <div class="relative flex items-center gap-2">
-                        <i class="fas fa-fingerprint text-fuchsia-400 group-hover:text-white transition-colors text-[10px]"></i>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-fuchsia-200 group-hover:text-white transition-colors">Identity Lab</span>
+                <!-- Identity Lab -->
+                <a href="identity-lab.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] mr-1">
+                    <div class="absolute inset-0 bg-gradient-to-r from-violet-900/50 to-fuchsia-900/50 border border-violet-500/40 group-hover:border-fuchsia-400/70 rounded-full transition-colors"></div>
+                    <div class="relative flex items-center gap-1.5">
+                        <i class="fas fa-fingerprint text-[10px] text-fuchsia-300 group-hover:text-white transition-colors"></i>
+                        <span class="text-[10px] font-semibold uppercase tracking-[0.22em] text-fuchsia-100 group-hover:text-white transition-colors">Identity Lab</span>
                     </div>
                 </a>
 
-                <a href="categories.html" class="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2 group/cat">
-                    <i class="fas fa-layer-group text-slate-500 group-hover/cat:text-blue-400 transition-colors"></i>
+                <!-- Categories -->
+                <a href="categories.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5 group/cat">
+                    <i class="fas fa-layer-group text-slate-500 group-hover/cat:text-blue-400 transition-colors text-xs"></i>
                     <span>Categories</span>
                 </a>
 
-                <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
+                <div class="w-px h-4 bg-white/10 mx-1"></div>
 
+                <!-- Arcade + dropdown -->
                 <div class="relative group h-full">
-                    <a href="arcade.html" class="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
-                        <i class="fas fa-gamepad text-slate-500 group-hover:text-pink-400 transition-colors"></i> 
+                    <a href="arcade.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
+                        <i class="fas fa-gamepad text-slate-500 group-hover:text-pink-400 transition-colors text-xs"></i> 
                         <span>Arcade</span>
-                        <i class="fas fa-chevron-down text-[8px] opacity-50 ml-1 group-hover:translate-y-0.5 transition-transform"></i>
+                        <i class="fas fa-chevron-down text-[8px] opacity-50 ml-0.5 group-hover:translate-y-0.5 transition-transform"></i>
                     </a>
-                    <div class="absolute top-full left-1/2 -translate-x-1/2 pt-6 w-[340px] hidden group-hover:block z-[100]">
-                        <div class="bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_50px_-12px_rgba(0,0,0,0.8)] p-3 overflow-hidden">
-                            <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-widest border-b border-white/5 mb-2 flex justify-between items-center">
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-[340px] hidden group-hover:block z-[100]">
+                        <div class="bg-[#020617]/98 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_18px_60px_-16px_rgba(0,0,0,0.9)] p-3">
+                            <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-[0.22em] border-b border-white/5 mb-2 flex justify-between items-center">
                                 <span>Arcade Collection</span>
                                 <i class="fas fa-gamepad text-slate-700"></i>
                             </div>
@@ -144,56 +152,71 @@ function getQuizHeaderMarkup() {
                 </div>
             </nav>
 
-            <div class="flex items-center gap-4 shrink-0">
-                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/40 border border-amber-500/20 shadow-inner">
-                    <div class="w-5 h-5 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/50">
-                        <i class="fas fa-coins text-[10px] text-amber-400"></i>
+            <!-- USER CLUSTER -->
+            <div class="flex items-center gap-3 shrink-0">
+                <!-- Coins / XP (desktop) -->
+                <div class="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-black/40 border border-amber-500/25 shadow-inner">
+                    <div class="w-5 h-5 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/60">
+                        <i class="fas fa-coins text-[10px] text-amber-300"></i>
                     </div>
-                    <span id="headerCoins" class="text-xs font-mono font-bold text-amber-100">${coins.toLocaleString()}</span>
+                    <span id="headerCoins" class="text-[11px] font-mono font-bold text-amber-100">
+                        ${coins.toLocaleString()}
+                    </span>
+                    <span class="hidden lg:inline text-[9px] text-slate-500 uppercase tracking-[0.18em] ml-1">
+                        Lvl <span id="headerLevel">${level}</span>
+                    </span>
                 </div>
                 
-                <button onclick="window.location.href='profile.html'" class="flex items-center gap-3 pl-1 pr-1 md:pr-4 py-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 p-[1px] relative z-10 shadow-lg">
+                <!-- Profile -->
+                <button onclick="window.location.href='profile.html'" class="flex items-center gap-2.5 pl-1.5 pr-1.5 md:pr-4 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/25 transition-all group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none"></div>
+                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 p-[1px] relative z-10 shadow-lg">
                         <img id="headerAvatar" src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover rounded-full">
                     </div>
                     <div class="hidden md:flex flex-col items-start leading-none relative z-10">
-                        <span class="text-[11px] font-bold text-slate-200 group-hover:text-white">My Profile</span>
-                        <span class="text-[9px] text-slate-500 uppercase tracking-wide">Lvl <span id="headerLevel">${level}</span></span>
+                        <span class="text-[11px] font-semibold text-slate-100 group-hover:text-white">Profile</span>
+                       
                     </div>
                 </button>
             </div>
         </div>
 
-        <div class="xl:hidden fixed bottom-0 left-0 right-0 z-[80] bg-[#020617]/95 backdrop-blur-xl border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
-            <div class="flex justify-around items-center px-2 py-3">
-                <a href="categories.html" class="flex flex-col items-center gap-1 group w-16">
-                    <i class="fas fa-layer-group text-lg text-slate-500 group-hover:text-blue-400 transition-colors"></i>
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Topics</span>
-                </a>
-                <a href="arcade.html" class="flex flex-col items-center gap-1 group w-16">
-                    <i class="fas fa-gamepad text-lg text-slate-500 group-hover:text-pink-400 transition-colors"></i>
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Arcade</span>
-                </a>
-                <a href="premium.html" class="relative -top-6">
-                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300 to-yellow-600 p-[2px] shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-                        <div class="w-full h-full rounded-full bg-[#0f172a] flex flex-col items-center justify-center relative overflow-hidden group">
-                            <div class="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-transparent"></div>
-                            <i class="fas fa-crown text-xl text-amber-400 mb-0.5 group-active:scale-95 transition-transform"></i>
-                            <span class="text-[8px] font-black text-amber-400 uppercase tracking-tighter">Gold</span>
+        <!-- MOBILE DOCK NAV (moved slightly up + centered FAB fully visible) -->
+        <div class="xl:hidden fixed left-0 right-0 bottom-3 sm:bottom-4 z-[80]">
+            <div class="mx-auto max-w-md rounded-[1.25rem] bg-[#020617]/95 backdrop-blur-2xl border border-white/10 shadow-[0_18px_60px_-20px_rgba(0,0,0,0.9)] pb-[env(safe-area-inset-bottom)]">
+                <div class="flex justify-around items-center px-2 pt-2 pb-3 relative">
+                    
+                    <a href="categories.html" class="flex flex-col items-center gap-1 group w-14">
+                        <i class="fas fa-layer-group text-base text-slate-500 group-hover:text-blue-400 transition-colors"></i>
+                        <span class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500 group-hover:text-slate-200">Topics</span>
+                    </a>
+                    
+                    <a href="arcade.html" class="flex flex-col items-center gap-1 group w-14">
+                        <i class="fas fa-gamepad text-base text-slate-500 group-hover:text-pink-400 transition-colors"></i>
+                        <span class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500 group-hover:text-slate-200">Arcade</span>
+                    </a>
+
+                    <!-- Center FAB: raised enough so it's never cut off -->
+                    <a href="premium.html" class="absolute left-1/2 -translate-x-1/2 -translate-y-5">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300 to-yellow-600 p-[2px] shadow-[0_0_22px_rgba(245,158,11,0.65)]">
+                            <div class="w-full h-full rounded-full bg-[#020617] flex flex-col items-center justify-center relative overflow-hidden group">
+                                <div class="absolute inset-0 bg-gradient-to-br from-amber-400/25 to-transparent"></div>
+                                <i class="fas fa-crown text-lg text-amber-300 mb-0.5 group-active:scale-95 transition-transform"></i>
+                                <span class="text-[8px] font-black text-amber-200 uppercase tracking-tight">Gold</span>
+                            </div>
                         </div>
-                    </div>
-                </a>
-                <a href="identity-lab.html" class="flex flex-col items-center gap-1 group w-16">
-                    <i class="fas fa-fingerprint text-lg text-slate-500 group-hover:text-fuchsia-400 transition-colors"></i>
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">ID Lab</span>
-                </a>
-                <a href="profile.html" class="flex flex-col items-center gap-1 group w-16">
-                    <div class="relative">
-                        <i class="fas fa-user text-lg text-slate-500 group-hover:text-purple-400 transition-colors"></i>
-                    </div>
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-300">Me</span>
-                </a>
+                    </a>
+
+                    <a href="identity-lab.html" class="flex flex-col items-center gap-1 group w-14 ml-6">
+                        <i class="fas fa-fingerprint text-base text-slate-500 group-hover:text-fuchsia-400 transition-colors"></i>
+                        <span class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500 group-hover:text-slate-200">ID Lab</span>
+                    </a>
+                    
+                    <a href="profile.html" class="flex flex-col items-center gap-1 group w-14">
+                        <i class="fas fa-user text-base text-slate-500 group-hover:text-purple-400 transition-colors"></i>
+                        <span class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500 group-hover:text-slate-200">Me</span>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -207,6 +230,10 @@ class QuizHeader extends HTMLElement {
     connectedCallback() {
         this.innerHTML = getQuizHeaderMarkup();
     }
+}
+
+if (!customElements.get('quiz-header')) {
+    customElements.define('quiz-header', QuizHeader);
 }
 
 class QuizFooter extends HTMLElement {

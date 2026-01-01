@@ -10,7 +10,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Social Battery Diagnostic • Energy Audit | QuizRealm</title>
-    
+    <meta name="description" content="Social Battery Diagnostic: 13-question energy audit that exposes whether you're a nuclear reactor, a dying phone at 3%, or a hermit cosplaying as an extrovert. Brutally honest archetypes included.">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,13 +25,13 @@
             theme: {
                 extend: {
                     fontFamily: { 
-                        'sans': ['Outfit', 'sans-serif'], 
-                        'mono': ['JetBrains Mono', 'monospace'] 
+                        sans: ['Outfit', 'sans-serif'], 
+                        mono: ['JetBrains Mono', 'monospace'] 
                     },
                     colors: { 
-                        'space': '#050505',
-                        'cyber-lime': '#bef264', // Lime 300
-                        'cyber-dim': '#365314'  // Lime 900
+                        space: '#050505',
+                        'cyber-lime': '#bef264',
+                        'cyber-dim': '#365314'
                     }
                 }
             }
@@ -38,7 +39,12 @@
     </script>
 
     <style>
-        body { background-color: #050505; color: #f8fafc; font-family: 'Outfit', sans-serif; }
+        body {
+            background-color: #050505;
+            color: #f8fafc;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
         
         .battery-container {
             border: 4px solid #365314;
@@ -55,68 +61,135 @@
         .battery-level {
             background: #bef264;
             width: 100%;
-            height: 100%;
+            height: 20%;
             transition: height 0.5s ease;
             box-shadow: 0 0 20px #bef264;
         }
 
         .option-card {
-            background: #0f172a;
+            background: #020617;
             border: 1px solid #1e293b;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .option-card::before {
+            content:"";
+            position:absolute;
+            inset:0;
+            background:linear-gradient(90deg, rgba(190,242,100,0.08), transparent);
+            opacity:0;
+            transform:translateX(-20%);
+            transition:opacity 0.18s, transform 0.18s;
         }
         .option-card:hover {
-            background: #1e293b;
+            background: #0f172a;
             border-color: #bef264;
-            transform: translateY(-4px);
-            box-shadow: 0 10px 20px -10px rgba(190, 242, 100, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px -10px rgba(190, 242, 100, 0.28);
+        }
+        .option-card:hover::before {
+            opacity:1;
+            transform:translateX(0);
         }
 
         .scanline {
-            width: 100%; height: 2px; background: rgba(190, 242, 100, 0.1);
+            width: 100%; height: 2px; background: rgba(190, 242, 100, 0.06);
             position: absolute; animation: scan 4s linear infinite;
         }
         @keyframes scan { from { top: 0%; } to { top: 100%; } }
 
         .reveal { animation: zoomIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; opacity: 0; }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        .pill {
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.4);
+            background: rgba(15,23,42,0.95);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+        .stat-value {
+            font-size: 14px;
+        }
+
+        .stat-bar-bg {
+            background:#020617;
+            border-radius:999px;
+            overflow:hidden;
+            height:4px;
+        }
+        .stat-bar-fill {
+            height:100%;
+            width:0%;
+            border-radius:999px;
+            background:linear-gradient(90deg,#22c55e,#bef264,#facc15,#f97316);
+            transition:width 0.25s ease-out;
+        }
+
+        .section-card {
+            background:#020617;
+            border-radius:24px;
+            border:1px solid #1e293b;
+        }
     </style>
 </head>
 
 <body class="flex flex-col min-h-screen">
     <quiz-header style="color: #bef264;"></quiz-header>
 
-    <main class="flex-grow w-full max-w-2xl mx-auto px-6 py-12 lg:py-24 relative">
+    <main class="flex-grow w-full max-w-3xl mx-auto px-6 py-12 lg:py-20 relative">
         <div class="scanline"></div>
 
+        <!-- START SCREEN -->
         <div id="start-screen" class="text-center space-y-10 reveal">
             <div class="battery-container">
                 <div class="battery-cap"></div>
-                <div class="battery-level animate-pulse" style="height: 20%"></div>
+                <div id="battery-start" class="battery-level animate-pulse"></div>
             </div>
 
-            <div class="space-y-4">
-                <h1 class="text-5xl md:text-7xl font-extrabold uppercase tracking-tighter">
+            <div class="space-y-3">
+                <h1 class="text-5xl md:text-7xl font-extrabold uppercase tracking-tighter leading-none">
                     Social <span class="text-cyber-lime italic">Battery.</span>
                 </h1>
-                <p class="text-slate-500 font-mono text-xs tracking-widest uppercase">Diagnostic v4.0 // Energy Audit</p>
+                <p class="text-slate-500 font-mono text-[10px] tracking-[0.3em] uppercase">
+                    Diagnostic v4.0 // Energy Audit // Emotional Warranty Void
+                </p>
             </div>
 
-            <p class="text-slate-400 font-light leading-relaxed max-w-sm mx-auto">
-                Discover your exact social limit. Are you a nuclear reactor or a AA battery in a flashlight?
+            <p class="text-slate-400 font-light leading-relaxed max-w-md mx-auto">
+                This is not a vibe check. This is a technical report on why you’re tired after talking to
+                two people… or why you think you’re an introvert while actually never shutting up.
             </p>
 
-            <button onclick="window.startQuiz()" class="bg-cyber-lime text-space px-12 py-5 font-extrabold uppercase tracking-tighter hover:bg-white transition-colors duration-300">
-                Initiate Scan
-            </button>
+            <div class="flex flex-col items-center gap-4">
+                <button
+                    onclick="window.startQuiz()"
+                    class="bg-cyber-lime text-space px-12 py-4 font-extrabold uppercase tracking-[0.25em] text-xs hover:bg-white transition-colors duration-200 flex items-center gap-2">
+                    <span>Initiate Scan</span>
+                    <i class="fa-solid fa-bolt"></i>
+                </button>
+                <p class="font-mono text-[10px] text-slate-500 uppercase tracking-[0.25em]">
+                    ~3 minutes · No account · Mild emotional damage
+                </p>
+            </div>
         </div>
 
-        <div id="quiz-interface" class="hidden space-y-12">
+        <!-- QUIZ -->
+        <div id="quiz-interface" class="hidden space-y-10">
             <div class="flex justify-between items-end border-b border-cyber-dim pb-4">
                 <div class="font-mono text-[10px] text-cyber-lime uppercase tracking-widest">
-                    System: <span id="q-category">Active</span>
+                    System: <span id="q-category">Booting</span>
                 </div>
-                <div class="font-mono text-[10px] text-slate-500" id="progress-text">01 / 13</div>
+                <div class="flex flex-col items-end gap-1">
+                    <div class="font-mono text-[10px] text-slate-500" id="progress-text">01 / 13</div>
+                    <div class="font-mono text-[10px] text-slate-600" id="timer-display">00:00</div>
+                </div>
             </div>
 
             <h2 id="question-text" class="text-3xl md:text-4xl font-bold text-white leading-tight uppercase tracking-tight">
@@ -126,36 +199,129 @@
             <div id="options-container" class="grid grid-cols-1 gap-4"></div>
         </div>
 
-        <div id="result-screen" class="hidden text-center space-y-10 reveal">
-            <div class="bg-slate-900/50 p-10 border border-slate-800 rounded-3xl space-y-4">
-                <span class="text-[10px] uppercase font-bold tracking-[0.3em] text-cyber-lime">Audit Confirmed</span>
-                <h2 id="result-title" class="text-5xl md:text-7xl font-extrabold text-white uppercase italic tracking-tighter">Archetype</h2>
-                <p id="result-summary" class="text-slate-400 font-light leading-relaxed max-w-lg mx-auto">Summary...</p>
+        <!-- RESULT -->
+        <div id="result-screen" class="hidden space-y-10 reveal">
+            <!-- Main archetype card -->
+            <div class="section-card p-8 space-y-5">
+                <div class="flex justify-between items-center gap-3 mb-1">
+                    <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-cyber-lime">
+                        Audit Confirmed · Energy Signature Captured
+                    </span>
+                    <span id="severity-chip" class="pill px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-slate-200">
+                        Mildly Drained
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr),minmax(0,1.6fr)] gap-8 items-start">
+                    <div class="space-y-3 text-left">
+                        <h2 class="text-4xl md:text-5xl font-extrabold text-white uppercase tracking-tight leading-none">
+                            The <span id="result-title" class="text-cyber-lime italic">Archetype</span>
+                        </h2>
+                        <p id="result-subtitle" class="text-[11px] tracking-[0.25em] uppercase text-slate-500">
+                            Subtitle
+                        </p>
+                        <p id="result-summary" class="text-slate-300 text-sm leading-relaxed">
+                            Summary...
+                        </p>
+
+                        <div id="result-tags" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+
+                    <div class="bg-black/40 border border-cyber-dim rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="stat-label text-slate-500">Overall battery</span>
+                            <span id="battery-label" class="font-mono text-[11px] text-slate-300 uppercase tracking-[0.2em]">
+                                0%
+                            </span>
+                        </div>
+                        <div class="stat-bar-bg">
+                            <div id="battery-bar" class="stat-bar-fill"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 pt-3">
+                            <div>
+                                <div class="stat-label text-slate-500 mb-1">Resilience output</div>
+                                <div id="res-val" class="stat-value text-cyber-lime font-mono">--%</div>
+                            </div>
+                            <div>
+                                <div class="stat-label text-slate-500 mb-1">Recovery need</div>
+                                <div id="rec-val" class="stat-value text-cyber-lime font-mono">--%</div>
+                            </div>
+                            <div>
+                                <div class="stat-label text-slate-500 mb-1">Noise tolerance</div>
+                                <div id="lim-val" class="stat-value text-cyber-lime font-mono">--%</div>
+                            </div>
+                            <div>
+                                <div class="stat-label text-slate-500 mb-1">Class</div>
+                                <div id="cla-val" class="stat-value text-cyber-lime font-mono uppercase">--</div>
+                            </div>
+                        </div>
+
+                        <p class="text-[11px] text-slate-500 leading-relaxed">
+                            Translation: how long you can pretend to enjoy people, how violently you crash afterwards,
+                            and how much small talk your soul can survive.
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-slate-900 border border-slate-800 p-4">
-                    <div class="text-[10px] text-slate-500 uppercase mb-1">Resilience</div>
-                    <div id="res-val" class="font-bold text-cyber-lime">...</div>
+            <!-- Explanation / bullets -->
+            <div class="section-card p-7 space-y-4 text-left">
+                <h3 class="stat-label text-slate-500 mb-1">Diagnostic Notes</h3>
+                <p id="result-desc" class="text-sm text-slate-200 leading-relaxed">
+                    ...
+                </p>
+
+                <div id="quick-lines" class="mt-1 text-[13px] text-slate-400 space-y-1.5">
+                    <!-- bullets -->
                 </div>
-                <div class="bg-slate-900 border border-slate-800 p-4">
-                    <div class="text-[10px] text-slate-500 uppercase mb-1">Recovery</div>
-                    <div id="rec-val" class="font-bold text-cyber-lime">...</div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 p-4">
-                    <div class="text-[10px] text-slate-500 uppercase mb-1">Limit</div>
-                    <div id="lim-val" class="font-bold text-cyber-lime">...</div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 p-4">
-                    <div class="text-[10px] text-slate-500 uppercase mb-1">Class</div>
-                    <div id="cla-val" class="font-bold text-cyber-lime">...</div>
+
+                <div class="mt-3 pt-3 border-t border-cyber-dim text-[11px] text-cyber-lime uppercase tracking-[0.25em]">
+                    <span id="stat-rec">
+                        Recommendation: stop blaming “being an introvert” for choices you made with your own thumbs.
+                    </span>
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-                <button onclick="shareResult()" class="bg-cyber-lime text-space px-10 py-4 font-extrabold uppercase tracking-widest text-xs">Share Energy Signature</button>
-                <a href="index-funnels.html" class="border border-slate-700 text-slate-400 px-10 py-4 font-bold uppercase tracking-widest text-xs hover:text-white transition">Exit Terminal</a>
+            <!-- Controls -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <button
+                    onclick="window.shareResult()"
+                    class="bg-cyber-lime text-space px-10 py-4 font-extrabold uppercase tracking-[0.25em] text-[10px] hover:bg-white transition">
+                    Share Energy Signature
+                </button>
+                <button
+                    onclick="window.retakeTest()"
+                    class="border border-slate-700 text-slate-300 px-10 py-4 font-bold uppercase tracking-[0.25em] text-[10px] hover:text-white hover:bg-white/5 transition">
+                    Re-run Diagnostic
+                </button>
+                <a href="index-funnels.html"
+                   class="border border-slate-700 text-slate-400 px-10 py-4 font-bold uppercase tracking-[0.25em] text-[10px] hover:text-white hover:bg-white/5 transition text-center">
+                    Exit Terminal
+                </a>
             </div>
+
+            <!-- SEO-ish copy block -->
+            <section class="border-t border-slate-800 pt-8 pb-2 text-[13px] text-slate-400 space-y-3 text-left">
+                <h2 class="text-sm font-semibold text-slate-100">
+                    What this social battery test actually measures
+                </h2>
+                <p>
+                    This diagnostic tracks three things: your <strong>resilience output</strong> (how hard you can
+                    socially perform before wanting to bite someone), your <strong>recovery need</strong> (how much
+                    alone time you actually require, not what you post on Instagram), and your
+                    <strong>noise tolerance</strong> (how badly small talk and group chaos fry your brain).
+                </p>
+                <h3 class="text-sm font-semibold text-slate-100">
+                    How to use your archetype in real life
+                </h3>
+                <p>
+                    If you scored high on output but low on recovery, you’re probably overbooking yourself and then
+                    wondering why you hate everyone by Friday. If your recovery need is huge but you never schedule
+                    solitude, that’s not introversion – that’s self-sabotage. Your archetype is not an excuse; it’s a
+                    warning label.
+                </p>
+            </section>
         </div>
 
     </main>
@@ -163,128 +329,344 @@
     <quiz-footer></quiz-footer>
 
     <script type="module">
+        // ========= QUESTION SET (more sarcastic) =========
         const questions = [
-            { q: "A friend texts 'WYD? Come over' at 9 PM on a Tuesday. You:", cat: "Spontaneity",
+            { q: "A friend texts “WYD? Come over” at 9 PM on a Tuesday. You:", cat: "Spontaneity",
               a: [
-                  { text: "On my way. I love late night chaos.", scores: { res: 20, rec: 0, tol: 20 } },
-                  { text: "Heart the message, reply tomorrow morning.", scores: { res: 0, rec: 20, tol: 0 } },
-                  { text: "Depends on who else is there.", scores: { res: 10, rec: 10, tol: 10 } }
+                  { text: "Already have shoes on. Chaos is my pre-workout.", scores: { res: 22, rec: -5, tol: 20 } },
+                  { text: "Heart the message and reply “OMG I just saw this” tomorrow.", scores: { res: 0, rec: 22, tol: 0 } },
+                  { text: "Ask who’s there. Your energy depends on the guest list.", scores: { res: 10, rec: 10, tol: 10 } }
               ] 
             },
-            { q: "At a party, you spend most of your time:", cat: "Socializing",
+            { q: "At a party, you spend most of your time:", cat: "Social Field",
               a: [
-                  { text: "In the middle of the dance floor/crowd.", scores: { res: 25, rec: 0, tol: 25 } },
-                  { text: "With the host's dog in the kitchen.", scores: { res: 0, rec: 25, tol: 0 } },
-                  { text: "In a deep 1-on-1 talk on the balcony.", scores: { res: 15, rec: 10, tol: 5 } }
+                  { text: "In the center yelling over the music like a podcast with no off button.", scores: { res: 25, rec: -5, tol: 22 } },
+                  { text: "With the host’s pet, silently questioning why you left the house.", scores: { res: 0, rec: 25, tol: 0 } },
+                  { text: "On the balcony trauma-bonding with one stranger for three hours.", scores: { res: 15, rec: 12, tol: 8 } }
               ] 
             },
-            { q: "Your phone rings. No caller ID. You:", cat: "Contact",
+            { q: "Your phone rings. Unknown number. You:", cat: "Fight Or Flight",
               a: [
-                  { text: "Answer it immediately.", scores: { res: 20, rec: 0, tol: 15 } },
-                  { text: "Stare at the screen until it stops vibrating.", scores: { res: 0, rec: 25, tol: 0 } },
-                  { text: "Google the number while it's still ringing.", scores: { res: 5, rec: 15, tol: 5 } }
+                  { text: "Answer. It could be a plot twist.", scores: { res: 18, rec: 0, tol: 15 } },
+                  { text: "Watch it ring like it’s a horror movie.", scores: { res: 0, rec: 23, tol: 0 } },
+                  { text: "Google the number while it’s still ringing like an anxious FBI agent.", scores: { res: 6, rec: 15, tol: 6 } }
               ] 
             },
-            { q: "Post-event recovery for you involves:", cat: "Recovery",
+            { q: "Post-event recovery looks like:", cat: "Recharge Ritual",
               a: [
-                  { text: "A second, smaller party with inner circle.", scores: { res: 25, rec: 0, tol: 15 } },
-                  { text: "Total silence, dark room, no screens.", scores: { res: 0, rec: 30, tol: 0 } },
-                  { text: "Recapping everything with a best friend.", scores: { res: 15, rec: 15, tol: 10 } }
+                  { text: "Afterparty. Then after-afterparty. Sleep is for weaker species.", scores: { res: 25, rec: -5, tol: 18 } },
+                  { text: "Noise-cancelling headphones, dark room, no human voices.", scores: { res: 0, rec: 28, tol: 0 } },
+                  { text: "Debriefing everything with one trusted gremlin.", scores: { res: 14, rec: 15, tol: 10 } }
               ] 
             },
-            { q: "You have 3 social events in 4 days. You feel:", cat: "Stamina",
+            { q: "You see 3 social events in your calendar this week. You:", cat: "Stamina",
               a: [
-                  { text: "Excited. My schedule is finally full.", scores: { res: 30, rec: 0, tol: 20 } },
-                  { text: "Terrified. I will need a week to recover.", scores: { res: 0, rec: 25, tol: 0 } },
-                  { text: "I'll go to two and flake on the third.", scores: { res: 15, rec: 15, tol: 10 } }
+                  { text: "Smile. Finally living the main-character agenda.", scores: { res: 28, rec: -5, tol: 20 } },
+                  { text: "Start planning cancellations like a military operation.", scores: { res: 0, rec: 24, tol: 0 } },
+                  { text: "Negotiate with yourself which one gets sacrificed.", scores: { res: 15, rec: 15, tol: 10 } }
               ] 
             },
             { q: "Small talk with a stranger in an elevator is:", cat: "Threshold",
               a: [
-                  { text: "Easy. I usually start it.", scores: { res: 20, rec: 0, tol: 20 } },
-                  { text: "Physical torture. I look at my shoes.", scores: { res: 0, rec: 25, tol: 0 } },
-                  { text: "Functional and brief.", scores: { res: 10, rec: 10, tol: 10 } }
+                  { text: "Light cardio. You ask where they’re from and what their soul purpose is.", scores: { res: 18, rec: 0, tol: 18 } },
+                  { text: "A hostage situation. You study the floor numbers.", scores: { res: 0, rec: 23, tol: 0 } },
+                  { text: "Fine if it’s efficient and legally short.", scores: { res: 10, rec: 10, tol: 10 } }
               ] 
             },
-            { q: "Your 'Ideal' Saturday night is:", cat: "Environment",
+            { q: "Ideal Saturday night:", cat: "Environment",
               a: [
-                  { text: "A concert with 5,000 strangers.", scores: { res: 25, rec: 0, tol: 30 } },
-                  { text: "Reading/Gaming alone.", scores: { res: 0, rec: 30, tol: 0 } },
-                  { text: "Dinner with 3 close friends.", scores: { res: 15, rec: 15, tol: 10 } }
+                  { text: "Concert. 5,000 strangers. You screaming lyrics like it’s therapy.", scores: { res: 25, rec: -5, tol: 26 } },
+                  { text: "Alone. Blanket. Device. Nobody saying your name.", scores: { res: 0, rec: 30, tol: 0 } },
+                  { text: "Dinner with 2–4 humans who know your damage already.", scores: { res: 16, rec: 15, tol: 10 } }
               ] 
             },
-            { q: "When people call you 'Extroverted,' you:", cat: "Identity",
+            { q: "When people call you “so extroverted”, you:", cat: "Identity Mask",
               a: [
-                  { text: "Agree. I love people.", scores: { res: 25, rec: 0, tol: 20 } },
-                  { text: "Laugh. They only see the mask.", scores: { res: 10, rec: 20, tol: 10 } },
-                  { text: "Disagree. I'm an introvert who can talk.", scores: { res: 15, rec: 25, tol: 5 } }
+                  { text: "Agree. You are powered by attention and questionable decisions.", scores: { res: 25, rec: -5, tol: 20 } },
+                  { text: "Laugh. They met Performance You, not Actual You.", scores: { res: 14, rec: 18, tol: 10 } },
+                  { text: "Die inside a bit. You’re an introvert with stage access.", scores: { res: 12, rec: 22, tol: 8 } }
               ] 
             },
-            { q: "A conflict breaks out in the group. You:", cat: "Conflict",
+            { q: "A conflict erupts in the group chat. You:", cat: "Conflict Handling",
               a: [
-                  { text: "Jump in to mediate/resolve.", scores: { res: 20, rec: 0, tol: 15 } },
-                  { text: "Shut down emotionally and leave.", scores: { res: 0, rec: 30, tol: 0 } },
-                  { text: "Watch the drama silently.", scores: { res: 10, rec: 10, tol: 10 } }
+                  { text: "Slide in with a paragraph and a leadership tone.", scores: { res: 18, rec: 0, tol: 15 } },
+                  { text: "Mute conversation. Contemplate faking your death.", scores: { res: 0, rec: 26, tol: 0 } },
+                  { text: "Read everything silently like a drama historian.", scores: { res: 10, rec: 12, tol: 9 } }
               ] 
             },
-            { q: "How much 'Alone Time' do you need per day?", cat: "Baseline",
+            { q: "Daily alone-time requirement for you:", cat: "Baseline",
               a: [
-                  { text: "Zero. I hate being alone.", scores: { res: 30, rec: -10, tol: 20 } },
-                  { text: "At least 4 hours.", scores: { res: 0, rec: 25, tol: 0 } },
-                  { text: "1-2 hours to decompress.", scores: { res: 15, rec: 15, tol: 10 } }
+                  { text: "Zero. I get lonely in my own head after 12 minutes.", scores: { res: 26, rec: -10, tol: 18 } },
+                  { text: "Minimum 4 hours or I become unfit for society.", scores: { res: 0, rec: 26, tol: 0 } },
+                  { text: "1–2 hours so I don’t bite anyone.", scores: { res: 15, rec: 16, tol: 10 } }
               ] 
             },
-            { q: "You are at a wedding. You leave:", cat: "Duration",
+            { q: "You’re at a wedding. You leave:", cat: "Duration",
               a: [
-                  { text: "When the lights come on at 3 AM.", scores: { res: 30, rec: 0, tol: 25 } },
-                  { text: "Immediately after the cake is cut.", scores: { res: 0, rec: 25, tol: 0 } },
-                  { text: "Somewhere in the middle.", scores: { res: 15, rec: 15, tol: 10 } }
+                  { text: "When the staff starts stacking chairs.", scores: { res: 28, rec: 0, tol: 22 } },
+                  { text: "Right after dessert, before anyone suggests dancing.", scores: { res: 0, rec: 24, tol: 0 } },
+                  { text: "After a respectable amount of chaos.", scores: { res: 16, rec: 15, tol: 10 } }
               ] 
             },
-            { q: "Public speaking makes you feel:", cat: "Efficacy",
+            { q: "Public speaking makes you feel:", cat: "Stage Tolerance",
               a: [
-                  { text: "Powerful. I love the stage.", scores: { res: 25, rec: 0, tol: 25 } },
-                  { text: "Sick to my stomach.", scores: { res: 0, rec: 30, tol: 0 } },
-                  { text: "Nervous but I can handle it.", scores: { res: 15, rec: 15, tol: 10 } }
+                  { text: "Powerful. A microphone is just volume for your opinions.", scores: { res: 24, rec: 0, tol: 22 } },
+                  { text: "Physically unwell. Fight-or-flight in PowerPoint form.", scores: { res: 0, rec: 27, tol: 0 } },
+                  { text: "Nervous, but you’ll still do it for the plot.", scores: { res: 15, rec: 15, tol: 10 } }
               ] 
             },
-            { q: "Why are you doing this audit?", cat: "Final",
+            { q: "Right now, you took this test because:", cat: "Meta Honesty",
               a: [
-                  { text: "Because I'm currently avoiding social interaction.", scores: { res: 0, rec: 25, tol: 0 } },
-                  { text: "To optimize my social schedule.", scores: { res: 20, rec: 0, tol: 10 } },
-                  { text: "Curiosity.", scores: { res: 10, rec: 10, tol: 10 } }
+                  { text: "I’m avoiding actual social interaction by studying it instead.", scores: { res: 0, rec: 22, tol: 0 } },
+                  { text: "I want to optimize my schedule like a social project manager.", scores: { res: 18, rec: 0, tol: 10 } },
+                  { text: "Curiosity and mild self-loathing.", scores: { res: 10, rec: 10, tol: 10 } }
               ] 
             }
         ];
 
+        // ========= ARCHETYPES (8, sarcastic) =========
         const archetypes = {
-            "Nuclear": { title: "The Nuclear Reactor", summary: "You generate energy from crowds. You don't have a limit; you have an engine.", desc: "You are a rare ultra-extrovert. While others drain, you recharge in social settings. You likely struggle with solitude and find silence 'loud.' You are the natural leader of any group, but watch out for burning others out with your pace." },
-            "AA": { title: "The AA Battery", summary: "Small, reliable, but once you're out, you're OUT.", desc: "You are the classic introvert. You have enough charge for a specific task or evening, but you require 100% isolation to hit full capacity again. You are highly observant and deep, but 'networking' feels like manual labor to you." },
-            "Solar": { title: "Solar Powered", summary: "You recharge based on the quality of the light (people).", desc: "You are an Ambivert. In the right 'sunlight' (good friends), you can last all night. In 'shade' (small talk/strangers), you drain in minutes. Your battery isn't about time; it's about vibes and connection." },
-            "ShortCircuit": { title: "The Short Circuit", summary: "High intensity, high anxiety, rapid drain.", desc: "You dive into social situations with 100% effort, but your 'Social Anxiety Load' causes you to drain twice as fast as others. You are likely the most fun person at the party for exactly one hour, then you disappear without saying goodbye." }
+            NuclearReactor: {
+                title: "Nuclear Reactor",
+                subtitle: "Unlimited output, zero self-preservation",
+                summary: "You don’t have a social battery. You are the power plant the rest of us drain from.",
+                desc: "Your resilience is high, your tolerance for chaos is even higher, and your recovery need is something you apparently plan to handle in the afterlife. You say yes to everything, talk to everyone, and then act surprised when your body collapses once a month.",
+                bullets: [
+                    "You treat three back-to-back plans as “a normal Thursday”.",
+                    "Silence feels illegal to you.",
+                    "You probably text people while in the bathroom at parties."
+                ],
+                rec: "Schedule rest on purpose. If you don’t put alone time in the calendar, your immune system will schedule it for you."
+            },
+            WeekendPerformer: {
+                title: "Weekend Performer",
+                subtitle: "Part-time extrovert, full-time spectacle",
+                summary: "You’re chill on weekdays, then overcompensate like a feral TikTok live on weekends.",
+                desc: "You can go hard socially, but only in bursts. You treat high-energy nights like events, not lifestyle. Monday you’re a ghost; Saturday you’re the DJ, MC, therapist and event coordinator in one human.",
+                bullets: [
+                    "You “save energy” all week for one chaotic night.",
+                    "Your friends never know which version of you is coming out.",
+                    "You need 48 hours of recovery after pretending to be an extrovert for 4 hours."
+                ],
+                rec: "Stop booking weekends like a festival if you plan to act confused about why you hate everyone on Sunday."
+            },
+            SolarPanel: {
+                title: "Solar Panel Ambivert",
+                subtitle: "Thrives in good light, dies in fluorescent rooms",
+                summary: "You are not introverted or extroverted; you are “depends who’s there.”",
+                desc: "Your energy isn’t about number of people, it’s about quality. You can talk for hours with the right humans and shut down in five minutes of networking small talk. You’re efficient, not shy.",
+                bullets: [
+                    "You can out-social extroverts if the vibe is right.",
+                    "You decay instantly in corporate icebreakers.",
+                    "You’re allergic to people who shout “I’m such an empath” unprovoked."
+                ],
+                rec: "Curate your calendar like a playlist. Stop going to events where you already know you’ll stand in a corner judging everyone."
+            },
+            AirplaneModeHermit: {
+                title: "Airplane-Mode Hermit",
+                subtitle: "Human, but only with Wi-Fi off",
+                summary: "Your battery exists solely to power your own thoughts, not other people’s conversations.",
+                desc: "Your recovery need is massive and your tolerance for social noise is microscopic. You can be charming when forced, but every interaction starts a countdown to “I need to go home immediately or I will bite someone.”",
+                bullets: [
+                    "You rehearse conversations before they happen and after they end.",
+                    "You have replied “sorry just saw this” to messages you saw instantly.",
+                    "You only enjoy people in 4K when they are on a screen."
+                ],
+                rec: "You don’t need to become an extrovert. You just need one or two humans who don’t drain you like a malware update."
+            },
+            BackgroundProcess: {
+                title: "Background Process",
+                subtitle: "Always there, rarely in focus",
+                summary: "You are socially present, like a Windows task you forgot was running.",
+                desc: "Your energy is steady but soft. You rarely take the spotlight, but you’re at almost every event like furniture with opinions. You avoid extremes: not first to arrive, not last to leave, not the problem, not the solution.",
+                bullets: [
+                    "You know everyone’s business; no one knows your middle name.",
+                    "You’re in the photos but never tagged first.",
+                    "You are the safe person people sit next to when they’re overwhelmed."
+                ],
+                rec: "Learn to say no before you start quietly resenting people for invitations you accepted yourself."
+            },
+            PeoplePleasingAdapter: {
+                title: "People-Pleasing Adapter",
+                subtitle: "Universal charger for other people’s comfort",
+                summary: "You adjust your entire personality like a phone on 3% trying to be useful.",
+                desc: "You can handle a lot socially, but most of that energy goes into making sure everyone else is okay. You say yes when you mean “I’d rather chew glass”, then wonder why you’re exhausted and slightly furious.",
+                bullets: [
+                    "You RSVP “of course!” before checking your battery or calendar.",
+                    "You stay longer than you want so nobody feels abandoned.",
+                    "Your social life is mostly other people’s plans that you agreed to under duress."
+                ],
+                rec: "“No” is a full sentence, not a hate crime. Try using it before your body starts doing it for you via illness and ghosting."
+            },
+            SociallyExpired: {
+                title: "Socially Expired",
+                subtitle: "Out of charge, still pretending",
+                summary: "Your battery hits 1% in public but your mouth insists on performing.",
+                desc: "Your tolerance for social noise is low, your recovery need is high, and your resilience is… ambitious. You keep going to things out of guilt or FOMO, then sit there radiating “I want to go home” energy.",
+                bullets: [
+                    "You say “I’m so tired” at least 17 times during the event.",
+                    "You mentally leave hours before your body does.",
+                    "You call yourself “low energy” instead of “chronically over-booked”."
+                ],
+                rec: "If your battery hits red within the first hour, stop signing up for six-hour experiences. Shorter, intentional hangouts. Long naps."
+            },
+            ChaosFountain: {
+                title: "Chaos Fountain",
+                subtitle: "Loud, available, and mysteriously exhausted",
+                summary: "You act like a full-time extrovert with the battery of a Bluetooth earbud.",
+                desc: "You pour out energy like you have a backup generator, but your recovery need is real and your tolerance is more fragile than you admit. You crash hard, ghost everyone, then reappear like nothing happened.",
+                bullets: [
+                    "You over-commit then cancel “for mental health” at the last second.",
+                    "Your friends never know if you’re in party mode or witness protection.",
+                    "You think coffee counts as a personality and a coping mechanism."
+                ],
+                rec: "Pick fewer people, fewer events, and show up like a real human instead of glitching between extremes."
+            }
         };
 
+        // ========= STATE =========
         let currentQ = 0;
         let totals = { res: 0, rec: 0, tol: 0 };
+        let startTime = 0;
+        let timerActive = false;
 
-        window.startQuiz = function() {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('quiz-interface').classList.remove('hidden');
-            renderQuestion();
+        const $ = (id) => document.getElementById(id);
+
+        function normaliseScore(raw) {
+            const maxRaw = 13 * 30; // max ~390
+            const capped = Math.max(0, Math.min(maxRaw, raw));
+            return Math.round((capped / maxRaw) * 100);
         }
 
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60).toString().padStart(2, "0");
+            const s = (sec % 60).toString().padStart(2, "0");
+            return `${m}:${s}`;
+        }
+
+        function updateTimer() {
+            if (!timerActive || $("quiz-interface").classList.contains("hidden")) return;
+            const diff = Math.floor((Date.now() - startTime) / 1000);
+            $("timer-display").textContent = formatTime(diff);
+            requestAnimationFrame(updateTimer);
+        }
+
+        function pickArchetype(resPct, recPct, tolPct) {
+            // High res, high tol, low rec => Nuclear
+            if (resPct >= 70 && tolPct >= 65 && recPct <= 40) return "NuclearReactor";
+
+            // High res, high tol, mid rec => Chaos Fountain
+            if (resPct >= 60 && tolPct >= 55 && recPct > 40 && recPct <= 65) return "ChaosFountain";
+
+            // Mid-high res, mid tol, mid rec => Weekend Performer
+            if (resPct >= 55 && resPct <= 75 && tolPct >= 40 && tolPct <= 65 && recPct >= 40 && recPct <= 70)
+                return "WeekendPerformer";
+
+            // High rec, low res, low tol => AirplaneModeHermit
+            if (recPct >= 70 && resPct <= 40 && tolPct <= 40) return "AirplaneModeHermit";
+
+            // High rec, mid res, mid tol => Solar Panel
+            if (recPct >= 60 && resPct >= 40 && resPct <= 70 && tolPct >= 35 && tolPct <= 65)
+                return "SolarPanel";
+
+            // Mid everything, low extremes => Background Process
+            if (resPct >= 35 && resPct <= 60 && recPct >= 35 && recPct <= 65 && tolPct >= 30 && tolPct <= 55)
+                return "BackgroundProcess";
+
+            // High res + high rec (overdoing it then dying) => Socially Expired
+            if (resPct >= 60 && recPct >= 60 && tolPct <= 60) return "SociallyExpired";
+
+            // High rec, mid/high tol => People Pleasing Adapter
+            if (recPct >= 55 && tolPct >= 50) return "PeoplePleasingAdapter";
+
+            // Fallback
+            if (recPct >= 65) return "AirplaneModeHermit";
+            if (resPct >= 65) return "NuclearReactor";
+            return "SolarPanel";
+        }
+
+        function severityLabel(resPct, recPct, tolPct) {
+            const avg = Math.round((resPct + (100 - recPct) + tolPct) / 3);
+            if (avg >= 75) return "Running On Chaos";
+            if (avg >= 55) return "Functioning Menace";
+            if (avg >= 35) return "Socially Flammable";
+            return "Perpetually Drained";
+        }
+
+        function batteryText(avg) {
+            if (avg >= 80) return "Overclocked (80–100%)";
+            if (avg >= 60) return "Charged (60–80%)";
+            if (avg >= 40) return "Medium (40–60%)";
+            if (avg >= 20) return "Low (20–40%)";
+            return "Red Zone (<20%)";
+        }
+
+        function fillTags(key, resPct, recPct, tolPct) {
+            const container = $("result-tags");
+            container.innerHTML = "";
+            const tags = [];
+
+            tags.push(`Output: ${resPct}%`);
+            tags.push(`Alone-time need: ${recPct}%`);
+            tags.push(`Noise tolerance: ${tolPct}%`);
+
+            if (key === "NuclearReactor")      tags.push("Human power plant");
+            if (key === "WeekendPerformer")    tags.push("Fri-Sat only extrovert");
+            if (key === "SolarPanel")          tags.push("Quality-filter dependent");
+            if (key === "AirplaneModeHermit")  tags.push("Do not disturb enabled");
+            if (key === "BackgroundProcess")   tags.push("NPC but self-aware");
+            if (key === "PeoplePleasingAdapter") tags.push("Charger for other people’s comfort");
+            if (key === "SociallyExpired")     tags.push("Battery permanently at 9%");
+            if (key === "ChaosFountain")       tags.push("Loud with low stamina");
+
+            tags.slice(0, 4).forEach(t => {
+                const pill = document.createElement("span");
+                pill.className = "pill px-3 py-1 text-[11px] text-slate-200";
+                pill.textContent = t;
+                container.appendChild(pill);
+            });
+        }
+
+        // ========= FLOW =========
+        window.startQuiz = function () {
+            $("start-screen").classList.add("hidden");
+            $("result-screen").classList.add("hidden");
+            $("quiz-interface").classList.remove("hidden");
+
+            currentQ = 0;
+            totals = { res: 0, rec: 0, tol: 0 };
+            startTime = Date.now();
+            timerActive = true;
+
+            // Reset progress + timer UI
+            $("timer-display").textContent = "00:00";
+            $("progress-text").textContent = `01 / ${questions.length}`;
+            updateTimer();
+            renderQuestion();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        window.retakeTest = function () {
+            window.startQuiz();
+        };
+
         function renderQuestion() {
-            if (currentQ >= questions.length) { finishQuiz(); return; }
+            if (currentQ >= questions.length) {
+                finishQuiz();
+                return;
+            }
+
             const q = questions[currentQ];
-            document.getElementById('q-category').innerText = q.cat;
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
+            $("q-category").textContent = q.cat;
+            $("question-text").textContent = q.q;
+            $("progress-text").textContent = `${String(currentQ + 1).padStart(2, "0")} / ${questions.length}`;
+
+            const container = $("options-container");
+            container.innerHTML = "";
             q.a.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "option-card w-full p-6 text-left font-mono text-xs uppercase tracking-widest text-slate-300";
-                btn.innerText = opt.text;
+                const btn = document.createElement("button");
+                btn.className = "option-card w-full p-5 text-left font-mono text-[11px] uppercase tracking-[0.18em] text-slate-300";
+                btn.textContent = opt.text;
                 btn.onclick = () => {
                     totals.res += opt.scores.res;
                     totals.rec += opt.scores.rec;
@@ -297,25 +679,135 @@
         }
 
         function finishQuiz() {
-            let key = "Solar";
-            const { res, rec, tol } = totals;
-            if (res > 280) key = "Nuclear";
-            else if (rec > 280) key = "AA";
-            else if (rec > 150 && res > 150) key = "ShortCircuit";
-            
-            const data = archetypes[key];
-            document.getElementById('quiz-interface').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('result-title').innerText = data.title;
-            document.getElementById('result-summary').innerText = data.summary;
-            
-            document.getElementById('res-val').innerText = res > 150 ? "Infinite" : "Limited";
-            document.getElementById('rec-val').innerText = rec > 150 ? "Slow" : "Rapid";
-            document.getElementById('lim-val').innerText = tol > 150 ? "High" : "Low";
-            document.getElementById('cla-val').innerText = key;
+            timerActive = false;
+            $("quiz-interface").classList.add("hidden");
+            $("result-screen").classList.remove("hidden");
 
-            if (window.saveTestResult) window.saveTestResult({ testId: 'social_battery', archetype: key, metrics: totals });
+            const durationSec = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
+            const resPct = normaliseScore(totals.res);
+            const recPct = normaliseScore(totals.rec);
+            const tolPct = normaliseScore(totals.tol);
+
+            const key = pickArchetype(resPct, recPct, tolPct);
+            const data = archetypes[key];
+
+            // Core text
+            $("result-title").textContent = data.title;
+            $("result-subtitle").textContent = data.subtitle;
+            $("result-summary").textContent = data.summary;
+            $("result-desc").textContent = data.desc;
+            $("stat-rec").textContent = data.rec;
+
+            // Stats
+            $("res-val").textContent = resPct + "%";
+            $("rec-val").textContent = recPct + "%";
+            $("lim-val").textContent = tolPct + "%";
+            $("cla-val").textContent = key;
+
+            const avgBattery = Math.round((resPct + (100 - recPct) + tolPct) / 3);
+            $("battery-label").textContent = batteryText(avgBattery);
+            $("battery-bar").style.width = avgBattery + "%";
+
+            const severity = severityLabel(resPct, recPct, tolPct);
+            $("severity-chip").textContent = severity;
+
+            // Update start-screen battery for fun if visible later
+            const startBattery = $("battery-start");
+            if (startBattery) {
+                const height = Math.max(10, Math.min(100, avgBattery));
+                startBattery.style.height = height + "%";
+            }
+
+            // Bullets
+            const quick = $("quick-lines");
+            quick.innerHTML = "";
+            (data.bullets || []).forEach(line => {
+                const p = document.createElement("p");
+                p.textContent = "• " + line;
+                quick.appendChild(p);
+            });
+
+            fillTags(key, resPct, recPct, tolPct);
+
+            // Save for engine
+            const payload = {
+                testId: "social_battery",
+                timestamp: new Date().toISOString(),
+                archetype: key,
+                metrics: {
+                    resilience_output: totals.res,
+                    recovery_need_raw: totals.rec,
+                    noise_tolerance_raw: totals.tol,
+                    resilience_pct: resPct,
+                    recovery_pct: recPct,
+                    noise_tolerance_pct: tolPct,
+                    time_taken: durationSec
+                }
+            };
+
+            if (window.saveTestResult) {
+                try {
+                    window.saveTestResult(payload);
+                } catch (e) {
+                    console.warn("saveTestResult (social_battery) failed", e);
+                }
+            }
+
+            if (window.GameEngine && typeof window.GameEngine.trackEvent === "function") {
+                try {
+                    window.GameEngine.trackEvent("test_complete", {
+                        testId: "social_battery",
+                        archetype: key,
+                        resPct,
+                        recPct,
+                        tolPct,
+                        timeTaken: durationSec
+                    });
+                } catch (e) {}
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
+
+        // ========= SHARE =========
+        window.shareResult = async function () {
+            const title = "My Social Battery Diagnostic · QuizRealm";
+            const arche = $("result-title").textContent;
+            const subtitle = $("result-subtitle").textContent;
+            const res = $("res-val").textContent;
+            const rec = $("rec-val").textContent;
+            const tol = $("lim-val").textContent;
+
+            const text =
+                `I took the Social Battery Diagnostic on QuizRealm.\n` +
+                `Archetype: ${arche} — ${subtitle}.\n` +
+                `Output: ${res} · Recovery need: ${rec} · Noise tolerance: ${tol}.\n` +
+                `It explains why I act like this in group chats.`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title,
+                        text,
+                        url: window.location.href
+                    });
+                    return;
+                } catch (e) {
+                    // fall through
+                }
+            }
+
+            const fallback = `${text}\n${window.location.href}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(fallback);
+                    alert("Caption + link copied. Paste it into your story or group chat.");
+                    return;
+                } catch (e) {}
+            }
+
+            alert("Share this:\n\n" + fallback);
+        };
     </script>
 </body>
 </html>

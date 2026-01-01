@@ -10,7 +10,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Toxic Radar • Environmental Scan | QuizRealm</title>
-    
+    <meta name="description" content="Toxic Radar is a 13-question environmental scan that exposes how much of the drama is your surroundings… and how much is actually you. Get a brutally honest archetype with a screenshot-ready card.">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -23,18 +24,21 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { 
-                        'header': ['Space Grotesk', 'sans-serif'], 
-                        'body': ['Inter', 'sans-serif'] 
+                    fontFamily: {
+                        header: ['Space Grotesk', 'sans-serif'],
+                        body: ['Inter', 'sans-serif']
                     },
-                    colors: { 
+                    colors: {
                         'hazard-orange': '#ff4d00',
-                        'slate-base': '#0f172a',
-                        'slate-panel': '#1e293b',
+                        'hazard-amber': '#f59e0b',
+                        'slate-base': '#020617',
+                        'slate-panel': '#0f172a',
+                        'slate-soft': '#02091a',
                         'text-muted': '#94a3b8'
                     },
                     boxShadow: {
-                        'sharp': '6px 6px 0px rgba(255, 77, 0, 0.2)'
+                        'sharp': '6px 6px 0px rgba(255, 77, 0, 0.35)',
+                        'tox-card': '0 26px 80px rgba(0,0,0,0.9)'
                     }
                 }
             }
@@ -42,327 +46,879 @@
     </script>
 
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
-        
-        /* Striped Warning Background */
-        .hazard-stripes {
-            background-image: repeating-linear-gradient(
-                45deg,
-                rgba(255, 77, 0, 0.03),
-                rgba(255, 77, 0, 0.03) 10px,
-                transparent 10px,
-                transparent 20px
+        body {
+            background:
+                radial-gradient(circle at top, #1e293b 0, #020617 50%, #020617 100%);
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .hazard-overlay::before {
+            content:"";
+            position:fixed;
+            inset:0;
+            background-image:repeating-linear-gradient(
+                135deg,
+                rgba(255,77,0,0.05) 0,
+                rgba(255,77,0,0.05) 12px,
+                transparent 12px,
+                transparent 24px
             );
+            opacity:0.35;
+            mix-blend-mode:soft-light;
+            pointer-events:none;
+            z-index:-1;
+        }
+
+        .pill {
+            border-radius:999px;
+            border:1px solid rgba(248,250,252,0.25);
+            background:rgba(15,23,42,0.9);
         }
 
         .content-card {
-            background: #1e293b;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: radial-gradient(circle at top left, rgba(248,250,252,0.06), transparent 55%),
+                        linear-gradient(135deg, #020617, #020617 40%, #020617 100%);
+            border: 1px solid rgba(148,163,184,0.5);
+            border-radius: 24px;
             position: relative;
+            box-shadow: 0 26px 80px rgba(0,0,0,0.95);
         }
 
-        /* Interactive Elements */
         .btn-option {
-            background: white; color: #0f172a;
-            border-left: 4px solid transparent;
-            transition: all 0.2s ease-out;
+            background: #f9fafb;
+            color: #020617;
+            border-radius: 16px;
+            border-left: 5px solid transparent;
+            transition: all 0.16s ease-out;
+            text-align:left;
+            position:relative;
+            overflow:hidden;
+        }
+        .btn-option::before {
+            content:"";
+            position:absolute;
+            inset:0;
+            background:linear-gradient(90deg, rgba(15,23,42,0.08), transparent);
+            opacity:0;
+            transform:translateX(-20%);
+            transition:opacity 0.16s ease-out, transform 0.16s ease-out;
         }
         .btn-option:hover {
-            border-left-color: #ff4d00;
-            transform: translateX(8px);
-            background: #f1f5f9;
+            border-left-color:#ff4d00;
+            transform:translateX(6px);
+            background:#e5e7eb;
+        }
+        .btn-option:hover::before {
+            opacity:1;
+            transform:translateX(0);
         }
 
         .btn-primary {
-            background: #ff4d00; color: white;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
-            transition: all 0.2s;
+            background:#ff4d00;
+            color:white;
+            font-family:'Space Grotesk',sans-serif;
+            font-weight:700;
+            letter-spacing:0.12em;
+            text-transform:uppercase;
+            transition:all 0.2s;
+            border-radius:999px;
         }
         .btn-primary:hover {
-            background: white; color: #ff4d00;
-            box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+            background:white;
+            color:#ff4d00;
+            box-shadow:0 0 28px rgba(255,77,0,0.55);
+            transform:translateY(-1px);
         }
 
-        /* Spectrum Meter */
-        .spectrum-bar {
-            height: 12px; background: #334155; border-radius: 99px; position: relative; overflow: hidden;
+        .progress-shell {
+            background:rgba(15,23,42,0.95);
+            border-radius:999px;
+            height:4px;
+            overflow:hidden;
         }
-        .spectrum-indicator {
-            position: absolute; top: 0; bottom: 0; width: 4px; background: white;
-            box-shadow: 0 0 10px white; transition: left 1s ease; left: 0%;
+        .progress-fill {
+            height:100%;
+            width:0%;
+            border-radius:999px;
+            background:linear-gradient(90deg,#22c55e,#f59e0b,#ff4d00,#ef4444);
+            background-size:200% auto;
+            animation:tox-shimmer 3s linear infinite;
+            transition:width 0.25s ease-out;
+        }
+        @keyframes tox-shimmer {
+            to { background-position:200% center; }
+        }
+
+        .spectrum-bar {
+            height: 10px;
+            background: #020617;
+            border-radius: 999px;
+            position: relative;
+            overflow: hidden;
+            border:1px solid rgba(148,163,184,0.5);
         }
         .spectrum-gradient {
-            background: linear-gradient(90deg, #22c55e 0%, #eab308 50%, #ff4d00 100%);
-            width: 100%; height: 100%; opacity: 0.8;
+            width:100%;
+            height:100%;
+            background: linear-gradient(90deg, #22c55e 0%, #fbbf24 50%, #ff4d00 75%, #ef4444 100%);
+            opacity:0.9;
+        }
+        .spectrum-indicator {
+            position:absolute;
+            top:-3px;
+            bottom:-3px;
+            width:4px;
+            background:white;
+            box-shadow:0 0 14px rgba(248,250,252,0.9);
+            border-radius:999px;
+            left:0%;
+            transition:left 0.9s ease-out;
         }
 
-        .fade-in { animation: fadeIn 0.6s ease forwards; opacity: 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .stat-bar-bg {
+            background:#020617;
+            border-radius:999px;
+            overflow:hidden;
+        }
+        .stat-bar-fill {
+            height:100%;
+            width:0%;
+            border-radius:999px;
+            transition:width 0.28s ease-out;
+        }
+
+        .fade-in {
+            opacity:0;
+            transform:translateY(18px);
+            animation:fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity:1; transform:translateY(0); }
+        }
     </style>
 </head>
 
-<body class="flex flex-col min-h-screen hazard-stripes">
-    <quiz-header style="color: white;"></quiz-header>
+<body class="flex flex-col min-h-screen hazard-overlay">
+    <quiz-header></quiz-header>
 
-    <main class="flex-grow w-full max-w-4xl mx-auto px-6 py-12 lg:py-20">
+    <main class="flex-grow w-full max-w-5xl mx-auto px-4 md:px-6 py-12 md:py-16 lg:py-20">
 
-        <div id="start-screen" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center fade-in">
-            <div class="space-y-8">
-                <div class="inline-flex items-center gap-2 border border-hazard-orange/50 px-3 py-1 rounded-full text-hazard-orange text-[10px] font-bold uppercase tracking-widest">
-                    <span class="w-2 h-2 rounded-full bg-hazard-orange animate-pulse"></span>
-                    <span>System Active</span>
+        <!-- START SCREEN -->
+        <section id="start-screen" class="fade-in" style="animation-delay:0.04s">
+            <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,3fr),minmax(0,2.2fr)] gap-10 items-center">
+                <!-- Left side -->
+                <div class="space-y-8">
+                    <div class="inline-flex items-center gap-2 pill px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-hazard-amber">
+                        <span class="w-1.5 h-1.5 rounded-full bg-hazard-orange animate-pulse"></span>
+                        <span>Environmental Scan · Toxic Radar</span>
+                    </div>
+
+                    <div>
+                        <h1 class="font-header text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.9] font-bold">
+                            Toxic<br>
+                            <span class="text-hazard-orange">Radar</span>
+                        </h1>
+                        <p class="mt-4 text-sm sm:text-[15px] text-text-muted max-w-xl leading-relaxed">
+                            Is your life full of walking red flags because the world is cruel, or because you keep
+                            sending out invitations to the circus?
+                            <span class="block mt-3 text-[11px] uppercase tracking-[0.26em] text-slate-400">
+                                13 questions · Drama exposure · Friend-group compatible
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="grid sm:grid-cols-[auto,1fr] gap-4 sm:gap-6 items-center">
+                        <button
+                            onclick="window.startQuiz()"
+                            class="btn-primary px-10 py-4 text-[10px] md:text-[11px] flex items-center justify-center gap-2">
+                            <span>Run toxic scan</span>
+                            <i class="fa-solid fa-radar text-xs"></i>
+                        </button>
+
+                        <div class="flex flex-wrap gap-3 text-[11px] text-text-muted">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-regular fa-clock text-hazard-amber"></i>
+                                ~3 minutes
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-user-shield text-hazard-amber"></i>
+                                No login · No email
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 text-[11px] text-text-muted">
+                        <div class="pill px-3 py-1">
+                            Narcissists · Drama cycles · Boundary problems · Savior complex
+                        </div>
+                        <div class="pill px-3 py-1">
+                            Built to be screenshotted and thrown in the group chat.
+                        </div>
+                    </div>
                 </div>
-                
-                <h1 class="font-header text-6xl lg:text-8xl font-bold leading-[0.9]">
-                    Toxic <br><span class="text-hazard-orange">Radar.</span>
-                </h1>
 
-                <p class="text-text-muted text-lg leading-relaxed border-l-2 border-white/20 pl-6">
-                    A clinical audit of your environment. Are you surrounded by drama because of bad luck, or because you are the magnet?
-                </p>
+                <!-- Right: preview card -->
+                <div class="lg:pl-4">
+                    <div class="content-card p-6 sm:p-7 shadow-tox-card">
+                        <div class="absolute inset-x-0 -top-20 h-32 opacity-30 bg-gradient-to-b from-slate-100/40 via-transparent to-transparent blur-3xl"></div>
+                        <div class="relative space-y-4">
+                            <div class="flex items-center justify-between text-[11px] text-text-muted mb-1">
+                                <span class="uppercase tracking-[0.32em]">Preview result card</span>
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-camera-rotate text-hazard-amber"></i>
+                                    Screenshot-ready
+                                </span>
+                            </div>
 
-                <button onclick="window.startQuiz()" class="btn-primary w-full md:w-auto px-10 py-5 text-sm rounded-sm">
-                    Run Calibration
-                </button>
+                            <div class="rounded-2xl border border-slate-500/70 bg-slate-base/60 px-4 py-4 sm:px-5 sm:py-5">
+                                <div class="flex justify-between items-center mb-2 text-[11px]">
+                                    <span class="px-2.5 py-1 rounded-full bg-slate-100/5 border border-slate-100/25 uppercase tracking-[0.26em] text-text-muted">
+                                        Toxic radar™
+                                    </span>
+                                    <span class="text-slate-200">
+                                        81% <span class="text-hazard-orange font-semibold">Drama exposure</span>
+                                    </span>
+                                </div>
+
+                                <h2 class="font-header text-2xl sm:text-3xl text-slate-50 leading-tight mb-1">
+                                    The <span class="text-hazard-orange">Drama Sponge</span>
+                                </h2>
+                                <p class="text-[11px] uppercase tracking-[0.26em] text-slate-400 mb-2">
+                                    Always the victim, never the common denominator
+                                </p>
+                                <p class="text-[13px] text-slate-200 leading-relaxed">
+                                    You swear you “hate drama” while texting three people about it at once.
+                                    You keep letting clowns in and then blaming the circus.
+                                </p>
+                            </div>
+
+                            <p class="text-[11px] text-text-muted leading-relaxed">
+                                The actual test calculates how sharp your <strong>red-flag radar</strong> is,
+                                how porous your <strong>boundaries</strong> are, and how much of the chaos is
+                                simply <strong>you being the problem</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUIZ INTERFACE -->
+        <section id="quiz-interface" class="hidden max-w-3xl mx-auto pt-10">
+            <div class="flex justify-between items-end mb-4 border-b border-slate-700 pb-3">
+                <div class="flex flex-col gap-1">
+                    <span id="q-category" class="font-header text-[14px] text-slate-100 uppercase tracking-[0.16em]">
+                        Scan Phase
+                    </span>
+                    <span class="text-[11px] text-text-muted">
+                        Answer instinctively. Your therapist is not here to save you.
+                    </span>
+                </div>
+                <span id="progress-text" class="text-[11px] font-mono text-text-muted">
+                    01 / 13
+                </span>
             </div>
 
-            <div class="content-card p-8 rounded-xl shadow-sharp">
-                <h3 class="font-header text-xl font-bold mb-6 flex items-center gap-3">
-                    <i class="fas fa-crosshairs text-hazard-orange"></i> Assessment Scope
+            <div class="progress-shell mb-8">
+                <div id="progress-bar" class="progress-fill"></div>
+            </div>
+
+            <div class="space-y-7">
+                <h2 id="question-text" class="font-header text-2xl sm:text-3xl md:text-4xl leading-tight">
+                    Loading...
+                </h2>
+
+                <div id="options-container" class="space-y-4">
+                    <!-- options injected -->
+                </div>
+
+                <div class="mt-4 flex justify-between items-center text-[11px] text-text-muted">
+                    <span>This is not therapy. It is worse: accurate.</span>
+                    <span id="timer-display">00:00</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULT SCREEN -->
+        <section id="result-screen" class="hidden pt-10 max-w-4xl mx-auto">
+
+            <!-- Main share card -->
+            <div id="share-card" class="content-card p-6 sm:p-8 mb-10">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                    <div class="flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-text-muted">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span>Environmental scan complete</span>
+                    </div>
+                    <div id="severity-chip" class="pill px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-slate-100">
+                        Mildly contaminated
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-[minmax(0,2.4fr),minmax(0,2fr)] gap-7 items-start">
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.3em] text-text-muted mb-2">
+                            Your toxic archetype
+                        </p>
+                        <h2 class="font-header text-3xl sm:text-4xl md:text-5xl leading-tight mb-1">
+                            The <span id="result-title" class="text-hazard-orange">...</span>
+                        </h2>
+                        <p id="result-subtitle" class="text-[11px] uppercase tracking-[0.28em] text-slate-400 mb-4">
+                            Subtitle
+                        </p>
+
+                        <p id="result-summary" class="text-sm sm:text-[15px] text-slate-200 leading-relaxed mb-5">
+                            Summary...
+                        </p>
+
+                        <ul id="result-tags" class="flex flex-wrap gap-2 text-[11px] text-slate-100">
+                            <!-- tags injected -->
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-soft/80 border border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-center text-[11px] text-text-muted">
+                            <span>Environment toxicity index</span>
+                            <span id="env-score" class="text-slate-100 font-semibold text-sm">0%</span>
+                        </div>
+                        <div class="stat-bar-bg w-full h-1.5">
+                            <div id="env-bar" class="stat-bar-fill bg-gradient-to-r from-emerald-400 via-hazard-amber to-hazard-orange"></div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-[11px] text-text-muted">
+                            <span>You are the problem index</span>
+                            <span id="self-score" class="text-slate-100 font-semibold text-sm">0%</span>
+                        </div>
+                        <div class="stat-bar-bg w-full h-1.5">
+                            <div id="self-bar" class="stat-bar-fill bg-gradient-to-r from-emerald-400 via-rose-400 to-red-500"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-700 text-[11px] text-text-muted">
+                            <div>
+                                <div class="uppercase tracking-[0.25em] text-[10px] mb-1">Blindspot Index</div>
+                                <div id="stat-blind" class="font-header text-[15px] text-slate-50">...</div>
+                            </div>
+                            <div>
+                                <div class="uppercase tracking-[0.25em] text-[10px] mb-1">Boundaries</div>
+                                <div id="stat-bound" class="font-header text-[15px] text-slate-50">...</div>
+                            </div>
+                        </div>
+
+                        <p class="pt-1 text-[11px] text-text-muted">
+                            Screenshot this and send it to whoever insists they “hate drama” while starting three arguments a week.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spectrum & explanation -->
+            <div class="grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr),minmax(0,2fr)] gap-7 mb-10">
+                <div class="bg-slate-soft border border-slate-700 rounded-3xl p-6 shadow-tox-card">
+                    <h3 class="text-[11px] uppercase tracking-[0.3em] text-text-muted mb-4">
+                        Where you sit on the toxic spectrum
+                    </h3>
+
+                    <div class="space-y-6 text-sm">
+                        <div>
+                            <div class="flex justify-between mb-2 text-[11px] text-text-muted">
+                                <span>Overall toxicity radar</span>
+                                <span id="radar-label" class="text-slate-100 font-semibold text-[12px]">Neutral zone</span>
+                            </div>
+                            <div class="spectrum-bar">
+                                <div class="spectrum-gradient"></div>
+                                <div id="spectrum-marker" class="spectrum-indicator"></div>
+                            </div>
+                            <div class="flex justify-between mt-2 text-[10px] uppercase tracking-[0.24em] text-text-muted">
+                                <span>Hazmat</span>
+                                <span>Drama magnet</span>
+                                <span>Radioactive</span>
+                            </div>
+                        </div>
+
+                        <p class="text-[12px] text-text-muted leading-relaxed">
+                            We combine how good you are at spotting red flags, how quickly you forgive
+                            walking disasters, and how often you accidentally <strong>are</strong>
+                            the walking disaster.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Archetype explanation -->
+                <div class="bg-slate-soft border border-slate-700 rounded-3xl p-6 shadow-tox-card flex flex-col gap-4">
+                    <h3 class="text-[11px] uppercase tracking-[0.3em] text-text-muted">
+                        What this says about your environment
+                    </h3>
+                    <p id="result-desc" class="text-sm text-slate-200 leading-relaxed">
+                        ...
+                    </p>
+
+                    <div id="quick-lines" class="mt-1 text-[12px] text-text-muted space-y-1.5">
+                        <!-- bullets -->
+                    </div>
+
+                    <div class="mt-3 pt-3 border-t border-slate-700 text-[11px] text-hazard-amber uppercase tracking-[0.26em]">
+                        <span id="stat-rec">...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full report -->
+            <div id="full-report" class="hidden bg-slate-soft border border-slate-700 rounded-3xl p-6 md:p-7 mb-10 text-sm text-slate-200 leading-relaxed">
+                <h3 class="text-[11px] uppercase tracking-[0.3em] text-text-muted mb-4">
+                    Full analysis log · Toxic Radar
                 </h3>
-                <ul class="space-y-4 text-sm text-slate-300">
-                    <li class="flex items-start gap-3">
-                        <span class="text-hazard-orange font-bold">01.</span>
-                        <span><strong>Detection Accuracy:</strong> Can you spot a narcissist before they speak, or only after they ruin your life?</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="text-hazard-orange font-bold">02.</span>
-                        <span><strong>Permissibility Index:</strong> Do you have "porous" boundaries that invite energy vampires?</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="text-hazard-orange font-bold">03.</span>
-                        <span><strong>Self-Reflection:</strong> Are <em>you</em> the drama? (We check for that too).</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div id="quiz-interface" class="hidden max-w-2xl mx-auto">
-            <div class="mb-10">
-                <div class="flex justify-between text-xs font-bold uppercase tracking-widest text-text-muted mb-4">
-                    <span id="q-category">Scan Phase</span>
-                    <span id="progress-text">01 / 13</span>
-                </div>
-                <div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
-                    <div id="progress-bar" class="h-full bg-hazard-orange transition-all duration-300" style="width: 0%"></div>
-                </div>
+                <p id="report-extra-1" class="mb-3"></p>
+                <p id="report-extra-2" class="mb-3"></p>
+                <p id="report-extra-3" class="italic text-text-muted border-l border-hazard-orange/70 pl-4">
+                    This test is for reflection and entertainment. It will not replace therapy, but it
+                    might explain why your group chat is a revolving door of “you will not believe what happened”.
+                </p>
             </div>
 
-            <h2 id="question-text" class="font-header text-3xl md:text-4xl font-bold leading-tight mb-8">
-                Loading...
-            </h2>
-
-            <div id="options-container" class="space-y-4">
-                </div>
-        </div>
-
-        <div id="result-screen" class="hidden fade-in">
-            
-            <div class="text-center mb-12">
-                <span class="text-hazard-orange font-bold uppercase tracking-[0.4em] text-xs mb-2 block">Archetype Identified</span>
-                <h2 id="result-title" class="font-header text-6xl md:text-7xl font-bold mb-4">Loading...</h2>
-                <p id="result-summary" class="text-xl text-slate-300 max-w-2xl mx-auto font-light">Summary...</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                
-                <div class="content-card p-8 rounded-xl">
-                    <h4 class="font-header text-sm uppercase tracking-widest text-text-muted mb-6">Toxicity Spectrum Position</h4>
-                    
-                    <div class="relative pt-6 pb-2">
-                        <div class="spectrum-bar">
-                            <div class="spectrum-gradient"></div>
-                            <div id="spectrum-marker" class="spectrum-indicator"></div>
-                        </div>
-                        <div class="flex justify-between text-[10px] uppercase font-bold mt-3 text-slate-500">
-                            <span>Hazmat (Safe)</span>
-                            <span>Magnet (Risk)</span>
-                            <span>Radioactive (Toxic)</span>
-                        </div>
-                    </div>
+            <!-- CTAs -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-12">
+                <div class="text-[12px] text-text-muted max-w-md">
+                    <p class="uppercase tracking-[0.26em] text-[11px] text-slate-300 mb-1">
+                        Share or retake
+                    </p>
+                    <p>
+                        Your card is built for stories, chats and interventions. Share it with the friend
+                        who keeps dating the same person in different outfits, or retake it after you finally
+                        block that one walking hazard.
+                    </p>
                 </div>
 
-                <div class="content-card p-8 rounded-xl grid grid-cols-2 gap-4">
-                    <div>
-                        <span class="block text-[10px] uppercase text-text-muted mb-1">Blindspot Index</span>
-                        <span id="stat-blind" class="font-header text-2xl text-white">...</span>
-                    </div>
-                    <div>
-                        <span class="block text-[10px] uppercase text-text-muted mb-1">Boundaries</span>
-                        <span id="stat-bound" class="font-header text-2xl text-white">...</span>
-                    </div>
-                    <div class="col-span-2 border-t border-white/10 pt-4 mt-2">
-                        <span class="block text-[10px] uppercase text-text-muted mb-1">Recommendation</span>
-                        <span id="stat-rec" class="font-bold text-hazard-orange text-sm">...</span>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="max-w-3xl mx-auto space-y-8">
-                <button onclick="document.getElementById('full-report').classList.toggle('hidden')" class="w-full border-y border-white/10 py-4 text-center text-xs font-bold uppercase tracking-widest hover:text-hazard-orange transition">
-                    View Full Analysis Log
-                </button>
-                
-                <div id="full-report" class="hidden text-left text-slate-400 text-sm leading-loose space-y-4 px-4">
-                    <p id="result-desc">...</p>
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onclick="shareResult()" class="btn-primary px-8 py-4 rounded-sm w-full sm:w-auto">
-                        Share Status
+                <div class="flex flex-wrap gap-3">
+                    <button
+                        onclick="window.shareResult()"
+                        class="px-6 py-3 rounded-[999px] bg-slate-50 text-slate-base text-[10px] tracking-[0.24em] uppercase font-semibold flex items-center gap-2 shadow-tox-card hover:bg-white hover:translate-y-[-1px] transition-all">
+                        <i class="fa-solid fa-share-nodes text-xs"></i>
+                        Share result
                     </button>
-                    <a href="index-funnels.html" class="bg-slate-800 text-white px-8 py-4 rounded-sm font-bold uppercase tracking-widest text-sm hover:bg-slate-700 transition w-full sm:w-auto text-center">
-                        Return to Index
+                    <button
+                        onclick="window.retakeTest()"
+                        class="px-5 py-3 rounded-[999px] border border-slate-600 text-[10px] tracking-[0.24em] uppercase text-slate-200 hover:bg-white/5">
+                        Retake
+                    </button>
+                    <a href="index-funnels.html"
+                       class="px-5 py-3 rounded-[999px] border border-slate-600 text-[10px] tracking-[0.24em] uppercase text-slate-200 hover:bg-white/5 flex items-center gap-2">
+                        <i class="fa-solid fa-house text-xs"></i>
+                        Back to index
                     </a>
                 </div>
             </div>
 
-        </div>
+            <!-- SEO block -->
+            <section class="border-t border-slate-800 pt-8 pb-2 text-[13px] md:text-[14px] text-text-muted space-y-4">
+                <h2 class="text-sm md:text-base font-semibold text-slate-100">
+                    What does the Toxic Radar actually scan?
+                </h2>
+                <p>
+                    Toxic Radar checks three things: your <strong>red-flag detection</strong> (do you notice bad behavior),
+                    your <strong>tolerance level</strong> (how much you excuse it), and your <strong>self-toxicity</strong>
+                    (how often you are also part of the mess). The combination decides whether you are the Hazmat Friend,
+                    the Drama Sponge, or the Walking HR Incident.
+                </p>
+                <h3 class="text-sm md:text-base font-semibold text-slate-100">
+                    How to use your archetype in real life
+                </h3>
+                <p>
+                    If you scored high on environment toxicity but low on self-toxicity, your job is to raise your
+                    standards and stop collecting broken people. If your self-toxicity index is high, your job is to
+                    stop calling it “bad luck” and start changing the patterns you bring into every room.
+                </p>
+            </section>
+        </section>
 
     </main>
 
     <quiz-footer></quiz-footer>
 
     <script type="module">
+        // ========= QUESTIONS =========
         const questions = [
-            { q: "A friend gossips to you about everyone else. You assume:", cat: "Intel Gathering",
+            { q: "A friend spends an hour trash-talking everyone they know. Your main takeaway is:", cat: "Intel & Projection",
               a: [
-                  { text: "They are absolutely gossiping about me too.", scores: { det: 25, tol: 0, self: 0 } },
-                  { text: "They just trust me with the tea.", scores: { det: 0, tol: 25, self: 0 } },
-                  { text: "I have some drama to add to the pile.", scores: { det: 10, tol: 10, self: 25 } }
-              ] 
+                  { text: "If they do that to them, they do that to me.", scores: { det: 25, tol: 0,  self: 0  } },
+                  { text: "They just feel safe with me, poor thing.",     scores: { det: 5,  tol: 25, self: 0  } },
+                  { text: "Incredible, finally someone speaking my language.", scores:{ det: 5, tol: 5, self: 25 } }
+              ]
             },
-            { q: "Someone gives you a 'backhanded compliment' (e.g., 'You look good... for your age').", cat: "Aggression",
+            { q: "Someone gives you a ‘compliment’ like: “You look good today… for once.”", cat: "Micro-aggression",
               a: [
-                  { text: "Call them out immediately.", scores: { det: 25, tol: 0, self: 0 } },
-                  { text: "Laugh awkwardly and feel bad later.", scores: { det: 10, tol: 25, self: 0 } },
-                  { text: "Insult them back, but harder.", scores: { det: 10, tol: 0, self: 25 } }
-              ] 
+                  { text: "I ask them what they meant. Out loud. Immediately.", scores:{ det: 25, tol: 0,  self: 0  } },
+                  { text: "I laugh, die inside, replay it in my head for 3 days.", scores:{ det: 10, tol: 25, self: 0 } },
+                  { text: "I respond with a sharper one and smile.",             scores:{ det: 10, tol: 0,  self: 25 } }
+              ]
             },
-            { q: "Your partner is 'brutally honest'. You interpret this as:", cat: "Relationships",
+            { q: "Your partner prides themselves on being “brutally honest.” You think:", cat: "Relationship Hygiene",
               a: [
-                  { text: "Cruelty disguised as a virtue.", scores: { det: 25, tol: 0, self: 0 } },
-                  { text: "Helpful feedback I probably need.", scores: { det: 0, tol: 25, self: 0 } },
-                  { text: "An excuse for me to be brutal back.", scores: { det: 0, tol: 10, self: 25 } }
-              ] 
+                  { text: "Translation: they enjoy being mean.",         scores:{ det: 25, tol: 0,  self: 0  } },
+                  { text: "At least they’re honest, I can work with that.", scores:{ det: 5, tol: 25, self: 0 } },
+                  { text: "Perfect. I needed an excuse to be brutal back.", scores:{ det: 5, tol: 5, self: 25 } }
+              ]
             },
-            { q: "How often do you find yourself in drama?", cat: "Frequency",
+            { q: "How often do you end up in exploding group chats and friend breakups?", cat: "Drama Frequency",
               a: [
-                  { text: "Rarely. I cut people off at the first sign.", scores: { det: 20, tol: 0, self: 0 } },
-                  { text: "Always. It seems to follow me.", scores: { det: 0, tol: 20, self: 10 } },
-                  { text: "I am the main character, so yes.", scores: { det: 0, tol: 0, self: 30 } }
-              ] 
+                  { text: "Rarely. I leave at the first whiff of madness.", scores:{ det: 20, tol: 0,  self: 0  } },
+                  { text: "Constantly. I swear I don’t know why.",         scores:{ det: 5,  tol: 20, self: 10 } },
+                  { text: "If there’s chaos, I’m probably in the screenshots.", scores:{ det: 0, tol: 5, self: 30 } }
+              ]
             },
-            { q: "When someone sets a boundary with you, you feel:", cat: "Reaction",
+            { q: "When someone sets a firm boundary with you, your gut reaction is:", cat: "Boundary Literacy",
               a: [
-                  { text: "Respectful. Good for them.", scores: { det: 20, tol: 0, self: 0 } },
-                  { text: "Rejected and hurt.", scores: { det: 0, tol: 20, self: 5 } },
-                  { text: "Angry. Who do they think they are?", scores: { det: 0, tol: 0, self: 25 } }
-              ] 
+                  { text: "Respect. I might even copy-paste that.",       scores:{ det: 20, tol: 0,  self: 0  } },
+                  { text: "Rejection. I assume they secretly hate me.",   scores:{ det: 5,  tol: 20, self: 5  } },
+                  { text: "Offense. Who do they think they’re talking to?", scores:{ det: 0, tol: 0, self: 25 } }
+              ]
             },
-            { q: "A 'nice guy' does something nice but clearly expects a reward. You:", cat: "Analysis",
+            { q: "A ‘nice’ person does you a favour and then clearly expects something back. You:", cat: "Hidden Contracts",
               a: [
-                  { text: "Spot the transaction and decline.", scores: { det: 25, tol: 0, self: 0 } },
-                  { text: "Feel guilty if I don't give them what they want.", scores: { det: 5, tol: 25, self: 0 } },
-                  { text: "Take the nice thing and ghost them.", scores: { det: 10, tol: 0, self: 20 } }
-              ] 
+                  { text: "Clock the manipulation and step away.",        scores:{ det: 25, tol: 0,  self: 0  } },
+                  { text: "Feel guilty and over-deliver out of pressure.",scores:{ det: 5,  tol: 25, self: 0  } },
+                  { text: "Take the favour and vanish from planet Earth.",scores:{ det: 5,  tol: 0,  self: 20 } }
+              ]
             },
-            { q: "You overhear a coworker lying to the boss. You:", cat: "Ethics",
+            { q: "You overhear a coworker lying to the boss. Your move:", cat: "Ethics & Leverage",
               a: [
-                  { text: "Note it. Trust them with nothing.", scores: { det: 25, tol: 0, self: 0 } },
-                  { text: "Assume they had a good reason.", scores: { det: 0, tol: 25, self: 0 } },
-                  { text: "Store the info for leverage later.", scores: { det: 0, tol: 0, self: 25 } }
-              ] 
+                  { text: "Mentally mark them as unsafe. Access revoked.", scores:{ det: 25, tol: 0,  self: 0  } },
+                  { text: "Assume they had their reasons and shrug.",     scores:{ det: 5,  tol: 25, self: 0  } },
+                  { text: "Store it as future blackmail material.",       scores:{ det: 0,  tol: 0,  self: 25 } }
+              ]
             },
-            { q: "Your reaction to a 'Love Bomber' (too much affection too soon) is:", cat: "Seduction",
+            { q: "Someone love-bombs you on week one: gifts, paragraphs, future plans. You feel:", cat: "Seduction Filters",
               a: [
-                  { text: "Suspicion. What do they want?", scores: { det: 25, tol: 0, self: 0 } },
-                  { text: "Validation. Finally someone sees me!", scores: { det: 0, tol: 30, self: 0 } },
-                  { text: "Boredom. I prefer the chase.", scores: { det: 10, tol: 0, self: 10 } }
-              ] 
+                  { text: "Suspicious. No healthy adult behaves like this.", scores:{ det: 25, tol: 0,  self: 0  } },
+                  { text: "Seen, adored, and instantly attached.",       scores:{ det: 5,  tol: 30, self: 0  } },
+                  { text: "Bored. I’m only attracted if they’re a little dangerous.", scores:{ det: 5, tol: 5, self: 15 } }
+              ]
             },
-            { q: "The phrase 'I hate drama' usually means:", cat: "Translation",
+            { q: "The phrase “I hate drama” usually means:", cat: "Translation Skills",
               a: [
-                  { text: "They start all the drama.", scores: { det: 25, tol: 0, self: 0 } },
-                  { text: "They are peaceful like me.", scores: { det: 0, tol: 25, self: 0 } },
-                  { text: "I say this all the time.", scores: { det: 0, tol: 0, self: 25 } }
-              ] 
+                  { text: "They start most of it.",                       scores:{ det: 25, tol: 0,  self: 0  } },
+                  { text: "They are peaceful, like I try to be.",        scores:{ det: 0,  tol: 25, self: 0  } },
+                  { text: "Something I say… while causing drama.",       scores:{ det: 0,  tol: 5,  self: 25 } }
+              ]
             },
-            { q: "You apologize when:", cat: "Accountability",
+            { q: "You apologize:", cat: "Accountability",
               a: [
-                  { text: "I actually did something wrong.", scores: { det: 20, tol: 0, self: 0 } },
-                  { text: "Constantly, just to keep the peace.", scores: { det: 0, tol: 30, self: 0 } },
-                  { text: "Rarely. People are too sensitive.", scores: { det: 0, tol: 0, self: 25 } }
-              ] 
+                  { text: "When I actually did something wrong.",        scores:{ det: 20, tol: 0,  self: 0  } },
+                  { text: "Constantly, so nobody gets mad.",             scores:{ det: 5,  tol: 30, self: 0  } },
+                  { text: "Rarely. Everyone else overreacts.",           scores:{ det: 0,  tol: 0,  self: 25 } }
+              ]
             },
-            { q: "If someone is rude to a waiter, you:", cat: "Observation",
+            { q: "If someone is rude to a waiter, you:", cat: "Decency Check",
               a: [
-                  { text: "The date/friendship is over.", scores: { det: 25, tol: 0, self: 0 } },
-                  { text: "Apologize for them silently.", scores: { det: 10, tol: 20, self: 0 } },
-                  { text: "Join in. The service was bad.", scores: { det: 0, tol: 0, self: 25 } }
-              ] 
+                  { text: "Mark them as undateable / unfriendable.",     scores:{ det: 25, tol: 0,  self: 0  } },
+                  { text: "Over-apologize on their behalf.",             scores:{ det: 10, tol: 20, self: 0  } },
+                  { text: "Quietly agree. Service was terrible.",        scores:{ det: 0,  tol: 0,  self: 25 } }
+              ]
             },
-            { q: "How many of your exes are 'Crazy'?", cat: "Pattern Rec",
+            { q: "How many of your exes are “crazy” according to you?", cat: "Pattern Recognition",
               a: [
-                  { text: "Maybe one. The rest were just incompatible.", scores: { det: 20, tol: 0, self: 0 } },
-                  { text: "None, I was the problem.", scores: { det: 10, tol: 20, self: 0 } },
-                  { text: "All of them. Every single one.", scores: { det: 0, tol: 0, self: 30 } }
-              ] 
+                  { text: "Maybe one. The rest were just incompatible.", scores:{ det: 20, tol: 0,  self: 0  } },
+                  { text: "None. It was mostly me.",                     scores:{ det: 10, tol: 20, self: 5  } },
+                  { text: "All of them. Every single one.",              scores:{ det: 0,  tol: 0,  self: 30 } }
+              ]
             },
-            { q: "Final Check: This test feels like:", cat: "Meta",
+            { q: "A friend tells you every crisis in their life but never changes anything. You:", cat: "Emotional Labor",
               a: [
-                  { text: "A useful tool.", scores: { det: 10, tol: 10, self: 0 } },
-                  { text: "An attack.", scores: { det: 0, tol: 0, self: 20 } },
-                  { text: "Confusing.", scores: { det: 0, tol: 20, self: 0 } }
-              ] 
+                  { text: "Start giving shorter answers and more distance.", scores:{ det: 25, tol: 0,  self: 0  } },
+                  { text: "Become their unpaid therapist for years.",    scores:{ det: 5,  tol: 30, self: 0  } },
+                  { text: "Switch to sending memes instead of help.",    scores:{ det: 5,  tol: 5,  self: 20 } }
+              ]
+            },
+            { q: "Final check: This test feels like:", cat: "Meta Honesty",
+              a: [
+                  { text: "Accurate and rude.",                          scores:{ det: 10, tol: 10, self: 0  } },
+                  { text: "A personal attack.",                          scores:{ det: 0,  tol: 0,  self: 20 } },
+                  { text: "Confusing, like my dating history.",          scores:{ det: 0,  tol: 20, self: 5  } }
+              ]
             }
         ];
 
+        // ========= ARCHETYPES (>=7) =========
         const archetypes = {
-            "Hazmat": { title: "Hazmat Suit", summary: "You spot red flags from miles away. Your boundaries are steel.", desc: "You have High Detection and Low Tolerance. You do not engage with drama; you delete it. This keeps you safe, but ensure you don't isolate yourself from genuine human connection in the process.", rec: "Maintain Course" },
-            "Magnet": { title: "The Open Door", summary: "You are a good person in a bad environment. You let too much slide.", desc: "You have Low Detection and High Tolerance. You tend to project your own kindness onto others, assuming they didn't 'mean it.' This makes you a prime target for energy vampires.", rec: "Close the Gate" },
-            "Radioactive": { title: "Radioactive", summary: "The call is coming from inside the house.", desc: "High Self-Toxicity scores. You likely view relationships as power struggles. You struggle with accountability and often feel like the victim in situations you created.", rec: "Shadow Work" },
-            "Fixer": { title: "The Fixer", subtitle: "Savior Complex", summary: "You see the red flags, but you think you can paint them white.", desc: "High Detection, High Tolerance. You know they are toxic, but you think you can heal them. You view broken people as projects. This is a dangerous game.", rec: "Stop Saving" }
+            HazmatSuit: {
+                title: "Hazmat Suit",
+                subtitle: "Professional red-flag inspector",
+                summary: "You spot toxicity faster than it can say “I hate drama but…” and you actually walk away.",
+                desc: "Your detection is high, your tolerance is low, and your self-toxicity is under control. You evacuate at the first sign of manipulation, casual cruelty, or “it’s just a joke.” The risk? You might over-correct and assume everyone is a threat, even the people who have earned trust.",
+                bullets: [
+                    "You can clock a narcissist from the handshake.",
+                    "You’re the friend who says “absolutely not” and means it.",
+                    "Your standards are terrifying to people who rely on chaos."
+                ],
+                rec: "Do not lower your standards just to feel less “picky”. Raise your environments instead."
+            },
+            BurntEmpath: {
+                title: "Burnt-Out Empath",
+                subtitle: "Therapist with no invoice",
+                summary: "You see every red flag clearly and then emotionally adopt it.",
+                desc: "Your detection is strong, but your tolerance is even stronger. You know exactly how toxic people are and still convince yourself they “just need love, patience, or one more chance.” You’re not unlucky; you’re over-available.",
+                bullets: [
+                    "You give second chances like they’re on a subscription plan.",
+                    "You know they’re bad for you and still answer the call.",
+                    "You confuse emotional labor with loyalty."
+                ],
+                rec: "You don’t need better intuition. You need to listen to the intuition you already have and act on it."
+            },
+            DramaSponge: {
+                title: "Drama Sponge",
+                subtitle: "Chaos magnet with victim branding",
+                summary: "You swear “drama just finds you” while holding a neon sign that says welcome.",
+                desc: "Your tolerance is high, your detection is mid, and your self-toxicity is soft but present. You minimize red flags, assume the best, and only realize something was insane three disasters later. You are not cursed; you are porous.",
+                bullets: [
+                    "Your group chats include the words “you will NOT believe” several times a week.",
+                    "You attract broken people and call it “being understanding”.",
+                    "You keep giving the benefit of the doubt to people who have already cashed it in."
+                ],
+                rec: "Stop translating obvious bad behavior into “they’re going through a lot.” Start going through the exit."
+            },
+            GroupTherapist: {
+                title: "Group Therapist",
+                subtitle: "HR department of your friend group",
+                summary: "Everyone vents to you, nobody asks if you’re okay, and you call it being a good friend.",
+                desc: "You have decent detection, a lot of tolerance, and low self-toxicity. You are not usually the source of the problem – you are the emotional landfill it gets dumped into. You feel responsible for keeping everyone calm.",
+                bullets: [
+                    "You know everybody’s trauma and nobody knows your schedule.",
+                    "People say “I didn’t want to burden you” after burdening you for 45 minutes.",
+                    "You confuse being useful with being valued."
+                ],
+                rec: "Start asking yourself: “Do I have the energy for this conversation?” If the answer is no, say no instead of “it’s okay, tell me everything.”"
+            },
+            ConflictAvoider: {
+                title: "Conflict Avoider",
+                subtitle: "Peaceful on the surface, resentful underneath",
+                summary: "You see the problem, say nothing, and then act surprised when it explodes later.",
+                desc: "Your detection is moderate, your tolerance is artificially high, and your self-toxicity is low-to-mid. You dislike drama so much that you let bad behavior slide until it becomes a full wildfire.",
+                bullets: [
+                    "You’d rather ghost than say “this bothered me”.",
+                    "You replay arguments in your head that never actually happened out loud.",
+                    "Your silence protects other people’s comfort more than your own peace."
+                ],
+                rec: "Healthy boundaries often look like small, boring conflicts. Stop outsourcing your self-respect to the hope that they will just “get it.”"
+            },
+            ChaosConductor: {
+                title: "Chaos Conductor",
+                subtitle: "Main character in every disaster",
+                summary: "Some people attract drama. You schedule it.",
+                desc: "Your self-toxicity is high, your detection is low when it comes to yourself, and your tolerance is selective. You escalate, poke, test limits and then act shocked when everything catches fire.",
+                bullets: [
+                    "You describe yourself as “brutally honest” and forget the honest part.",
+                    "You call people “too sensitive” right after saying something cruel.",
+                    "There is a non-zero chance you are the reason the group chat split in half."
+                ],
+                rec: "If the same story keeps happening with different people, the common factor is not “bad luck.” It is you, and that’s fixable if you stop treating accountability as an insult."
+            },
+            HRIncident: {
+                title: "Walking HR Incident",
+                subtitle: "Red flag with Wi-Fi",
+                summary: "If you worked in an office, HR would know your name by week two.",
+                desc: "Your self-toxicity is very high, your tolerance for bad behavior is also high (especially your own), and your detection is mostly used to gain leverage, not to improve anything. You treat relationships like negotiations and friendships like PR.",
+                bullets: [
+                    "You think “it was just a joke” is a valid defense.",
+                    "You keep receipts, not to protect yourself, but to win future arguments.",
+                    "You see kindness as weakness and boundaries as challenges."
+                ],
+                rec: "Start by retiring the phrase “everyone is too sensitive.” If five people tell you the same story about you, it’s not a smear campaign; it’s a review."
+            },
+            WalkingRedFlag: {
+                title: "Walking Red Flag",
+                subtitle: "Hazard label in human form",
+                summary: "You are not surrounded by toxic people – you are the ecosystem.",
+                desc: "Self-toxicity is maxed out, your tolerance is high for chaos and low for accountability, and your detection skills only work when you’re judging other people. You create the environment you keep complaining about.",
+                bullets: [
+                    "Every ex is “crazy” and every friend who left is “ungrateful”.",
+                    "You escalate conflict for entertainment and then play the victim.",
+                    "You treat boundaries as personal attacks instead of self-protection."
+                ],
+                rec: "This is your invitation to stop being the main reason other people need therapy. Start with one thing: apologize when you’re wrong and change one concrete behavior."
+            }
         };
 
+        // ========= STATE / HELPERS =========
         let currentQ = 0;
         let totals = { det: 0, tol: 0, self: 0 };
+        let startTime = 0;
+        let timerActive = false;
 
-        window.startQuiz = function() {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('quiz-interface').classList.remove('hidden');
-            renderQuestion();
+        const $ = (id) => document.getElementById(id);
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60).toString().padStart(2, "0");
+            const s = (sec % 60).toString().padStart(2, "0");
+            return `${m}:${s}`;
         }
 
-        function renderQuestion() {
-            if (currentQ >= questions.length) { finishQuiz(); return; }
-            const q = questions[currentQ];
-            document.getElementById('q-category').innerText = q.cat;
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-text').innerText = `${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
-            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+        function normaliseScore(raw) {
+            const capped = Math.max(0, Math.min(390, raw)); // 13 questions * max 30
+            return Math.round((capped / 390) * 100);
+        }
 
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
+        function envToxicityIndex() {
+            // More tolerance and weak detection = environment walking over you
+            const detPct = normaliseScore(totals.det);
+            const tolPct = normaliseScore(totals.tol);
+            const selfPct = normaliseScore(totals.self);
+            const env = Math.max(0, Math.min(100, Math.round((tolPct * 1.1 + (100 - detPct) * 0.8 - selfPct * 0.4) / 1.5)));
+            return env;
+        }
+
+        function selfToxicityIndex() {
+            const selfPct = normaliseScore(totals.self);
+            const tolPct = normaliseScore(totals.tol);
+            return Math.max(0, Math.min(100, Math.round((selfPct * 1.2 + tolPct * 0.3) / 1.3)));
+        }
+
+        function radarLabel(envIndex, selfIndex) {
+            if (selfIndex < 25 && envIndex < 25) return "Neutral zone";
+            if (selfIndex < 30 && envIndex >= 40) return "Hostile environment";
+            if (selfIndex >= 40 && envIndex < 35) return "You are the environment";
+            if (selfIndex >= 60 && envIndex >= 50) return "Mutual destruction zone";
+            if (envIndex >= 65) return "High contamination";
+            if (selfIndex >= 65) return "High self-hazard";
+            return "Mildly contaminated";
+        }
+
+        function severityLabel(selfIndex, envIndex) {
+            if (selfIndex < 20 && envIndex < 25) return "Relatively safe habitat";
+            if (selfIndex < 30 && envIndex >= 40) return "Surrounded by hazards";
+            if (selfIndex >= 60 && envIndex < 35) return "Walking hazard";
+            if (selfIndex >= 60 && envIndex >= 40) return "Biohazard everywhere";
+            if (envIndex >= 60) return "Drama swamp";
+            if (selfIndex >= 45) return "High self-toxicity";
+            return "Mild-to-moderate contamination";
+        }
+
+        function blindspotLabel(detPct) {
+            if (detPct >= 70) return "Low";
+            if (detPct >= 50) return "Manageable";
+            if (detPct >= 30) return "Concerning";
+            return "Critical";
+        }
+
+        function boundaryLabel(tolPct, selfPct) {
+            if (tolPct <= 30 && selfPct <= 30) return "Solid";
+            if (tolPct <= 45 && selfPct <= 40) return "Decent";
+            if (tolPct <= 65) return "Porous";
+            return "Non-existent";
+        }
+
+        function pickArchetype() {
+            const det = totals.det;
+            const tol = totals.tol;
+            const self = totals.self;
+
+            const detHigh = det >= 260;
+            const detMid  = det >= 190 && det < 260;
+            const detLow  = det < 160;
+
+            const tolHigh = tol >= 260;
+            const tolMid  = tol >= 190 && tol < 260;
+            const tolLow  = tol < 150;
+
+            const selfHigh = self >= 260;
+            const selfMid  = self >= 190 && self < 260;
+            const selfLow  = self < 150;
+
+            // Walking red flag tier
+            if (selfHigh && tolHigh) return "WalkingRedFlag";
+            if (selfHigh && tolMid && detLow) return "WalkingRedFlag";
+
+            // HR Incident / Chaos conductor
+            if (selfHigh && tolMid && detMid) return "HRIncident";
+            if (selfHigh && tolLow) return "ChaosConductor";
+            if (selfMid && detLow && tolMid) return "ChaosConductor";
+
+            // Hazmat / Burnt Empath
+            if (detHigh && tolLow && selfLow) return "HazmatSuit";
+            if (detHigh && tolMid && selfLow) return "BurntEmpath";
+            if (detMid && tolHigh && selfLow) return "BurntEmpath";
+
+            // Drama sponge / Group therapist / Conflict avoider
+            if (tolHigh && detLow && selfLow) return "DramaSponge";
+            if (tolHigh && detMid && selfLow) return "GroupTherapist";
+            if (tolMid && detMid && selfLow) return "GroupTherapist";
+            if (tolMid && detMid && selfMid) return "ConflictAvoider";
+
+            if (tolMid && detLow && selfLow) return "DramaSponge";
+            if (tolMid && detLow && selfMid) return "ConflictAvoider";
+
+            // Fallbacks
+            if (selfMid && tolMid) return "ChaosConductor";
+            if (selfMid && tolLow) return "ConflictAvoider";
+
+            return "DramaSponge";
+        }
+
+        function fillTags(key, envIndex, selfIndex) {
+            const container = $("result-tags");
+            container.innerHTML = "";
+            const tags = [];
+
+            tags.push(`Environment: ${envIndex}%`);
+            tags.push(`You: ${selfIndex}%`);
+
+            if (key === "HazmatSuit")        tags.push("Zero tolerance for clowns");
+            if (key === "BurntEmpath")       tags.push("Overqualified emotional support");
+            if (key === "DramaSponge")       tags.push("Drama “victim” (self-reported)");
+            if (key === "GroupTherapist")    tags.push("Unpaid HR department");
+            if (key === "ConflictAvoider")   tags.push("Avoids fights, attracts explosions");
+            if (key === "ChaosConductor")    tags.push("Main character in every mess");
+            if (key === "HRIncident")        tags.push("Would be in HR training slides");
+            if (key === "WalkingRedFlag")    tags.push("Do not date without supervision");
+
+            tags.slice(0, 4).forEach(t => {
+                const span = document.createElement("span");
+                span.className = "pill px-3 py-1";
+                span.textContent = t;
+                container.appendChild(span);
+            });
+        }
+
+        // ========= FLOW =========
+        window.startQuiz = function () {
+            $("start-screen").classList.add("hidden");
+            $("result-screen").classList.add("hidden");
+            $("quiz-interface").classList.remove("hidden");
+
+            currentQ = 0;
+            totals = { det: 0, tol: 0, self: 0 };
+            startTime = Date.now();
+            timerActive = true;
+            renderQuestion();
+            updateTimer();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        window.retakeTest = function () {
+            window.startQuiz();
+        };
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) {
+                finishQuiz();
+                return;
+            }
+
+            const q = questions[currentQ];
+            $("q-category").textContent = q.cat;
+            $("question-text").textContent = q.q;
+            $("progress-text").textContent = `${String(currentQ + 1).padStart(2, "0")} / ${questions.length}`;
+            $("progress-bar").style.width = `${(currentQ / questions.length) * 100}%`;
+
+            const container = $("options-container");
+            container.innerHTML = "";
+
             q.a.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "btn-option w-full p-6 text-left rounded-lg text-lg font-bold text-slate-800";
-                btn.innerText = opt.text;
+                const btn = document.createElement("button");
+                btn.className = "btn-option w-full p-4 sm:p-5 text-xs sm:text-[13px] uppercase tracking-[0.17em] font-semibold";
+                btn.textContent = opt.text;
                 btn.onclick = () => {
-                    totals.det += opt.scores.det;
-                    totals.tol += opt.scores.tol;
+                    totals.det  += opt.scores.det;
+                    totals.tol  += opt.scores.tol;
                     totals.self += opt.scores.self;
                     currentQ++;
                     renderQuestion();
@@ -371,42 +927,152 @@
             });
         }
 
+        function updateTimer() {
+            if (!timerActive || $("quiz-interface").classList.contains("hidden")) return;
+            const diff = Math.floor((Date.now() - startTime) / 1000);
+            $("timer-display").textContent = formatTime(diff);
+            requestAnimationFrame(updateTimer);
+        }
+
         function finishQuiz() {
-            let key = "Magnet";
-            const { det, tol, self } = totals;
-            if (self > 150) key = "Radioactive";
-            else if (det > 200 && tol < 100) key = "Hazmat";
-            else if (det > 150 && tol > 150) key = "Fixer";
-            else if (det < 100) key = "Magnet";
-            
+            timerActive = false;
+            $("quiz-interface").classList.add("hidden");
+            $("result-screen").classList.remove("hidden");
+
+            const durationSec = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
+
+            const key = pickArchetype();
             const data = archetypes[key];
-            document.getElementById('quiz-interface').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('result-title').innerText = data.title;
-            document.getElementById('result-summary').innerText = data.summary;
-            document.getElementById('result-desc').innerText = data.desc;
-            document.getElementById('stat-rec').innerText = data.rec;
-            
-            // Visual Stats
-            document.getElementById('stat-blind').innerText = det < 100 ? "Critical" : "Clear";
-            document.getElementById('stat-bound').innerText = tol > 150 ? "Weak" : "Strong";
-            
-            // Spectrum Bar Logic (0 = Hazmat/Left, 100 = Radioactive/Right)
-            let spectrumPos = 50; // default middle
-            if (key === "Hazmat") spectrumPos = 10;
-            if (key === "Magnet") spectrumPos = 40;
-            if (key === "Fixer") spectrumPos = 60;
-            if (key === "Radioactive") spectrumPos = 90;
-            
-            document.getElementById('spectrum-marker').style.left = spectrumPos + "%";
 
-            if (window.saveTestResult) window.saveTestResult({ testId: 'toxic_radar', archetype: key, metrics: totals });
+            const envIndex = envToxicityIndex();
+            const selfIndex = selfToxicityIndex();
+
+            // Main text
+            $("result-title").textContent = data.title;
+            $("result-subtitle").textContent = data.subtitle;
+            $("result-summary").textContent = data.summary;
+            $("result-desc").textContent = data.desc;
+
+            // Severity / chips
+            const severity = severityLabel(selfIndex, envIndex);
+            $("severity-chip").textContent = severity;
+
+            // High-level bars
+            $("env-score").textContent = `${envIndex}%`;
+            $("env-bar").style.width = `${envIndex}%`;
+            $("self-score").textContent = `${selfIndex}%`;
+            $("self-bar").style.width = `${selfIndex}%`;
+
+            // Radar + stats
+            const detPct = normaliseScore(totals.det);
+            const tolPct = normaliseScore(totals.tol);
+            const selfPct = normaliseScore(totals.self);
+
+            $("radar-label").textContent = radarLabel(envIndex, selfIndex);
+            $("stat-blind").textContent = blindspotLabel(detPct);
+            $("stat-bound").textContent = boundaryLabel(tolPct, selfPct);
+
+            // Place marker roughly between env / self influence
+            const spectrumPos = Math.max(5, Math.min(95, Math.round((envIndex * 0.6 + selfIndex * 0.9) / 1.5)));
+            $("spectrum-marker").style.left = spectrumPos + "%";
+
+            // Bullets
+            const quick = $("quick-lines");
+            quick.innerHTML = "";
+            (data.bullets || []).forEach(line => {
+                const p = document.createElement("p");
+                p.textContent = "• " + line;
+                quick.appendChild(p);
+            });
+
+            fillTags(key, envIndex, selfIndex);
+
+            $("report-extra-1").textContent =
+                "Toxic Radar does not care what people say they are like; it cares how you behave when someone is rude, manipulative, or drowning in their own drama. " +
+                "Every answer adds points to either your red-flag detection, your boundary tolerance, or your personal chaos contribution.";
+            $("report-extra-2").textContent =
+                "High detection with low tolerance usually means you’re the Hazmat Friend – the one who actually leaves. High tolerance with low detection means you keep giving chances to people who already showed you who they are. High self-toxicity means you might be the common denominator in stories you tell as if they’re all about other people.";
+
+            // Save result via game engine
+            const payload = {
+                testId: "toxic_radar",
+                timestamp: new Date().toISOString(),
+                archetype: key,
+                metrics: {
+                    detection: totals.det,
+                    tolerance: totals.tol,
+                    self_toxicity: totals.self,
+                    env_toxicity_index: envIndex,
+                    self_toxicity_index: selfIndex,
+                    time_taken: durationSec
+                }
+            };
+
+            if (window.saveTestResult) {
+                try {
+                    window.saveTestResult(payload);
+                } catch (e) {
+                    console.warn("saveTestResult failed", e);
+                }
+            }
+
+            if (window.GameEngine && typeof window.GameEngine.trackEvent === "function") {
+                try {
+                    window.GameEngine.trackEvent("test_complete", {
+                        testId: "toxic_radar",
+                        archetype: key,
+                        envIndex,
+                        selfIndex,
+                        timeTaken: durationSec
+                    });
+                } catch (e) {}
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        window.shareResult = () => {
-            if(navigator.share) navigator.share({title: 'Toxic Radar', text: 'My Toxicity Archetype is ' + document.getElementById('result-title').innerText, url: window.location.href});
-            else alert("Link copied to clipboard");
-        }
+        // ========= UI HELPERS =========
+        window.shareResult = async function () {
+            const title = "My Toxic Radar Result • QuizRealm";
+            const arche = $("result-title").textContent;
+            const subtitle = $("result-subtitle").textContent;
+            const env = $("env-score").textContent;
+            const self = $("self-score").textContent;
+
+            const text =
+                `I took the Toxic Radar on QuizRealm.\n` +
+                `Archetype: The ${arche} — ${subtitle}.\n` +
+                `Environment toxicity: ${env} · I am the problem index: ${self}.\n` +
+                `What are you?`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title,
+                        text,
+                        url: window.location.href
+                    });
+                    return;
+                } catch (e) {
+                    // fallback
+                }
+            }
+
+            const fallback = `${text}\n${window.location.href}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(fallback);
+                    alert("Caption + link copied. Paste it into your story or chat.");
+                    return;
+                } catch (e) {}
+            }
+
+            alert("Share this:\n\n" + fallback);
+        };
+
+        window.toggleFullReport = function () {
+            $("full-report").classList.toggle("hidden");
+        };
     </script>
 </body>
 </html>

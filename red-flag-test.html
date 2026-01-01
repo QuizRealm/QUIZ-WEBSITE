@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -9,9 +10,10 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Red Flag Audit • Psychological Assessment | QuizRealm</title>
-    <meta name="description" content="A 13-point clinical audit of your toxic traits. Are you the problem? Let's find out.">
-    <meta name="theme-color" content="#0a0a0a">
+
+    <title>Red Flag Audit • Toxic Traits Test | QuizRealm</title>
+    <meta name="description" content="A brutally honest 13-question red flag test about your dating habits, accountability and emotional chaos. Discover your toxic traits profile and get a shareable result card.">
+    <meta name="theme-color" content="#020617">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -25,19 +27,25 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { 
-                        'display': ['Space Grotesk', 'sans-serif'], 
-                        'body': ['Inter', 'sans-serif'] 
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        body: ['Inter', 'sans-serif']
                     },
-                    colors: { 
-                        'clinical-dark': '#0a0a0a',
-                        'clinical-panel': '#121212',
-                        'rose-blood': '#9f1239', // Rose 800
-                        'rose-glow': '#be123c', // Rose 700
-                        'text-muted': '#a3a3a3'
+                    colors: {
+                        ink: '#020617',
+                        panel: '#020617',
+                        panelSoft: '#020617',
+                        card: '#020617',
+                        accentRed: '#f97373',
+                        accentDeep: '#b91c1c',
+                        textSoft: '#9ca3af'
                     },
                     boxShadow: {
-                        'glow': '0 0 40px -10px rgba(190, 18, 60, 0.15)'
+                        card: '0 24px 80px rgba(0,0,0,0.8)',
+                        ring: '0 0 0 1px rgba(248, 113, 113, 0.4), 0 24px 80px rgba(0,0,0,0.9)'
+                    },
+                    borderRadius: {
+                        card: '24px'
                     }
                 }
             }
@@ -45,421 +53,698 @@
     </script>
 
     <style>
-        body { background-color: #0a0a0a; color: #e5e5e5; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        
-        /* Clinical Grid Background */
-        .bg-grid {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        body {
+            background: radial-gradient(circle at top, #111827 0, #020617 38%, #020617 100%);
+            color: #e5e7eb;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
-
-        /* Card Styling */
+        .bg-texture {
+            position: relative;
+        }
+        .bg-texture::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            opacity: 0.18;
+            pointer-events: none;
+            background-image:
+                radial-gradient(circle at 0 0, rgba(148,163,184,0.1) 0, transparent 50%),
+                radial-gradient(circle at 100% 0, rgba(248,113,113,0.08) 0, transparent 55%);
+            mix-blend-mode: soft-light;
+            z-index: -1;
+        }
         .audit-card {
-            background: #121212;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: radial-gradient(circle at top left, rgba(248,113,113,0.08), transparent 55%), #020617;
+            border: 1px solid rgba(148,163,184,0.3);
+            box-shadow: 0 24px 80px rgba(0,0,0,0.85);
         }
-        
-        /* Option Button */
         .option-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15,23,42,0.9);
+            border: 1px solid rgba(148,163,184,0.45);
             position: relative;
             overflow: hidden;
         }
-        .option-btn:hover {
-            background: rgba(190, 18, 60, 0.1);
-            border-color: #9f1239;
-            transform: translateY(-2px);
-        }
         .option-btn::before {
             content: "";
-            position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-            background: #9f1239; opacity: 0; transition: 0.2s;
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 0 0, rgba(248,113,113,0.24), transparent 55%);
+            opacity: 0;
+            transition: opacity 0.18s ease-out;
         }
-        .option-btn:hover::before { opacity: 1; }
-
-        /* Main CTA */
-        .btn-primary {
-            background: #e5e5e5; color: #0a0a0a;
+        .option-btn:hover::before {
+            opacity: 1;
+        }
+        .option-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(248,113,113,0.8);
+        }
+        .btn-main {
+            background: #f9fafb;
+            color: #020617;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
             font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-            transition: all 0.3s;
+            font-weight: 700;
+            box-shadow: 0 18px 45px rgba(15,23,42,0.95);
         }
-        .btn-primary:hover {
+        .btn-main:hover {
             background: #ffffff;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            transform: scale(1.02);
+            transform: translateY(-1px);
+            box-shadow: 0 26px 70px rgba(15,23,42,1);
         }
+        .pill-chip {
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.45);
+            background: rgba(15,23,42,0.7);
+        }
+        .progress-track { background: rgba(15,23,42,0.9); height: 4px; border-radius: 999px; }
+        .progress-fill { background: linear-gradient(to right,#f97373,#fb7185); height: 100%; width: 0%; border-radius: 999px; transition: width 0.4s ease; }
 
-        /* Results Reveal Animation */
-        .reveal-up { animation: fadeInUp 0.8s ease forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-
-        /* Progress Bar */
-        .progress-track { background: rgba(255,255,255,0.05); height: 4px; border-radius: 99px; }
-        .progress-fill { background: #9f1239; height: 100%; width: 0%; border-radius: 99px; transition: width 0.4s ease; }
+        .fade-up {
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeUp 0.45s ease-out forwards;
+        }
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .share-card-gradient {
+            background:
+                radial-gradient(circle at top left, rgba(248,113,113,0.16), transparent 60%),
+                radial-gradient(circle at bottom right, rgba(248,250,252,0.05), transparent 55%),
+                #020617;
+        }
     </style>
 </head>
 
-<body class="flex flex-col min-h-screen bg-grid selection:bg-rose-blood selection:text-white">
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<body class="flex flex-col min-h-screen bg-texture">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <quiz-header></quiz-header>
 
-    <main class="flex-grow w-full max-w-5xl mx-auto px-6 py-12 lg:py-20">
+    <main class="flex-grow w-full max-w-6xl mx-auto px-4 md:px-6 py-10 md:py-16 lg:py-20">
 
-        <div id="start-screen" class="reveal-up" style="animation-delay: 0.1s;">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                
-                <div class="lg:col-span-7 space-y-8">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 border border-rose-blood/40 rounded-full bg-rose-blood/5">
-                        <span class="w-2 h-2 rounded-full bg-rose-blood animate-pulse"></span>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-rose-500">Live Diagnostic</span>
+        <!-- START SCREEN -->
+        <section id="start-screen" class="fade-up" style="animation-delay:0.05s">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                <!-- Left: Copy -->
+                <div class="lg:col-span-7 space-y-7">
+                    <div class="inline-flex items-center gap-2 pill-chip px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-textSoft">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span>
+                        <span>Dating & Personality Test</span>
                     </div>
 
-                    <h1 class="font-display text-5xl md:text-7xl lg:text-8xl leading-[0.9] text-white uppercase tracking-tight">
-                        Red Flag <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-rose-900">Audit.</span>
-                    </h1>
+                    <div>
+                        <h1 class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.9] text-slate-50">
+                            Red&nbsp;Flag<br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-300 via-red-500 to-red-700">
+                                Audit
+                            </span>
+                        </h1>
+                        <p class="mt-4 text-[15px] md:text-base text-textSoft max-w-xl">
+                            A short, uncomfortably honest audit of how you behave in relationships:
+                            jealousy, accountability, emotional messiness. No sugar coating, no “you’re perfect as you are.”
+                        </p>
+                    </div>
 
-                    <p class="text-lg md:text-xl text-text-muted font-light leading-relaxed max-w-xl">
-                        This is not a game. It is a 13-point inspection of your toxicity levels. 
-                        We measure <strong>Narcissism</strong>, <strong>Impulse Control</strong>, and <strong>Manipulation</strong> to generate your psychological profile.
-                    </p>
-
-                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                        <button onclick="window.startQuiz()" class="btn-primary px-10 py-5 w-full sm:w-auto text-center rounded-sm">
-                            Begin Assessment
+                    <div class="grid sm:grid-cols-[auto,1fr] gap-5 items-center">
+                        <button
+                            class="btn-main px-10 py-4 rounded-card text-xs tracking-[0.22em]"
+                            onclick="window.startQuiz()">
+                            Start the audit
                         </button>
-                        <div class="flex items-center gap-4 px-6 text-xs text-text-muted">
-                            <span><i class="fas fa-clock mr-2"></i> 3 Minutes</span>
-                            <span><i class="fas fa-user-secret mr-2"></i> Anonymous</span>
+                        <div class="flex flex-wrap gap-4 text-xs text-textSoft">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-regular fa-clock text-red-300"></i>
+                                ~3 minutes
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-user-ninja text-red-300"></i>
+                                No login · No email
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 text-[11px] text-slate-500">
+                        <div class="pill-chip px-3 py-1 flex items-center gap-2">
+                            <i class="fa-solid fa-flag text-xs text-red-400"></i>
+                            <span>Red flag score · 7 result types</span>
+                        </div>
+                        <div class="pill-chip px-3 py-1">
+                            Made for screenshots and sharing with friends who “aren’t the problem”.
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-5 space-y-4">
-                    <div class="audit-card p-8 rounded-xl shadow-glow">
-                        <h3 class="text-white font-display uppercase tracking-widest text-sm mb-6 border-b border-white/10 pb-4">
-                            Assessment Protocol
-                        </h3>
-                        <div class="space-y-6">
-                            <div class="flex gap-4">
-                                <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-rose-500 font-mono text-sm">01</div>
-                                <div>
-                                    <h4 class="text-white font-bold text-sm">Honesty Calibration</h4>
-                                    <p class="text-xs text-text-muted mt-1 leading-relaxed">If you lie to the algorithm, you are only proving your own insecurity. Answer instinctively.</p>
+                <!-- Right: Preview / Social card -->
+                <div class="lg:col-span-5">
+                    <div class="audit-card rounded-card p-6 sm:p-7 lg:p-8 relative overflow-hidden">
+                        <div class="absolute inset-x-0 -top-16 h-40 opacity-40 bg-gradient-to-b from-red-500/30 via-red-500/10 to-transparent blur-3xl"></div>
+                        <div class="relative">
+                            <div class="flex justify-between items-center mb-4 text-[11px] text-textSoft">
+                                <span class="uppercase tracking-[0.3em] text-slate-300">Preview</span>
+                                <span class="flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                    <span>Result card · Shareable</span>
+                                </span>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-700/70 share-card-gradient px-5 py-5 sm:px-6 sm:py-6 shadow-ring">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-[0.2em] uppercase bg-red-500/10 text-red-300 border border-red-500/40">
+                                        Sample result
+                                    </span>
+                                    <span class="text-[11px] text-slate-400">
+                                        Red&nbsp;Flag Score: <span class="text-red-300 font-semibold">78%</span>
+                                    </span>
+                                </div>
+
+                                <h2 class="font-display text-2xl sm:text-3xl text-slate-50 mb-1">
+                                    The Professional Victim
+                                </h2>
+                                <p class="text-[11px] uppercase tracking-[0.2em] text-red-300 mb-4">
+                                    “Everyone is toxic except me.”
+                                </p>
+
+                                <p class="text-[13px] text-slate-300 leading-relaxed mb-4">
+                                    You collect sympathy like it’s a reward system and treat responsibility
+                                    like a personal attack. Your therapist would make a fortune.
+                                </p>
+
+                                <div class="flex items-center justify-between text-[11px] text-slate-400">
+                                    <span>Tap to share · Tag the friend who needs this more than you.</span>
+                                    <i class="fa-solid fa-share-nodes text-red-300"></i>
                                 </div>
                             </div>
-                            <div class="flex gap-4">
-                                <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-rose-500 font-mono text-sm">02</div>
-                                <div>
-                                    <h4 class="text-white font-bold text-sm">Pattern Recognition</h4>
-                                    <p class="text-xs text-text-muted mt-1 leading-relaxed">We analyze your reaction to conflict, intimacy, and ego threats.</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-rose-500 font-mono text-sm">03</div>
-                                <div>
-                                    <h4 class="text-white font-bold text-sm">Archetype Assignment</h4>
-                                    <p class="text-xs text-text-muted mt-1 leading-relaxed">You will be matched with one of 7 personality types. The results are blunt.</p>
-                                </div>
-                            </div>
+
+                            <p class="mt-4 text-[11px] text-slate-500 leading-relaxed">
+                                This test is for entertainment, not diagnosis. If it hits a little too hard,
+                                that’s between you and your Notes app.
+                            </p>
                         </div>
                     </div>
-                    <p class="text-[10px] text-center text-text-muted uppercase tracking-widest opacity-60">
-                        QuizRealm Psychological Engine v4.2
-                    </p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="quiz-interface" class="hidden h-full min-h-[60vh] flex flex-col justify-center max-w-3xl mx-auto">
-            
-            <div class="flex justify-between items-end mb-6">
-                <span class="text-xs font-mono text-rose-500" id="progress-text">Q 01 / 13</span>
-                <span class="text-xs font-mono text-text-muted" id="timer-display">00:00</span>
+        <!-- QUIZ INTERFACE -->
+        <section id="quiz-interface" class="hidden h-full min-h-[60vh] max-w-3xl mx-auto pt-4">
+            <div class="flex justify-between items-end mb-4">
+                <span id="progress-text" class="text-[11px] font-mono text-red-300">Q 01 / 13</span>
+                <span id="timer-display" class="text-[11px] font-mono text-textSoft">00:00</span>
             </div>
-            
-            <div class="progress-track w-full mb-12">
+
+            <div class="progress-track w-full mb-8">
                 <div id="progress-bar" class="progress-fill"></div>
             </div>
 
-            <h2 id="question-text" class="font-display text-3xl md:text-5xl text-white mb-12 leading-tight reveal-up">
-                Loading...
-            </h2>
-
-            <div id="options-container" class="space-y-4 reveal-up" style="animation-delay: 0.1s;">
-                </div>
-        </div>
-
-        <div id="result-screen" class="hidden max-w-4xl mx-auto">
-            
-            <div class="text-center mb-12 reveal-up">
-                <div class="inline-block px-4 py-1 border border-white/20 rounded-full mb-6">
-                    <span class="text-[10px] uppercase tracking-[0.3em] text-white">Analysis Complete</span>
-                </div>
-                
-                <h2 class="font-display text-6xl md:text-8xl text-white uppercase tracking-tighter mb-4 leading-none">
-                    <span id="result-title" class="text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-500">Result</span>
+            <div class="space-y-8">
+                <h2 id="question-text" class="font-display text-2xl md:text-3xl lg:text-4xl text-slate-50 leading-tight min-h-[4rem]">
+                    Loading...
                 </h2>
-                
-                <h3 id="result-subtitle" class="text-rose-500 font-display text-xl md:text-2xl uppercase tracking-widest mb-8">
-                    Subtitle
-                </h3>
 
-                <p id="result-summary" class="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
-                    Summary text...
+                <div id="options-container" class="space-y-4">
+                    <!-- injected buttons -->
+                </div>
+
+                <div class="mt-6 flex justify-between items-center text-[11px] text-slate-500">
+                    <span>Answer honestly. We’re judging you either way.</span>
+                    <span>Tap once · No back button</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULT SCREEN -->
+        <section id="result-screen" class="hidden max-w-5xl mx-auto pt-8">
+
+            <!-- Hero Result Block / Share Card -->
+            <div id="share-card" class="audit-card rounded-card p-6 sm:p-8 lg:p-10 mb-10 share-card-gradient">
+                <div class="flex flex-wrap gap-3 justify-between items-center mb-6">
+                    <div class="flex items-center gap-2 text-[11px] text-slate-400 uppercase tracking-[0.3em]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span>Red Flag Audit · Completed</span>
+                    </div>
+                    <div id="result-severity-chip" class="pill-chip px-3 py-1 text-[11px] text-slate-200 uppercase tracking-[0.25em]">
+                        Mild red flags
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,3fr),minmax(0,2fr)] gap-8 items-start">
+                    <div>
+                        <h2 id="result-title" class="font-display text-3xl sm:text-4xl lg:text-5xl text-slate-50 leading-tight mb-2">
+                            Result Title
+                        </h2>
+                        <p id="result-subtitle" class="text-[12px] sm:text-xs md:text-sm uppercase tracking-[0.3em] text-red-300 mb-5">
+                            Subtitle
+                        </p>
+
+                        <p id="result-summary" class="text-sm sm:text-[15px] text-slate-200 leading-relaxed mb-6 max-w-xl">
+                            Summary text...
+                        </p>
+
+                        <ul id="result-tags" class="flex flex-wrap gap-2 text-[11px] text-slate-300">
+                            <!-- generated small tags -->
+                        </ul>
+                    </div>
+
+                    <div class="bg-black/40 border border-slate-700/70 rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
+                        <div class="flex justify-between items-center text-[11px] text-slate-400">
+                            <span>Red Flag Score</span>
+                            <span id="result-flag-score" class="text-slate-100 font-semibold text-sm">0%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="result-flag-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-300 to-red-500" style="width:0%"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800 mt-2 text-[11px] text-slate-400">
+                            <div>
+                                <div class="text-[10px] uppercase tracking-[0.22em] mb-1">Time to admit it</div>
+                                <div id="stat-time" class="text-base text-slate-50 font-mono">00s</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] uppercase tracking-[0.22em] mb-1">Accountability</div>
+                                <div id="stat-accountability" class="text-base text-slate-50 font-mono">Average</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 pb-1 text-[11px] text-slate-500">
+                            Screenshot this card and send it to the friend who made you like this.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics + Breakdown -->
+            <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,3fr),minmax(0,2fr)] gap-8 mb-10">
+                <!-- Metrics -->
+                <div class="audit-card rounded-card p-6 sm:p-7">
+                    <h3 class="text-[11px] uppercase tracking-[0.28em] text-slate-400 mb-5">
+                        Your numbers (since you like attention)
+                    </h3>
+
+                    <div class="space-y-5 text-sm">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Narcissism</span>
+                                <span id="score-narc" class="text-red-300">0%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                <div id="bar-narc" class="h-full rounded-full bg-gradient-to-r from-slate-400 to-red-400" style="width:0%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Impulsivity</span>
+                                <span id="score-imp" class="text-red-300">0%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                <div id="bar-imp" class="h-full rounded-full bg-gradient-to-r from-slate-400 to-amber-400" style="width:0%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Empathy gap</span>
+                                <span id="score-emp" class="text-red-300">0%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                <div id="bar-emp" class="h-full rounded-full bg-gradient-to-r from-slate-400 to-rose-400" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-[11px] text-slate-500 leading-relaxed">
+                        These scores are based on how you reacted to conflict, boundaries and ego threats
+                        across 13 questions. High does not mean “evil” — it just means your therapist
+                        would never be bored.
+                    </div>
+                </div>
+
+                <!-- Written breakdown -->
+                <div class="audit-card rounded-card p-6 sm:p-7 flex flex-col gap-4">
+                    <h3 class="text-[11px] uppercase tracking-[0.28em] text-slate-400">
+                        What this says about you
+                    </h3>
+
+                    <p id="result-description" class="text-sm text-slate-200 leading-relaxed">
+                        Detailed description loading...
+                    </p>
+
+                    <div id="quick-lines" class="mt-3 text-[12px] text-slate-400 space-y-2">
+                        <!-- short bullets per archetype -->
+                    </div>
+
+                    <button
+                        onclick="window.toggleFullReport()"
+                        class="mt-4 text-left text-[12px] flex justify-between items-center border-t border-slate-800 pt-3 text-slate-300 hover:text-slate-100">
+                        <span class="uppercase tracking-[0.26em] text-[11px]">
+                            Open full breakdown
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-xs text-red-300"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Full report expandable -->
+            <div id="full-report" class="hidden audit-card rounded-card p-6 sm:p-7 mb-10 text-sm text-slate-200 leading-relaxed">
+                <h3 class="text-[11px] uppercase tracking-[0.28em] text-slate-400 mb-4">
+                    Full report: red flags, explained
+                </h3>
+                <p id="report-extra-1" class="mb-3">
+                    <!-- filled dynamically -->
+                </p>
+                <p id="report-extra-2" class="mb-3">
+                    <!-- filled dynamically -->
+                </p>
+                <p id="report-extra-3" class="italic text-slate-500 border-l border-red-500/60 pl-4">
+                    This test is entertainment only. If parts of it feel a little too accurate, that is your cue
+                    to talk to someone who is not a quiz on the internet.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 reveal-up" style="animation-delay: 0.2s;">
-                <div class="audit-card p-6 rounded-xl">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-text-muted mb-6">Psychological Metrics</h4>
-                    
-                    <div class="space-y-5">
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-white">Narcissism</span>
-                                <span class="text-rose-500" id="score-narc">0%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-1 rounded"><div id="bar-narc" class="bg-rose-600 h-full rounded" style="width: 0%"></div></div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-white">Impulsivity</span>
-                                <span class="text-rose-500" id="score-imp">0%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-1 rounded"><div id="bar-imp" class="bg-rose-600 h-full rounded" style="width: 0%"></div></div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-white">Empathy Deficit</span>
-                                <span class="text-rose-500" id="score-emp">0%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-1 rounded"><div id="bar-emp" class="bg-rose-600 h-full rounded" style="width: 0%"></div></div>
-                        </div>
-                    </div>
+            <!-- CTA row -->
+            <div class="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-12">
+                <div class="flex flex-col gap-2 text-[12px] text-slate-400">
+                    <span class="uppercase tracking-[0.26em] text-slate-300 text-[11px]">
+                        Share your score
+                    </span>
+                    <span>
+                        Either tap share or screenshot the big card above. Tag the people who would fail this test on question one.
+                    </span>
                 </div>
 
-                <div class="audit-card p-6 rounded-xl flex flex-col justify-center text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-clock text-rose-500 text-3xl mb-2"></i>
-                        <div class="text-3xl font-display text-white" id="stat-time">00s</div>
-                        <div class="text-[10px] uppercase text-text-muted tracking-widest">Reaction Time</div>
-                    </div>
-                    <div class="w-full h-px bg-white/10 my-4"></div>
-                    <div>
-                        <div class="text-3xl font-display text-white" id="stat-accountability">Low</div>
-                        <div class="text-[10px] uppercase text-text-muted tracking-widest">Accountability Score</div>
-                    </div>
+                <div class="flex flex-wrap gap-3">
+                    <button
+                        onclick="window.shareResults()"
+                        class="btn-main px-6 py-3 rounded-full text-[11px] tracking-[0.24em] flex items-center gap-2 justify-center">
+                        <i class="fa-solid fa-share-nodes text-xs"></i>
+                        Share result
+                    </button>
+
+                    <button
+                        onclick="window.retakeTest()"
+                        class="px-5 py-3 rounded-full border border-slate-600 text-[11px] tracking-[0.24em] uppercase text-slate-200 hover:bg-white/5">
+                        Retake
+                    </button>
+
+                    <a href="arcade.html"
+                       class="px-5 py-3 rounded-full border border-slate-600 text-[11px] tracking-[0.24em] uppercase text-slate-200 hover:bg-white/5 flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad-modern text-xs"></i>
+                        Try other games
+                    </a>
                 </div>
             </div>
 
-            <div class="reveal-up" style="animation-delay: 0.3s;">
-                <button onclick="toggleFullReport()" class="w-full py-4 border-y border-white/10 text-left flex justify-between items-center group hover:bg-white/5 transition">
-                    <span class="font-display uppercase text-sm tracking-widest text-white pl-4">Read Full Clinical Breakdown</span>
-                    <span class="pr-4 text-rose-500 group-hover:translate-x-2 transition"><i class="fas fa-arrow-right"></i></span>
-                </button>
-                
-                <div id="full-report" class="hidden bg-white/5 p-8 text-sm text-gray-300 leading-loose space-y-4">
-                    <p id="result-description">Detailed description loading...</p>
-                    <p class="italic text-text-muted border-l-2 border-rose-500 pl-4 mt-4">
-                        "Your behavior patterns suggest a high likelihood of... [Analysis Context]"
-                    </p>
-                </div>
-            </div>
+            <!-- SEO CONTENT BLOCK -->
+            <section class="border-t border-slate-800 pt-8 pb-4 text-[13px] md:text-[14px] text-slate-300 space-y-5">
+                <h2 class="text-sm md:text-base font-semibold text-slate-100">
+                    What is a “Red Flag Audit” and why do people share it?
+                </h2>
+                <p>
+                    The Red Flag Audit is a short, brutally honest
+                    <strong>toxic traits quiz</strong> designed to mirror how you act in real-world situations:
+                    conflict, jealousy, secrets, apologies and self-control. Instead of asking “What is your favorite color?”,
+                    it puts you in small social dilemmas and watches which way you lean.
+                </p>
+                <p>
+                    People share their results because the labels are sarcastic, slightly insulting and
+                    uncomfortably accurate. Whether you land on
+                    <em>The Gaslighter</em>, <em>The Love Bomber</em>, or the suspiciously rare
+                    <em>Unicorn</em>, your card becomes a conversation starter in group chats and stories.
+                </p>
 
-            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12 mb-20 reveal-up" style="animation-delay: 0.4s;">
-                <button onclick="shareResults()" class="btn-primary px-8 py-4 rounded-sm w-full sm:w-auto">
-                    Share Audit
-                </button>
-                <a href="arcade.html" class="px-8 py-4 border border-white/20 text-white font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition text-center w-full sm:w-auto">
-                    Enter Arcade
-                </a>
-            </div>
-
-        </div>
+                <h3 class="text-sm md:text-base font-semibold text-slate-100">
+                    A quick reminder before you overthink it
+                </h3>
+                <p>
+                    This test is a reflection of habits, not a clinical diagnosis. Real personal work happens offline:
+                    in therapy, in honest conversations, and in the small decisions you make when nobody is watching.
+                    Use this result as a mirror, not a life sentence.
+                </p>
+            </section>
+        </section>
 
     </main>
 
     <quiz-footer></quiz-footer>
 
-   <script type="module">
-        // FIX: Removed the failing import. 
-        // We will rely on the global window.saveTestResult loaded by game-engine.js in the head.
-
-        // ================= CONFIG & DATA =================
+    <script type="module">
+        // ================= DATA (QUESTIONS + ARCHETYPES) =================
         const questions = [
-            { q: "Your ex calls you at 2 AM. What is your immediate reflex?", 
+            { q: "Your ex calls you at 2 AM. What is your immediate reflex?",
               a: [
-                  { text: "Answer immediately. It might be drama I can use.", scores: { narc: 15, imp: 20, emp: 0, acc: 0 } },
-                  { text: "Ignore. They belong to the past.", scores: { narc: 0, imp: 0, emp: 0, acc: 20 } },
-                  { text: "Screenshot the call and post it to my story.", scores: { narc: 25, imp: 10, emp: 20, acc: 0 } }
-              ] 
+                  { text: "Answer immediately. It might be drama I can use.", scores: { narc: 15, imp: 20, emp: 0,  acc: 0 } },
+                  { text: "Ignore. They belong to the past.",                    scores: { narc: 0,  imp: 0,  emp: 0,  acc: 20 } },
+                  { text: "Screenshot the call and post it to my story.",       scores: { narc: 25, imp: 10, emp: 20, acc: 0 } }
+              ]
             },
-            { q: "You are caught in a small lie. You...", 
+            { q: "You are caught in a small lie. You...",
               a: [
-                  { text: "Admit it instantly. No big deal.", scores: { narc: 0, imp: 0, emp: 0, acc: 25 } },
-                  { text: "Twist the story so I look like the victim.", scores: { narc: 20, imp: 5, emp: 15, acc: -10 } },
-                  { text: "Accuse them of being paranoid for asking.", scores: { narc: 30, imp: 10, emp: 25, acc: -20 } } // Gaslighting
-              ] 
+                  { text: "Admit it instantly. No big deal.",                    scores: { narc: 0,  imp: 0,  emp: 0,  acc: 25 } },
+                  { text: "Twist the story so I look like the victim.",          scores: { narc: 20, imp: 5,  emp: 15, acc: -10 } },
+                  { text: "Accuse them of being paranoid for asking.",           scores: { narc: 30, imp: 10, emp: 25, acc: -20 } }
+              ]
             },
-            { q: "Your partner goes out with attractive friends. You feel...", 
+            { q: "Your partner goes out with attractive friends. You feel...",
               a: [
-                  { text: "Secure. Have a good night.", scores: { narc: 0, imp: 0, emp: 0, acc: 10 } },
-                  { text: "A need to text them every 20 minutes.", scores: { narc: 10, imp: 15, emp: 0, acc: 0 } },
-                  { text: "Rage. I start a fight so they stay home.", scores: { narc: 25, imp: 30, emp: 30, acc: -10 } }
-              ] 
+                  { text: "Secure. Have a good night.",                          scores: { narc: 0,  imp: 0,  emp: 0,  acc: 10 } },
+                  { text: "A need to text them every 20 minutes.",               scores: { narc: 10, imp: 15, emp: 0,  acc: 0 } },
+                  { text: "Rage. I start a fight so they stay home.",            scores: { narc: 25, imp: 30, emp: 30, acc: -10 } }
+              ]
             },
-            { q: "How do you handle valid criticism?", 
+            { q: "How do you handle valid criticism?",
               a: [
-                  { text: "I internalize it and try to improve.", scores: { narc: 0, imp: 0, emp: 0, acc: 20 } },
-                  { text: "I cry until they apologize for hurting me.", scores: { narc: 15, imp: 10, emp: 5, acc: 0 } },
-                  { text: "I attack their insecurities immediately.", scores: { narc: 30, imp: 25, emp: 30, acc: -10 } }
-              ] 
+                  { text: "I internalize it and try to improve.",                scores: { narc: 0,  imp: 0,  emp: 0,  acc: 20 } },
+                  { text: "I cry until they apologize for hurting me.",          scores: { narc: 15, imp: 10, emp: 5,  acc: 0 } },
+                  { text: "I attack their insecurities immediately.",            scores: { narc: 30, imp: 25, emp: 30, acc: -10 } }
+              ]
             },
-            { q: "Ideally, your partner should be...", 
+            { q: "Ideally, your partner should be...",
               a: [
-                  { text: "My equal partner.", scores: { narc: 0, imp: 0, emp: 0, acc: 10 } },
-                  { text: "Obsessed with me 24/7.", scores: { narc: 25, imp: 10, emp: 10, acc: 0 } },
-                  { text: "Someone I can 'fix' or mold.", scores: { narc: 20, imp: 5, emp: 15, acc: 0 } }
-              ] 
+                  { text: "My equal partner.",                                    scores: { narc: 0,  imp: 0,  emp: 0,  acc: 10 } },
+                  { text: "Obsessed with me 24/7.",                              scores: { narc: 25, imp: 10, emp: 10, acc: 0 } },
+                  { text: "Someone I can 'fix' or mold.",                        scores: { narc: 20, imp: 5,  emp: 15, acc: 0 } }
+              ]
             },
-            { q: "When you do a good deed, you...", 
+            { q: "When you do a good deed, you...",
               a: [
-                  { text: "Tell no one.", scores: { narc: 0, imp: 0, emp: 0, acc: 10 } },
-                  { text: "Post it online. Impact is impact, right?", scores: { narc: 20, imp: 0, emp: 5, acc: 0 } },
-                  { text: "Bring it up in arguments later as leverage.", scores: { narc: 30, imp: 5, emp: 25, acc: -10 } }
-              ] 
+                  { text: "Tell no one.",                                        scores: { narc: 0,  imp: 0,  emp: 0,  acc: 10 } },
+                  { text: "Post it online. Impact is impact, right?",            scores: { narc: 20, imp: 0,  emp: 5,  acc: 0 } },
+                  { text: "Bring it up in arguments later as leverage.",         scores: { narc: 30, imp: 5,  emp: 25, acc: -10 } }
+              ]
             },
-            { q: "A friend tells you a deep secret. You...", 
+            { q: "A friend tells you a deep secret. You...",
               a: [
-                  { text: "Take it to the grave.", scores: { narc: 0, imp: 0, emp: 0, acc: 20 } },
-                  { text: "Tell my partner, but nobody else.", scores: { narc: 5, imp: 10, emp: 0, acc: 0 } },
-                  { text: "Tell the group chat. It's too juicy.", scores: { narc: 20, imp: 25, emp: 25, acc: -10 } }
-              ] 
+                  { text: "Take it to the grave.",                               scores: { narc: 0,  imp: 0,  emp: 0,  acc: 20 } },
+                  { text: "Tell my partner, but nobody else.",                   scores: { narc: 5,  imp: 10, emp: 0,  acc: 0 } },
+                  { text: "Tell the group chat. It's too juicy.",                scores: { narc: 20, imp: 25, emp: 25, acc: -10 } }
+              ]
             },
-            { q: "Someone breaks up with you. Your reaction?", 
+            { q: "Someone breaks up with you. Your reaction?",
               a: [
-                  { text: "Respect their decision and grieve.", scores: { narc: 0, imp: 0, emp: 0, acc: 20 } },
-                  { text: "Bombard them with texts and pleading.", scores: { narc: 10, imp: 30, emp: 5, acc: 0 } },
-                  { text: "Burn their clothes / Slash tires.", scores: { narc: 25, imp: 40, emp: 30, acc: -20 } }
-              ] 
+                  { text: "Respect their decision and grieve.",                  scores: { narc: 0,  imp: 0,  emp: 0,  acc: 20 } },
+                  { text: "Bombard them with texts and pleading.",               scores: { narc: 10, imp: 30, emp: 5,  acc: 0 } },
+                  { text: "Burn their clothes / Slash tires.",                   scores: { narc: 25, imp: 40, emp: 30, acc: -20 } }
+              ]
             },
-            { q: "What is your relationship with 'The Truth'?", 
+            { q: "What is your relationship with 'The Truth'?",
               a: [
-                  { text: "It is absolute.", scores: { narc: 0, imp: 0, emp: 0, acc: 20 } },
-                  { text: "It is flexible depending on my mood.", scores: { narc: 15, imp: 15, emp: 10, acc: -5 } },
-                  { text: "What they don't know protects them.", scores: { narc: 20, imp: 5, emp: 20, acc: -10 } }
-              ] 
+                  { text: "It is absolute.",                                     scores: { narc: 0,  imp: 0,  emp: 0,  acc: 20 } },
+                  { text: "It is flexible depending on my mood.",                scores: { narc: 15, imp: 15, emp: 10, acc: -5 } },
+                  { text: "What they don't know protects them.",                 scores: { narc: 20, imp: 5,  emp: 20, acc: -10 } }
+              ]
             },
-            { q: "How fast do you fall in love?", 
+            { q: "How fast do you fall in love?",
               a: [
-                  { text: "Slowly, over months.", scores: { narc: 0, imp: 0, emp: 0, acc: 10 } },
-                  { text: "Instantly. We move in after week 2.", scores: { narc: 15, imp: 30, emp: 5, acc: 0 } },
-                  { text: "I don't. I just like the chase.", scores: { narc: 25, imp: 10, emp: 25, acc: 0 } }
-              ] 
+                  { text: "Slowly, over months.",                                scores: { narc: 0,  imp: 0,  emp: 0,  acc: 10 } },
+                  { text: "Instantly. We move in after week 2.",                 scores: { narc: 15, imp: 30, emp: 5,  acc: 0 } },
+                  { text: "I don't. I just like the chase.",                     scores: { narc: 25, imp: 10, emp: 25, acc: 0 } }
+              ]
             },
-            { q: "Your partner is crying about a bad day. You think...", 
+            { q: "Your partner is crying about a bad day. You think...",
               a: [
-                  { text: "How can I help them?", scores: { narc: 0, imp: 0, emp: 0, acc: 10 } },
-                  { text: "This is ruining my vibe.", scores: { narc: 20, imp: 5, emp: 30, acc: 0 } },
-                  { text: "They are being so dramatic for attention.", scores: { narc: 25, imp: 10, emp: 30, acc: 0 } }
-              ] 
+                  { text: "How can I help them?",                                scores: { narc: 0,  imp: 0,  emp: 0,  acc: 10 } },
+                  { text: "This is ruining my vibe.",                            scores: { narc: 20, imp: 5,  emp: 30, acc: 0 } },
+                  { text: "They are being so dramatic for attention.",           scores: { narc: 25, imp: 10, emp: 30, acc: 0 } }
+              ]
             },
-            { q: "Apologizing makes you feel...", 
+            { q: "Apologizing makes you feel...",
               a: [
-                  { text: "Relieved to fix things.", scores: { narc: 0, imp: 0, emp: 0, acc: 20 } },
-                  { text: "Weak and defeated.", scores: { narc: 30, imp: 0, emp: 10, acc: -10 } },
-                  { text: "I only apologize to shut them up.", scores: { narc: 25, imp: 10, emp: 25, acc: -10 } }
-              ] 
+                  { text: "Relieved to fix things.",                             scores: { narc: 0,  imp: 0,  emp: 0,  acc: 20 } },
+                  { text: "Weak and defeated.",                                  scores: { narc: 30, imp: 0,  emp: 10, acc: -10 } },
+                  { text: "I only apologize to shut them up.",                   scores: { narc: 25, imp: 10, emp: 25, acc: -10 } }
+              ]
             },
-            { q: "Why did you click on this test?", 
+            { q: "Why did you click on this test?",
               a: [
-                  { text: "Self-improvement.", scores: { narc: 0, imp: 0, emp: 0, acc: 10 } },
-                  { text: "To prove I'm not the problem.", scores: { narc: 20, imp: 0, emp: 10, acc: 0 } },
-                  { text: "Because I love talking about myself.", scores: { narc: 30, imp: 10, emp: 0, acc: 0 } }
-              ] 
+                  { text: "Self-improvement.",                                   scores: { narc: 0,  imp: 0,  emp: 0,  acc: 10 } },
+                  { text: "To prove I'm not the problem.",                       scores: { narc: 20, imp: 0,  emp: 10, acc: 0 } },
+                  { text: "Because I love talking about myself.",                scores: { narc: 30, imp: 10, emp: 0,  acc: 0 } }
+              ]
             }
         ];
 
         const archetypes = {
-            "Gaslighter": {
+            Gaslighter: {
                 title: "The Gaslighter",
-                subtitle: "\"You're crazy, I never said that.\"",
-                summary: "You treat reality like a suggestion. You are highly manipulative and prioritize control over connection.",
-                desc: "Your results indicate extremely high Narcissism paired with high Empathy Deficit. You likely struggle to accept fault, viewing apologies as a loss of power. You rewrite history to suit your narrative."
+                subtitle: "\"You're overreacting, I never said that.\"",
+                summary: "You treat reality as something you can edit. You bend stories, feelings and facts until they fit the version where you’re never wrong.",
+                desc: "Your results show very high narcissism paired with a serious empathy gap. You rarely take responsibility unless cornered, and even then, you’re more interested in winning the argument than fixing the damage.",
+                bullets: [
+                    "You weaponize calm tone and long texts to make other people doubt their memory.",
+                    "You apologise for \"how they feel\", not for what you actually did.",
+                    "People leave conversations with you feeling confused and guilty, even when they were the ones hurt."
+                ]
             },
-            "LoveBomber": {
+            LoveBomber: {
                 title: "The Love Bomber",
-                subtitle: "\"I love you (I met you yesterday).\"",
-                summary: "You are addicted to the 'New Relationship Energy.' You overwhelm partners with affection, then withdraw when it gets real.",
-                desc: "High Impulsivity scores define this profile. You rush intimacy to secure validation, but lack the emotional stamina for the boring parts of love."
+                subtitle: "\"We just met, but I can already see forever.\"",
+                summary: "You sprint into emotional intimacy, flood people with attention, then vanish the second it stops feeling exciting.",
+                desc: "Your impulsivity score is doing laps. You chase intensity, not stability, and confuse obsession with connection. You’re excellent at first impressions and terrible at maintenance.",
+                bullets: [
+                    "You plan a future with someone before you know their last name.",
+                    "You say \"I’ve never felt this way\" every three months.",
+                    "When things calm down, you assume the relationship is dying instead of maturing."
+                ]
             },
-            "Victim": {
+            Victim: {
                 title: "The Professional Victim",
-                subtitle: "\"The world is against me.\"",
-                summary: "Nothing is ever your fault. The universe, your exes, and the barista are all conspiring to ruin your life.",
-                desc: "You scored low on Accountability but high on Narcissism. This creates a feedback loop where you demand sympathy but refuse to change your own behavior."
+                subtitle: "\"Somehow, everyone keeps hurting me.\"",
+                summary: "Nothing is your fault. The universe, your exes, and the group chat are all plotting against your peace.",
+                desc: "You scored low on accountability and high on narcissism. You want sympathy without self-reflection. Every story has you as the main character and the injured party.",
+                bullets: [
+                    "You retell every conflict in a way that removes 100% of your responsibility.",
+                    "Feedback feels like a personal attack, not an opportunity to grow.",
+                    "You attract chaos, then act shocked when drama keeps finding you."
+                ]
             },
-            "Vampire": {
-                title: "Emotional Vampire",
-                subtitle: "\"Enough about you, let's talk about my trauma.\"",
-                summary: "You drain the energy of everyone around you. You use your problems as currency to buy attention.",
-                desc: "High Empathy Deficit. You view conversations as transactions where you must extract comfort without offering any in return."
+            Vampire: {
+                title: "The Emotional Vampire",
+                subtitle: "\"Enough about your day, here’s everything wrong with mine.\"",
+                summary: "You turn every interaction into an emotional drain. You unload, vent and spiral, but rarely hold space for anyone else.",
+                desc: "Your empathy gap is loud. You use your problems as a social currency, but you rarely listen with the same intensity you demand.",
+                bullets: [
+                    "You say \"I don’t want to trauma-dump\" and then absolutely do.",
+                    "You feel lighter after talking; other people feel exhausted.",
+                    "You confuse being honest about your feelings with being considerate of theirs."
+                ]
             },
-            "Ick": {
+            Ick: {
                 title: "The Walking Ick",
-                subtitle: "\"Where's my hug?\"",
-                summary: "You aren't malicious, just socially oblivious. You cross boundaries because you simply don't see them.",
-                desc: "Moderate Narcissism, High Impulsivity. You prioritize your immediate desires over social cues, leading to awkward or uncomfortable interactions."
+                subtitle: "\"So anyway, can I get a hug?\"",
+                summary: "You’re not malicious, just aggressively unaware. Boundaries, tone and timing are more of a suggestion in your world.",
+                desc: "Your impulsivity is high and your awareness of social cues is… developing. You don’t mean harm, but you often come across as pushy, clingy or just a little too much.",
+                bullets: [
+                    "You overshare within 10 minutes of meeting someone.",
+                    "You confuse persistence with charm.",
+                    "You only notice a boundary after you’ve already crossed it."
+                ]
             },
-            "Commitment": {
+            Commitment: {
                 title: "The Phantom",
-                subtitle: "\"I don't like labels.\"",
-                summary: "You want the benefits of a relationship with the freedom of a ghost. You run at the first sign of real intimacy.",
-                desc: "You have a balanced profile but spike in Avoidance (inferred from answers). You view vulnerability as a threat."
+                subtitle: "\"Let’s act like a couple, but never call it that.\"",
+                summary: "You love connection as long as there’s a visible exit sign. You give just enough to keep people close, but not enough to feel vulnerable.",
+                desc: "Your profile is relatively balanced but spikes in avoidance. You pride yourself on being \"chill\" while quietly dodging depth.",
+                bullets: [
+                    "You say \"I’m just going with the flow\" while steering away from every label.",
+                    "You avoid difficult talks until the other person gives up.",
+                    "You prefer almost-relationships: all the feelings, none of the responsibility."
+                ]
             },
-            "Unicorn": {
+            Unicorn: {
                 title: "The Unicorn",
-                subtitle: "\"Suspiciously Normal.\"",
-                summary: "You scored... healthy? You communicate well and take accountability. Either you are rare, or you are a fantastic liar.",
-                desc: "Low scores across all Red Flag metrics. You likely have a secure attachment style and high emotional intelligence. Boring, but stable."
+                subtitle: "\"Alarmingly emotionally stable.\"",
+                summary: "You communicate, take accountability and don’t create unnecessary chaos. Frankly, you seem suspicious.",
+                desc: "Low scores across all red flag metrics. You likely have a secure attachment style, decent self-awareness and a healthy respect for other people’s feelings.",
+                bullets: [
+                    "You apologise without drama and mean it.",
+                    "You don’t confuse intensity with love.",
+                    "Your biggest red flag is probably that you send long, reasonable texts."
+                ]
             }
         };
 
-        // ================= LOGIC =================
+        // ================= STATE =================
         let currentQ = 0;
         let totalScores = { narc: 0, imp: 0, emp: 0, acc: 0 };
         let startTime = 0;
+        let timerActive = false;
 
-        // Exposed to Window for HTML onclicks
-        window.startQuiz = function() {
-            document.getElementById('start-screen').style.display = 'none'; // simple hide
-            document.getElementById('quiz-interface').classList.remove('hidden');
+        // ================= HELPERS =================
+        const $ = (id) => document.getElementById(id);
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+            const s = (seconds % 60).toString().padStart(2, "0");
+            return `${m}:${s}`;
+        }
+
+        function computeFlagScore() {
+            // Simple composite: narcissism + impulsivity + empathy gap, scaled
+            const raw = totalScores.narc + totalScores.imp + totalScores.emp;
+            const scaled = Math.max(0, Math.min(100, Math.round(raw / 4))); // rough cap
+            return scaled;
+        }
+
+        function flagSeverityLabel(score) {
+            if (score < 25) return "Suspiciously normal";
+            if (score < 45) return "Mild red flags";
+            if (score < 65) return "Manageable chaos";
+            if (score < 85) return "Certified problem";
+            return "Walking hazard";
+        }
+
+        function fillTags(archetypeKey, severityScore) {
+            const container = $("result-tags");
+            container.innerHTML = "";
+
+            const tags = [];
+
+            tags.push(archetypeKey === "Unicorn" ? "Emotionally stable (for now)" : "Certified red flag content");
+
+            if (severityScore >= 70) tags.push("High-risk habits");
+            else if (severityScore >= 45) tags.push("Work in progress");
+            else tags.push("Mostly safe, slightly unhinged");
+
+            if (totalScores.acc < 0) tags.push("Accountability issues");
+            if (totalScores.emp > 60) tags.push("Empathy gap");
+            if (totalScores.imp > 60) tags.push("Impulsive decisions");
+            if (tags.length < 4) tags.push("Shareable result card");
+
+            tags.slice(0, 5).forEach(t => {
+                const span = document.createElement("span");
+                span.className = "pill-chip px-3 py-1";
+                span.textContent = t;
+                container.appendChild(span);
+            });
+        }
+
+        // ================= QUIZ FLOW =================
+        window.startQuiz = function () {
+            $("start-screen").classList.add("hidden");
+            $("result-screen").classList.add("hidden");
+
+            $("quiz-interface").classList.remove("hidden");
+
+            currentQ = 0;
+            totalScores = { narc: 0, imp: 0, emp: 0, acc: 0 };
             startTime = Date.now();
+            timerActive = true;
             renderQuestion();
             updateTimer();
-        }
+        };
 
-        window.toggleFullReport = function() {
-            const report = document.getElementById('full-report');
-            report.classList.toggle('hidden');
-        }
-
-        window.shareResults = function() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'My Red Flag Audit',
-                    text: 'I just ran the Red Flag Audit on QuizRealm. Check my toxicity levels.',
-                    url: window.location.href
-                }).catch(console.error);
-            } else {
-                alert("Link copied to clipboard!");
-            }
-        }
+        window.retakeTest = function () {
+            window.startQuiz();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
 
         function renderQuestion() {
             if (currentQ >= questions.length) {
@@ -468,17 +753,17 @@
             }
 
             const q = questions[currentQ];
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-text').innerText = `Q ${String(currentQ + 1).padStart(2, '0')} / ${questions.length}`;
-            document.getElementById('progress-bar').style.width = `${((currentQ) / questions.length) * 100}%`;
+            $("question-text").textContent = q.q;
+            $("progress-text").textContent = `Q ${String(currentQ + 1).padStart(2, "0")} / ${questions.length}`;
+            $("progress-bar").style.width = `${(currentQ / questions.length) * 100}%`;
 
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
+            const container = $("options-container");
+            container.innerHTML = "";
 
             q.a.forEach((opt) => {
-                const btn = document.createElement('button');
-                btn.className = "option-btn w-full p-6 text-left rounded-lg text-lg text-gray-200 transition-all duration-200 block";
-                btn.innerText = opt.text;
+                const btn = document.createElement("button");
+                btn.className = "option-btn w-full p-4 sm:p-5 rounded-2xl text-left text-sm sm:text-[15px] text-slate-100 transition-all";
+                btn.textContent = opt.text;
                 btn.onclick = () => handleAnswer(opt.scores);
                 container.appendChild(btn);
             });
@@ -489,59 +774,102 @@
             totalScores.imp += scores.imp;
             totalScores.emp += scores.emp;
             totalScores.acc += scores.acc;
-            
+
             currentQ++;
             renderQuestion();
         }
 
-        function finishQuiz() {
-            const endTime = Date.now();
-            const durationMs = endTime - startTime;
-            const durationSec = (durationMs / 1000).toFixed(0);
+        function updateTimer() {
+            if (!timerActive || $("quiz-interface").classList.contains("hidden")) return;
+            const diffSec = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
+            $("timer-display").textContent = formatTime(diffSec);
+            requestAnimationFrame(updateTimer);
+        }
 
-            // Determine Archetype
+        // ================= RESULT LOGIC =================
+        function pickArchetype() {
+            const { narc, imp, emp, acc } = totalScores;
             let resultKey = "Unicorn";
-            
-            // Logic Priorities (Highest score wins)
-            if (totalScores.narc > 80 && totalScores.emp > 60) resultKey = "Gaslighter";
-            else if (totalScores.imp > 80 && totalScores.narc > 40) resultKey = "LoveBomber";
-            else if (totalScores.narc > 60 && totalScores.acc < 0) resultKey = "Victim";
-            else if (totalScores.emp > 70) resultKey = "Vampire";
-            else if (totalScores.imp > 60 && totalScores.acc < 20) resultKey = "Ick";
-            else if (totalScores.emp > 40 && totalScores.narc < 40) resultKey = "Commitment";
-            else if (totalScores.narc < 30 && totalScores.acc > 50) resultKey = "Unicorn";
-            else resultKey = "Victim"; // Default for messy scores
 
-            const data = archetypes[resultKey];
+            if (narc > 80 && emp > 60) resultKey = "Gaslighter";
+            else if (imp > 80 && narc > 40) resultKey = "LoveBomber";
+            else if (narc > 60 && acc < 0) resultKey = "Victim";
+            else if (emp > 70) resultKey = "Vampire";
+            else if (imp > 60 && acc < 20) resultKey = "Ick";
+            else if (emp > 40 && narc < 40 && acc <= 20) resultKey = "Commitment";
+            else if (narc < 30 && acc > 50) resultKey = "Unicorn";
+            else resultKey = "Victim";
 
-            // Render UI
-            document.getElementById('quiz-interface').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
+            return resultKey;
+        }
 
-            document.getElementById('result-title').innerText = data.title;
-            document.getElementById('result-subtitle').innerText = data.subtitle;
-            document.getElementById('result-summary').innerText = data.summary;
-            document.getElementById('result-description').innerText = data.desc;
+        function finishQuiz() {
+            timerActive = false;
+            $("quiz-interface").classList.add("hidden");
+            $("result-screen").classList.remove("hidden");
 
-            // Render Stats
-            document.getElementById('score-narc').innerText = Math.min(100, totalScores.narc) + "%";
-            document.getElementById('bar-narc').style.width = Math.min(100, totalScores.narc) + "%";
-            
-            document.getElementById('score-imp').innerText = Math.min(100, totalScores.imp) + "%";
-            document.getElementById('bar-imp').style.width = Math.min(100, totalScores.imp) + "%";
+            const endTime = Date.now();
+            const durationSec = Math.max(1, Math.floor((endTime - startTime) / 1000));
 
-            document.getElementById('score-emp').innerText = Math.min(100, totalScores.emp) + "%";
-            document.getElementById('bar-emp').style.width = Math.min(100, totalScores.emp) + "%";
+            const key = pickArchetype();
+            const data = archetypes[key];
 
-            document.getElementById('stat-time').innerText = durationSec + "s";
-            document.getElementById('stat-accountability').innerText = totalScores.acc > 30 ? "High" : (totalScores.acc > 0 ? "Avg" : "Toxic");
+            const flagScore = computeFlagScore();
+            const severityLabel = flagSeverityLabel(flagScore);
 
-            // Save Data Safely
+            // primary text
+            $("result-title").textContent = data.title;
+            $("result-subtitle").textContent = data.subtitle;
+            $("result-summary").textContent = data.summary;
+            $("result-description").textContent = data.desc;
+
+            $("result-flag-score").textContent = `${flagScore}%`;
+            $("result-flag-bar").style.width = `${flagScore}%`;
+            $("result-severity-chip").textContent = severityLabel;
+
+            // metrics
+            const cappedNarc = Math.min(100, totalScores.narc);
+            const cappedImp = Math.min(100, totalScores.imp);
+            const cappedEmp = Math.min(100, totalScores.emp);
+
+            $("score-narc").textContent = `${cappedNarc}%`;
+            $("bar-narc").style.width = `${cappedNarc}%`;
+
+            $("score-imp").textContent = `${cappedImp}%`;
+            $("bar-imp").style.width = `${cappedImp}%`;
+
+            $("score-emp").textContent = `${cappedEmp}%`;
+            $("bar-emp").style.width = `${cappedEmp}%`;
+
+            $("stat-time").textContent = `${durationSec}s`;
+            $("stat-accountability").textContent =
+                totalScores.acc > 30 ? "High" :
+                totalScores.acc > 0 ? "Average" :
+                "Avoidant";
+
+            fillTags(key, flagScore);
+
+            // quick lines
+            const quick = $("quick-lines");
+            quick.innerHTML = "";
+            (data.bullets || []).forEach(line => {
+                const p = document.createElement("p");
+                p.textContent = "• " + line;
+                quick.appendChild(p);
+            });
+
+            // extra report text (SEO-friendly but on theme)
+            $("report-extra-1").textContent =
+                "This profile is built from tiny choices: how fast you escalate, how you react when challenged, and what you do with other people’s trust. None of these moments look dramatic on their own, but together they form a pattern.";
+            $("report-extra-2").textContent =
+                "If you recognise yourself in this result, that is already progress. The next step is learning to pause before reacting, to apologise without arguments attached, and to treat other people’s feelings as more than background noise.";
+
+            // Save to game-engine / Firestore – same structure as before
             const savePayload = {
                 testId: "red_flag_radar",
                 timestamp: new Date().toISOString(),
-                archetype: resultKey,
-                durationSeconds: parseInt(durationSec),
+                archetype: key,
+                durationSeconds: durationSec,
                 metrics: {
                     narcissism_score: totalScores.narc,
                     impulse_control: totalScores.imp,
@@ -551,28 +879,62 @@
                 }
             };
 
-            // Check if game-engine attached the function to window
             if (window.saveTestResult) {
                 try {
                     window.saveTestResult(savePayload);
-                    console.log("Saved to Firestore via global handler");
                 } catch (e) {
-                    console.warn("Save failed:", e);
+                    console.warn("saveTestResult failed", e);
                 }
-            } else {
-                console.log("Firestore unavailable, mock save:", savePayload);
             }
+
+            if (window.GameEngine && typeof window.GameEngine.trackEvent === "function") {
+                try {
+                    window.GameEngine.trackEvent("test_complete", {
+                        testId: "red_flag_radar",
+                        archetype: key,
+                        durationSeconds: durationSec,
+                        flagScore
+                    });
+                } catch (e) { /* ignore */ }
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        function updateTimer() {
-            if (document.getElementById('quiz-interface').classList.contains('hidden')) return;
-            const now = Date.now();
-            const diff = Math.floor((now - startTime) / 1000);
-            const m = Math.floor(diff / 60).toString().padStart(2, '0');
-            const s = (diff % 60).toString().padStart(2, '0');
-            document.getElementById('timer-display').innerText = `${m}:${s}`;
-            requestAnimationFrame(updateTimer);
-        }
+        // ================= UI ACTIONS =================
+        window.toggleFullReport = function () {
+            const el = $("full-report");
+            el.classList.toggle("hidden");
+        };
+
+        window.shareResults = async function () {
+            const shareText = `I just did the Red Flag Audit on QuizRealm.\nResult: ${$("result-title").textContent} – ${$("result-subtitle").textContent}\nCheck yours here: ${window.location.href}`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: "Red Flag Audit • QuizRealm",
+                        text: shareText,
+                        url: window.location.href
+                    });
+                    return;
+                } catch (e) {
+                    // fall through to clipboard
+                }
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(shareText);
+                    alert("Link and caption copied. Paste it into your chat or story.");
+                    return;
+                } catch (e) {
+                    // fallback
+                }
+            }
+
+            alert("Copy this text to share:\n\n" + shareText);
+        };
     </script>
 </body>
 </html>

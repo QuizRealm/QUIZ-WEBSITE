@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -10,8 +11,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Seduction Archetype • Identity Lab | QuizRealm</title>
-    <meta name="description" content="Siren, Coquette, or Charmer? Discover your power dynamic in relationships. 13 Questions.">
-    <meta name="theme-color" content="#2e1065">
+    <meta name="description" content="Siren, Coquette, Rake, Charmer or Natural? Take this 13-question seduction archetype test and discover your dating power dynamic. Shareable result card included.">
+    <meta name="theme-color" content="#0b0413">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -25,19 +26,21 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { 
-                        'serif': ['Playfair Display', 'serif'], 
-                        'sans': ['Lato', 'sans-serif'] 
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Lato', 'sans-serif']
                     },
-                    colors: { 
-                        'luxe-bg': '#0f0518',
-                        'luxe-panel': '#1a0b2e',
-                        'luxe-gold': '#fbbf24', // Amber 400
-                        'luxe-gold-dim': '#b45309',
-                        'luxe-purple': '#2e1065'
+                    colors: {
+                        'velvet-bg': '#070111',
+                        'velvet-panel': '#13061f',
+                        'velvet-soft': '#180726',
+                        'velvet-gold': '#fbbf24',
+                        'velvet-gold-soft': '#facc6b',
+                        'velvet-wine': '#3b0a3d'
                     },
-                    backgroundImage: {
-                        'velvet-gradient': 'radial-gradient(circle at center, #2e1065 0%, #0f0518 100%)'
+                    boxShadow: {
+                        'velvet-card': '0 26px 80px rgba(0,0,0,0.9)',
+                        'velvet-ring': '0 0 0 1px rgba(248, 250, 252, 0.18), 0 26px 80px rgba(0,0,0,0.96)'
                     }
                 }
             }
@@ -45,325 +48,707 @@
     </script>
 
     <style>
-        body { background-color: #0f0518; color: #f3f4f6; font-family: 'Lato', sans-serif; overflow-x: hidden; }
-        
-        /* Gold Border Gradient */
-        .border-gold {
-            border: 1px solid transparent;
-            background: linear-gradient(#1a0b2e, #1a0b2e) padding-box,
-                        linear-gradient(45deg, #b45309, #fbbf24, #b45309) border-box;
+        body {
+            background:
+                radial-gradient(circle at top, #3b0764 0, #020014 40%, #020014 100%);
+            color: #e5e7eb;
+            font-family: 'Lato', sans-serif;
+            overflow-x: hidden;
         }
-
-        /* Option Button Styling */
+        .bg-texture::before {
+            content:"";
+            position:fixed;
+            inset:0;
+            opacity:0.18;
+            pointer-events:none;
+            background-image:
+                radial-gradient(circle at 0 0, rgba(248,250,252,0.08) 0, transparent 55%),
+                radial-gradient(circle at 100% 100%, rgba(248,250,252,0.04) 0, transparent 55%);
+            mix-blend-mode:soft-light;
+            z-index:-1;
+        }
+        .border-gold {
+            border-radius: 24px;
+            border: 1px solid transparent;
+            background:
+                linear-gradient(#13061f, #13061f) padding-box,
+                linear-gradient(135deg, rgba(248,181,0,0.9), rgba(248,250,252,0.7), rgba(248,181,0,0.9)) border-box;
+        }
         .choice-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 2px solid rgba(251, 191, 36, 0.2);
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            background: rgba(12,10,24,0.9);
+            border-radius: 18px;
+            border: 1px solid rgba(148,163,184,0.55);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.22s ease-out;
+        }
+        .choice-btn::before {
+            content:"";
+            position:absolute;
+            inset:0;
+            background: radial-gradient(circle at 0 0, rgba(248,191,36,0.28), transparent 60%);
+            opacity:0;
+            transition: opacity 0.18s ease-out;
         }
         .choice-btn:hover {
-            background: linear-gradient(90deg, rgba(46, 16, 101, 0.6), transparent);
-            border-left-color: #fbbf24;
-            padding-left: 2rem;
+            transform: translateY(-1px);
+            border-color: rgba(248,191,36,0.9);
         }
-
-        /* Serif Italic Highlights */
-        .italic-accent {
+        .choice-btn:hover::before {
+            opacity:1;
+        }
+        .btn-main {
+            background: #f9fafb;
+            color: #020014;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
             font-family: 'Playfair Display', serif;
-            font-style: italic;
-            color: #fbbf24;
+            font-weight: 700;
+            box-shadow: 0 24px 70px rgba(0,0,0,1);
         }
-
-        /* Fade Animations */
-        .fade-in-up { animation: fadeInUp 1s ease forwards; opacity: 0; transform: translateY(30px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-
-        /* Progress Bar Gold */
-        .gold-progress {
-            background: linear-gradient(90deg, #b45309, #fbbf24, #fff, #fbbf24, #b45309);
+        .btn-main:hover {
+            background:#ffffff;
+            transform:translateY(-1px);
+            box-shadow:0 30px 90px rgba(0,0,0,1);
+        }
+        .pill {
+            border-radius:999px;
+            border:1px solid rgba(148,163,184,0.45);
+            background:rgba(7,0,20,0.85);
+        }
+        .fade-up {
+            opacity:0;
+            transform:translateY(18px);
+            animation:fadeUp 0.45s ease-out forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity:1; transform:translateY(0); }
+        }
+        .progress-track {background:rgba(12,10,24,0.95);height:4px;border-radius:999px;}
+        .progress-fill {
+            background: linear-gradient(90deg,#facc6b,#fbbf24,#fde68a,#fbbf24,#facc6b);
             background-size: 200% auto;
-            animation: shine 3s linear infinite;
+            height:100%;
+            border-radius:999px;
+            width:0%;
+            animation: shimmer 3s linear infinite;
+            transition:width 0.3s ease-out;
         }
-        @keyframes shine { to { background-position: 200% center; } }
+        @keyframes shimmer {
+            to { background-position:200% center; }
+        }
+        .result-card-gradient {
+            background:
+                radial-gradient(circle at top left, rgba(248,191,36,0.24), transparent 60%),
+                radial-gradient(circle at bottom right, rgba(15,23,42,0.9), rgba(15,23,42,1)),
+                #020014;
+        }
     </style>
 </head>
 
-<body class="flex flex-col min-h-screen bg-velvet-gradient selection:bg-luxe-gold selection:text-luxe-purple">
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<body class="flex flex-col min-h-screen bg-texture">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <quiz-header></quiz-header>
 
-    <main class="flex-grow w-full max-w-4xl mx-auto px-6 py-16">
+    <main class="flex-grow w-full max-w-5xl mx-auto px-4 md:px-6 py-12 md:py-16 lg:py-20">
 
-        <div id="start-screen" class="text-center space-y-10 fade-in-up">
-            
-            <div class="relative w-24 h-24 mx-auto mb-8">
-                <div class="absolute inset-0 border border-luxe-gold rounded-full opacity-20 animate-spin" style="animation-duration: 10s;"></div>
-                <div class="absolute inset-0 flex items-center justify-center text-4xl text-luxe-gold">
-                    <i class="fas fa-mask"></i>
+        <!-- START SCREEN -->
+        <section id="start-screen" class="fade-up" style="animation-delay:0.03s">
+            <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,3fr),minmax(0,2.2fr)] gap-10 items-center">
+                <!-- Left: hero copy -->
+                <div class="space-y-8">
+                    <div class="inline-flex items-center gap-2 pill px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-slate-300">
+                        <span class="w-1.5 h-1.5 rounded-full bg-velvet-gold"></span>
+                        <span>Seduction Archetype Test</span>
+                    </div>
+
+                    <div>
+                        <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.9] text-slate-50">
+                            The<br>
+                            <span class="italic text-velvet-gold-soft">Seduction</span>
+                            Archetype
+                        </h1>
+                        <p class="mt-4 text-sm sm:text-[15px] text-slate-300 max-w-xl leading-relaxed">
+                            Not another “love language” quiz. This one looks at how you actually behave:
+                            how you pull people in, how you keep them there, and how much chaos you leave behind.
+                            <span class="block mt-3 text-[11px] uppercase tracking-[0.25em] text-slate-400">
+                                13 questions · 7 archetypes · Built to be shared
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="grid sm:grid-cols-[auto,1fr] gap-4 sm:gap-6 items-center">
+                        <button
+                            class="btn-main px-10 py-4 rounded-[999px] text-[10px] md:text-[11px] tracking-[0.25em] flex items-center justify-center gap-2"
+                            onclick="window.startQuiz()">
+                            <span>Start the test</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+
+                        <div class="flex flex-wrap gap-3 text-[11px] text-slate-400">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-regular fa-clock text-velvet-gold-soft"></i>
+                                ~3 minutes
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-user-shield text-velvet-gold-soft"></i>
+                                No email · No login
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 text-[11px] text-slate-500">
+                        <div class="pill px-3 py-1">
+                            Siren · Rake · Coquette · Charmer · Ideal Lover · Dandy · Natural
+                        </div>
+                        <div class="pill px-3 py-1">
+                            Designed for screenshots, arguments and group chats.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: preview result card -->
+                <div class="lg:pl-4">
+                    <div class="border-gold shadow-velvet-ring result-card-gradient p-6 sm:p-7 relative overflow-hidden">
+                        <div class="absolute inset-x-0 -top-24 h-40 opacity-50 bg-gradient-to-b from-velvet-gold/40 via-transparent to-transparent blur-3xl"></div>
+                        <div class="relative">
+                            <div class="flex items-center justify-between mb-4 text-[11px] text-slate-300">
+                                <span class="uppercase tracking-[0.3em]">Result Preview</span>
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-martini-glass-citrus text-velvet-gold-soft"></i>
+                                    <span>Shareable card</span>
+                                </span>
+                            </div>
+
+                            <div class="rounded-2xl border border-white/15 bg-black/40 px-4 py-4 sm:px-5 sm:py-5 mb-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] uppercase tracking-[0.25em] bg-velvet-gold/10 text-velvet-gold-soft border border-velvet-gold/50">
+                                        Archetype
+                                    </span>
+                                    <span class="text-[11px] text-slate-300">
+                                        Seduction Score: <span class="text-velvet-gold-soft font-semibold">84%</span>
+                                    </span>
+                                </div>
+
+                                <h2 class="font-serif text-2xl sm:text-3xl text-slate-50 leading-tight mb-1">
+                                    The Siren
+                                </h2>
+                                <p class="text-[11px] uppercase tracking-[0.26em] text-slate-400 mb-3">
+                                    The walking plot twist
+                                </p>
+
+                                <p class="text-[13px] text-slate-200 leading-relaxed">
+                                    You don’t chase. You stand still and let curiosity do the work.
+                                    People don’t “meet” you – they wander into your atmosphere.
+                                </p>
+                            </div>
+
+                            <p class="text-[11px] text-slate-500 leading-relaxed">
+                                The real test calculates your dominant style (Dominance, Mystery, Charm)
+                                and gives you a blunt breakdown you can send to whoever ruined you.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <div>
-                <h1 class="font-serif text-5xl md:text-7xl text-white leading-none mb-6">
-                    The <span class="italic-accent">Seduction</span><br>Archetype.
-                </h1>
-                <p class="text-slate-400 text-lg font-light max-w-xl mx-auto leading-relaxed">
-                    Seduction is not about beauty; it is about <strong>power</strong>. <br>
-                    Are you the hunter, the prize, or the mirror? <br>
-                    <span class="text-luxe-gold text-xs uppercase tracking-widest mt-4 block">13 Questions • Psychological Profiling</span>
-                </p>
-            </div>
-
-            <button onclick="window.startQuiz()" class="group relative inline-flex items-center justify-center px-10 py-4 overflow-hidden font-serif font-bold text-white transition duration-300 ease-out border-gold rounded-sm shadow-md">
-                <span class="absolute inset-0 flex items-center justify-center w-full h-full text-white duration-300 -translate-x-full bg-luxe-gold group-hover:translate-x-0 ease">
-                    <i class="fas fa-arrow-right text-luxe-purple"></i>
+        <!-- QUIZ INTERFACE -->
+        <section id="quiz-interface" class="hidden max-w-3xl mx-auto pt-10">
+            <div class="flex justify-between items-end mb-5 border-b border-white/10 pb-3">
+                <div class="flex flex-col gap-1">
+                    <span id="q-category" class="font-serif text-velvet-gold-soft italic text-lg">
+                        Presence
+                    </span>
+                    <span class="text-[11px] text-slate-400">
+                        Answer in instinct mode, not “ideal version of me” mode.
+                    </span>
+                </div>
+                <span id="progress-text" class="text-[11px] font-mono text-slate-400">
+                    01 / 13
                 </span>
-                <span class="absolute flex items-center justify-center w-full h-full text-luxe-gold transition-all duration-300 transform group-hover:translate-x-full ease">DIAGNOSE STYLE</span>
-                <span class="relative invisible">DIAGNOSE STYLE</span>
-            </button>
-
-            <p class="text-[10px] uppercase tracking-[0.3em] text-white/20 pt-8">
-                Data is encrypted & anonymous
-            </p>
-        </div>
-
-        <div id="quiz-interface" class="hidden h-full min-h-[50vh] flex flex-col justify-center">
-            
-            <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
-                <span class="font-serif text-luxe-gold italic text-xl" id="q-category">Power Dynamics</span>
-                <span class="text-xs font-mono text-slate-500" id="progress-text">01 / 13</span>
             </div>
 
-            <h2 id="question-text" class="font-serif text-3xl md:text-4xl text-white mb-12 leading-tight fade-in-up">
-                Loading...
-            </h2>
+            <div class="progress-track w-full mb-8">
+                <div id="progress-bar" class="progress-fill"></div>
+            </div>
 
-            <div id="options-container" class="space-y-4 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="space-y-8">
+                <h2 id="question-text" class="font-serif text-2xl sm:text-3xl md:text-4xl text-slate-50 leading-tight min-h-[4rem]">
+                    Loading...
+                </h2>
+
+                <div id="options-container" class="space-y-4">
+                    <!-- choices injected here -->
                 </div>
 
-            <div class="fixed top-0 left-0 w-full h-1 bg-luxe-purple/20">
-                <div id="progress-bar" class="gold-progress h-full w-0 transition-all duration-500"></div>
+                <div class="mt-5 flex justify-between items-center text-[11px] text-slate-500">
+                    <span>Tap once per question. No back button, just like real life.</span>
+                    <span id="timer-display">00:00</span>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div id="result-screen" class="hidden text-center max-w-3xl mx-auto">
-            
-            <div class="fade-in-up">
-                <span class="text-[10px] uppercase tracking-[0.4em] text-luxe-gold mb-4 block">Your Archetype Is</span>
-                
-                <h2 class="font-serif text-6xl md:text-8xl text-white mb-2">
-                    The <span id="result-title" class="italic-accent">Loading...</span>
-                </h2>
-                
-                <h3 id="result-subtitle" class="text-slate-400 font-sans text-sm uppercase tracking-widest mb-8 border-b border-white/10 pb-8 inline-block">
-                    Loading...
+        <!-- RESULT SCREEN -->
+        <section id="result-screen" class="hidden max-w-4xl mx-auto pt-10">
+
+            <!-- Shareable card -->
+            <div id="share-card" class="border-gold shadow-velvet-ring result-card-gradient p-6 sm:p-8 mb-10">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                    <div class="flex items-center gap-2 text-[11px] text-slate-300 uppercase tracking-[0.3em]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span>Seduction profile · Complete</span>
+                    </div>
+                    <div id="severity-chip" class="pill px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-velvet-gold-soft">
+                        Soft power
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-[minmax(0,2.3fr),minmax(0,2fr)] gap-7 items-start">
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.32em] text-velvet-gold-soft mb-2">
+                            Your archetype
+                        </p>
+                        <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl text-slate-50 leading-tight mb-1">
+                            <span class="italic text-velvet-gold-soft">The</span>
+                            <span id="result-title">...</span>
+                        </h2>
+                        <p id="result-subtitle" class="text-[11px] uppercase tracking-[0.28em] text-slate-400 mb-4">
+                            Subtitle
+                        </p>
+
+                        <p id="result-summary" class="text-sm sm:text-[15px] text-slate-200 leading-relaxed mb-5">
+                            Summary...
+                        </p>
+
+                        <ul id="result-tags" class="flex flex-wrap gap-2 text-[11px] text-slate-200">
+                            <!-- tags filled in JS -->
+                        </ul>
+                    </div>
+
+                    <div class="bg-black/35 border border-white/12 rounded-2xl p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-center text-[11px] text-slate-400">
+                            <span>Seduction Score</span>
+                            <span id="seduction-score" class="text-velvet-gold-soft font-semibold text-sm">0%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                            <div id="seduction-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-400 via-velvet-gold-soft to-rose-500" style="width:0%"></div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3 pt-2 border-t border-slate-800 text-[11px] text-slate-300">
+                            <div>
+                                <div class="uppercase tracking-[0.26em] text-[10px] mb-1">Dominance</div>
+                                <div id="stat-dom" class="font-mono text-sm text-slate-50">0</div>
+                            </div>
+                            <div>
+                                <div class="uppercase tracking-[0.26em] text-[10px] mb-1">Mystery</div>
+                                <div id="stat-mys" class="font-mono text-sm text-slate-50">0</div>
+                            </div>
+                            <div>
+                                <div class="uppercase tracking-[0.26em] text-[10px] mb-1">Charm</div>
+                                <div id="stat-cha" class="font-mono text-sm text-slate-50">0</div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 text-[11px] text-slate-500">
+                            Screenshot this card and send it to the person who first made you this dramatic.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics + narrative -->
+            <div class="grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr),minmax(0,2fr)] gap-7 mb-10">
+                <!-- Bars -->
+                <div class="bg-velvet-panel border border-white/10 rounded-3xl p-6 shadow-velvet-card">
+                    <h3 class="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-5">
+                        How you actually seduce people
+                    </h3>
+
+                    <div class="space-y-5 text-sm">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Dominance (push)</span>
+                                <span id="bar-dom-label" class="text-velvet-gold-soft">0</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                                <div id="bar-dom" class="h-full rounded-full bg-gradient-to-r from-slate-300 to-velvet-gold-soft" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Mystery (pull)</span>
+                                <span id="bar-mys-label" class="text-velvet-gold-soft">0</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                                <div id="bar-mys" class="h-full rounded-full bg-gradient-to-r from-slate-300 to-purple-400" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Charm (soft power)</span>
+                                <span id="bar-cha-label" class="text-velvet-gold-soft">0</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                                <div id="bar-cha" class="h-full rounded-full bg-gradient-to-r from-slate-300 to-rose-400" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="mt-5 text-[12px] text-slate-400 leading-relaxed">
+                        These numbers come from how you reacted to distance, conflict, validation and attention
+                        across all 13 questions. It is less about how you look and more about what it feels like
+                        to be on the other side of you.
+                    </p>
+                </div>
+
+                <!-- Text breakdown -->
+                <div class="bg-velvet-panel border border-white/10 rounded-3xl p-6 shadow-velvet-card flex flex-col gap-4">
+                    <h3 class="text-[11px] uppercase tracking-[0.3em] text-slate-400">
+                        What this means in plain language
+                    </h3>
+                    <p id="result-desc" class="text-sm text-slate-200 leading-relaxed">
+                        Full description loading...
+                    </p>
+
+                    <div id="quick-lines" class="mt-2 text-[12px] text-slate-400 space-y-1.5">
+                        <!-- bullets per archetype -->
+                    </div>
+
+                    <button
+                        onclick="window.toggleFullReport()"
+                        class="mt-3 pt-3 border-t border-slate-800 text-left text-[11px] uppercase tracking-[0.28em] text-slate-300 hover:text-slate-100 flex items-center justify-between">
+                        <span>Open full breakdown</span>
+                        <i class="fa-solid fa-chevron-down text-xs text-velvet-gold-soft"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Full SEO-ish breakdown -->
+            <div id="full-report" class="hidden bg-velvet-soft border border-white/10 rounded-3xl p-6 md:p-7 mb-10 text-sm text-slate-200 leading-relaxed">
+                <h3 class="text-[11px] uppercase tracking-[0.3em] text-slate-400 mb-4">
+                    Deep dive: your seduction archetype
                 </h3>
-
-                <p id="result-summary" class="text-lg text-slate-300 leading-loose font-light mb-12">
-                    Calculating profile...
+                <p id="report-extra-1" class="mb-3">
+                    <!-- filled by JS -->
+                </p>
+                <p id="report-extra-2" class="mb-3">
+                    <!-- filled by JS -->
+                </p>
+                <p id="report-extra-3" class="italic text-slate-500 border-l border-velvet-gold/60 pl-4">
+                    This quiz is for entertainment and self-awareness. If it feels a little too accurate, that is your sign
+                    to reflect, not to panic-text your ex.
                 </p>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mb-12 fade-in-up" style="animation-delay: 0.2s;">
-                <div class="border-gold p-6 bg-luxe-panel">
-                    <div class="text-[10px] uppercase text-slate-500 mb-2">Mystery Index</div>
-                    <div class="font-serif text-2xl text-luxe-gold" id="stat-mystery">High</div>
-                </div>
-                <div class="border-gold p-6 bg-luxe-panel">
-                    <div class="text-[10px] uppercase text-slate-500 mb-2">Dominance</div>
-                    <div class="font-serif text-2xl text-luxe-gold" id="stat-dominance">Passive</div>
-                </div>
-            </div>
-
-            <div class="fade-in-up" style="animation-delay: 0.3s;">
-                <button onclick="document.getElementById('full-report').classList.toggle('hidden')" class="text-xs font-bold text-slate-500 uppercase tracking-widest hover:text-white transition mb-6">
-                    Read Deep Analysis <i class="fas fa-caret-down ml-2"></i>
-                </button>
-                
-                <div id="full-report" class="hidden text-left bg-white/5 p-8 border-l-2 border-luxe-gold text-slate-400 text-sm leading-relaxed space-y-4 mb-8">
-                    <p id="result-desc">Full description...</p>
-                    <p class="text-luxe-gold italic">"Your power lies in what you withhold, not what you give."</p>
+            <!-- CTAs -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-12">
+                <div class="text-[12px] text-slate-400 max-w-md">
+                    <p class="uppercase tracking-[0.26em] text-[11px] text-slate-300 mb-1">
+                        Share or retake
+                    </p>
+                    <p>
+                        Your card is built for screenshots and stories. Share it, argue with it, or retake it in six months
+                        when you swear you have changed.
+                    </p>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                    <button onclick="shareResult()" class="px-8 py-3 bg-luxe-gold text-luxe-purple font-bold font-serif uppercase tracking-wider hover:bg-white transition">
-                        Share Persona
+                <div class="flex flex-wrap gap-3">
+                    <button
+                        onclick="window.shareResult()"
+                        class="btn-main px-6 py-3 rounded-[999px] text-[10px] tracking-[0.24em] flex items-center gap-2 justify-center">
+                        <i class="fa-solid fa-share-nodes text-xs"></i>
+                        Share result
                     </button>
-                    <a href="seduction-archetypes.html" class="px-8 py-3 border border-white/20 text-white font-bold font-serif uppercase tracking-wider hover:bg-white/5 transition">
-                        Enter The Lab
+                    <button
+                        onclick="window.retakeTest()"
+                        class="px-5 py-3 rounded-[999px] border border-slate-600 text-[10px] tracking-[0.24em] uppercase text-slate-200 hover:bg-white/5">
+                        Retake
+                    </button>
+                    <a href="seduction-archetypes.html"
+                       class="px-5 py-3 rounded-[999px] border border-slate-600 text-[10px] tracking-[0.24em] uppercase text-slate-200 hover:bg-white/5 flex items-center gap-2">
+                        <i class="fa-solid fa-flask text-xs"></i>
+                        Explore the lab
                     </a>
                 </div>
             </div>
 
-        </div>
+            <!-- SEO block -->
+            <section class="border-t border-slate-800 pt-8 pb-2 text-[13px] md:text-[14px] text-slate-300 space-y-4">
+                <h2 class="text-sm md:text-base font-semibold text-slate-100">
+                    What is a “seduction archetype”?
+                </h2>
+                <p>
+                    A seduction archetype describes the <strong>pattern behind your flirting style</strong>:
+                    do you win people over with intensity, mystery, softness, or a mix of all three?
+                    This test doesn’t ask what you think is attractive – it looks at how you react to attention, distance,
+                    conflict and control in real situations.
+                </p>
+                <p>
+                    Classic archetypes like the <em>Siren</em>, <em>Rake</em>, <em>Coquette</em>, <em>Charmer</em>,
+                    <em>Ideal Lover</em>, <em>Dandy</em> and <em>Natural</em> show up again and again in dating,
+                    movies and real life. Your result is simply the version of that story you keep replaying.
+                </p>
+
+                <h3 class="text-sm md:text-base font-semibold text-slate-100">
+                    How to use this result (without overdoing it)
+                </h3>
+                <p>
+                    Think of this as a mirror, not a diagnosis. It highlights the habits you lean on:
+                    pushing, pulling, disappearing, rescuing, or charming your way through connection.
+                    The goal is not to become “less attractive”, but to use your style without turning it into
+                    a walking red flag.
+                </p>
+            </section>
+        </section>
 
     </main>
 
     <quiz-footer></quiz-footer>
 
     <script type="module">
-        
-
-        // ================= CONFIG =================
+        // ================= QUESTION DATA =================
         const questions = [
             { q: "When you walk into a room, you want people to feel...", cat: "Presence",
               a: [
-                  { text: "Intimidated. I want them to know I'm the prize.", scores: { dom: 20, mys: 0, cha: 0 } },
-                  { text: "Comfortable. I want them to feel seen.", scores: { dom: 0, mys: 0, cha: 20 } },
-                  { text: "Curious. I want them wondering who I am.", scores: { dom: 5, mys: 20, cha: 5 } }
-              ] 
+                  { text: "Intimidated. I want them to know I'm the prize.", scores: { dom: 20, mys: 0,  cha: 0 } },
+                  { text: "Comfortable. I want them to feel seen.",           scores: { dom: 0,  mys: 0,  cha: 20 } },
+                  { text: "Curious. I want them wondering who I am.",         scores: { dom: 5,  mys: 20, cha: 5 } }
+              ]
             },
             { q: "Your flirting style is best described as...", cat: "Tactic",
               a: [
-                  { text: "Direct and intense eye contact.", scores: { dom: 20, mys: 0, cha: 5 } },
-                  { text: "Playful teasing and hot/cold signals.", scores: { dom: 10, mys: 15, cha: 10 } },
-                  { text: "Deep listening and emotional mirroring.", scores: { dom: 0, mys: 5, cha: 25 } }
-              ] 
+                  { text: "Direct and intense eye contact.",                   scores: { dom: 20, mys: 0,  cha: 5 } },
+                  { text: "Playful teasing and hot/cold signals.",             scores: { dom: 10, mys: 15, cha: 10 } },
+                  { text: "Deep listening and emotional mirroring.",           scores: { dom: 0,  mys: 5,  cha: 25 } }
+              ]
             },
             { q: "If someone pulls away from you, you...", cat: "Reaction",
               a: [
-                  { text: "Chase them harder. I love the hunt.", scores: { dom: 25, mys: 0, cha: 0 } },
-                  { text: "Pull back further. Let them come to me.", scores: { dom: 10, mys: 20, cha: 0 } },
-                  { text: "Ask them what's wrong and try to fix it.", scores: { dom: 0, mys: 0, cha: 15 } }
-              ] 
+                  { text: "Chase them harder. I love the hunt.",               scores: { dom: 25, mys: 0,  cha: 0 } },
+                  { text: "Pull back further. Let them come to me.",           scores: { dom: 10, mys: 20, cha: 0 } },
+                  { text: "Ask them what's wrong and try to fix it.",          scores: { dom: 0,  mys: 0,  cha: 15 } }
+              ]
             },
             { q: "What makes someone instantly attractive to you?", cat: "Desire",
               a: [
-                  { text: "They seem unobtainable or dangerous.", scores: { dom: 15, mys: 15, cha: 0 } },
-                  { text: "They are obsessed with me.", scores: { dom: 20, mys: 0, cha: 0 } },
-                  { text: "They make me feel safe and understood.", scores: { dom: 0, mys: 0, cha: 20 } }
-              ] 
+                  { text: "They seem unobtainable or dangerous.",              scores: { dom: 15, mys: 15, cha: 0 } },
+                  { text: "They are obsessed with me.",                        scores: { dom: 20, mys: 0,  cha: 0 } },
+                  { text: "They make me feel safe and understood.",            scores: { dom: 0,  mys: 0,  cha: 20 } }
+              ]
             },
             { q: "The biggest mistake people make in romance is...", cat: "Philosophy",
               a: [
-                  { text: "Giving everything away too soon.", scores: { dom: 5, mys: 25, cha: 0 } },
-                  { text: "Being too nice and boring.", scores: { dom: 20, mys: 5, cha: 0 } },
-                  { text: "Playing games instead of being real.", scores: { dom: 0, mys: 0, cha: 20 } }
-              ] 
+                  { text: "Giving everything away too soon.",                  scores: { dom: 5,  mys: 25, cha: 0 } },
+                  { text: "Being too nice and boring.",                        scores: { dom: 20, mys: 5,  cha: 0 } },
+                  { text: "Playing games instead of being real.",              scores: { dom: 0,  mys: 0,  cha: 20 } }
+              ]
             },
             { q: "You are at a party. Where are you?", cat: "Social",
               a: [
-                  { text: "In the center, holding court.", scores: { dom: 20, mys: 0, cha: 10 } },
-                  { text: "In the corner, having a deep talk with one person.", scores: { dom: 0, mys: 10, cha: 20 } },
-                  { text: "Floating around, leaving before it ends.", scores: { dom: 5, mys: 20, cha: 5 } }
-              ] 
+                  { text: "In the center, holding court.",                     scores: { dom: 20, mys: 0,  cha: 10 } },
+                  { text: "In the corner, having a deep talk with one person.",scores: { dom: 0,  mys: 10, cha: 20 } },
+                  { text: "Floating around, leaving before it ends.",          scores: { dom: 5,  mys: 20, cha: 5 } }
+              ]
             },
             { q: "Your ideal first date involves...", cat: "Scenario",
               a: [
-                  { text: "Something high-adrenaline or expensive.", scores: { dom: 20, mys: 0, cha: 0 } },
-                  { text: "A quiet, dark bar with no distractions.", scores: { dom: 5, mys: 15, cha: 10 } },
-                  { text: "Doing something they love so they feel special.", scores: { dom: 0, mys: 0, cha: 25 } }
-              ] 
+                  { text: "Something high-adrenaline or expensive.",           scores: { dom: 20, mys: 0,  cha: 0 } },
+                  { text: "A quiet, dark bar with no distractions.",           scores: { dom: 5,  mys: 15, cha: 10 } },
+                  { text: "Doing something they love so they feel special.",   scores: { dom: 0,  mys: 0,  cha: 25 } }
+              ]
             },
             { q: "How much about your past do you reveal?", cat: "Mystery",
               a: [
-                  { text: "Everything. I'm an open book.", scores: { dom: 0, mys: -10, cha: 15 } },
-                  { text: "Only the impressive parts.", scores: { dom: 15, mys: 0, cha: 5 } },
-                  { text: "Very little. I prefer they imagine the rest.", scores: { dom: 5, mys: 30, cha: 0 } }
-              ] 
+                  { text: "Everything. I'm an open book.",                     scores: { dom: 0,  mys: -10, cha: 15 } },
+                  { text: "Only the impressive parts.",                        scores: { dom: 15, mys: 0,  cha: 5 } },
+                  { text: "Very little. I prefer they imagine the rest.",      scores: { dom: 5,  mys: 30, cha: 0 } }
+              ]
             },
             { q: "When you want something, you...", cat: "Action",
               a: [
-                  { text: "Take it.", scores: { dom: 25, mys: 0, cha: 0 } },
-                  { text: "Hint at it until they offer it.", scores: { dom: 5, mys: 20, cha: 5 } },
-                  { text: "Ask nicely and explain why.", scores: { dom: 0, mys: 0, cha: 15 } }
-              ] 
+                  { text: "Take it.",                                          scores: { dom: 25, mys: 0,  cha: 0 } },
+                  { text: "Hint at it until they offer it.",                   scores: { dom: 5,  mys: 20, cha: 5 } },
+                  { text: "Ask nicely and explain why.",                       scores: { dom: 0,  mys: 0,  cha: 15 } }
+              ]
             },
             { q: "What is your secret weapon?", cat: "Asset",
               a: [
-                  { text: "My looks / My reputation.", scores: { dom: 20, mys: 0, cha: 0 } },
-                  { text: "My absence. People miss me when I'm gone.", scores: { dom: 5, mys: 25, cha: 0 } },
-                  { text: "My empathy. I know what people need.", scores: { dom: 0, mys: 5, cha: 25 } }
-              ] 
+                  { text: "My looks / My reputation.",                         scores: { dom: 20, mys: 0,  cha: 0 } },
+                  { text: "My absence. People miss me when I'm gone.",         scores: { dom: 5,  mys: 25, cha: 0 } },
+                  { text: "My empathy. I know what people need.",              scores: { dom: 0,  mys: 5,  cha: 25 } }
+              ]
             },
             { q: "Conflict in a relationship is...", cat: "Conflict",
               a: [
-                  { text: "A power struggle I intend to win.", scores: { dom: 20, mys: 0, cha: -5 } },
-                  { text: "Something to be avoided or smoothed over.", scores: { dom: 0, mys: 5, cha: 20 } },
-                  { text: "A chance to create emotional spikes.", scores: { dom: 10, mys: 15, cha: 5 } }
-              ] 
+                  { text: "A power struggle I intend to win.",                 scores: { dom: 20, mys: 0,  cha: -5 } },
+                  { text: "Something to be avoided or smoothed over.",         scores: { dom: 0,  mys: 5,  cha: 20 } },
+                  { text: "A chance to create emotional spikes.",              scores: { dom: 10, mys: 15, cha: 5 } }
+              ]
             },
             { q: "If you were a mythical creature, you would be...", cat: "Abstract",
               a: [
-                  { text: "A Dragon. Powerful and hoarding gold.", scores: { dom: 25, mys: 0, cha: 0 } },
-                  { text: "A Siren. Luring sailors to the rocks.", scores: { dom: 10, mys: 25, cha: 0 } },
-                  { text: "A Healer. Fixing the broken.", scores: { dom: 0, mys: 0, cha: 25 } }
-              ] 
+                  { text: "A Dragon. Powerful and hoarding gold.",             scores: { dom: 25, mys: 0,  cha: 0 } },
+                  { text: "A Siren. Luring sailors to the rocks.",             scores: { dom: 10, mys: 25, cha: 0 } },
+                  { text: "A Healer. Fixing the broken.",                      scores: { dom: 0,  mys: 0,  cha: 25 } }
+              ]
             },
             { q: "Finally, what do you really want?", cat: "Goal",
               a: [
-                  { text: "Worship.", scores: { dom: 20, mys: 5, cha: 0 } },
-                  { text: "Obsession.", scores: { dom: 5, mys: 20, cha: 0 } },
-                  { text: "Connection.", scores: { dom: 0, mys: 0, cha: 20 } }
-              ] 
+                  { text: "Worship.",                                          scores: { dom: 20, mys: 5,  cha: 0 } },
+                  { text: "Obsession.",                                        scores: { dom: 5,  mys: 20, cha: 0 } },
+                  { text: "Connection.",                                       scores: { dom: 0,  mys: 0,  cha: 20 } }
+              ]
             }
         ];
 
         const archetypes = {
-            "Siren": {
-                title: "The Siren",
-                subtitle: "The Ultimate Fantasy",
-                summary: "You operate through sensory distraction. You offer a world of pleasure and danger that men/women cannot resist.",
-                desc: "Your high Mystery and moderate Dominance make you a Siren. You do not chase; you lure. You understand that people are bored, and you offer them a spectacle. Your power lies in your ability to embody the fantasy of your target while remaining just out of reach."
+            Siren: {
+                title: "Siren",
+                subtitle: "The beautiful problem",
+                summary: "You don’t chase. You create a feeling, then let people wander in. You are the plot twist, not the plot.",
+                desc: "High Mystery with a sharp edge of Dominance puts you firmly in Siren territory. You know how to be seen without being available. Your strength is atmosphere: the way you look, speak, disappear and reappear at exactly the right moment.",
+                bullets: [
+                    "You’re not loud, but people notice when you enter or leave.",
+                    "You share just enough to feel intimate, then pull the curtain closed.",
+                    "You rarely text first, but somehow the conversation always circles back to you."
+                ]
             },
-            "Rake": {
-                title: "The Rake",
-                subtitle: "The Relentless Hunter",
-                summary: "You desire the impossible. You overwhelm your target with pure, focused desire until they surrender.",
-                desc: "High Dominance defines you. You are the Rake (or the Ardour). You don't play games of subtle withdrawal; you burn with intensity. Your secret weapon is the ability to make the target feel like they are the only person in the world... for now."
+            Rake: {
+                title: "Rake",
+                subtitle: "The relentless admirer",
+                summary: "You come on strong and stay there. When you want someone, it is painfully obvious – in a good and dangerous way.",
+                desc: "Sky-high Dominance with a taste for drama makes you the Rake. You seduce by making people feel chosen, sometimes obsessively so. Subtlety is not your brand; intensity is.",
+                bullets: [
+                    "You can turn small crushes into full emotional sagas in 24 hours.",
+                    "You are excellent at making people feel like the only person in the room.",
+                    "You risk burning things out as fast as you light them up."
+                ]
             },
-            "Coquette": {
-                title: "The Coquette",
-                subtitle: "The Hot & Cold Master",
-                summary: "You are a master of delayed gratification. You give hope, then withdraw it, keeping them trapped in the loop.",
-                desc: "High Mystery and calculated withdrawal make you a Coquette. You understand that humans want what they cannot have. By oscillating between warmth and coldness, you create an addiction in your target that is hard to break."
+            Coquette: {
+                title: "Coquette",
+                subtitle: "The hot-and-cold expert",
+                summary: "You specialise in delayed gratification. You give just enough, then vanish, and watch them lean in harder.",
+                desc: "Very high Mystery with carefully measured Dominance turns you into a classic Coquette. You instinctively know when to respond, when to leave them on read, and when to act like you barely noticed.",
+                bullets: [
+                    "You answer messages just late enough to be noticed.",
+                    "You like having options and keeping them slightly off-balance.",
+                    "People call you confusing. You call it strategy."
+                ]
             },
-            "Charmer": {
-                title: "The Charmer",
-                subtitle: "The Mirror",
-                summary: "You make people feel amazing about themselves. You deflect attention from yourself to shine it on them.",
-                desc: "High Charm scores. You do not fight; you yield. By validating the target's ego and listening intensely, you lower their defenses completely. They fall for you because they love who they are when they are with you."
+            Charmer: {
+                title: "Charmer",
+                subtitle: "The emotional mirror",
+                summary: "You make people feel deeply seen. They don’t fall for you; they fall for who they are around you.",
+                desc: "Charm is your highest stat. You seduce by listening in 4K. You notice details, mirror emotions and give people the feeling of finally being understood.",
+                bullets: [
+                    "People overshare around you without realising it.",
+                    "You remember small details and use them later in terrifyingly accurate ways.",
+                    "You rarely push. You simply make “yes” feel very safe."
+                ]
             },
-            "Ideal": {
-                title: "The Ideal Lover",
-                subtitle: "The Broken Wing Fixer",
-                summary: "You represent the dreams of your target. You observe what is missing in their life and become it.",
-                desc: "Balanced Mystery and Charm. You play the role of the savior or the muse. You have a chameleon-like quality that allows you to fit into the empty space in someone's soul perfectly."
+            Ideal: {
+                title: "Ideal Lover",
+                subtitle: "The custom fantasy",
+                summary: "You quietly study what someone misses, then become exactly that. You don’t just seduce people; you redesign their life.",
+                desc: "Balanced Charm and Mystery mean you’re a chameleon. You don’t offer a generic vibe – you offer the one thing the other person secretly wants but never gets.",
+                bullets: [
+                    "You shift your energy depending on who you’re with.",
+                    "You turn up as the supportive one, the wild one, or the calm one on demand.",
+                    "People describe you as “exactly what I needed right then”."
+                ]
             },
-            "Dandy": {
-                title: "The Dandy",
-                subtitle: "The Rule Breaker",
-                summary: "You refuse to fit into boxes. Your androgyny or rebellion is magnetic to those trapped in boredom.",
-                desc: "Moderate Dominance and Mystery. You seduce by offering a life of freedom. You represent the 'forbidden fruit' to people who are tired of playing by society's rules."
+            Dandy: {
+                title: "Dandy",
+                subtitle: "The walking alternative",
+                summary: "You don’t fit the script – and that is the point. You make people question their type, their rules, and sometimes their entire life plan.",
+                desc: "With strong Dominance and Mystery, you magnetise people who are bored of normal. You seduce by being unapologetically yourself, even when it doesn’t fit the mould.",
+                bullets: [
+                    "You attract people who swear you are “not their type”.",
+                    "You blur lines – in style, behaviour, or lifestyle choices.",
+                    "You are most attractive when you’re not trying to be anything but yourself."
+                ]
             },
-            "Natural": {
-                title: "The Natural",
-                subtitle: "The Innocent",
-                summary: "You aren't trying to seduce, which is why it works. Your playful, childish energy lowers all guards.",
-                desc: "Balanced scores with low Dominance. You remind people of a simpler time. Your lack of pretension is refreshing in a world of games, making people want to protect and possess you."
+            Natural: {
+                title: "Natural",
+                subtitle: "The unbothered favourite",
+                summary: "You don’t perform seduction; you just exist. People relax around you, then suddenly realise they have a crush.",
+                desc: "Balanced scores with lower Dominance make you a Natural. You seduce by being playful, open and emotionally non-threatening. You feel more like a warm memory than a risk.",
+                bullets: [
+                    "You don’t chase, but you’re easy to get attached to.",
+                    "You’re the “I didn’t mean to like you, but here we are” archetype.",
+                    "Your biggest trap is underestimating how powerful your softness actually is."
+                ]
             }
         };
 
-        // ================= LOGIC =================
+        // ================= STATE =================
         let currentQ = 0;
         let totalScores = { dom: 0, mys: 0, cha: 0 };
         let startTime = 0;
+        let timerActive = false;
 
-        // Exposed functions
-        window.startQuiz = function() {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('quiz-interface').classList.remove('hidden');
+        const $ = (id) => document.getElementById(id);
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60).toString().padStart(2,"0");
+            const s = (sec % 60).toString().padStart(2,"0");
+            return `${m}:${s}`;
+        }
+
+        function computeSeductionScore() {
+            const raw = totalScores.dom + totalScores.mys + totalScores.cha;
+            return Math.max(0, Math.min(100, Math.round(raw / 4)));
+        }
+
+        function severityLabel(score) {
+            if (score < 30) return "Soft power";
+            if (score < 55) return "Dangerous enough";
+            if (score < 75) return "High impact";
+            return "Certified trouble";
+        }
+
+        function fillTags(key, score) {
+            const container = $("result-tags");
+            container.innerHTML = "";
+            const tags = [];
+
+            tags.push(`Primary style: ${key}`);
+            if (score >= 70) tags.push("Handle with care");
+            else if (score >= 45) tags.push("Borderline addictive");
+            else tags.push("Calm but effective");
+
+            if (totalScores.dom > totalScores.mys && totalScores.dom > totalScores.cha) tags.push("Pursuer energy");
+            if (totalScores.mys >= totalScores.dom && totalScores.mys >= totalScores.cha) tags.push("Mystery first");
+            if (totalScores.cha > totalScores.dom && totalScores.cha >= totalScores.mys) tags.push("Soft power specialist");
+
+            tags.slice(0,4).forEach(t => {
+                const span = document.createElement("span");
+                span.className = "pill px-3 py-1";
+                span.textContent = t;
+                container.appendChild(span);
+            });
+        }
+
+        // ================= QUIZ FLOW =================
+        window.startQuiz = function () {
+            $("start-screen").classList.add("hidden");
+            $("result-screen").classList.add("hidden");
+            $("quiz-interface").classList.remove("hidden");
+            currentQ = 0;
+            totalScores = { dom: 0, mys: 0, cha: 0 };
             startTime = Date.now();
+            timerActive = true;
             renderQuestion();
-        }
+            updateTimer();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
 
-        window.shareResult = function() {
-            if(navigator.share) {
-                navigator.share({ title: "My Seduction Archetype", text: "I am " + document.getElementById('result-title').innerText, url: window.location.href });
-            } else {
-                alert("Result copied to clipboard.");
-            }
-        }
+        window.retakeTest = function () {
+            window.startQuiz();
+        };
 
         function renderQuestion() {
             if (currentQ >= questions.length) {
@@ -372,20 +757,18 @@
             }
 
             const q = questions[currentQ];
-            document.getElementById('q-category').innerText = q.cat;
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-text').innerText = String(currentQ + 1).padStart(2, '0') + " / " + questions.length;
-            
-            // Progress Bar
-            document.getElementById('progress-bar').style.width = ((currentQ / questions.length) * 100) + "%";
+            $("q-category").textContent = q.cat;
+            $("question-text").textContent = q.q;
+            $("progress-text").textContent = `${String(currentQ + 1).padStart(2,"0")} / ${questions.length}`;
+            $("progress-bar").style.width = `${(currentQ / questions.length) * 100}%`;
 
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
+            const container = $("options-container");
+            container.innerHTML = "";
 
-            q.a.forEach((opt) => {
-                const btn = document.createElement('button');
-                btn.className = "choice-btn w-full p-6 text-left text-lg text-slate-300 rounded-r-lg group";
-                btn.innerHTML = `<span class="group-hover:text-luxe-gold transition-colors">${opt.text}</span>`;
+            q.a.forEach(opt => {
+                const btn = document.createElement("button");
+                btn.className = "choice-btn w-full p-4 sm:p-5 text-left text-sm sm:text-[15px] text-slate-200";
+                btn.innerHTML = `<span>${opt.text}</span>`;
                 btn.onclick = () => handleAnswer(opt.scores);
                 container.appendChild(btn);
             });
@@ -399,59 +782,147 @@
             renderQuestion();
         }
 
-        function finishQuiz() {
-            const durationSec = ((Date.now() - startTime) / 1000).toFixed(0);
-            
-            // Determine Archetype
-            let resultKey = "Natural";
+        function updateTimer() {
+            if (!timerActive || $("quiz-interface").classList.contains("hidden")) return;
+            const diff = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
+            $("timer-display").textContent = formatTime(diff);
+            requestAnimationFrame(updateTimer);
+        }
+
+        function pickArchetype() {
             const { dom, mys, cha } = totalScores;
+            let key = "Natural";
 
-            if (mys > 100 && dom > 50) resultKey = "Siren";
-            else if (mys > 100 && cha > 50) resultKey = "Ideal";
-            else if (mys > 120) resultKey = "Coquette";
-            else if (dom > 120) resultKey = "Rake";
-            else if (cha > 120) resultKey = "Charmer";
-            else if (dom > 50 && mys > 50) resultKey = "Dandy";
-            else resultKey = "Natural";
+            if (mys > 100 && dom > 50) key = "Siren";
+            else if (mys > 120) key = "Coquette";
+            else if (dom > 120) key = "Rake";
+            else if (cha > 120) key = "Charmer";
+            else if (mys > 100 && cha > 50) key = "Ideal";
+            else if (dom > 50 && mys > 50) key = "Dandy";
+            else key = "Natural";
 
-            const data = archetypes[resultKey];
+            return key;
+        }
 
-            // UI Render
-            document.getElementById('quiz-interface').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
+        function finishQuiz() {
+            timerActive = false;
+            $("quiz-interface").classList.add("hidden");
+            $("result-screen").classList.remove("hidden");
 
-            document.getElementById('result-title').innerText = data.title;
-            document.getElementById('result-subtitle').innerText = data.subtitle;
-            document.getElementById('result-summary').innerText = data.summary;
-            document.getElementById('result-desc').innerText = data.desc;
+            const durationSec = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
+            const key = pickArchetype();
+            const data = archetypes[key];
 
-            // Stats
-            document.getElementById('stat-mystery').innerText = mys > 80 ? "Enigmatic" : "Open";
-            document.getElementById('stat-dominance').innerText = dom > 80 ? "Hunter" : (cha > 80 ? "Yielding" : "Passive");
+            const sedScore = computeSeductionScore();
+            const severity = severityLabel(sedScore);
 
-            // Save Data
+            $("result-title").textContent = data.title;
+            $("result-subtitle").textContent = data.subtitle;
+            $("result-summary").textContent = data.summary;
+            $("result-desc").textContent = data.desc;
+
+            $("seduction-score").textContent = `${sedScore}%`;
+            $("seduction-bar").style.width = `${sedScore}%`;
+            $("severity-chip").textContent = severity;
+
+            const domCap = Math.max(0, Math.min(150, totalScores.dom));
+            const mysCap = Math.max(0, Math.min(150, totalScores.mys));
+            const chaCap = Math.max(0, Math.min(150, totalScores.cha));
+
+            $("stat-dom").textContent = domCap;
+            $("stat-mys").textContent = mysCap;
+            $("stat-cha").textContent = chaCap;
+
+            $("bar-dom-label").textContent = domCap;
+            $("bar-mys-label").textContent = mysCap;
+            $("bar-cha-label").textContent = chaCap;
+
+            $("bar-dom").style.width = `${Math.min(100, Math.round(domCap / 1.5))}%`;
+            $("bar-mys").style.width = `${Math.min(100, Math.round(mysCap / 1.5))}%`;
+            $("bar-cha").style.width = `${Math.min(100, Math.round(chaCap / 1.5))}%`;
+
+            fillTags(key, sedScore);
+
+            const quick = $("quick-lines");
+            quick.innerHTML = "";
+            (data.bullets || []).forEach(line => {
+                const p = document.createElement("p");
+                p.textContent = "• " + line;
+                quick.appendChild(p);
+            });
+
+            $("report-extra-1").textContent =
+                "This archetype is built from your answers about distance, control, attention and vulnerability. It isn’t about how attractive you are – it is about how you create tension, safety or chaos in someone else’s nervous system.";
+            $("report-extra-2").textContent =
+                "If you recognise yourself here, that is the useful part. Your style isn’t automatically a red flag; it becomes one when you use it without awareness. The more honest you are about your patterns, the less likely you are to repeat the same story with a new name.";
+
+            // Save data using existing game engine hook
             const payload = {
                 testId: "seduction_archetype",
                 timestamp: new Date().toISOString(),
-                archetype: resultKey,
+                archetype: key,
                 metrics: {
-                    dominance_index: dom,
-                    mystery_score: mys,
-                    charm_factor: cha,
-                    time_taken: parseInt(durationSec)
+                    dominance_index: totalScores.dom,
+                    mystery_score: totalScores.mys,
+                    charm_factor: totalScores.cha,
+                    time_taken: durationSec,
+                    seduction_score: sedScore
                 }
             };
 
-            // Use global save handler if available
             if (window.saveTestResult) {
                 try {
                     window.saveTestResult(payload);
-                    console.log("Saved Seduction Profile");
-                } catch(e) { console.warn("Save Error", e); }
-            } else {
-                console.log("Mock Save:", payload);
+                } catch (e) {
+                    console.warn("saveTestResult failed", e);
+                }
             }
+
+            if (window.GameEngine && typeof window.GameEngine.trackEvent === "function") {
+                try {
+                    window.GameEngine.trackEvent("test_complete", {
+                        testId: "seduction_archetype",
+                        archetype: key,
+                        durationSeconds: durationSec,
+                        seductionScore: sedScore
+                    });
+                } catch (e) {}
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
+
+        // ============== UI HELPERS ==============
+        window.toggleFullReport = function () {
+            $("full-report").classList.toggle("hidden");
+        };
+
+        window.shareResult = async function () {
+            const title = "My Seduction Archetype • QuizRealm";
+            const arche = $("result-title").textContent;
+            const sub = $("result-subtitle").textContent;
+            const text =
+                `I took the Seduction Archetype test on QuizRealm.\nResult: The ${arche} – ${sub}.\nWhat are you?`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title, text, url: window.location.href });
+                    return;
+                } catch (e) {
+                    // fall through
+                }
+            }
+
+            const fallback = `${text}\n${window.location.href}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(fallback);
+                    alert("Caption + link copied. Paste it into your chat or story.");
+                    return;
+                } catch (e) {}
+            }
+            alert("Share this:\n\n" + fallback);
+        };
     </script>
 </body>
 </html>
