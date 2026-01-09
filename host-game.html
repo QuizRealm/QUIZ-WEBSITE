@@ -34,6 +34,8 @@
         body { background-color: #0f172a; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
         .timer-bar { transition: width 1s linear; }
+        .seo-box h3 { color: white; font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .seo-box p { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; }
     </style>
 </head>
 
@@ -50,9 +52,11 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
                 <div class="lg:col-span-4 glass rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-brand">
                     <div class="text-xs font-bold text-brand uppercase tracking-widest mb-4 bg-brand/10 px-3 py-1 rounded-full border border-brand/20">Scan to Join</div>
+                    
                     <div class="bg-white p-2 rounded-2xl shadow-2xl mb-6">
                         <img id="qr-img" src="" alt="Scan QR" class="w-40 h-40 object-contain" />
                     </div>
+                    
                     <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Room Code</div>
                     <div id="display-code" class="text-7xl font-black text-white tracking-widest leading-none my-2">----</div>
                     <div class="text-xs text-blue-400 underline cursor-pointer mt-2" onclick="openPlayerLink()">Open Player Link</div>
@@ -126,6 +130,7 @@
                 const joinUrl = `${window.location.origin}/play.html?code=${settings.roomCode}`;
                 const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}`;
                 document.getElementById('qr-img').src = qrApi;
+                
                 window.openPlayerLink = () => window.open(joinUrl, '_blank');
 
                 await setDoc(ROOM_REF, {
@@ -155,14 +160,13 @@
                         const count = Object.keys(data.answers || {}).length;
                         const total = Object.keys(gameState.players).length;
                         document.getElementById('ans-count').innerText = `${count} / ${total}`;
-                        
                         if (total > 0 && count >= total) endQuestion();
                     }
                 });
 
             } catch (err) {
                 console.error(err);
-                document.getElementById('error-banner').innerText = "System Error: " + err.message;
+                document.getElementById('error-banner').innerText = "Error: " + err.message;
                 document.getElementById('error-banner').classList.remove('hidden');
             }
         }
@@ -191,6 +195,7 @@
 
         window.startGame = function() {
             if (!QUESTION_BANKS[settings.categoryKey]) { alert("Data Error"); return; }
+            
             const bank = QUESTION_BANKS[settings.categoryKey];
             let pool = [...(bank.easy||[]), ...(bank.medium||[])];
             pool.sort(() => Math.random() - 0.5);
@@ -201,6 +206,7 @@
             document.getElementById('view-lobby').classList.remove('flex');
             document.getElementById('view-game').classList.remove('hidden');
             document.getElementById('view-game').classList.add('flex');
+            
             startRound();
         }
 
@@ -211,12 +217,10 @@
             document.getElementById('ans-count').innerText = `0 / ${Object.keys(gameState.players).length}`;
 
             const colors = ['bg-red-500', 'bg-blue-500', 'bg-yellow-500', 'bg-green-500'];
-            const icons = ['square', 'circle', 'play', 'diamond'];
-
             document.getElementById('opt-grid').innerHTML = q.options.map((opt, i) => `
                 <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-surface/60 backdrop-blur-sm">
                     <div class="w-12 h-12 rounded-xl ${colors[i]} flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                        <i class="fas fa-${icons[i]} ${i===2?'rotate-[-90deg]':''}"></i>
+                        ${['A','B','C','D'][i]}
                     </div>
                     <span class="text-xl font-bold text-white">${opt}</span>
                 </div>
@@ -225,8 +229,9 @@
             await updateDoc(ROOM_REF, {
                 status: 'GAME',
                 currentQuestion: {
-                    text: q.question, // FIX 1: ALWAYS SEND TEXT
-                    mobileMode: true, // FIX 1: FORCE MOBILE DISPLAY
+                    text: q.question, // Force Mobile Mode Text
+                    options: q.options, // Send options to phone
+                    mobileMode: true,
                     startTime: Date.now()
                 },
                 answers: {}
@@ -246,6 +251,7 @@
 
         async function endQuestion() {
             if(gameState.timer) clearTimeout(gameState.timer);
+            
             const snap = await getDoc(ROOM_REF);
             const data = snap.data();
             const answers = data.answers || {};
@@ -254,22 +260,24 @@
 
             let updates = { status: 'RESULT', correctIndex: q.correctIndex };
             
-            // FIX 2: STRICT SCORING LOGIC
+            // --- SCORING FIX ---
             Object.entries(gameState.players).forEach(([nick, pData]) => {
-                const playerAns = answers[nick];
-                
-                // Only give points if answer exists AND equals correct index (Compare Numbers)
-                if (playerAns && Number(playerAns.val) === Number(q.correctIndex)) {
-                    const timeTaken = (playerAns.time - startTime) / 1000;
-                    // Max Bonus 500, Min Bonus 0
-                    const speedBonus = Math.max(0, Math.floor((1 - (timeTaken / TIMER_DURATION)) * 500));
-                    const points = 1000 + speedBonus;
-                    
-                    // Update score safely
-                    const currentScore = Number(pData.score) || 0;
-                    updates[`players.${nick}.score`] = currentScore + points;
-                } 
-                // DO NOT ADD POINTS IF WRONG
+                if(answers[nick]) {
+                    // Force Number Conversion to match types
+                    const val = Number(answers[nick].val);
+                    const correct = Number(q.correctIndex);
+
+                    if (val === correct) {
+                        const timeTaken = (answers[nick].time - startTime) / 1000;
+                        const speedBonus = Math.max(0, Math.floor((1 - (timeTaken / TIMER_DURATION)) * 500));
+                        const points = 1000 + speedBonus;
+                        
+                        // Add points only if correct
+                        gameState.players[nick].score = (pData.score || 0) + points;
+                    }
+                    // Else: Score remains the same (No points for wrong answer)
+                }
+                updates[`players.${nick}.score`] = gameState.players[nick].score;
             });
 
             await updateDoc(ROOM_REF, updates);
