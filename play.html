@@ -2,25 +2,44 @@
 <html lang="en">
 <head>
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Controller | QuizRealm</title>
     <meta name="theme-color" content="#0f172a">
+
     <script type="module" src="firebase-config.js"></script>
+    
     <script type="module">
         import { doc, updateDoc, onSnapshot, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         window.fs = { doc, updateDoc, onSnapshot, getDoc, setDoc };
     </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { brand: '#6366f1', surface: '#1e293b', background: '#0f172a', opt0: '#ef4444', opt1: '#3b82f6', opt2: '#eab308', opt3: '#22c55e' } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: '#6366f1', surface: '#1e293b', background: '#0f172a',
+                        opt0: '#ef4444', opt1: '#3b82f6', opt2: '#eab308', opt3: '#22c55e',
+                    },
+                    animation: { 'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)' },
+                    keyframes: { pop: { '0%': { transform: 'scale(0.8)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } } }
+                }
+            }
+        }
     </script>
+
     <style>
-        body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; touch-action: manipulation; }
-        .game-btn { border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: all 0.1s; text-align: center; padding: 10px; }
+        body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; overscroll-behavior: none; touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .game-btn { border: none; border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: all 0.1s; }
         .game-btn:active { transform: translateY(4px); box-shadow: none; filter: brightness(0.9); }
+        .glass-modal { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); }
     </style>
 </head>
 
@@ -28,10 +47,18 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div id="join-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-background hidden">
-        <div class="w-full max-w-sm p-8 rounded-3xl border border-white/10 text-center shadow-2xl bg-surface/90 backdrop-blur">
+        <div class="glass-modal w-full max-w-sm p-8 rounded-3xl border border-white/10 text-center shadow-2xl animate-pop">
+            <div class="w-16 h-16 bg-brand rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand/20">
+                <i class="fas fa-user-astronaut text-3xl text-white"></i>
+            </div>
             <h2 class="text-2xl font-black text-white mb-2">Join Game</h2>
-            <input type="text" id="join-nick" placeholder="NICKNAME" maxlength="12" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-4 text-center font-bold text-white mb-4 uppercase">
-            <button onclick="confirmJoin()" class="w-full py-4 bg-brand rounded-xl font-bold text-white">ENTER LOBBY</button>
+            <p class="text-slate-400 text-sm mb-6">Enter a nickname to enter the room.</p>
+            
+            <input type="text" id="join-nick" placeholder="NICKNAME" maxlength="12" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-4 text-center font-bold text-white mb-4 focus:border-brand focus:outline-none uppercase placeholder-slate-600">
+            
+            <button onclick="confirmJoin()" class="w-full py-4 bg-gradient-to-r from-brand to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:scale-[1.02] transition-transform">
+                ENTER LOBBY
+            </button>
         </div>
     </div>
 
@@ -43,35 +70,55 @@
         <div class="bg-brand/20 px-3 py-1 rounded-full text-brand font-mono font-bold text-sm" id="score-disp">0</div>
     </nav>
 
+    <div id="loading-screen" class="fixed inset-0 bg-background z-40 flex items-center justify-center">
+        <div class="text-center animate-pulse">
+            <i class="fas fa-satellite-dish text-4xl text-brand mb-4"></i>
+            <p class="text-slate-400 font-mono text-sm">CONNECTING...</p>
+        </div>
+    </div>
+
     <main class="flex-grow pt-20 px-4 pb-6 relative z-10 w-full max-w-md mx-auto h-full overflow-hidden">
         
-        <div id="view-lobby" class="hidden flex-col items-center justify-center h-full text-center">
+        <div id="view-lobby" class="hidden flex-col items-center justify-center h-full text-center animate-pop">
             <div class="w-24 h-24 bg-surface rounded-full flex items-center justify-center mb-6 shadow-xl border border-white/10">
                 <i class="fas fa-gamepad text-4xl text-brand animate-pulse"></i>
             </div>
             <h1 class="text-3xl font-extrabold text-white mb-2">You're In!</h1>
-            <p class="text-slate-400 text-sm">Wait for host.</p>
+            <p class="text-slate-400 text-sm">Watch the big screen.</p>
+            <div class="mt-4 px-3 py-1 bg-green-500/20 text-green-400 text-xs font-bold rounded-full">CONNECTED</div>
         </div>
 
         <div id="view-game" class="hidden flex-col h-full">
-            <div id="q-card" class="mb-4 p-4 bg-surface rounded-2xl border border-white/10 shadow-lg min-h-[100px] flex items-center justify-center text-center">
+            <div id="q-card" class="hidden mb-4 p-4 bg-surface rounded-2xl border border-white/10 shadow-lg animate-pop">
                 <p id="q-text" class="text-lg font-bold text-white leading-tight">Loading...</p>
             </div>
             
-            <div class="grid grid-cols-1 gap-3 flex-grow content-start pb-safe" id="btn-grid">
-                </div>
+            <div class="grid grid-cols-2 gap-4 flex-grow content-center pb-safe">
+                <button onclick="submit(0)" class="game-btn bg-opt0 h-full text-white">
+                    <i class="fas fa-square text-3xl mb-2"></i><span class="text-xl font-black">A</span>
+                </button>
+                <button onclick="submit(1)" class="game-btn bg-opt1 h-full text-white">
+                    <i class="fas fa-circle text-3xl mb-2"></i><span class="text-xl font-black">B</span>
+                </button>
+                <button onclick="submit(2)" class="game-btn bg-opt2 h-full text-white">
+                    <i class="fas fa-play rotate-[-90deg] text-3xl mb-2"></i><span class="text-xl font-black">C</span>
+                </button>
+                <button onclick="submit(3)" class="game-btn bg-opt3 h-full text-white">
+                    <i class="fas fa-diamond text-3xl mb-2"></i><span class="text-xl font-black">D</span>
+                </button>
+            </div>
         </div>
 
-        <div id="view-feedback" class="hidden flex-col items-center justify-center h-full text-center">
+        <div id="view-feedback" class="hidden flex-col items-center justify-center h-full text-center animate-pop">
             <div class="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mb-4">
                 <i class="fas fa-lock text-3xl text-white"></i>
             </div>
-            <h2 class="text-2xl font-bold text-white">Answer Locked</h2>
-            <p class="text-slate-400 animate-pulse">Waiting for others...</p>
+            <h2 class="text-2xl font-bold text-white">Locked In</h2>
+            <p class="text-slate-400">Wait for results...</p>
         </div>
 
-        <div id="view-result" class="hidden flex-col items-center justify-center h-full text-center">
-            <div id="res-icon-bg" class="w-28 h-28 rounded-full flex items-center justify-center mb-6 shadow-2xl">
+        <div id="view-result" class="hidden flex-col items-center justify-center h-full text-center animate-pop">
+            <div id="res-icon-bg" class="w-28 h-28 rounded-full flex items-center justify-center mb-6 shadow-2xl transition-colors duration-300">
                 <i id="res-icon" class="fas fa-star text-5xl text-white"></i>
             </div>
             <h1 id="res-title" class="text-4xl font-black text-white mb-2">Correct!</h1>
@@ -80,97 +127,135 @@
     </main>
 
     <script type="module">
+        // --- 1. SETUP ---
         let info = {};
         const urlParams = new URLSearchParams(window.location.search);
-        const urlCode = urlParams.get('code');
-        let ROOM_REF, myAnswer = null;
+        const urlCode = urlParams.get('code'); // Get code from QR scan
 
+        // --- 2. GLOBAL STATE ---
+        let ROOM_REF;
+        let myAnswer = null;
+
+        // --- 3. INITIALIZATION LOGIC ---
         function initController() {
             try { info = JSON.parse(localStorage.getItem('qr_player_info')); } catch(e){}
 
+            // SCENARIO A: No Saved Data, but scanned QR Code
             if ((!info || !info.nickname) && urlCode) {
+                // Show Join Modal
+                document.getElementById('loading-screen').classList.add('hidden');
                 document.getElementById('join-modal').classList.remove('hidden');
                 return;
             }
+
+            // SCENARIO B: Has Data, but wrong room (Scanned new QR)
             if (info && urlCode && info.roomCode !== urlCode) {
-                info.roomCode = urlCode;
+                info.roomCode = urlCode; // Update room, keep name
                 localStorage.setItem('qr_player_info', JSON.stringify(info));
             }
+
+            // SCENARIO C: No Data, No Code -> Go Hub
             if ((!info || !info.roomCode) && !urlCode) {
                 window.location.href = 'group-hub.html';
                 return;
             }
-            if (info && info.nickname && info.roomCode) boot();
+
+            // SCENARIO D: Ready to Connect
+            if (info && info.nickname && info.roomCode) {
+                boot();
+            }
         }
 
+        // --- 4. JOIN HANDLER ---
         window.confirmJoin = function() {
             const nick = document.getElementById('join-nick').value.trim().toUpperCase();
-            if (nick.length < 2) return alert("Enter nickname!");
-            
-            const newInfo = { nickname: nick, roomCode: urlCode, role: 'player', timestamp: Date.now() };
+            if (nick.length < 2) { alert("Enter a nickname!"); return; }
+
+            const newInfo = {
+                nickname: nick,
+                roomCode: urlCode,
+                role: 'player',
+                timestamp: Date.now()
+            };
             localStorage.setItem('qr_player_info', JSON.stringify(newInfo));
+            
+            // Reload with data
             info = newInfo;
             document.getElementById('join-modal').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
             boot();
         }
 
+        // --- 5. BOOTSTRAP ---
         async function boot() {
-            if (!window.db || !window.fs) { setTimeout(boot, 100); return; }
+            // Wait for window.fs
+            if (!window.db || !window.fs) {
+                setTimeout(boot, 100);
+                return;
+            }
 
             try {
+                // Init UI
                 document.getElementById('nick-disp').innerText = info.nickname;
-                document.getElementById('avatar-disp').innerText = info.nickname.charAt(0);
+                document.getElementById('avatar-disp').innerText = info.nickname.charAt(0).toUpperCase();
+
+                // Connect to Room
                 ROOM_REF = window.fs.doc(window.db, "group_rooms", info.roomCode);
 
+                // Add Player to DB (This triggers the Host screen update)
                 const playerKey = `players.${info.nickname}`;
-                let joinData = {}; joinData[playerKey] = { score: 0, avatar: 'A', joinedAt: Date.now() };
-                
-                await window.fs.updateDoc(ROOM_REF, joinData).catch(async () => {
+                let joinData = {};
+                joinData[playerKey] = { score: 0, avatar: 'A', joinedAt: Date.now() };
+
+                await window.fs.updateDoc(ROOM_REF, joinData).catch(async (err) => {
+                    console.warn("Update failed, trying Set...", err);
                     await window.fs.setDoc(ROOM_REF, joinData, { merge: true });
                 });
 
+                document.getElementById('loading-screen').classList.add('hidden');
+                
+                // Start Listener
                 window.fs.onSnapshot(ROOM_REF, (snap) => {
-                    if(!snap.exists()) { alert("Room closed"); window.location.href='group-hub.html'; return; }
-                    handleState(snap.data());
+                    if(!snap.exists()) {
+                        alert("Room closed or invalid code.");
+                        window.location.href = 'group-hub.html';
+                        return;
+                    }
+                    const data = snap.data();
+                    handleState(data);
                 });
-            } catch (err) { alert("Connection Error"); }
+
+            } catch (err) {
+                console.error(err);
+                alert("Connection Error: " + err.message);
+                window.location.href = 'group-hub.html';
+            }
         }
 
         function handleState(data) {
+            // Score Update
             if(data.players && data.players[info.nickname]) {
                 document.getElementById('score-disp').innerText = data.players[info.nickname].score;
             }
 
+            // View Management
             if(data.status === 'LOBBY') showView('view-lobby');
             
             if(data.status === 'GAME') {
-                // If we haven't answered yet, show game. If answered, stay on feedback.
-                if (myAnswer === null) {
-                    showView('view-game');
-                    if(data.currentQuestion) {
-                        document.getElementById('q-text').innerText = data.currentQuestion.text;
-                        
-                        // Render Buttons with Text
-                        const opts = data.currentQuestion.options || ["A", "B", "C", "D"];
-                        const colors = ['bg-opt0', 'bg-opt1', 'bg-opt2', 'bg-opt3'];
-                        const icons = ['square', 'circle', 'play', 'diamond'];
-                        
-                        document.getElementById('btn-grid').innerHTML = opts.map((opt, i) => `
-                            <button onclick="submit(${i})" class="game-btn ${colors[i]} h-16 text-white w-full flex-row gap-4">
-                                <i class="fas fa-${icons[i]} ${i===2?'rotate-[-90deg]':''} text-xl"></i>
-                                <span class="text-lg font-bold">${opt}</span>
-                            </button>
-                        `).join('');
-                    }
+                myAnswer = null;
+                showView('view-game');
+                
+                // Mobile Text
+                if(data.currentQuestion && data.currentQuestion.mobileMode) {
+                    document.getElementById('q-card').classList.remove('hidden');
+                    document.getElementById('q-text').innerText = data.currentQuestion.text;
+                } else {
+                    document.getElementById('q-card').classList.add('hidden');
                 }
             }
 
             if(data.status === 'RESULT') {
-                // Convert both to Numbers for safety
-                const correctIdx = Number(data.correctIndex);
-                const myAnsIdx = Number(myAnswer);
-                
-                const isCorrect = (myAnsIdx === correctIdx);
+                const isCorrect = (myAnswer === data.correctIndex);
                 
                 const title = document.getElementById('res-title');
                 const bg = document.getElementById('res-icon-bg');
@@ -182,7 +267,7 @@
                     title.className = "text-4xl font-black text-green-500 mb-2";
                     bg.className = "w-28 h-28 rounded-full bg-green-500 flex items-center justify-center mb-6 shadow-2xl";
                     icon.className = "fas fa-check text-5xl text-white";
-                    pts.innerText = "Good Job!";
+                    pts.innerText = "+1000"; 
                     if(navigator.vibrate) navigator.vibrate([50,50,50]);
                 } else {
                     title.innerText = "Wrong!";
@@ -192,36 +277,34 @@
                     pts.innerText = "+0";
                     if(navigator.vibrate) navigator.vibrate(300);
                 }
-                
-                // Reset for next round
-                myAnswer = null; 
                 showView('view-result');
             }
         }
 
+        // --- ACTIONS ---
         window.submit = function(idx) {
             myAnswer = idx;
             if(navigator.vibrate) navigator.vibrate(50);
             
             let ansData = {};
             ansData[`answers.${info.nickname}`] = { val: idx, time: Date.now() };
-            window.fs.updateDoc(ROOM_REF, ansData);
             
-            // HIDE GAME -> SHOW WAITING
+            window.fs.updateDoc(ROOM_REF, ansData).catch(e => console.error(e));
             showView('view-feedback');
         }
 
         function showView(id) {
-            ['view-lobby','view-game','view-feedback','view-result'].forEach(v => {
-                document.getElementById(v).classList.add('hidden');
-                document.getElementById(v).classList.remove('flex');
-            });
+            ['view-lobby','view-game','view-feedback','view-result'].forEach(v => document.getElementById(v).classList.add('hidden'));
+            document.getElementById(v => document.getElementById(v).classList.remove('flex'));
+            
             const el = document.getElementById(id);
             el.classList.remove('hidden');
             el.classList.add('flex');
         }
 
+        // Initialize based on entry method
         initController();
+
     </script>
 </body>
 </html>
