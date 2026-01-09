@@ -19,7 +19,7 @@
     </script>
     <style>
         body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; touch-action: manipulation; }
-        .game-btn { border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: all 0.1s; text-align: center; padding: 10px; }
+        .game-btn { border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: all 0.1s; text-align: center; padding: 10px; height: 100%; width: 100%; }
         .game-btn:active { transform: translateY(4px); box-shadow: none; filter: brightness(0.9); }
         .timer-progress { transition: width 1s linear; }
     </style>
@@ -63,7 +63,8 @@
                 <p id="q-text" class="text-lg font-bold text-white leading-tight">Loading...</p>
             </div>
             
-            <div class="grid grid-cols-1 gap-3 flex-grow content-start pb-safe" id="btn-grid"></div>
+            <div class="grid grid-cols-1 gap-3 flex-grow content-start pb-safe" id="btn-grid">
+                </div>
         </div>
 
         <div id="view-feedback" class="hidden flex-col items-center justify-center h-full text-center">
@@ -159,7 +160,7 @@
             // Update Wait Count
             if (data.answers) {
                 const ansCount = Object.keys(data.answers).length;
-                document.getElementById('wait-count').innerText = `${totalPlayers - ansCount}`;
+                document.getElementById('wait-count').innerText = `${Math.max(0, totalPlayers - ansCount)}`;
             }
 
             // --- VIEW ROUTING ---
@@ -183,9 +184,9 @@
                         const icons = ['square', 'circle', 'play', 'diamond'];
                         
                         document.getElementById('btn-grid').innerHTML = opts.map((opt, i) => `
-                            <button onclick="submit(${i})" class="game-btn ${colors[i]} h-16 text-white w-full flex-row gap-4">
+                            <button onclick="submit(${i})" class="game-btn ${colors[i]} h-20 text-white w-full">
                                 <i class="fas fa-${icons[i]} ${i===2?'rotate-[-90deg]':''} text-xl"></i>
-                                <span class="text-lg font-bold">${opt}</span>
+                                <span class="text-lg font-bold leading-tight">${opt}</span>
                             </button>
                         `).join('');
                     }
@@ -193,6 +194,7 @@
             }
 
             if(data.status === 'RESULT') {
+                // Strict Type Conversion
                 const correctIdx = Number(data.correctIndex);
                 const myAnsIdx = Number(myAnswer);
                 const isCorrect = (myAnsIdx === correctIdx);
