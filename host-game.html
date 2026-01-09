@@ -11,6 +11,12 @@
     <script type="module" src="firebase-config.js"></script>
     <script src="data.js"></script>
     
+    <script type="module">
+        import { doc, setDoc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // Attach to window so we can access them safely
+        window.fs = { doc, setDoc, onSnapshot, updateDoc, getDoc };
+    </script>
+
     <script src="components.js" defer></script>
     <script type="module" src="assets/ux-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -34,8 +40,6 @@
         body { background-color: #0f172a; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
         .timer-bar { transition: width 1s linear; }
-        .seo-box h3 { color: white; font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem; }
-        .seo-box p { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; }
     </style>
 </head>
 
@@ -46,8 +50,8 @@
 
     <div id="loading-overlay" class="fixed inset-0 bg-background z-50 flex items-center justify-center">
         <div class="text-center animate-pulse">
-            <h2 class="text-2xl font-bold text-white mb-2">System Initializing...</h2>
-            <p class="text-slate-400 text-sm font-mono">Connecting to Database</p>
+            <h2 class="text-2xl font-bold text-white mb-2">Starting System...</h2>
+            <p class="text-slate-400 text-sm font-mono" id="loading-text">Connecting Database</p>
         </div>
     </div>
 
@@ -121,59 +125,49 @@
 
     </main>
 
-    <section class="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/5 mt-auto">
-        <div class="seo-box">
-            <h3>Instant Multiplayer Gaming</h3>
-            <p>QuizRealm transforms any gathering into a live game show. Using advanced WebSocket technology via Firebase, up to 16 players can connect instantly using just their smartphones. No app downloads required—simply scan and play.</p>
-        </div>
-        <div class="seo-box">
-            <h3>Competitive Real-Time Scoring</h3>
-            <p>Our engine calculates scores based on precision and reaction time. The faster you answer correctly, the higher you climb on the live leaderboard. Perfect for classrooms, team building, or game nights.</p>
-        </div>
-    </section>
-
     <quiz-footer></quiz-footer>
 
     <script type="module">
-        import { db } from './firebase-config.js';
-        import { doc, setDoc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+        // --- 1. CONFIG CHECK ---
         let settings = {};
         try { settings = JSON.parse(localStorage.getItem('qr_host_settings')); } catch(e){}
 
         if (!settings || !settings.roomCode) {
+            document.getElementById('loading-overlay').classList.add('hidden');
             document.getElementById('error-banner').innerHTML = "Session missing. <a href='group-hub.html' class='underline'>Return to Hub</a>";
             document.getElementById('error-banner').classList.remove('hidden');
-            document.getElementById('loading-overlay').classList.add('hidden');
             throw new Error("No Session");
         }
 
-        const ROOM_REF = doc(db, "group_rooms", settings.roomCode);
+        // --- GLOBAL STATE ---
         let gameState = { players: {}, questions: [], index: 0, timer: null, currentShuffledOptions: [], currentCorrectIndex: 0 };
         const TIMER_DURATION = 20;
+        let ROOM_REF; 
 
-        // --- 3. INIT LOGIC (Wait for window.db) ---
+        // --- 2. BOOTSTRAP ---
         async function boot() {
-            // Wait loop: Ensure firebase-config.js has run and created window.db
-            if (!window.db) {
-                console.log("Waiting for Firebase...");
+            // WAIT FOR FIREBASE (Safety Loop)
+            if (!window.db || !window.fs) {
+                console.log("Waiting for DB connection...");
                 setTimeout(boot, 100);
                 return;
             }
 
             try {
+                // UI SETUP
                 document.getElementById('display-code').innerText = settings.roomCode;
                 document.getElementById('cat-badge').innerText = settings.categoryKey;
 
+                // QR CODE SETUP
                 const joinUrl = `${window.location.origin}/play.html?code=${settings.roomCode}`;
                 const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}`;
                 document.getElementById('qr-img').src = qrApi;
                 window.openPlayerLink = () => window.open(joinUrl, '_blank');
 
                 // DATABASE INIT
-                // Use window.db (from config) but use the imported 'doc' function
-                // This aligns the Firestore instance
-                await setDoc(ROOM_REF, {
+                ROOM_REF = window.fs.doc(window.db, "group_rooms", settings.roomCode);
+
+                await window.fs.setDoc(ROOM_REF, {
                     status: 'LOBBY',
                     hostId: 'HOST_' + Date.now(),
                     category: settings.categoryKey,
@@ -183,12 +177,14 @@
                     createdAt: Date.now()
                 });
 
+                // UNLOCK UI
                 document.getElementById('net-status').innerText = "● ONLINE";
                 document.getElementById('loading-overlay').classList.add('hidden');
                 document.getElementById('view-lobby').classList.remove('hidden');
                 document.getElementById('view-lobby').classList.add('flex');
 
-                onSnapshot(ROOM_REF, (snap) => {
+                // LISTENER
+                window.fs.onSnapshot(ROOM_REF, (snap) => {
                     const data = snap.data();
                     if(!data) return;
 
@@ -208,9 +204,9 @@
 
             } catch (err) {
                 console.error(err);
+                document.getElementById('loading-overlay').classList.add('hidden');
                 document.getElementById('error-banner').innerText = "System Error: " + err.message;
                 document.getElementById('error-banner').classList.remove('hidden');
-                document.getElementById('loading-overlay').classList.add('hidden');
             }
         }
 
@@ -237,6 +233,7 @@
             }
         }
 
+        // --- GAME LOGIC ---
         window.startGame = function() {
             if (typeof QUESTION_BANKS === 'undefined' || !QUESTION_BANKS[settings.categoryKey]) { 
                 alert("Data Error: Question Bank not found"); 
@@ -264,13 +261,8 @@
             document.getElementById('ans-count').innerText = `0 / ${Object.keys(gameState.players).length}`;
 
             // --- SHUFFLE LOGIC ---
-            // 1. Create array of objects { text: "Option A", isCorrect: true/false }
             let opts = q.options.map((opt, i) => ({ text: opt, isCorrect: i === q.correctIndex }));
-            
-            // 2. Shuffle
             opts.sort(() => Math.random() - 0.5);
-            
-            // 3. Find new correct index
             gameState.currentCorrectIndex = opts.findIndex(o => o.isCorrect);
             gameState.currentShuffledOptions = opts.map(o => o.text);
 
@@ -286,12 +278,12 @@
                 </div>
             `).join('');
 
-            await updateDoc(ROOM_REF, {
+            await window.fs.updateDoc(ROOM_REF, {
                 status: 'GAME',
                 currentQuestion: {
                     text: q.question, 
-                    options: gameState.currentShuffledOptions, // Send SHUFFLED options
-                    mobileMode: true, // Always true now
+                    options: gameState.currentShuffledOptions, // Send Shuffled options to phone
+                    mobileMode: true, // Force Show
                     startTime: Date.now()
                 },
                 answers: {}
@@ -311,7 +303,7 @@
 
         async function endQuestion() {
             if(gameState.timer) clearTimeout(gameState.timer);
-            const snap = await getDoc(ROOM_REF);
+            const snap = await window.fs.getDoc(ROOM_REF);
             const data = snap.data();
             const answers = data.answers || {};
             const startTime = data.currentQuestion.startTime;
@@ -338,7 +330,7 @@
                 updates[`players.${nick}.score`] = gameState.players[nick].score;
             });
 
-            await updateDoc(ROOM_REF, updates);
+            await window.fs.updateDoc(ROOM_REF, updates);
             document.getElementById('correct-answer-text').innerText = correctText;
             setTimeout(showScores, 4000);
         }
