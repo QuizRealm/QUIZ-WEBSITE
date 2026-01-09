@@ -5,14 +5,15 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Host Console | QuizRealm</title>
+    <title>Host Console | QuizRealm Multiplayer</title>
     <meta name="theme-color" content="#0f172a">
 
     <script type="module" src="firebase-config.js"></script>
-    <script src="data.js"></script>
     
+    <script src="data.js"></script>
     <script src="components.js" defer></script>
     <script type="module" src="assets/ux-core.js"></script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,13 +35,23 @@
         body { background-color: #0f172a; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
         .timer-bar { transition: width 1s linear; }
+        /* SEO Content Styling */
+        .seo-box h3 { color: white; font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .seo-box p { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; }
     </style>
 </head>
 
-<body>
+<body class="flex flex-col">
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <quiz-header></quiz-header>
+
+    <div id="loading-overlay" class="fixed inset-0 bg-background z-50 flex items-center justify-center">
+        <div class="text-center">
+            <i class="fas fa-circle-notch fa-spin text-4xl text-brand mb-4"></i>
+            <p class="text-slate-400 text-sm font-mono uppercase tracking-widest">Initializing System...</p>
+        </div>
+    </div>
 
     <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-8 relative z-10 flex flex-col justify-center min-h-[600px]">
         
@@ -48,6 +59,7 @@
 
         <div id="view-lobby" class="hidden w-full flex-col gap-8 animate-pop">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
+                
                 <div class="lg:col-span-4 glass rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-brand">
                     <div class="text-xs font-bold text-brand uppercase tracking-widest mb-4 bg-brand/10 px-3 py-1 rounded-full border border-brand/20">Scan to Join</div>
                     
@@ -61,14 +73,23 @@
                 </div>
 
                 <div class="lg:col-span-8 flex flex-col gap-6">
-                    <div class="glass rounded-2xl p-6 border-l-4 border-green-500">
-                        <h3 class="font-bold text-white mb-1"><i class="fas fa-users mr-2"></i>Lobby</h3>
-                        <p class="text-sm text-slate-400">Wait for everyone to join before starting.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="glass rounded-2xl p-6 border-l-4 border-blue-500">
+                            <h3 class="font-bold text-white mb-1"><i class="fas fa-info-circle text-blue-400 mr-2"></i>Game Info</h3>
+                            <p id="game-desc" class="text-sm text-slate-400">Loading details...</p>
+                        </div>
+                        <div class="glass rounded-2xl p-6 border-l-4 border-green-500">
+                            <h3 class="font-bold text-white mb-1"><i class="fas fa-check-circle text-green-400 mr-2"></i>Rules</h3>
+                            <ul class="text-sm text-slate-400 list-disc list-inside">
+                                <li>Don't let screen sleep</li>
+                                <li>Faster = More Points</li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="glass rounded-3xl p-6 flex-grow flex flex-col min-h-[300px]">
                         <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-2xl font-bold text-white">Players <span id="p-count" class="text-brand ml-2">0</span></h2>
+                            <h2 class="text-2xl font-bold text-white">Lobby <span id="p-count" class="text-brand ml-2">0</span></h2>
                             <div class="text-xs text-green-400 font-mono animate-pulse" id="net-status">CONNECTING...</div>
                         </div>
                         <div id="p-grid" class="grid grid-cols-3 md:grid-cols-4 gap-4 content-start max-h-[300px] overflow-y-auto"></div>
@@ -100,46 +121,74 @@
 
         <div id="view-scores" class="hidden w-full max-w-3xl mx-auto flex-col items-center animate-pop">
             <h1 class="text-5xl font-black text-white mb-8">Results</h1>
-            
-            <div class="glass w-full p-6 rounded-2xl mb-8 border-l-4 border-green-500 bg-surface/80">
-                <div class="text-xs text-slate-400 uppercase font-bold mb-2">Correct Answer</div>
-                <h2 id="correct-answer-text" class="text-2xl font-bold text-white">...</h2>
-            </div>
-
             <div id="score-list" class="w-full space-y-3 mb-10"></div>
             <button onclick="nextRound()" class="px-10 py-4 bg-brand text-white font-bold rounded-xl shadow-lg hover:scale-105 transition">Next Question</button>
         </div>
 
     </main>
 
+    <section class="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/5 mt-auto">
+        <div class="seo-box">
+            <h3>Instant Multiplayer Gaming</h3>
+            <p>QuizRealm transforms any gathering into a live game show. Using advanced WebSocket technology via Firebase, up to 16 players can connect instantly using just their smartphones. No app downloads required—simply scan and play.</p>
+        </div>
+        <div class="seo-box">
+            <h3>Competitive Real-Time Scoring</h3>
+            <p>Our engine calculates scores based on precision and reaction time. The faster you answer correctly, the higher you climb on the live leaderboard. Perfect for classrooms, team building, or game nights.</p>
+        </div>
+    </section>
+
     <quiz-footer></quiz-footer>
 
     <script type="module">
-        import { db } from './firebase-config.js';
+        // --- 1. CRITICAL IMPORTS ---
+        // We import the tools needed for the Host, matching version 10.7.1
         import { doc, setDoc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // --- 2. CONFIG CHECK ---
         let settings = {};
         try { settings = JSON.parse(localStorage.getItem('qr_host_settings')); } catch(e){}
 
         if (!settings || !settings.roomCode) {
             document.getElementById('error-banner').innerHTML = "Session missing. <a href='group-hub.html' class='underline'>Return to Hub</a>";
             document.getElementById('error-banner').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('hidden');
             throw new Error("No Session");
         }
 
-        const ROOM_REF = doc(db, "group_rooms", settings.roomCode);
-        let gameState = { players: {}, questions: [], index: 0, timer: null, currentShuffledOptions: [], currentCorrectIndex: 0 };
+        // --- GLOBAL STATE ---
+        let gameState = { players: {}, questions: [], index: 0, timer: null };
         const TIMER_DURATION = 20;
+        let ROOM_REF; 
 
+        // --- 3. BOOTSTRAP ---
         async function boot() {
+            // Wait loop: Ensure firebase-config.js has run and created window.db
+            if (!window.db) {
+                console.log("Waiting for Firebase Connection...");
+                setTimeout(boot, 100);
+                return;
+            }
+
             try {
+                // UI Init
                 document.getElementById('display-code').innerText = settings.roomCode;
                 document.getElementById('cat-badge').innerText = settings.categoryKey;
+                
+                if (typeof CATEGORY_CONFIG !== 'undefined' && CATEGORY_CONFIG[settings.categoryKey]) {
+                    document.getElementById('game-desc').innerText = CATEGORY_CONFIG[settings.categoryKey].desc;
+                }
 
+                // QR CODE FIX: Static Image API (Cannot be blocked by tracking prevention)
                 const joinUrl = `${window.location.origin}/play.html?code=${settings.roomCode}`;
                 const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}`;
                 document.getElementById('qr-img').src = qrApi;
+                
                 window.openPlayerLink = () => window.open(joinUrl, '_blank');
+
+                // DATABASE INIT
+                // Use window.db (from config) but use the imported 'doc' function
+                ROOM_REF = doc(window.db, "group_rooms", settings.roomCode);
 
                 await setDoc(ROOM_REF, {
                     status: 'LOBBY',
@@ -152,9 +201,11 @@
                 });
 
                 document.getElementById('net-status').innerText = "● ONLINE";
+                document.getElementById('loading-overlay').classList.add('hidden');
                 document.getElementById('view-lobby').classList.remove('hidden');
                 document.getElementById('view-lobby').classList.add('flex');
 
+                // LISTENER
                 onSnapshot(ROOM_REF, (snap) => {
                     const data = snap.data();
                     if(!data) return;
@@ -177,6 +228,7 @@
                 console.error(err);
                 document.getElementById('error-banner').innerText = "System Error: " + err.message;
                 document.getElementById('error-banner').classList.remove('hidden');
+                document.getElementById('loading-overlay').classList.add('hidden');
             }
         }
 
@@ -203,8 +255,12 @@
             }
         }
 
+        // --- GAME LOGIC ---
         window.startGame = function() {
-            if (!QUESTION_BANKS[settings.categoryKey]) { alert("Data Error"); return; }
+            if (typeof QUESTION_BANKS === 'undefined' || !QUESTION_BANKS[settings.categoryKey]) { 
+                alert("Data Error: Question Bank not found"); 
+                return; 
+            }
             
             const bank = QUESTION_BANKS[settings.categoryKey];
             let pool = [...(bank.easy||[]), ...(bank.medium||[])];
@@ -226,21 +282,10 @@
             document.getElementById('q-text').innerText = q.question;
             document.getElementById('ans-count').innerText = `0 / ${Object.keys(gameState.players).length}`;
 
-            // --- SHUFFLE LOGIC ---
-            // 1. Create array of objects { text: "Option A", isCorrect: true/false }
-            let opts = q.options.map((opt, i) => ({ text: opt, isCorrect: i === q.correctIndex }));
-            
-            // 2. Shuffle
-            opts.sort(() => Math.random() - 0.5);
-            
-            // 3. Find new correct index
-            gameState.currentCorrectIndex = opts.findIndex(o => o.isCorrect);
-            gameState.currentShuffledOptions = opts.map(o => o.text);
-
             const colors = ['bg-red-500', 'bg-blue-500', 'bg-yellow-500', 'bg-green-500'];
             const icons = ['square', 'circle', 'play', 'diamond'];
 
-            document.getElementById('opt-grid').innerHTML = gameState.currentShuffledOptions.map((opt, i) => `
+            document.getElementById('opt-grid').innerHTML = q.options.map((opt, i) => `
                 <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-surface/60 backdrop-blur-sm">
                     <div class="w-12 h-12 rounded-xl ${colors[i]} flex items-center justify-center text-white text-xl font-bold shadow-lg">
                         <i class="fas fa-${icons[i]} ${i===2?'rotate-[-90deg]':''}"></i>
@@ -252,9 +297,8 @@
             await updateDoc(ROOM_REF, {
                 status: 'GAME',
                 currentQuestion: {
-                    text: q.question, 
-                    options: gameState.currentShuffledOptions, // Send SHUFFLED options
-                    mobileMode: true, // Always true now
+                    text: settings.tvMode ? "Look at Host Screen" : q.question,
+                    mobileMode: !settings.tvMode,
                     startTime: Date.now()
                 },
                 answers: {}
@@ -274,40 +318,26 @@
 
         async function endQuestion() {
             if(gameState.timer) clearTimeout(gameState.timer);
+            
             const snap = await getDoc(ROOM_REF);
             const data = snap.data();
             const answers = data.answers || {};
+            const q = gameState.questions[gameState.index];
             const startTime = data.currentQuestion.startTime;
 
-            // Use the stored SHUFFLED correct index
-            const correctIdx = gameState.currentCorrectIndex;
-            const correctText = gameState.currentShuffledOptions[correctIdx];
-
-            let updates = { 
-                status: 'RESULT', 
-                correctIndex: correctIdx,
-                correctText: correctText 
-            };
+            let updates = { status: 'RESULT', correctIndex: q.correctIndex };
             
             Object.entries(gameState.players).forEach(([nick, pData]) => {
-                if(answers[nick]) {
-                    const ans = answers[nick];
-                    // Compare stored answer to stored correct index
-                    if(Number(ans.val) === correctIdx) {
-                        const timeTaken = (ans.time - startTime) / 1000;
-                        const speedBonus = Math.max(0, Math.floor((1 - (timeTaken / TIMER_DURATION)) * 500));
-                        const points = 1000 + speedBonus;
-                        gameState.players[nick].score = (pData.score || 0) + points;
-                    }
+                if(answers[nick] && answers[nick].val === q.correctIndex) {
+                    const timeTaken = (answers[nick].time - startTime) / 1000;
+                    const speedBonus = Math.max(0, Math.floor((1 - (timeTaken / TIMER_DURATION)) * 500));
+                    const points = 1000 + speedBonus;
+                    gameState.players[nick].score = (pData.score || 0) + points;
                 }
                 updates[`players.${nick}.score`] = gameState.players[nick].score;
             });
 
             await updateDoc(ROOM_REF, updates);
-            
-            // Show correct answer on Host
-            document.getElementById('correct-answer-text').innerText = correctText;
-            
             setTimeout(showScores, 4000);
         }
 
