@@ -290,14 +290,22 @@
                 document.getElementById('display-code').textContent = settings.roomCode;
                 document.getElementById('category-badge').textContent = settings.categoryKey;
                 
-                // Load Game Description from Data (if available)
+                // Load Game Description
                 if (typeof CATEGORY_CONFIG !== 'undefined' && CATEGORY_CONFIG[settings.categoryKey]) {
                     const conf = CATEGORY_CONFIG[settings.categoryKey];
                     document.getElementById('game-desc').textContent = conf.desc || "Test your knowledge in this fast-paced trivia challenge.";
                 }
 
-                // Generate QR Code
-                const joinUrl = `${window.location.origin}/play.html?code=${settings.roomCode}`;
+                // --- FIX: ROBUST URL GENERATION ---
+                // This ensures the link works even if you are in a subfolder (e.g., yoursite.com/mygame/)
+                // It takes the current URL path and swaps 'host-game.html' for 'play.html'
+                const currentUrl = window.location.href;
+                // Remove 'host-game.html' and query params to get the base folder
+                const basePath = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+                const joinUrl = `${basePath}/play.html?code=${settings.roomCode}`;
+
+                console.log("Generated Join Link:", joinUrl); // Check console to verify
+
                 const qrContainer = document.getElementById("qrcode");
                 qrContainer.innerHTML = ""; // Clear prev
                 new QRCode(qrContainer, { 
@@ -308,6 +316,7 @@
                     colorLight : "#ffffff", 
                     correctLevel : QRCode.CorrectLevel.H 
                 });
+                // ----------------------------------
 
                 // Create Room in Firebase
                 await setDoc(ROOM_REF, {
@@ -341,7 +350,7 @@
                         
                         document.getElementById('answer-count').textContent = `${count} / ${total}`;
                         
-                        // Auto-advance if everyone answered (and at least 1 player exists)
+                        // Auto-advance
                         if(total > 0 && count >= total) {
                             endQuestion();
                         }
