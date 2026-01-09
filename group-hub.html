@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Group Games Hub | Multiplayer Trivia | QuizRealm</title>
+    <meta name="description" content="Host live trivia games for friends, classrooms, or teams. No app download required. Join via QR code and play instantly on your phone.">
+    <meta name="theme-color" content="#0f172a">
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="game-engine.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script>
+    
+    <script src="data.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: '#6366f1', 
+                        brandHover: '#4f46e5',
+                        surface: '#1e293b',
+                        background: '#0f172a',
+                        textDim: '#94a3b8'
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.5s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 60%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.3);
+        }
+        .code-input {
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-variant-numeric: tabular-nums;
+        }
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked { right: 0; border-color: #6366f1; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #6366f1; }
+        
+        /* SEO Content Styles */
+        .seo-section h3 { color: #fff; font-weight: 700; margin-bottom: 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; }
+        .seo-section p { color: #94a3b8; line-height: 1.7; margin-bottom: 1rem; font-size: 0.95rem; }
+    </style>
+</head>
+
+<body class="antialiased">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-6xl mx-auto px-4 py-10 relative z-10 flex flex-col items-center">
+        
+        <div class="text-center mb-12 animate-fade-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/20 mb-6">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                </span>
+                <span class="text-brand text-xs font-bold uppercase tracking-wider">Live Multiplayer</span>
+            </div>
+            <h1 class="font-display font-extrabold text-5xl md:text-7xl mb-6 tracking-tight text-white drop-shadow-2xl">
+                Game Night, <br class="md:hidden" /> <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-purple-400">Evolved.</span>
+            </h1>
+            <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                Connect seamlessly. No apps to install. Just scan, join, and compete in real-time quizzes using your phone as the controller.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mb-20">
+
+            <div class="glass-card rounded-3xl p-8 md:p-10 flex flex-col items-center text-center animate-fade-up border-t-4 border-t-blue-500 transition hover:-translate-y-1" style="animation-delay: 0.1s;">
+                <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 text-3xl mb-6 shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h2 class="font-display font-bold text-3xl mb-3 text-white">Join a Room</h2>
+                <p class="text-slate-400 text-sm mb-8">Got a code? Enter it below to jump into the lobby.</p>
+                
+                <form id="join-form" class="w-full max-w-xs space-y-5" onsubmit="handleJoin(event)">
+                    <div class="relative group">
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl opacity-50 group-focus-within:opacity-100 transition duration-500 blur"></div>
+                        <input type="text" id="room-code" 
+                            class="relative code-input w-full bg-surface border border-slate-700 rounded-xl px-4 py-4 text-center text-2xl font-bold text-white placeholder-slate-600 focus:outline-none focus:bg-background transition uppercase"
+                            placeholder="CODE" maxlength="4" autocomplete="off" required>
+                    </div>
+                    <div>
+                        <input type="text" id="nickname" 
+                            class="w-full bg-surface/50 border border-slate-700 rounded-xl px-4 py-3 text-center text-sm font-medium text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 transition"
+                            placeholder="Choose a Nickname" maxlength="12" required>
+                    </div>
+                    <button type="submit" 
+                        class="w-full bg-white text-slate-900 hover:bg-blue-50 font-bold py-4 rounded-xl transition transform active:scale-95 shadow-xl shadow-white/5 flex items-center justify-center gap-2">
+                        <span>Enter Lobby</span> <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="glass-card rounded-3xl p-8 md:p-10 flex flex-col items-center text-center animate-fade-up border-t-4 border-t-brand transition hover:-translate-y-1" style="animation-delay: 0.2s;">
+                <div class="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-brand text-3xl mb-6 shadow-lg shadow-indigo-500/20">
+                    <i class="fas fa-desktop"></i>
+                </div>
+                <h2 class="font-display font-bold text-3xl mb-3 text-white">Host a Game</h2>
+                <p class="text-slate-400 text-sm mb-8">Use this screen as the main board. Players join via QR.</p>
+
+                <div class="w-full max-w-xs space-y-5">
+                    <div class="text-left">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block pl-1">Select Topic</label>
+                        <div class="relative">
+                            <select id="category-select" class="w-full bg-surface border border-slate-700 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-brand transition appearance-none cursor-pointer pr-10 shadow-sm">
+                                <option value="" disabled selected>Loading Library...</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface/50 border border-slate-700 rounded-xl p-4 flex items-center justify-between">
+                        <div class="text-left">
+                            <div class="text-sm font-bold text-white">TV Mode</div>
+                            <div class="text-[10px] text-slate-400">Show questions on big screen only</div>
+                        </div>
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle" id="tv-mode-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 left-0 checked:left-6" checked/>
+                            <label for="tv-mode-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-700 cursor-pointer transition-colors duration-300 checked:bg-brand"></label>
+                        </div>
+                    </div>
+
+                    <button onclick="handleHost()" 
+                        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-xl transition transform active:scale-95 shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2">
+                        <i class="fas fa-plus"></i> <span>Create Room</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl mt-8 pt-10 border-t border-white/5">
+            
+            <div class="seo-section">
+                <h3>The Ultimate Browser-Based Party Game</h3>
+                <p>
+                    Welcome to the <strong>QuizRealm Group Hub</strong>, the premier destination for hosting live, interactive trivia sessions without the hassle of app downloads or complex setups. Whether you are organizing a corporate team-building event, a classroom review session, or a casual Friday night with friends, our platform turns your living room into a game show stage.
+                </p>
+                <p>
+                    Unlike traditional board games, QuizRealm leverages the device everyone already has in their pocket. By using a unique <strong>4-letter room code</strong> or scanning a dynamic QR code, up to 16 players can connect instantly. Our low-latency "Host-Controller" architecture ensures that when you tap an answer on your phone, it registers instantly on the main screen, creating a seamless, high-energy competitive environment.
+                </p>
+                <p>
+                    We prioritize user experience above all else. The interface is designed with a "mobile-first" philosophy for players, featuring large, accessible buttons and instant haptic feedback. For hosts, the dashboard provides granular control over game settings, including our exclusive "TV Mode" which mimics high-production television quiz shows by keeping question text hidden on player devices to ensure all eyes remain on the main display.
+                </p>
+            </div>
+
+            <div class="seo-section">
+                <h3>Curated Categories & Real-Time Scoring</h3>
+                <p>
+                    Content is king, and QuizRealm delivers a vast library of meticulously curated questions. Our dynamic engine pulls from the same high-quality data sources as our single-player Arcade, ensuring consistency and accuracy. From the intricate lore of <em>Game of Thrones</em> and the expansive MCU timeline to academic challenges in Physics and World History, there is a category for every group dynamic.
+                </p>
+                <p>
+                    <strong>Fairness and speed</strong> are at the core of our scoring algorithm. Points are awarded not just for accuracy, but for speed, rewarding players who can recall facts under pressure. The live leaderboard updates after every round, visualizing the shift in rankings and keeping the stakes high until the very last question. This real-time feedback loop drives engagement and encourages the kind of friendly rivalry that makes game nights memorable.
+                </p>
+                <p>
+                    Built on modern web technologies like Firebase Firestore, QuizRealm guarantees data integrity and synchronization across all devices. Whether you are playing on a high-end desktop, a smart TV browser, or an older smartphone, the experience remains fluid and responsive. Join the thousands of players who have upgraded their social gatherings with the smartest trivia platform on the web.
+                </p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // --- 1. INITIALIZATION & DATA LOADING ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('category-select');
+            
+            // Check if data loaded correctly
+            if (typeof CATEGORY_CONFIG === 'undefined' || typeof QUESTION_BANKS === 'undefined') {
+                select.innerHTML = '<option>Error: Data Source Offline</option>';
+                console.error("CRITICAL: data.js variables not found.");
+                return;
+            }
+
+            select.innerHTML = ''; // Clear loading state
+
+            // Populate Dropdown from data.js
+            Object.entries(CATEGORY_CONFIG).forEach(([key, config]) => {
+                // Filter: Must have a bank AND not be in the 'locked' group
+                if (QUESTION_BANKS[key] && config.group !== 'locked') {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = `${config.icon || '📝'} ${config.label}`; 
+                    select.appendChild(option);
+                }
+            });
+        });
+
+        // --- 2. HOST LOGIC ---
+        function handleHost() {
+            const categoryKey = document.getElementById('category-select').value;
+            const isTVMode = document.getElementById('tv-mode-toggle').checked;
+            
+            if (!categoryKey) {
+                alert("Please select a category to start.");
+                return;
+            }
+
+            // Generate Secure Room Code (Avoiding confusing letters like I, O, 1, 0)
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ"; 
+            let roomCode = "";
+            for (let i = 0; i < 4; i++) roomCode += chars.charAt(Math.floor(Math.random() * chars.length));
+
+            // Save settings for the Host Page
+            const settings = {
+                categoryKey: categoryKey,
+                tvMode: isTVMode,
+                roomCode: roomCode,
+                role: 'host',
+                timestamp: Date.now()
+            };
+            localStorage.setItem('qr_host_settings', JSON.stringify(settings));
+
+            // Redirect to Host Screen
+            window.location.href = `host-game.html?code=${roomCode}`;
+        }
+
+        // --- 3. JOIN LOGIC ---
+        function handleJoin(e) {
+            e.preventDefault();
+            const codeInput = document.getElementById('room-code');
+            const nickInput = document.getElementById('nickname');
+            
+            const code = codeInput.value.toUpperCase().trim();
+            const nick = nickInput.value.trim();
+
+            if (code.length !== 4) {
+                codeInput.focus();
+                alert("Please enter a valid 4-letter room code.");
+                return;
+            }
+            if (!nick || nick.length < 2) {
+                nickInput.focus();
+                alert("Please enter a nickname (min 2 chars).");
+                return;
+            }
+
+            const playerInfo = {
+                roomCode: code,
+                nickname: nick,
+                role: 'player',
+                timestamp: Date.now()
+            };
+            localStorage.setItem('qr_player_info', JSON.stringify(playerInfo));
+
+            // Redirect to Player Controller
+            window.location.href = `play.html?code=${code}`;
+        }
+
+        // --- 4. UX HELPERS ---
+        // Auto-format input to uppercase and remove non-letters
+        document.getElementById('room-code').addEventListener('input', function() {
+            this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '');
+        });
+    </script>
+</body>
+</html>

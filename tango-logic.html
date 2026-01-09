@@ -6,35 +6,21 @@
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
+
   <title>Solar Grid • Binary Logic Protocol | QuizRealm</title>
-  <meta name="description" content="Restore balance to the grid. Place Suns and Moons according to three strict logic rules. A daily constraint satisfaction puzzle.">
+  <meta name="description" content="Restore balance to the grid. Place Suns and Moons according to strict logic rules: Balance, No Triples, Uniqueness. Any valid solution wins.">
   <meta name="theme-color" content="#0f172a">
 
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="game-engine.js"></script>
   <script src="components.js" defer></script>
-<script type="module" src="assets/ux-core.js"></script>
-<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
-<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
-<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
-<link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
-<link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
-<link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
-<link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
-<link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/manifest.json">
-<meta name="msapplication-TileColor" content="#ffffff">
-<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-<meta name="theme-color" content="#ffffff">
+  <script type="module" src="assets/ux-core.js"></script>
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="manifest" href="/manifest.json">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -51,18 +37,17 @@
           colors: {
             bgDark: '#0f172a',
             panel: '#1e293b',
-            sun: '#f59e0b',   // Gold
-            moon: '#6366f1',  // Indigo
+            sun: '#f59e0b',
+            moon: '#6366f1',
             empty: '#334155',
             border: '#475569'
           },
           animation: {
-            'spin-slow': 'spin 3s linear infinite',
-            'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            'pop': 'pop 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
             'shake': 'shake 0.4s ease-in-out',
           },
           keyframes: {
-            pop: { '0%': { transform: 'scale(0.8)' }, '100%': { transform: 'scale(1)' } },
+            pop: { '0%': { transform: 'scale(0.86)' }, '100%': { transform: 'scale(1)' } },
             shake: {
               '10%, 90%': { transform: 'translateX(-1px)' },
               '20%, 80%': { transform: 'translateX(2px)' },
@@ -77,7 +62,7 @@
 
   <style>
     body { background-color: #0f172a; color: #e2e8f0; overflow-x: hidden; touch-action: manipulation; }
-    
+
     .glass-panel {
       background: rgba(30, 41, 59, 0.7);
       backdrop-filter: blur(12px);
@@ -85,134 +70,91 @@
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
     }
 
-    /* THE GRID */
+    :root{
+      --cell: clamp(46px, 12vw, 58px);
+      --gap: 6px;
+    }
+
     .game-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 4px;
+      grid-template-columns: repeat(6, var(--cell));
+      gap: var(--gap);
       width: 100%;
-      max-width: 360px;
+      justify-content: center;
       margin: 0 auto;
-      aspect-ratio: 1/1;
+      padding: 10px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.35);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .cell {
+      width: var(--cell);
+      height: var(--cell);
       background: #334155;
-      border-radius: 8px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
       position: relative;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-    }
-    
-    .cell:active { transform: scale(0.95); }
-    
-    /* Cell States */
-    .cell[data-state="0"] { background: #334155; } /* Empty */
-    
-    .cell[data-state="1"] { /* SUN */
-      background: rgba(245, 158, 11, 0.15);
-      border: 2px solid #f59e0b;
-      color: #f59e0b;
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-    }
-    
-    .cell[data-state="2"] { /* MOON */
-      background: rgba(99, 102, 241, 0.15);
-      border: 2px solid #6366f1;
-      color: #6366f1;
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.25);
+      border: 2px solid transparent;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .cell.locked {
-      cursor: not-allowed;
-      opacity: 0.7;
+    .cell:active { transform: scale(0.96); }
+
+    .cell[data-state="0"] { background: #334155; }
+
+    .cell[data-state="1"] {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.95);
+      color: #f59e0b;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.18), inset 0 2px 5px rgba(0,0,0,0.25);
     }
-    .cell.locked::after {
+
+    .cell[data-state="2"] {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.95);
+      color: #6366f1;
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.18), inset 0 2px 5px rgba(0,0,0,0.25);
+    }
+
+    .cell.locked { cursor: not-allowed; opacity: 0.78; }
+    .cell.locked::after{
       content: '•';
       position: absolute;
-      bottom: 2px;
+      bottom: 3px;
       font-size: 10px;
-      opacity: 0.5;
+      opacity: 0.55;
+      color: rgba(226,232,240,0.8);
     }
 
     .cell.error {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.22) !important;
+      border-color: rgba(239, 68, 68, 0.95) !important;
       animation: shake 0.4s;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.18), inset 0 2px 5px rgba(0,0,0,0.25) !important;
     }
 
-    /* SEO Card Typography */
-    .seo-text { font-size: 0.85rem; line-height: 1.7; color: #94a3b8; }
-    .seo-text strong { color: #e2e8f0; }
-
-
-    /* DEMO ANIMATION STYLES */
-.demo-cell-wrapper {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin: 0 auto;
-}
-
-.demo-cell {
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  border: 2px solid transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  background: #334155;
-  animation: cell-cycle 4s infinite step-end;
-}
-
-.demo-cursor {
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  font-size: 1.5rem;
-  color: white;
-  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  animation: tap-cycle 4s infinite;
-}
-
-/* Cycle States */
-@keyframes cell-cycle {
-  0%, 100% { background: #334155; border-color: transparent; box-shadow: none; color: transparent; } /* Empty */
-  33% { background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); color: #f59e0b; } /* Sun */
-  66% { background: rgba(99, 102, 241, 0.15); border-color: #6366f1; box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); color: #6366f1; } /* Moon */
-}
-
-/* Simulated Tap */
-@keyframes tap-cycle {
-  0%, 30%, 63%, 96% { transform: scale(1); opacity: 0; }
-  15%, 48%, 81% { transform: scale(0.8); opacity: 1; } /* The "Tap" moment */
-}
-
-/* Icon Switching */
-.demo-cell::after {
-  content: '';
-  font-family: "Font Awesome 6 Free"; 
-  font-weight: 900;
-}
-@keyframes icon-cycle {
-  0%, 100% { content: ''; }
-  33% { content: '\f185'; } /* Sun Icon */
-  66% { content: '\f186'; } /* Moon Icon */
-}
-
+    .status-line{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: rgba(148,163,184,0.92);
+      margin-top: 10px;
+      min-height: 18px;
+      text-align: center;
+    }
+    .status-line b{ color:#e2e8f0; }
   </style>
 </head>
 
 <body class="flex flex-col min-h-screen">
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <quiz-header></quiz-header>
 
@@ -225,7 +167,7 @@
         <div class="h-px w-10 bg-slate-700"></div>
       </div>
       <h1 class="font-display font-bold text-4xl md:text-5xl text-white tracking-tight">SOLAR <span class="text-sun">GRID</span></h1>
-      
+
       <div class="flex justify-between items-center mt-4 px-4">
         <button onclick="document.getElementById('rules-modal').classList.remove('hidden')" class="text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2">
           <i class="fas fa-book"></i> RULES
@@ -236,339 +178,66 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full max-w-5xl items-start">
 
-  <div class="lg:col-span-7 w-full">
-    <div id="grid-container" class="mb-6 relative">
-      <div id="game-grid" class="game-grid rounded-xl overflow-hidden p-1 bg-slate-800/50">
+      <div class="lg:col-span-7 w-full">
+        <div id="grid-container" class="mb-6 relative">
+          <div id="game-grid" class="game-grid"></div>
+          <div id="status" class="status-line"></div>
         </div>
-    </div>
-    
-    <div class="flex justify-center gap-4">
-      <button onclick="checkPuzzle()" class="px-8 py-3 bg-white text-black font-bold rounded-full uppercase tracking-widest hover:bg-slate-200 transition shadow-lg shadow-white/10">
-        Check Logic
-      </button>
-      <button onclick="resetPuzzle()" class="px-6 py-3 bg-slate-800 text-slate-400 font-bold rounded-full hover:bg-slate-700 transition">
-        <i class="fas fa-rotate"></i>
-      </button>
-    </div>
-  </div>
 
-  <aside class="lg:col-span-5 flex flex-col gap-6">
+        <div class="flex justify-center gap-4">
+          <button onclick="checkPuzzle()" class="px-8 py-3 bg-white text-black font-bold rounded-full uppercase tracking-widest hover:bg-slate-200 transition shadow-lg shadow-white/10">
+            Check Logic
+          </button>
+          <button onclick="resetPuzzle()" class="px-6 py-3 bg-slate-800 text-slate-300 font-bold rounded-full hover:bg-slate-700 transition" aria-label="Reset">
+            <i class="fas fa-rotate"></i>
+          </button>
+          <button onclick="newPuzzle()" class="px-6 py-3 bg-slate-800 text-slate-300 font-bold rounded-full hover:bg-slate-700 transition" aria-label="New Puzzle">
+            <i class="fas fa-dice"></i>
+          </button>
+        </div>
+      </div>
 
-    <div class="glass-panel p-6 rounded-2xl border border-slate-700/50">
-  <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-4 text-center">Control Mechanics</div>
-  
-  <div class="flex items-center justify-center gap-6">
-    <div class="demo-cell-wrapper">
-      <div class="demo-cell">
-        <i class="fas fa-sun absolute text-sun drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" 
-           style="animation: icon-sun-cycle 4s infinite step-end; opacity: 0;"></i>
-        
-        <i class="fas fa-moon absolute text-moon drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" 
-           style="animation: icon-moon-cycle 4s infinite step-end; opacity: 0;"></i>
-      </div>
-      
-      <div class="demo-cursor"><i class="fas fa-hand-pointer"></i></div>
-    </div>
-    
-    <div class="text-xs text-slate-300 space-y-2 font-mono">
-      <div class="flex items-center gap-2">
-        <span class="w-4 h-4 bg-sun text-black rounded-full flex items-center justify-center text-[8px] font-bold">1</span> 
-        <span>Tap for <strong>Sun</strong></span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="w-4 h-4 bg-moon text-white rounded-full flex items-center justify-center text-[8px] font-bold">2</span> 
-        <span>Tap for <strong>Moon</strong></span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="w-4 h-4 bg-slate-700 text-slate-300 rounded-full flex items-center justify-center text-[8px] font-bold">3</span> 
-        <span>Tap to <strong>Clear</strong></span>
-      </div>
-    </div>
-  </div>
-</div>
-
-    <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-sun">
-      <h3 class="font-display font-bold text-white text-lg mb-3">How to Win</h3>
-      <p class="text-sm text-slate-400 leading-relaxed mb-4">
-        Your goal is to fill the grid with <span class="text-sun font-bold">Light</span> and <span class="text-moon font-bold">Darkness</span> while maintaining perfect balance.
-      </p>
-      
-      <div class="space-y-3">
-        <div class="p-3 bg-slate-800/50 rounded-lg flex gap-3 items-start">
-          <i class="fas fa-scale-balanced text-sun mt-1"></i>
-          <div class="text-xs text-slate-300">
-            <strong class="text-white block mb-1">The Rule of Three</strong>
-            Every row and column must have exactly <strong>3 Suns</strong> and <strong>3 Moons</strong>.
+      <aside class="lg:col-span-5 flex flex-col gap-6">
+        <div class="glass-panel p-6 rounded-2xl border border-slate-700/50">
+          <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-4 text-center">Core Directives</div>
+          <div class="space-y-3 text-sm text-slate-300">
+            <div class="p-3 bg-slate-800/50 rounded-lg flex gap-3 items-start">
+              <i class="fas fa-scale-balanced text-sun mt-1"></i>
+              <div>
+                <strong class="text-white block mb-1">Balance</strong>
+                Each row and column has exactly <strong>3 Suns</strong> and <strong>3 Moons</strong>.
+              </div>
+            </div>
+            <div class="p-3 bg-slate-800/50 rounded-lg flex gap-3 items-start">
+              <i class="fas fa-ban text-moon mt-1"></i>
+              <div>
+                <strong class="text-white block mb-1">No Triples</strong>
+                Never three identical symbols adjacent horizontally or vertically.
+              </div>
+            </div>
+            <div class="p-3 bg-slate-800/50 rounded-lg flex gap-3 items-start">
+              <i class="fas fa-fingerprint text-sun mt-1"></i>
+              <div>
+                <strong class="text-white block mb-1">Uniqueness</strong>
+                No two rows or columns may be identical <strong>once full</strong>.
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="p-3 bg-slate-800/50 rounded-lg flex gap-3 items-start">
-          <i class="fas fa-ban text-moon mt-1"></i>
-          <div class="text-xs text-slate-300">
-            <strong class="text-white block mb-1">No Triples</strong>
-            You can never have three of the same symbol touching (e.g. ☀️☀️☀️ is forbidden).
+        <div class="glass-panel p-6 rounded-2xl">
+          <div class="text-white font-display font-bold text-lg mb-2">Controls</div>
+          <div class="text-sm text-slate-300">
+            Tap a cell to cycle: <span class="text-sun font-bold">Sun</span> → <span class="text-moon font-bold">Moon</span> → Empty.
+          </div>
+          <div class="text-xs text-slate-400 mt-3">
+            This game accepts <strong>any valid final grid</strong>. It does not require a single template solution.
           </div>
         </div>
-      </div>
+      </aside>
+
     </div>
-
-  </aside>
-
-</div>
-
-    <section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-t border-slate-800 pt-10 animate-fade-up">
-      
-      <article class="glass-panel p-6 rounded-2xl border-l-4 border-l-sun">
-        <h3 class="font-display font-bold text-white text-lg mb-4">Core Directives</h3>
-        <ul class="space-y-3 text-sm text-slate-300">
-          <li class="flex items-start gap-3">
-            <i class="fas fa-equals text-sun mt-1"></i>
-            <span><strong>Balance:</strong> Each row and column must have an equal number of Suns and Moons (3 of each).</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i class="fas fa-ban text-sun mt-1"></i>
-            <span><strong>Spacing:</strong> No more than two of the same symbol can be adjacent horizontally or vertically. (e.g., Sun-Sun-Sun is forbidden).</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <i class="fas fa-fingerprint text-sun mt-1"></i>
-            <span><strong>Uniqueness:</strong> No two rows or columns can be identical.</span>
-          </li>
-        </ul>
-      </article>
-
-      <article class="glass-panel p-6 rounded-2xl">
-        <h3 class="font-display font-bold text-white text-lg mb-4">About Solar Grid</h3>
-        <p class="seo-text">
-          Solar Grid is a binary determination puzzle based on the classic algorithmic challenge "Takuzu" (also known as Binairo). Unlike Sudoku which uses 9 variables, Solar Grid uses only two: <strong>Light and Dark</strong>. 
-          <br><br>
-          This simplicity is deceptive. Because the constraints are tighter (you cannot simply place a number anywhere), the puzzle forces you to deduce chains of logic. "If this is a Sun, and that is a Sun, the next <em>must</em> be a Moon." It is pure deductive reasoning stripped of arithmetic.
-        </p>
-      </article>
-
-      <article class="glass-panel p-6 rounded-2xl">
-        <h3 class="font-display font-bold text-white text-lg mb-4">The Logic of Constraint</h3>
-        <p class="seo-text">
-          Why do constraint puzzles feel so satisfying? Cognitive science suggests that the brain enjoys "closing loops." Solar Grid presents a <strong>Constraint Satisfaction Problem (CSP)</strong> where every move reduces the entropy of the system. 
-          <br><br>
-          When you place a Moon to prevent a "triple Sun," you aren't just guessing; you are applying a strict rule set. This engages the <strong>Dorsolateral Prefrontal Cortex</strong>, the area responsible for working memory and planning. Regular engagement with CSPs improves your ability to visualize future states and consequences.
-        </p>
-      </article>
-
-      <article class="glass-panel p-6 rounded-2xl">
-        <h3 class="font-display font-bold text-white text-lg mb-4">The Daily Ritual</h3>
-        <p class="seo-text">
-          In 2025, the "Daily Micro-Game" has replaced the morning newspaper. Games like Solar Grid, Wordle, and Mini Crossword are designed for high-frequency, low-duration engagement. 
-          <br><br>
-          They act as a <strong>cognitive warm-up</strong>. By solving a finite, solvable problem first thing in the morning, you trigger a dopamine release that sets a tone of efficacy for the rest of the day. The "Streak" mechanic further reinforces this by turning logic into a lifestyle.
-        </p>
-      </article>
-
-      <article class="glass-panel p-6 rounded-2xl">
-        <h3 class="font-display font-bold text-white text-lg mb-4">Mastery Techniques</h3>
-        <p class="seo-text">
-          <strong>1. The Sandwich Rule:</strong> If you see two Suns with a space between them (Sun - Empty - Sun), the middle <em>must</em> be a Moon to prevent a triple.
-          <br><br>
-          <strong>2. The Double Rule:</strong> If you see two Suns adjacent, the cells on either side <em>must</em> be Moons.
-          <br><br>
-          <strong>3. The Count:</strong> Always check row totals. If a row has 3 Suns already, fill the rest with Moons immediately. This often triggers a cascade of solutions across intersecting columns.
-        </p>
-      </article>
-
-    </section>
-
   </main>
-
-  
-
-
-
-
-
-
-<div class="qr-seo-wrapper">
-    <style>
-        .qr-seo-wrapper { display: flex; flex-direction: column; gap: 3rem; width: 100%; max-width: 1200px; margin: 4rem auto; padding: 0 1rem; font-family: system-ui, -apple-system, sans-serif; color: #94a3b8; line-height: 1.6; }
-        .qr-hub-card { position: relative; background: linear-gradient(145deg, #060b18, #0f172a); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5); padding: 2.5rem; display: flex; flex-direction: column; }
-        
-        /* THEMES */
-        .theme-green { border-left: 4px solid #10b981; } .theme-green h2 span { color: #34d399; } .theme-green .qr-badge { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; } .theme-green a { color: #34d399; }
-        .theme-purple { border-left: 4px solid #a855f7; } .theme-purple h2 span { color: #c084fc; } .theme-purple .qr-badge { background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); color: #d8b4fe; } .theme-purple a { color: #c084fc; }
-        .theme-cyan { border-left: 4px solid #06b6d4; } .theme-cyan h2 span { color: #22d3ee; } .theme-cyan .qr-badge { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9; } .theme-cyan a { color: #22d3ee; }
-        .theme-amber { border-left: 4px solid #f59e0b; } .theme-amber h2 span { color: #fbbf24; } .theme-amber .qr-badge { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; } .theme-amber a { color: #fbbf24; }
-
-        /* LAYOUT */
-        .qr-card-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 2rem; height: 100%; }
-        @media (min-width: 900px) { .qr-card-content { flex-direction: row; align-items: flex-start; } }
-        .qr-main-col { flex: 1; }
-        .qr-side-col { width: 100%; max-width: 320px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(10px); flex-shrink: 0; }
-        
-        /* ELEMENTS */
-        .qr-badge { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 1rem; font-weight: 700; }
-        .qr-hub-card h2 { color: #fff; font-size: 1.8rem; margin: 0 0 1rem 0; line-height: 1.2; letter-spacing: -0.02em; }
-        .qr-hub-card p { margin-bottom: 1.5rem; font-size: 0.95rem; text-align: justify; }
-        .qr-hub-card strong { color: #fff; }
-        .qr-hub-card a { font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
-        .qr-hub-card a:hover { border-bottom-color: currentColor; }
-        
-        /* SIDEBAR */
-        .qr-sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px; margin-bottom: 8px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; text-decoration: none !important; }
-        .qr-sidebar-link:hover { background: rgba(255, 255, 255, 0.08); }
-        .qr-link-text { display: flex; flex-direction: column; }
-        .qr-link-head { color: #e2e8f0; font-size: 0.85rem; font-weight: 700; }
-        .qr-link-sub { color: #64748b; font-size: 0.7rem; }
-        .qr-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px; }
-
-        /* GRIDS */
-        .qr-game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-        .qr-mini-link { padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 0.75rem; color: #cbd5e1 !important; }
-        .qr-mini-link:hover { background: rgba(255,255,255,0.1); }
-        .qr-link-matrix { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
-        .qr-matrix-item { font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; background: rgba(251, 191, 36, 0.1); color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.2); }
-        .qr-matrix-item:hover { background: rgba(251, 191, 36, 0.2); }
-
-        @media (max-width: 600px) { .qr-hub-card { padding: 1.5rem; } .qr-side-col { max-width: 100%; } }
-    </style>
-
-    <div class="qr-hub-card theme-green">
-        <div class="qr-card-content">
-            <div class="qr-main-col">
-                <div class="qr-badge"><i class="fas fa-stopwatch"></i> Time Attack Mode</div>
-                <h2>Beat The Clock: <span>High-Stakes Puzzles</span></h2>
-                <p>
-                    In the <strong>Quiz Realm Arcade</strong>, intelligence is nothing without speed. Our game modes are built to simulate high-pressure environments where hesitation leads to failure. Challenges like <a href="rapid.html">Rapid Fire</a> force you to make split-second decisions, training your brain to retrieve information instantly rather than just memorizing it.
-                </p>
-                <p>
-                    We track your "Time-to-Answer" metrics across all modes, from the deductive grids of <a href="fusion-core.html">Logic League</a> to the fast-paced pattern matching of <a href="nexus.html">Connections</a>. Are you faster than 90% of the global player base? Only the leaderboard tells the truth. Jump into a session now and set a new personal best.
-                </p>
-                
-                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1rem; color: #fff;">Speed Modules</div>
-                <div class="qr-game-grid">
-                    <a href="/rapid.html" class="qr-mini-link">Rapid Fire</a>
-                    <a href="/mini-crossword.html" class="qr-mini-link">Speed Cross</a>
-                    <a href="/odd-one-out.html" class="qr-mini-link">Odd One Out</a>
-                    <a href="/cryptex.html" class="qr-mini-link">Cryptex</a>
-                    <a href="/word-ladder.html" class="qr-mini-link">Ladder Run</a>
-                    <a href="/timeline-history.html" class="qr-mini-link">Timeline</a>
-                </div>
-            </div>
-            <div class="qr-side-col">
-                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Compete</div>
-                <a href="/daily.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-trophy text-green-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Daily Rank</span><span class="qr-link-sub">Today's Leaderboard</span></div>
-                </a>
-                <a href="/arcade.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-list-ol text-green-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">All Games</span><span class="qr-link-sub">Browse Collection</span></div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="qr-hub-card theme-purple">
-        <div class="qr-card-content">
-            <div class="qr-main-col">
-                <div class="qr-badge"><i class="fas fa-dungeon"></i> Hardcore Mode</div>
-                <h2>The Deep End: <span>Impossible Trivia</span></h2>
-                <p>
-                    Casual fans need not apply. The <strong>Knowledge Nexus</strong> is home to our "Deep Dive" hubs, where we house questions that go far beyond the movie posters. We test your knowledge of specific issue numbers, alien dialects, and background Easter eggs found in the <a href="marvel.html">Marvel</a> and <a href="dc.html">DC Universes</a>.
-                </p>
-                <p>
-                    Our algorithm adjusts to your skill level. If you consistently answer easy questions correctly, the system will begin serving "Omega-Level" threats—questions designed to stump even professional archivists. From <a href="rick-and-morty.html">Rick and Morty's</a> multidimensional coordinates to the exact dates of historical battles, this is the ultimate test of your fandom retention.
-                </p>
-            </div>
-            <div class="qr-side-col">
-                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Select Challenge</div>
-                <a href="/encyclopedia/marvel.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-hand-rock text-purple-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Infinity War</span><span class="qr-link-sub">Marvel Hard Mode</span></div>
-                </a>
-                <a href="/encyclopedia/superman.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-city text-purple-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Gotham City</span><span class="qr-link-sub">DC Hard Mode</span></div>
-                </a>
-                <a href="/christmas-hub.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-gift text-purple-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Holiday Lore</span><span class="qr-link-sub">Seasonal Facts</span></div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="qr-hub-card theme-cyan">
-        <div class="qr-card-content">
-            <div class="qr-main-col">
-                <div class="qr-badge"><i class="fas fa-crown"></i> Prestige System</div>
-                <h2>Global Status: <span>Earn Your Rank</span></h2>
-                <p>
-                    In the Quiz Realm, knowledge is currency. Our <strong>Prestige System</strong> rewards dedicated players with exclusive profile borders, titles, and badges. Completing a "Perfect Run" in the Daily Challenge or achieving a 7-day streak grants you XP multipliers that accelerate your rise through the ranks.
-                </p>
-                <p>
-                    Don't just play anonymously. Sign in to track your <strong>Lifetime Stats</strong>. See which categories are your strongest (e.g., "Science Geek") and where you need improvement. Compare your "Brain Age" and reaction times against friends to see who truly has the sharpest mind in your circle.
-                </p>
-            </div>
-            <div class="qr-side-col">
-                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Your Legacy</div>
-                <a href="/achievements.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-award text-cyan-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Hall of Fame</span><span class="qr-link-sub">View Trophies</span></div>
-                </a>
-                <a href="/profile.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-sliders-h text-cyan-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Customize</span><span class="qr-link-sub">Edit Avatar</span></div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="qr-hub-card theme-amber">
-        <div class="qr-card-content">
-            <div class="qr-main-col">
-                <div class="qr-badge"><i class="fas fa-graduation-cap"></i> Study Guide</div>
-                <h2>The Library: <span>Prep for Trivia Night</span></h2>
-                <p>
-                    Are you the weak link in your pub trivia team? The <strong>Quiz Realm Library</strong> is your training ground. We have categorized thousands of questions into study-friendly blocks. Spend 10 minutes a day in our "Geography" or "Classic Literature" sections, and you will see immediate improvements in your general knowledge retention.
-                </p>
-                <p>
-                    Our database covers everything from <strong>Ancient Civilizations</strong> to <strong>Modern Tech</strong>. Use the quick links below to target your weak spots. Whether you need to memorize capital cities or understand basic quantum mechanics, we have a quiz module ready for you.
-                </p>
-
-                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem; color: #fff;">Study Topics</div>
-                <div class="qr-link-matrix">
-                    <a href="/categories.html" class="qr-matrix-item">Periodic Table</a>
-                    <a href="/categories.html" class="qr-matrix-item">World Wars</a>
-                    <a href="/categories.html" class="qr-matrix-item">Film Directors</a>
-                    <a href="/categories.html" class="qr-matrix-item">Human Anatomy</a>
-                    <a href="/categories.html" class="qr-matrix-item">Solar System</a>
-                    <a href="/categories.html" class="qr-matrix-item">Capitals</a>
-                    <a href="/categories.html" class="qr-matrix-item">Grammar</a>
-                    <a href="/categories.html" class="qr-matrix-item">Coding</a>
-                    <a href="/categories.html" class="qr-matrix-item">Fine Art</a>
-                    <a href="/categories.html" class="qr-matrix-item">Olympics</a>
-                    <a href="/categories.html" class="qr-matrix-item">Oscar Winners</a>
-                    <a href="/categories.html" class="qr-matrix-item">Philosophy</a>
-                </div>
-            </div>
-            
-            <div class="qr-side-col">
-                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Resources</div>
-                <a href="about.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-users text-amber-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Our Team</span><span class="qr-link-sub">Who we are</span></div>
-                </a>
-                <a href="FAQ.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-life-ring text-amber-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Support</span><span class="qr-link-sub">Get Help</span></div>
-                </a>
-                <a href="privacy.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-shield-alt text-amber-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Security</span><span class="qr-link-sub">Your Data</span></div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-</div>
 
   <quiz-footer></quiz-footer>
 
@@ -576,10 +245,11 @@
     <div class="glass-panel p-8 rounded-2xl max-w-sm w-full text-center relative border-t-4 border-t-sun">
       <h2 class="font-display font-bold text-2xl text-white mb-2">DIRECTIVES</h2>
       <p class="text-slate-400 text-sm mb-6">Fill the grid with Suns & Moons.</p>
-      <div class="text-left text-sm text-slate-300 space-y-4 mb-8">
-        <p>1. No more than two adjacent identical symbols.</p>
-        <p>2. Equal number of Suns/Moons per row/col.</p>
-        <p>3. Tap cell to toggle: <span class="text-sun">Sun</span> -> <span class="text-moon">Moon</span> -> Empty.</p>
+      <div class="text-left text-sm text-slate-300 space-y-3 mb-8">
+        <p><strong>1.</strong> Balance: exactly 3 Suns and 3 Moons in every row/column.</p>
+        <p><strong>2.</strong> No Triples: no ☀☀☀ or 🌙🌙🌙 adjacent (row/column).</p>
+        <p><strong>3.</strong> Uniqueness: once full, no two rows/columns identical.</p>
+        <p><strong>Tap</strong> cycles: Sun → Moon → Empty.</p>
       </div>
       <button onclick="document.getElementById('rules-modal').classList.add('hidden')" class="w-full py-3 bg-sun text-black font-bold rounded-xl hover:bg-yellow-400 transition">
         INITIATE
@@ -588,14 +258,13 @@
   </div>
 
   <div id="win-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
-    <div class="glass-panel p-8 rounded-2xl max-w-xs w-full text-center relative border-t-4 border-t-green-500 animate-pop">
+    <div class="glass-panel p-8 rounded-2xl max-w-xs w-full text-center relative border-t-4 border-t-green-500">
       <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-black rounded-full border-4 border-green-500 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)]">
         <i class="fas fa-check text-4xl text-green-500"></i>
       </div>
       <div class="mt-8">
         <h2 class="font-display font-black text-3xl text-white uppercase mb-1">BALANCE</h2>
-        <p class="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-6">Equilibrium Restored</p>
-        
+        <p class="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-6">Rules Satisfied</p>
         <div class="text-5xl font-mono font-bold text-white mb-6 tabular-nums" id="final-time">00:00</div>
 
         <div class="flex justify-center gap-4 mb-6">
@@ -605,7 +274,7 @@
           </div>
         </div>
 
-        <button onclick="nextPuzzle()" class="w-full py-4 bg-white text-black font-bold rounded-xl uppercase tracking-widest hover:bg-slate-200 transition mb-3">
+        <button onclick="newPuzzle()" class="w-full py-4 bg-white text-black font-bold rounded-xl uppercase tracking-widest hover:bg-slate-200 transition mb-3">
           Next Grid
         </button>
       </div>
@@ -613,22 +282,19 @@
   </div>
 
   <script>
-    // --- PUZZLE DATABASE (6x6 Valid Grids) ---
-    // 0 = Empty, 1 = Sun, 2 = Moon
-    // 'locked' array defines initial state
+    /******************************************************************
+     * SOLAR GRID (6x6) — REFACTORED LOGIC
+     ******************************************************************/
+
+    const N = 6;
+    const HALF = 3;
+    const EMPTY = 0;
+    const SUN = 1;
+    const MOON = 2;
+
     const PUZZLES = [
       {
         id: 1,
-        // Solution Grid
-        solution: [
-          [1,2,1,2,1,2],
-          [2,1,2,1,2,1],
-          [1,1,2,2,1,2],
-          [2,2,1,1,2,1],
-          [1,2,1,2,2,1],
-          [2,1,2,1,1,2]
-        ],
-        // Initial setup (Null = empty, Number = Locked)
         initial: [
           [1,null,null,2,null,null],
           [null,null,2,null,null,1],
@@ -640,14 +306,6 @@
       },
       {
         id: 2,
-        solution: [
-          [2,1,1,2,1,2],
-          [1,2,2,1,2,1],
-          [1,2,1,2,1,2],
-          [2,1,2,1,2,1],
-          [2,1,1,2,1,2],
-          [1,2,2,1,2,1]
-        ],
         initial: [
           [null,1,1,null,null,null],
           [null,null,null,1,null,null],
@@ -659,14 +317,6 @@
       },
       {
         id: 3,
-        solution: [
-          [1,1,2,1,2,2],
-          [2,2,1,2,1,1],
-          [1,1,2,1,2,2],
-          [2,1,1,2,2,1],
-          [1,2,2,1,1,2],
-          [2,2,1,2,1,1]
-        ],
         initial: [
           [1,null,null,null,2,null],
           [null,2,null,2,null,1],
@@ -678,137 +328,236 @@
       }
     ];
 
-    // --- STATE ---
-    let currentPuzzle;
-    let userGrid = []; // 6x6 array
-    let timerInterval;
-    let startTime;
+    let currentPuzzle = null;
+    let userGrid = [];
     let isComplete = false;
+    let timerInterval = null;
+    let startTime = 0;
 
-    // --- INIT ---
-    window.onload = () => {
-      loadRandomPuzzle();
-      if(window.GameEngine) window.GameEngine.trackEvent('game_start', { game: 'Solar Grid' });
-    };
+    window.addEventListener('load', () => {
+      newPuzzle();
+      if (window.GameEngine) window.GameEngine.trackEvent('game_start', { game: 'Solar Grid' });
+    });
 
-    function loadRandomPuzzle() {
+    function newPuzzle(){
       const idx = Math.floor(Math.random() * PUZZLES.length);
       currentPuzzle = PUZZLES[idx];
-      
-      // Initialize User Grid based on 'initial'
-      userGrid = currentPuzzle.initial.map(row => row.map(val => val === null ? 0 : val));
-      
+      // Deep copy to prevent mutating initial data
+      userGrid = currentPuzzle.initial.map(row => row.map(v => v === null ? EMPTY : v));
+      isComplete = false;
+      clearErrors();
       renderGrid();
       startTimer();
-      isComplete = false;
+      setStatus('Fill grid: 3 Suns & 3 Moons per line.');
       document.getElementById('win-modal').classList.add('hidden');
     }
 
-    // --- RENDER ---
-    function renderGrid() {
+    function renderGrid(){
       const container = document.getElementById('game-grid');
       container.innerHTML = '';
-      
-      for(let r=0; r<6; r++) {
-        for(let c=0; c<6; c++) {
+
+      for (let r=0;r<N;r++){
+        for (let c=0;c<N;c++){
           const val = userGrid[r][c];
           const isLocked = currentPuzzle.initial[r][c] !== null;
-          
+
           const cell = document.createElement('div');
           cell.className = `cell ${isLocked ? 'locked' : ''}`;
-          cell.dataset.state = val;
-          cell.dataset.r = r;
-          cell.dataset.c = c;
-          
-          if(!isLocked) {
-            cell.onclick = () => toggleCell(r, c);
+          cell.dataset.state = String(val);
+          cell.dataset.r = String(r);
+          cell.dataset.c = String(c);
+          cell.innerHTML = iconFor(val);
+
+          if (!isLocked){
+            cell.addEventListener('click', () => toggleCell(r,c));
           }
 
-          // Icon Logic
-          if(val === 1) cell.innerHTML = '<i class="fas fa-sun animate-pop"></i>';
-          else if(val === 2) cell.innerHTML = '<i class="fas fa-moon animate-pop"></i>';
-          
           container.appendChild(cell);
         }
       }
-      updateCounts();
     }
 
-    function updateCounts() {
-      // Just a visual aid, optional logic here to count totals
+    function iconFor(val){
+      if (val === SUN) return '<i class="fas fa-sun animate-pop"></i>';
+      if (val === MOON) return '<i class="fas fa-moon animate-pop"></i>';
+      return '';
     }
 
-    // --- LOGIC ---
-    function toggleCell(r, c) {
-      if(isComplete) return;
-      
-      // Cycle: 0 -> 1 -> 2 -> 0
-      let val = userGrid[r][c];
-      val = (val + 1) > 2 ? 0 : val + 1;
-      userGrid[r][c] = val;
-      
-      // Update DOM directly for performance
-      const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-      cell.dataset.state = val;
-      if(val === 1) cell.innerHTML = '<i class="fas fa-sun animate-pop"></i>';
-      else if(val === 2) cell.innerHTML = '<i class="fas fa-moon animate-pop"></i>';
-      else cell.innerHTML = '';
-      
-      // Remove error state if exists
-      cell.classList.remove('error');
+    function cellEl(r,c){
+      return document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
     }
 
-    function checkPuzzle() {
-      let isCorrect = true;
-      let isFull = true;
-      const flatSol = currentPuzzle.solution.flat();
-      const flatUser = userGrid.flat();
+    function toggleCell(r,c){
+      if (isComplete) return;
 
-      // 1. Check Completeness & Match
-      flatUser.forEach((val, i) => {
-        if(val === 0) isFull = false;
-        if(val !== 0 && val !== flatSol[i]) {
-          // Highlight error
-          const r = Math.floor(i / 6);
-          const c = i % 6;
-          const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-          cell.classList.add('error');
-          setTimeout(() => cell.classList.remove('error'), 1000);
-          isCorrect = false;
+      let v = userGrid[r][c];
+      v = (v + 1) > 2 ? 0 : (v + 1);
+      userGrid[r][c] = v;
+
+      const el = cellEl(r,c);
+      if (!el) return;
+      el.dataset.state = String(v);
+      el.innerHTML = iconFor(v);
+      el.classList.remove('error');
+    }
+
+    function setStatus(html){
+      document.getElementById('status').innerHTML = html || '';
+    }
+
+    function clearErrors(){
+      document.querySelectorAll('.cell.error').forEach(x => x.classList.remove('error'));
+    }
+
+    function applyErrors(errorSet){
+      for (const key of errorSet){
+        const [r,c] = key.split(',').map(Number);
+        const el = cellEl(r,c);
+        if (el) el.classList.add('error');
+      }
+      setTimeout(() => clearErrors(), 1200);
+    }
+
+    // CORE VALIDATION LOGIC
+    function validateGrid(grid){
+      const errors = new Set();
+      const messages = [];
+
+      const mark = (r,c) => errors.add(`${r},${c}`);
+
+      // Check if grid is fully filled (no 0s)
+      const isFull = grid.every(row => row.every(v => v !== EMPTY));
+
+      // 1. BALANCE CHECK
+      for (let i=0; i<N; i++) {
+        // Row check
+        let s=0, m=0;
+        for (let j=0; j<N; j++) {
+           if (grid[i][j] === SUN) s++;
+           else if (grid[i][j] === MOON) m++;
         }
-      });
+        // Logic: If full, must be exactly HALF. If not full, just can't exceed HALF.
+        if (isFull ? (s !== HALF || m !== HALF) : (s > HALF || m > HALF)) {
+          for (let j=0; j<N; j++) mark(i, j);
+          messages.push(`Row ${i+1} Balance Error`);
+        }
 
-      if (isFull && isCorrect) {
+        // Col check
+        s=0; m=0;
+        for (let j=0; j<N; j++) {
+           if (grid[j][i] === SUN) s++;
+           else if (grid[j][i] === MOON) m++;
+        }
+        if (isFull ? (s !== HALF || m !== HALF) : (s > HALF || m > HALF)) {
+          for (let j=0; j<N; j++) mark(j, i);
+          messages.push(`Column ${i+1} Balance Error`);
+        }
+      }
+
+      // 2. TRIPLES CHECK (3 consecutive identical non-empty values)
+      const checkTriples = (arr, isRow, idx) => {
+        for (let k=0; k<=N-3; k++) {
+          const v1 = arr[k], v2 = arr[k+1], v3 = arr[k+2];
+          if (v1 !== EMPTY && v1 === v2 && v2 === v3) {
+            // Mark the three cells involved
+            if (isRow) { mark(idx, k); mark(idx, k+1); mark(idx, k+2); }
+            else       { mark(k, idx); mark(k+1, idx); mark(k+2, idx); }
+            messages.push(`${isRow ? 'Row' : 'Column'} ${idx+1} Triple Error`);
+          }
+        }
+      };
+
+      for (let i=0; i<N; i++) {
+        // Row
+        checkTriples(grid[i], true, i);
+        // Col
+        const colVals = [];
+        for(let r=0; r<N; r++) colVals.push(grid[r][i]);
+        checkTriples(colVals, false, i);
+      }
+
+      // 3. UNIQUENESS CHECK (Only if full and no other errors to avoid confusion)
+      // This prevents flagging incomplete rows (e.g. 000000) as identical
+      if (isFull && errors.size === 0) {
+        // Check Rows
+        const rowStrings = grid.map(r => r.join(''));
+        for (let i=0; i<N; i++) {
+          for (let j=i+1; j<N; j++) {
+            if (rowStrings[i] === rowStrings[j]) {
+              for(let k=0; k<N; k++) { mark(i, k); mark(j, k); }
+              messages.push(`Row ${i+1} and Row ${j+1} are identical`);
+            }
+          }
+        }
+        // Check Cols
+        const colStrings = [];
+        for (let c=0; c<N; c++) {
+          let s = "";
+          for (let r=0; r<N; r++) s += String(grid[r][c]);
+          colStrings.push(s);
+        }
+        for (let i=0; i<N; i++) {
+          for (let j=i+1; j<N; j++) {
+            if (colStrings[i] === colStrings[j]) {
+              for(let k=0; k<N; k++) { mark(k, i); mark(k, j); }
+              messages.push(`Column ${i+1} and Column ${j+1} are identical`);
+            }
+          }
+        }
+      }
+
+      const ok = isFull && errors.size === 0;
+      return { ok, isFull, errors, messages };
+    }
+
+    function checkPuzzle(){
+      clearErrors();
+      const res = validateGrid(userGrid);
+
+      if (!res.isFull){
+        setStatus('Grid is not full yet. Fill all cells.');
+        applyErrors(res.errors);
+        return;
+      }
+
+      if (res.ok){
+        setStatus('Logic Verified. Balance Restored.');
         endGame();
-      } else if (!isFull) {
-        // Optional: Toast "Grid not full"
+      } else {
+        const uniqueMsgs = [...new Set(res.messages)]; // dedupe messages
+        const msg = uniqueMsgs[0] || 'Logic violation detected.';
+        setStatus(`<b>Error:</b> ${escapeHtml(msg)}`);
+        applyErrors(res.errors);
       }
     }
 
-    function resetPuzzle() {
-      if(confirm("Clear board?")) {
-        userGrid = currentPuzzle.initial.map(row => row.map(val => val === null ? 0 : val));
+    function resetPuzzle(){
+      if (confirm("Clear board?")){
+        // Reset grid to initial state
+        userGrid = currentPuzzle.initial.map(row => row.map(v => v === null ? EMPTY : v));
+        isComplete = false;
+        clearErrors();
         renderGrid();
+        setStatus('Board cleared.');
       }
     }
 
-    function endGame() {
+    function endGame(){
       isComplete = true;
       clearInterval(timerInterval);
       document.getElementById('final-time').innerText = document.getElementById('timer').innerText;
       document.getElementById('win-modal').classList.remove('hidden');
-      
-      if(window.GameEngine) {
+
+      if (window.GameEngine){
         window.GameEngine.addXP(200);
-        window.GameEngine.saveGameResult("Solar Grid", 200, 1, { time: document.getElementById('timer').innerText });
+        window.GameEngine.saveGameResult("Solar Grid", 200, 1, {
+          time: document.getElementById('timer').innerText,
+          puzzleId: currentPuzzle?.id
+        });
       }
     }
 
-    function nextPuzzle() {
-      location.reload();
-    }
-
-    function startTimer() {
+    function startTimer(){
       clearInterval(timerInterval);
       startTime = Date.now();
       timerInterval = setInterval(() => {
@@ -817,6 +566,10 @@
         const s = (d%60).toString().padStart(2,'0');
         document.getElementById('timer').innerText = `${m}:${s}`;
       }, 1000);
+    }
+
+    function escapeHtml(str){
+      return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
     }
   </script>
 </body>

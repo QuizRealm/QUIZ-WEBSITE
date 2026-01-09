@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Game Controller | QuizRealm Multiplayer</title>
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Your personal game controller for QuizRealm. Join live trivia sessions, submit answers in real-time, and track your leaderboard ranking instantly.">
+
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="game-engine.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: '#6366f1',
+                        surface: '#1e293b',
+                        background: '#0f172a',
+                        // Game Colors
+                        opt1: '#ef4444', // Red
+                        opt2: '#3b82f6', // Blue
+                        opt3: '#eab308', // Yellow
+                        opt4: '#22c55e', // Green
+                    },
+                    animation: {
+                        'pop': 'pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                        'pulse-fast': 'pulse 1.5s infinite',
+                    },
+                    keyframes: {
+                        pop: { '0%': { transform: 'scale(0.9)' }, '100%': { transform: 'scale(1)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            overscroll-behavior: none;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .game-btn {
+            border: 0;
+            border-bottom: 6px solid rgba(0,0,0,0.2);
+            border-radius: 20px;
+            transition: all 0.1s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .game-btn:active {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+            filter: brightness(0.9);
+            box-shadow: none;
+        }
+        .game-btn i { font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .game-btn span { font-weight: 800; font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        .glass-header {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* SEO Card Styles */
+        .seo-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .seo-card h3 { color: #fff; font-weight: 700; margin-bottom: 0.75rem; font-size: 1.1rem; }
+        .seo-card p { color: #94a3b8; font-size: 0.85rem; line-height: 1.6; margin-bottom: 0.75rem; }
+    </style>
+</head>
+
+<body class="flex flex-col h-[100dvh]">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <nav class="glass-header w-full px-4 py-3 flex justify-between items-center z-50 fixed top-0 left-0">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center font-bold text-sm border border-slate-600 shadow-inner text-white" id="avatar-display">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="flex flex-col leading-none">
+                <span class="font-bold text-sm text-white truncate max-w-[120px]" id="nickname-display">Player</span>
+                <span class="text-[10px] text-slate-400 font-mono tracking-wider" id="room-display">ROOM: ----</span>
+            </div>
+        </div>
+        <div class="flex gap-4 text-xs font-mono">
+            <div class="text-right">
+                <div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Score</div>
+                <div class="text-brand font-bold text-lg leading-none" id="score-display">0</div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow pt-20 px-4 pb-6 flex flex-col relative z-10 w-full max-w-md mx-auto h-full overflow-hidden">
+        
+        <div id="view-lobby" class="flex flex-col items-center justify-center h-full text-center animate-pop">
+            <div class="relative mb-8">
+                <div class="absolute inset-0 bg-brand/20 blur-xl rounded-full animate-pulse-fast"></div>
+                <div class="relative w-28 h-28 bg-surface border border-white/10 rounded-full flex items-center justify-center shadow-2xl">
+                    <i class="fas fa-gamepad text-5xl text-brand"></i>
+                </div>
+            </div>
+            <h1 class="text-3xl font-extrabold text-white mb-2 tracking-tight">You're In!</h1>
+            <p class="text-slate-400 text-sm max-w-[200px] mx-auto leading-relaxed">Relax. The game will start on the main screen shortly.</p>
+            
+            <div class="mt-12 w-full max-w-xs bg-slate-800/50 rounded-xl p-4 border border-white/5">
+                <div class="flex items-center justify-center gap-2 text-xs font-mono text-slate-500">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    Connected to Host
+                </div>
+            </div>
+        </div>
+
+        <div id="view-game" class="hidden flex-col h-full pb- safe-area-bottom">
+            <div id="mobile-question-card" class="hidden mb-4 p-5 bg-surface rounded-2xl border border-slate-700 shadow-lg flex-grow max-h-[25vh] overflow-y-auto animate-pop">
+                <p id="question-text" class="text-lg font-bold text-white leading-snug">Loading Question...</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 h-full flex-grow content-center pb-2" id="answer-grid">
+                <button onclick="submitAnswer(0)" class="game-btn bg-opt1 text-white">
+                    <i class="fas fa-square"></i>
+                    <span>Option A</span>
+                </button>
+                <button onclick="submitAnswer(1)" class="game-btn bg-opt2 text-white">
+                    <i class="fas fa-circle"></i>
+                    <span>Option B</span>
+                </button>
+                <button onclick="submitAnswer(2)" class="game-btn bg-opt3 text-white">
+                    <i class="fas fa-play rotate-[-90deg]"></i>
+                    <span>Option C</span>
+                </button>
+                <button onclick="submitAnswer(3)" class="game-btn bg-opt4 text-white">
+                    <i class="fas fa-diamond"></i>
+                    <span>Option D</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-feedback" class="hidden flex-col items-center justify-center h-full text-center animate-pop">
+            <div class="w-24 h-24 bg-slate-700/50 rounded-full flex items-center justify-center mb-6 border border-white/10">
+                <i class="fas fa-lock text-4xl text-slate-400"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2">Answer Locked</h2>
+            <p class="text-slate-400 text-sm">Wait for the timer to end...</p>
+        </div>
+
+        <div id="view-result" class="hidden flex-col items-center justify-center h-full text-center animate-pop">
+            <div id="result-icon-bg" class="w-28 h-28 rounded-full flex items-center justify-center mb-6 shadow-2xl transition-colors duration-300">
+                <i id="result-icon" class="fas fa-star text-5xl text-white"></i>
+            </div>
+            
+            <h1 id="result-title" class="text-4xl font-black text-white mb-2 tracking-tight">Correct!</h1>
+            <div class="text-5xl font-mono font-bold text-brand mb-8" id="result-points">+950</div>
+            
+            <div class="w-full bg-surface border border-white/10 rounded-2xl p-5 max-w-xs">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-slate-500 uppercase font-bold">Total Score</span>
+                    <span class="text-white font-bold" id="total-score-result">0</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                    <div id="streak-bar" class="h-full bg-gradient-to-r from-orange-500 to-red-500 w-0 transition-all duration-500"></div>
+                </div>
+                <div class="text-right mt-1 text-[10px] text-orange-400 font-bold uppercase tracking-wider">Streak 🔥</div>
+            </div>
+        </div>
+
+    </main>
+
+    <section class="px-4 py-8 max-w-2xl mx-auto border-t border-white/5 mt-auto">
+        <div class="seo-card">
+            <h3>Seamless Mobile Gameplay</h3>
+            <p>
+                The QuizRealm Controller transforms your smartphone into a dedicated game interface designed for speed and accuracy. Built with "thumb-first" ergonomics, the layout ensures that reaction time is the only barrier between you and victory. Whether you are playing on an iPhone, Android, or tablet, the responsive web design adapts instantly to your screen size without any app store downloads.
+            </p>
+            <p>
+                Low-latency WebSocket connections via Firebase ensure that your input registers on the host screen in milliseconds. This real-time synchronization is crucial for our speed-based scoring system, where every split-second counts towards your final leaderboard position.
+            </p>
+        </div>
+
+        <div class="seo-card">
+            <h3>Fair Play & Competitive Scoring</h3>
+            <p>
+                Our proprietary scoring algorithm rewards both knowledge and decisiveness. While a correct answer guarantees points, answering faster than your opponents applies a dynamic multiplier to your score. This prevents ties and keeps the competitive tension high until the final round.
+            </p>
+            <p>
+                The controller interface provides instant haptic feedback and visual cues to confirm your submission, preventing accidental double-taps. In "Mobile Mode," question text is mirrored directly to your device for accessibility, ensuring that players with a poor view of the main screen are never at a disadvantage.
+            </p>
+        </div>
+    </section>
+
+    <quiz-footer></quiz-footer>
+
+    <script type="module">
+        import { db } from './firebase-config.js';
+        import { doc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // --- 1. INITIALIZATION ---
+        const info = JSON.parse(localStorage.getItem('qr_player_info'));
+        
+        // Redirect if invalid session
+        if (!info || !info.roomCode) {
+            window.location.href = 'group-hub.html';
+        }
+
+        // Init UI
+        document.getElementById('nickname-display').textContent = info.nickname;
+        document.getElementById('room-display').textContent = `ROOM: ${info.roomCode}`;
+        document.getElementById('avatar-display').innerHTML = info.nickname.charAt(0).toUpperCase();
+
+        const ROOM_REF = doc(db, "group_rooms", info.roomCode);
+        let myScore = 0;
+        let myAnswer = null;
+        let currentStreak = 0;
+
+        // --- 2. JOIN SEQUENCE ---
+        async function joinRoom() {
+            try {
+                // Check if room exists first
+                const docSnap = await getDoc(ROOM_REF);
+                if (!docSnap.exists()) {
+                    alert("Room not found or closed.");
+                    window.location.href = 'group-hub.html';
+                    return;
+                }
+
+                // Add player to room
+                await updateDoc(ROOM_REF, {
+                    [`players.${info.nickname}`]: { 
+                        score: 0, 
+                        avatar: info.nickname.charAt(0),
+                        joinedAt: Date.now()
+                    }
+                });
+                
+                // Track Join Event
+                if (window.GameEngine) {
+                    window.GameEngine.trackEvent('player_join', { room: info.roomCode });
+                }
+
+            } catch (err) {
+                console.error("Join Error:", err);
+                alert("Connection failed. Please try again.");
+                window.location.href = 'group-hub.html';
+            }
+        }
+
+        // --- 3. REAL-TIME LISTENER ---
+        onSnapshot(ROOM_REF, (docSnap) => {
+            const data = docSnap.data();
+            if (!data) return; // Room deleted
+
+            // A. LOBBY
+            if (data.status === 'LOBBY') {
+                showView('view-lobby');
+            }
+            
+            // B. GAME START / NEW QUESTION
+            if (data.status === 'GAME') {
+                myAnswer = null; // Reset local answer
+                showView('view-game');
+                
+                // Handle Mobile View Mode
+                const qCard = document.getElementById('mobile-question-card');
+                const qText = document.getElementById('question-text');
+                
+                if (data.currentQuestion && data.currentQuestion.mobileMode) {
+                    qText.textContent = data.currentQuestion.text;
+                    qCard.classList.remove('hidden');
+                } else {
+                    qCard.classList.add('hidden');
+                }
+            }
+
+            // C. RESULTS
+            if (data.status === 'RESULT') {
+                // Determine Success
+                const isCorrect = (myAnswer === data.correctIndex);
+                
+                // Calculate Points (Simplified for Client Display - Host is Truth)
+                // Base: 1000. Speed bonus handled by Host usually, but here we do flat for MVP consistency
+                const pts = isCorrect ? 1000 : 0; 
+                
+                // UI Elements
+                const title = document.getElementById('result-title');
+                const ptsDisp = document.getElementById('result-points');
+                const bg = document.getElementById('result-icon-bg');
+                const icon = document.getElementById('result-icon');
+
+                if (isCorrect) {
+                    title.textContent = "Correct!";
+                    title.className = "text-4xl font-black text-white mb-2 tracking-tight";
+                    ptsDisp.textContent = `+${pts}`;
+                    ptsDisp.className = "text-5xl font-mono font-bold text-green-400 mb-8";
+                    bg.className = "w-28 h-28 rounded-full flex items-center justify-center mb-6 shadow-2xl bg-green-500 text-white";
+                    icon.className = "fas fa-check text-5xl";
+                    
+                    myScore += pts;
+                    currentStreak++;
+                    if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
+                } else {
+                    title.textContent = "Wrong!";
+                    title.className = "text-4xl font-black text-red-500 mb-2 tracking-tight";
+                    ptsDisp.textContent = "+0";
+                    ptsDisp.className = "text-5xl font-mono font-bold text-slate-500 mb-8";
+                    bg.className = "w-28 h-28 rounded-full flex items-center justify-center mb-6 shadow-2xl bg-surface border-2 border-red-500/50 text-red-500";
+                    icon.className = "fas fa-times text-5xl";
+                    
+                    currentStreak = 0;
+                    if(navigator.vibrate) navigator.vibrate(200);
+                }
+
+                // Update Persisted Score
+                document.getElementById('score-display').textContent = myScore;
+                document.getElementById('total-score-result').textContent = myScore;
+                
+                // Sync Score to DB (Important for Host Leaderboard)
+                updateDoc(ROOM_REF, { 
+                    [`players.${info.nickname}.score`]: myScore 
+                });
+
+                // Update Streak Bar Visuals
+                const streakPct = Math.min(currentStreak * 20, 100); // 5 in a row = full bar
+                document.getElementById('streak-bar').style.width = `${streakPct}%`;
+
+                showView('view-result');
+            }
+        });
+
+        // --- 4. ACTIONS ---
+        window.submitAnswer = function(idx) {
+            myAnswer = idx;
+            
+            // Haptic Feedback
+            if(navigator.vibrate) navigator.vibrate(50);
+
+            // Send to Host
+            updateDoc(ROOM_REF, {
+                [`currentAnswers.${info.nickname}`]: idx
+            }).catch(e => console.error("Answer failed", e));
+
+            showView('view-feedback');
+        }
+
+        // Helper to toggle visibility
+        function showView(id) {
+            ['view-lobby','view-game','view-feedback','view-result'].forEach(v => {
+                document.getElementById(v).classList.add('hidden');
+                document.getElementById(v).classList.remove('flex');
+            });
+            const el = document.getElementById(id);
+            el.classList.remove('hidden');
+            el.classList.add('flex');
+        }
+
+        // Start
+        joinRoom();
+
+    </script>
+</body>
+</html>

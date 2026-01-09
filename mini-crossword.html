@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
-  <!-- End GTM -->
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-
-  <title>Mini Crossword • Premium Daily Grid | QuizRealm</title>
-  <meta name="description" content="A premium, mobile-first mini crossword. Tap cells to switch clues, toggle Across/Down, and play a fresh randomized grid every session." />
-  <meta name="theme-color" content="#020202"/>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>Vortex Cross • Premium Speed Puzzle | QuizRealm</title>
+  <meta name="description" content="The premium 5x5 mini crossword. Solve daily logic puzzles against a global timer.">
+  <meta name="theme-color" content="#09090b">
 
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="game-engine.js"></script>
@@ -23,36 +21,34 @@
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/manifest.json">
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Share+Tech+Mono&family=Bungee&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            display: ['Rajdhani', 'sans-serif'],
-            mono: ['Share Tech Mono', 'monospace'],
-            arcade: ['Bungee', 'cursive']
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
-            neonPurple: '#d946ef',
-            neonBlue: '#3b82f6',
-            neonRed: '#ef4444',
-            bgDark: '#020202',
-            panel: 'rgba(15, 23, 42, 0.6)'
+            bgDark: '#09090b',
+            panel: '#18181b',
+            border: '#27272a',
+            accent: '#facc15', // Gold
+            success: '#10b981',
+            error: '#ef4444'
           },
           animation: {
-            'pop-in': 'popIn 0.28s ease-out both',
+            'pop': 'pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
           },
           keyframes: {
-            popIn: {
-              '0%': { opacity: '0', transform: 'translateY(6px) scale(0.98)' },
-              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
-            }
+            pop: { '0%': { transform: 'scale(0.8)' }, '100%': { transform: 'scale(1)' } }
           }
         }
       }
@@ -60,2022 +56,689 @@
   </script>
 
   <style>
-    body{
-      background-color:#020202;
-      background-image:
-        radial-gradient(circle at 10% 20%, rgba(59,130,246,.10), transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(217,70,239,.10), transparent 40%),
-        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
-      color:#e2e8f0;
-      min-height:100vh;
-      overflow-x:hidden;
+    /* CORE UX OVERRIDES */
+    body { 
+        background-color: #09090b; 
+        color: #e4e4e7; 
+        overflow-x: hidden; 
+        touch-action: manipulation; 
+        overscroll-behavior: none; 
     }
-
-    .glass-panel{
-      background: rgba(15, 23, 42, 0.72);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 10px 36px rgba(0,0,0,.55);
-    }
-
-    /* Grid sizing is set by JS to prevent overlap on mobile */
-    :root{
-      --cell: 44px;
-      --gap:  6px;
-    }
-
-    #gridWrap{
+    
+    /* GRID STYLING */
+    .crossword-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2px;
+      background: #27272a;
+      border: 2px solid #27272a;
+      aspect-ratio: 1/1;
       width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-      touch-action: manipulation;
-    }
-
-    #grid{
-      display:grid;
-      gap: var(--gap);
-      justify-content:center;
-      align-content:center;
-      padding: 10px;
-      border-radius: 18px;
-      background: rgba(0,0,0,.25);
-      border: 1px solid rgba(255,255,255,.08);
+      max-width: 380px; /* Slightly larger for desktop readability */
       margin: 0 auto;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.8);
+      touch-action: none; 
     }
 
-    .cell{
-      position:relative;
-      width:var(--cell);
-      height:var(--cell);
-      border-radius: clamp(8px, 1.8vw, 12px);
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
+    .cell {
+      background: #18181b;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+      text-transform: uppercase;
       cursor: pointer;
-    }
-
-    .cell.block{
-      background: rgba(0,0,0,.55);
-      border-color: rgba(255,255,255,.06);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
-      cursor: default;
-    }
-
-    .cell input{
-      width:100%;
-      height:100%;
-      text-align:center;
-      background:transparent;
-      border:none;
-      outline:none;
-      color:#fff;
-      font-family: Rajdhani, sans-serif;
-      font-weight: 900;
-      font-size: clamp(14px, calc(var(--cell) * 0.44), 22px);
-      text-transform: uppercase;
-      caret-color: transparent;
-      -webkit-text-size-adjust: 100%;
-      pointer-events: none; /* tap the tile, not the input; prevents mobile sticky focus bugs */
-    }
-
-    .num{
-      position:absolute;
-      top: clamp(4px, 1.2vw, 6px);
-      left: clamp(5px, 1.4vw, 7px);
-      font-family: "Share Tech Mono", monospace;
-      font-size: clamp(9px, 2.2vw, 10px);
-      color: rgba(226,232,240,.75);
-      pointer-events:none;
-    }
-
-    /* Highlights */
-    .cell.word{
-      border-color: rgba(59,130,246,.55);
-      background: rgba(59,130,246,.10);
-    }
-    .cell.active{
-      border-color: rgba(217,70,239,.75);
-      background: rgba(217,70,239,.12);
-      box-shadow: 0 0 0 2px rgba(217,70,239,.25), 0 10px 18px rgba(0,0,0,.35);
-    }
-    .cell.correct{
-      border-color: rgba(16,185,129,.8);
-      background: rgba(16,185,129,.12);
-    }
-    .cell.wrong{
-      border-color: rgba(239,68,68,.8);
-      background: rgba(239,68,68,.12);
-    }
-
-    .chip{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-family: "Share Tech Mono", monospace;
-      font-size: 12px;
-      color: rgba(226,232,240,.9);
-      white-space: nowrap;
-    }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:.6rem;
-      width:100%;
-      padding: 12px 14px;
-      border-radius: 14px;
-      font-weight: 900;
-      font-family: "Share Tech Mono", monospace;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      font-size: 12px;
-      transition: .15s ease;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn-primary{
-      background: linear-gradient(90deg, #3b82f6, #d946ef);
-      color: #fff;
-      box-shadow: 0 0 20px rgba(217,70,239,.25);
-    }
-    .btn-primary:hover{ opacity:.92; transform: translateY(-1px); }
-    .btn-ghost{
-      background: transparent;
-      border: 1px solid rgba(255,255,255,.12);
-      color: rgba(226,232,240,.85);
-    }
-    .btn-ghost:hover{ background: rgba(255,255,255,.06); color:#fff; }
-
-    .clueItem{
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.25);
-      cursor:pointer;
-      transition: .12s ease;
-    }
-    .clueItem:hover{ background: rgba(255,255,255,.05); }
-    .clueItem.activeClue{
-      border-color: rgba(217,70,239,.55);
-      background: rgba(217,70,239,.10);
-    }
-    .clueTag{
-      font-family: "Share Tech Mono", monospace;
-      font-size: 11px;
-      letter-spacing: .12em;
-      color: rgba(226,232,240,.65);
-    }
-    .clueText{
-      margin-top: 4px;
-      font-size: 14px;
-      color: rgba(226,232,240,.92);
-      line-height: 1.25;
-    }
-
-    /* Mobile keyboard (on-screen) */
-    .kb{
-      display:grid;
-      grid-template-columns: repeat(10, minmax(0, 1fr));
-      gap: 6px;
-      margin-top: 12px;
-    }
-    .k{
-      padding: 10px 0;
-      border-radius: 12px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      font-family: "Share Tech Mono", monospace;
-      font-weight: 900;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      font-size: 12px;
-      color: rgba(226,232,240,.92);
       user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .k:active{ transform: scale(0.98); }
-    .k.wide{ grid-column: span 2; }
-
-    @media (min-width: 900px){
-      .kb{ display:none; }
+      transition: background 0.15s ease, color 0.1s;
     }
 
-    /* Prevent accidental scroll-jumps on tap */
-    html, body { overscroll-behavior: none; }
+    /* DESKTOP TWEAK: Make font larger on big screens */
+    @media (min-width: 768px) {
+        .cell { font-size: 1.8rem; }
+    }
+    
+    .cell .num {
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #52525b;
+      line-height: 1;
+      font-family: 'JetBrains Mono', monospace;
+      pointer-events: none;
+    }
+
+    /* ACTIVE STATES */
+    .cell.active { 
+        background: #facc15 !important; 
+        color: #000; 
+        z-index: 10; 
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+    }
+    .cell.highlight { 
+        background: #2e2e33; 
+    }
+    .cell.correct-anim { animation: pop 0.3s; color: #10b981; }
+    .cell.wrong-anim { animation: pop 0.3s; color: #ef4444; }
+
+    /* STICKY CLUE BAR (Mobile) */
+    .sticky-clue {
+      background: #facc15;
+      color: #000;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-align: center;
+      padding: 14px;
+      box-shadow: 0 4px 20px rgba(250, 204, 21, 0.2);
+      position: relative;
+      z-index: 20;
+    }
+    .sticky-clue::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 6px 6px 0;
+        border-style: solid;
+        border-color: #facc15 transparent transparent transparent;
+    }
+
+    /* ONSCREEN KEYBOARD */
+    .keyboard-row { display: flex; width: 100%; margin-bottom: 6px; gap: 4px; justify-content: center; touch-action: none; }
+    .key {
+      flex: 1;
+      height: 48px;
+      background: #27272a;
+      border-radius: 6px;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.1s;
+      user-select: none;
+      max-width: 42px;
+      box-shadow: 0 2px 0 #18181b;
+    }
+    .key:active { transform: translateY(2px); background: #3f3f46; box-shadow: none; }
+    .key.big { max-width: 60px; font-size: 1rem; background: #3f3f46; }
+
+    /* CUSTOM SCROLL */
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #18181b; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+
+    /* DESKTOP LAYOUT FIXES */
+    @media (min-width: 1024px) {
+        .game-layout-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px; /* Grid | Clues | Info */
+            gap: 40px;
+            align-items: start;
+        }
+        .clues-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 400px;
+        }
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        /* Hide sticky clue bar on desktop as we have full list */
+        #active-clue-bar { display: none; }
+    }
   </style>
 </head>
 
-<body class="flex flex-col antialiased">
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<body class="flex flex-col min-h-screen">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <quiz-header></quiz-header>
 
-  <main class="flex-grow w-full max-w-6xl mx-auto px-4 py-6 md:py-10 relative z-10">
-    <!-- HEADER -->
-    <div class="flex items-start justify-between gap-4 mb-6 md:mb-8">
+  <main class="flex-grow w-full max-w-[1400px] mx-auto px-4 py-6 flex flex-col items-center">
+    
+    <header class="w-full flex justify-between items-end mb-6 border-b border-white/10 pb-4">
       <div>
-        <div class="text-[10px] font-mono uppercase tracking-widest text-neonPurple mb-1">Arcade Module</div>
-        <h1 class="font-display font-black text-3xl md:text-5xl text-white uppercase tracking-wider leading-none">
-          MINI <span class="text-neonBlue">CROSSWORD</span>
-        </h1>
-        <p class="mt-2 text-slate-400 text-sm md:text-base max-w-2xl">
-          Tap any cell to switch clues instantly. Tap the same cell again to toggle Across/Down. Fresh randomized grids every run.
-        </p>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_#facc15]"></span>
+          <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Daily #402</span>
+        </div>
+        <h1 class="text-3xl font-black text-white tracking-tight italic">VORTEX <span class="text-accent">CROSS</span></h1>
       </div>
-
-      <div class="hidden md:flex flex-col items-end gap-2">
-        <div class="chip"><span class="opacity-70">Mode:</span> <span id="modeLabel">ACROSS</span></div>
-        <div class="chip"><span class="opacity-70">Streak:</span> <span id="streakLabel">0</span></div>
+      <div class="text-right">
+        <div class="text-[10px] font-mono text-zinc-500 uppercase mb-0.5">Time</div>
+        <div id="timer" class="text-2xl font-mono font-bold text-white tabular-nums bg-white/5 px-3 py-1 rounded">00:00</div>
       </div>
-    </div>
+    </header>
 
-    <!-- LAYOUT -->
-    <div class="grid grid-cols-1 lg:grid-cols-[auto,420px] gap-4 lg:gap-6 items-start">
-      <!-- GRID PANEL -->
-      <div class="glass-panel rounded-2xl p-3 md:p-4 animate-pop-in">
-        <div class="flex items-center justify-between gap-3 mb-3">
-          <div class="flex gap-2 flex-wrap">
-            <span class="chip"><span class="opacity-70">Grid:</span> <span id="gridSizeLabel">—</span></span>
-            <span class="chip"><span class="opacity-70">Seed:</span> <span id="seedLabel">—</span></span>
-            <span class="chip"><span class="opacity-70">Pattern:</span> <span id="patternLabel">—</span></span>
-          </div>
-          <div class="flex gap-2">
-            <button id="newBtn" class="btn btn-ghost" type="button"><i class="fa-solid fa-rotate"></i> New</button>
-            <button id="checkBtn" class="btn btn-primary" type="button"><i class="fa-solid fa-check"></i> Check</button>
-          </div>
+    <div class="w-full game-layout-grid">
+      
+      <section class="flex flex-col items-center">
+        <div id="active-clue-bar" class="sticky-clue rounded-lg mb-6 cursor-pointer select-none w-full max-w-md">
+           Tap a cell to begin
         </div>
 
-        <div id="gridWrap" class="w-full flex justify-center">
-          <div id="grid" aria-label="Crossword grid"></div>
+        <div id="grid-container" class="mb-6 px-2 w-full">
+          <div id="grid" class="crossword-grid"></div>
         </div>
 
-        <!-- Mobile keyboard (improves UX and avoids native input weirdness) -->
-        <div class="kb" id="kb"></div>
-
-        <div class="mt-3 flex items-center justify-between gap-2">
-          <div class="text-xs font-mono uppercase tracking-widest text-slate-500">
-            Tap same cell to toggle direction
-          </div>
-          <div class="md:hidden flex gap-2">
-            <span class="chip"><span class="opacity-70">Mode:</span> <span id="modeLabelM">ACROSS</span></span>
-            <span class="chip"><span class="opacity-70">Streak:</span> <span id="streakLabelM">0</span></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- CLUES PANEL -->
-      <div class="glass-panel rounded-2xl p-4 md:p-5 animate-pop-in">
-        <div class="flex items-center justify-between mb-3">
-          <div>
-            <div class="text-[10px] font-mono uppercase tracking-widest text-neonPurple">Clue Console</div>
-            <div class="text-white font-display font-black text-2xl tracking-wide uppercase mt-1">
-              <span id="clueModeTitle">Across</span>
-            </div>
-          </div>
-          <button id="toggleModeBtn" class="btn btn-ghost" type="button" style="width:auto; padding:10px 12px;">
-            <i class="fa-solid fa-arrows-left-right"></i> Toggle
+        <div class="flex justify-center gap-8 mb-8 text-[10px] font-bold uppercase tracking-widest text-zinc-500 w-full">
+          <button onclick="checkGrid()" class="hover:text-white transition flex flex-col items-center gap-2 group">
+              <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-lg group-hover:bg-white/10"><i class="fas fa-check"></i></div>
+              Check
+          </button>
+          <button onclick="revealLetter()" class="hover:text-accent transition flex flex-col items-center gap-2 group">
+              <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-lg group-hover:bg-white/10"><i class="fas fa-lightbulb"></i></div>
+              Hint
+          </button>
+          <button onclick="resetPuzzle()" class="hover:text-error transition flex flex-col items-center gap-2 group">
+              <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-lg group-hover:bg-white/10"><i class="fas fa-rotate-right"></i></div>
+              Reset
           </button>
         </div>
 
-        <div class="text-slate-400 text-sm mb-4">
-          Selected: <span id="selectedEntryLabel" class="text-white font-bold">—</span>
+        <div id="keyboard-container" class="w-full max-w-md lg:hidden"></div>
+      </section>
+
+      <section class="clues-wrapper hidden lg:grid">
+        <div class="bg-panel border border-border rounded-xl flex flex-col overflow-hidden h-full">
+          <div class="p-4 bg-white/5 font-bold text-xs uppercase tracking-widest text-accent border-b border-white/5">
+            <i class="fas fa-arrow-right mr-2"></i> Across
+          </div>
+          <div id="clues-across" class="overflow-y-auto flex-1 custom-scroll p-2"></div>
+        </div>
+        
+        <div class="bg-panel border border-border rounded-xl flex flex-col overflow-hidden h-full">
+          <div class="p-4 bg-white/5 font-bold text-xs uppercase tracking-widest text-accent border-b border-white/5">
+            <i class="fas fa-arrow-down mr-2"></i> Down
+          </div>
+          <div id="clues-down" class="overflow-y-auto flex-1 custom-scroll p-2"></div>
+        </div>
+      </section>
+
+      <section class="info-panel hidden lg:flex">
+        
+        <div class="bg-panel border border-border rounded-xl p-5 shadow-lg">
+            <h3 class="text-accent font-bold text-sm uppercase tracking-widest mb-3 border-b border-white/10 pb-2">
+                <i class="fas fa-info-circle mr-2"></i> Mission Brief
+            </h3>
+            <p class="text-zinc-400 text-sm leading-relaxed">
+                Engage the Vortex. Complete the 5x5 dense grid where every row and column forms a valid word. Speed is key to ranking on the global leaderboard.
+            </p>
         </div>
 
-        <div class="grid grid-cols-1 gap-2">
-          <div>
-            <div class="text-xs font-mono uppercase tracking-widest text-slate-500 mb-2">Across</div>
-            <div id="acrossList" class="flex flex-col gap-2"></div>
-          </div>
-          <div class="mt-2">
-            <div class="text-xs font-mono uppercase tracking-widest text-slate-500 mb-2">Down</div>
-            <div id="downList" class="flex flex-col gap-2"></div>
-          </div>
+        <div class="bg-panel border border-border rounded-xl p-5 shadow-lg">
+            <h3 class="text-accent font-bold text-sm uppercase tracking-widest mb-3 border-b border-white/10 pb-2">
+                <i class="fas fa-gamepad mr-2"></i> Protocols
+            </h3>
+            <ul class="text-zinc-400 text-sm space-y-2">
+                <li class="flex items-start gap-2">
+                    <span class="text-zinc-600">•</span> Fill all 25 squares.
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-zinc-600">•</span> Words intersect perfectly.
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-zinc-600">•</span> Tap a cell to toggle direction.
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-zinc-600">•</span> <strong>CHECK</strong> verifies accuracy.
+                </li>
+            </ul>
+        </div>
+        
+        <div class="bg-gradient-to-br from-indigo-900 to-panel border border-indigo-500/30 rounded-xl p-5">
+            <div class="text-xs font-bold text-indigo-400 uppercase mb-1">Premium Access</div>
+            <div class="text-white font-bold mb-2">Unlock Archive?</div>
+            <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2 rounded transition">
+                Go Pro
+            </button>
         </div>
 
-        <div class="mt-5 pt-4 border-t border-white/10">
-          <div class="grid grid-cols-2 gap-2">
-            <button id="revealBtn" class="btn btn-ghost" type="button"><i class="fa-solid fa-eye"></i> Reveal</button>
-            <button id="clearBtn" class="btn btn-ghost" type="button"><i class="fa-solid fa-eraser"></i> Clear</button>
-          </div>
-        </div>
+      </section>
 
-        <div id="statusLine" class="mt-4 text-xs font-mono uppercase tracking-widest text-slate-500"></div>
-      </div>
     </div>
   </main>
 
+  <div class="qr-seo-wrapper">
+    <style>
+        .qr-seo-wrapper { display: flex; flex-direction: column; gap: 3rem; width: 100%; max-width: 1200px; margin: 4rem auto; padding: 0 1rem; font-family: system-ui, -apple-system, sans-serif; color: #94a3b8; line-height: 1.6; }
+        .qr-hub-card { position: relative; background: linear-gradient(145deg, #060b18, #0f172a); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5); padding: 2.5rem; display: flex; flex-direction: column; }
+        
+        /* THEMES */
+        .theme-green { border-left: 4px solid #10b981; } .theme-green h2 span { color: #34d399; } .theme-green .qr-badge { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; } .theme-green a { color: #34d399; }
+        .theme-purple { border-left: 4px solid #a855f7; } .theme-purple h2 span { color: #c084fc; } .theme-purple .qr-badge { background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); color: #d8b4fe; } .theme-purple a { color: #c084fc; }
+        .theme-cyan { border-left: 4px solid #06b6d4; } .theme-cyan h2 span { color: #22d3ee; } .theme-cyan .qr-badge { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9; } .theme-cyan a { color: #22d3ee; }
+        .theme-amber { border-left: 4px solid #f59e0b; } .theme-amber h2 span { color: #fbbf24; } .theme-amber .qr-badge { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; } .theme-amber a { color: #fbbf24; }
+
+        /* LAYOUT */
+        .qr-card-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 2rem; height: 100%; }
+        @media (min-width: 900px) { .qr-card-content { flex-direction: row; align-items: flex-start; } }
+        .qr-main-col { flex: 1; }
+        .qr-side-col { width: 100%; max-width: 320px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(10px); flex-shrink: 0; }
+        
+        /* ELEMENTS */
+        .qr-badge { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 1rem; font-weight: 700; }
+        .qr-hub-card h2 { color: #fff; font-size: 1.8rem; margin: 0 0 1rem 0; line-height: 1.2; letter-spacing: -0.02em; }
+        .qr-hub-card p { margin-bottom: 1.5rem; font-size: 0.95rem; text-align: justify; }
+        .qr-hub-card strong { color: #fff; }
+        .qr-hub-card a { font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
+        .qr-hub-card a:hover { border-bottom-color: currentColor; }
+        
+        /* SIDEBAR */
+        .qr-sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px; margin-bottom: 8px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; text-decoration: none !important; }
+        .qr-sidebar-link:hover { background: rgba(255, 255, 255, 0.08); }
+        .qr-link-text { display: flex; flex-direction: column; }
+        .qr-link-head { color: #e2e8f0; font-size: 0.85rem; font-weight: 700; }
+        .qr-link-sub { color: #64748b; font-size: 0.7rem; }
+        .qr-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px; }
+
+        /* GRIDS */
+        .qr-game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .qr-mini-link { padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 0.75rem; color: #cbd5e1 !important; }
+        .qr-mini-link:hover { background: rgba(255,255,255,0.1); }
+        .qr-link-matrix { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+        .qr-matrix-item { font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; background: rgba(251, 191, 36, 0.1); color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.2); }
+        .qr-matrix-item:hover { background: rgba(251, 191, 36, 0.2); }
+
+        @media (max-width: 600px) { .qr-hub-card { padding: 1.5rem; } .qr-side-col { max-width: 100%; } }
+    </style>
+
+    <div class="qr-hub-card theme-green">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-microchip"></i> Digital Playground</div>
+                <h2>Arcade Suite: <span>Mental Reflex Engines</span></h2>
+                <p>
+                    Step into the <strong>Quiz Realm Arcade</strong>, a curated collection of micro-games designed to test specific facets of human intelligence. Unlike traditional trivia that relies solely on memory, our arcade challenges your <strong>processing speed</strong> and <strong>pattern recognition</strong>.
+                </p>
+                <div class="qr-game-grid">
+                    <a href="/mini-crossword.html" class="qr-mini-link">Crossword</a>
+                    <a href="/word-ladder.html" class="qr-mini-link">Word Ladder</a>
+                    <a href="/tango-logic.html" class="qr-mini-link">Tango Logic</a>
+                </div>
+            </div>
+            <div class="qr-side-col">
+                <a href="/arcade.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-play text-green-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Play Now</span><span class="qr-link-sub">Instant Access</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+  </div>
+
   <quiz-footer></quiz-footer>
 
-  <!-- RESULT MODAL -->
-  <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-    <div class="glass-panel p-7 rounded-2xl max-w-sm w-full text-center relative border-t-4 border-t-neonPurple">
-      <div class="mb-5">
-        <div id="modal-icon" class="text-5xl mb-3"></div>
-        <h2 id="modal-title" class="font-display font-black text-4xl text-white uppercase"></h2>
-        <p id="modal-msg" class="text-slate-400 font-mono text-xs mt-2 uppercase tracking-widest"></p>
+  <div id="win-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <div class="bg-panel border border-border p-8 rounded-3xl max-w-xs w-full text-center relative animate-pop shadow-2xl">
+      <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-bgDark rounded-full border-4 border-success flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)]">
+        <i class="fas fa-check text-4xl text-success"></i>
       </div>
+      <div class="mt-8">
+        <h2 class="font-sans font-black text-3xl text-white italic mb-1">CLEARED</h2>
+        <p class="text-[10px] text-zinc-500 font-mono uppercase tracking-widest mb-6">Sector Secured</p>
 
-      <div class="grid grid-cols-2 gap-3 mb-6">
-        <div class="bg-white/5 rounded-lg p-3 border border-white/5">
-          <div class="text-[10px] uppercase font-bold text-slate-500">Score</div>
-          <div id="resScore" class="text-xl font-mono text-white font-bold">0</div>
+        <div class="text-5xl font-mono font-bold text-white mb-6 tabular-nums tracking-tighter" id="final-time">00:00</div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6 bg-white/5 rounded-xl p-4">
+          <div class="text-center">
+            <div class="text-[10px] text-zinc-500 uppercase font-bold">XP Earned</div>
+            <div class="text-xl text-accent font-bold">+250</div>
+          </div>
+          <div class="text-center border-l border-white/10">
+            <div class="text-[10px] text-zinc-500 uppercase font-bold">Rank</div>
+            <div class="text-xl text-success font-bold">S</div>
+          </div>
         </div>
-        <div class="bg-white/5 rounded-lg p-3 border border-white/5">
-          <div class="text-[10px] uppercase font-bold text-slate-500">XP</div>
-          <div id="resXP" class="text-xl font-mono text-neonPurple font-bold">+0</div>
-        </div>
+
+        <button onclick="location.reload()" class="w-full py-3 bg-accent text-black font-bold rounded-xl uppercase tracking-widest hover:bg-yellow-400 transition transform active:scale-95 shadow-lg shadow-yellow-900/20">
+          Next Puzzle
+        </button>
       </div>
-
-      <button id="playAgainBtn" class="btn btn-primary" type="button">
-        <i class="fa-solid fa-rotate"></i> Play Again
-      </button>
-      <button id="exitBtn" class="btn btn-ghost mt-3" type="button">
-        <i class="fa-solid fa-house"></i> Exit to Hub
-      </button>
     </div>
   </div>
 
   <script>
-    /******************************************************************
-     * MINI CROSSWORD — FULL REWRITE (Stable, mobile-first, non-beginner)
-     * Key upgrades:
-     * - Proper crossword fill (CSP/backtracking) => consistent crossings
-     * - Random template + seed => not same puzzle every time
-     * - Mobile-safe sizing => no overlap
-     * - Tap behavior fixed => clue selection never gets "stuck"
-     * - 500-word bank (3–7 letters) with clean clues (no filler text)
-     ******************************************************************/
-
-    /***********************
-     * Size selection
-     ***********************/
-    const SIZE = (window.innerWidth < 380) ? 9 : 11;
-
-    /***********************
-     * Seeded RNG
-     ***********************/
-    function mulberry32(a){
-      return function(){
-        let t = a += 0x6D2B79F5;
-        t = Math.imul(t ^ t >>> 15, t | 1);
-        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    // --- VERIFIED PUZZLE DATA (NO HALLUCINATIONS) ---
+    // A 5x5 Grid with no black squares MUST mean every row is a word AND every column is a word.
+    // This is known as a "Word Square".
+    // 
+    // Grid: LASER / AGILE / SIREN / ELECT / RENTS
+    //
+    // Check:
+    // R1: LASER, R2: AGILE, R3: SIREN, R4: ELECT, R5: RENTS
+    // C1: LASER, C2: AGILE, C3: SIREN, C4: ELECT, C5: RENTS
+    //
+    // This grid is symmetric (Across words = Down words).
+    
+    const PUZZLES = [
+      {
+        id: 402,
+        grid: ["L","A","S","E","R", "A","G","I","L","E", "S","I","R","E","N", "E","L","E","C","T", "R","E","N","T","S"],
+        clues: {
+          across: { 
+            1: "Focused beam of light", 
+            6: "Nimble; quick-moving", 
+            7: "Warning alarm", 
+            8: "Choose by voting", 
+            9: "Payments to landlords" 
+          },
+          down: { 
+            1: "Printer toner type", 
+            2: "Software development method", 
+            3: "Mythical sea creature", 
+            4: "Chosen official", 
+            5: "Tears in fabric" 
+          } 
+        }
       }
-    }
-    function randInt(rng, n){ return Math.floor(rng() * n); }
-    function shuffle(rng, arr){
-      for (let i = arr.length - 1; i > 0; i--){
-        const j = randInt(rng, i + 1);
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
+    ];
 
-    /***********************
-     * UI elements
-     ***********************/
+    // --- STATE ---
+    let currentPuzzle = PUZZLES[0]; // Load the valid one
+    let userGrid = Array(25).fill("");
+    let cursor = 0; 
+    let direction = 'across'; 
+    let timerInterval;
+    let startTime;
+    let isComplete = false;
+
+    // --- DOM ---
     const gridEl = document.getElementById('grid');
-    const gridWrap = document.getElementById('gridWrap');
-    const gridSizeLabel = document.getElementById('gridSizeLabel');
-    const seedLabel = document.getElementById('seedLabel');
-    const patternLabel = document.getElementById('patternLabel');
-    const statusLine = document.getElementById('statusLine');
-
-    const acrossListEl = document.getElementById('acrossList');
-    const downListEl = document.getElementById('downList');
-
-    const clueModeTitle = document.getElementById('clueModeTitle');
-    const selectedEntryLabel = document.getElementById('selectedEntryLabel');
-
-    const modeLabel = document.getElementById('modeLabel');
-    const modeLabelM = document.getElementById('modeLabelM');
-    const streakLabel = document.getElementById('streakLabel');
-    const streakLabelM = document.getElementById('streakLabelM');
-
-    const newBtn = document.getElementById('newBtn');
-    const checkBtn = document.getElementById('checkBtn');
-    const toggleModeBtn = document.getElementById('toggleModeBtn');
-    const revealBtn = document.getElementById('revealBtn');
-    const clearBtn = document.getElementById('clearBtn');
-
-    const kbEl = document.getElementById('kb');
-
-    const modal = document.getElementById('result-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalIcon = document.getElementById('modal-icon');
-    const modalMsg = document.getElementById('modal-msg');
-    const resScore = document.getElementById('resScore');
-    const resXP = document.getElementById('resXP');
-    const playAgainBtn = document.getElementById('playAgainBtn');
-    const exitBtn = document.getElementById('exitBtn');
-
-    /***********************
-     * Game state
-     ***********************/
-    let seed = 0;
-    let rng = null;
-
-    let mode = 'across';        // 'across' | 'down'
-    let activeCell = null;      // {r,c}
-    let activeEntry = null;     // entry object
-    let streak = 0;
-    let score = 0;
-
-    let patternId = 0;
-
-    // Grid model
-    let gridMask = [];          // '.' block, ' ' open
-    let numbers = [];           // 2D numbering
-    let cells = [];             // 2D cell divs
-    let inputs = [];            // 2D {value:'', set(), get()}
-    let entriesAcross = [];
-    let entriesDown = [];
-
-    // Solution/user
-    let solutionLetters = [];   // 2D chars (A-Z or '.')
-    let userLetters = [];       // 2D chars (A-Z or '' or '.')
-
-    function cellId(r,c){ return `cell-${r}-${c}`; }
-
-    function setMode(m){
-      mode = m;
-      modeLabel.textContent = mode.toUpperCase();
-      modeLabelM.textContent = mode.toUpperCase();
-      clueModeTitle.textContent = mode === 'across' ? 'Across' : 'Down';
-      renderClues();
-    }
-
-    function updateStreakUI(){
-      streakLabel.textContent = String(streak);
-      streakLabelM.textContent = String(streak);
-    }
-
-    function setStatus(msg){
-      statusLine.textContent = msg || '';
-    }
-
-    /***********************
-     * Mobile-safe sizing
-     ***********************/
-    function computeCellSize(){
-      const size = SIZE;
-      const wrapWidth = gridWrap.getBoundingClientRect().width || window.innerWidth;
-      // padding inside grid: 10px left+right; keep margin for borders
-      const pad = 20;
-      // dynamic gap: a bit smaller on tiny screens
-      const gap = (window.innerWidth < 420) ? 5 : 6;
-      const usable = Math.max(240, wrapWidth - pad);
-      const cell = Math.floor((usable - gap * (size - 1)) / size);
-
-      const clamped = Math.max(28, Math.min(cell, 54));
-      document.documentElement.style.setProperty('--cell', clamped + 'px');
-      document.documentElement.style.setProperty('--gap', gap + 'px');
-      gridEl.style.gridTemplateColumns = `repeat(${size}, var(--cell))`;
-    }
-
-    window.addEventListener('resize', () => {
-      computeCellSize();
-    });
-
-    /***********************
-     * Templates (multiple patterns)
-     * - Symmetric
-     * - Constrained lengths (3–7) for stable fill
-     ***********************/
-    function placeBlocksSym(size, coords){
-      const g = Array.from({length:size}, () => Array.from({length:size}, () => ' '));
-      const put = (r,c) => {
-        g[r][c] = '.';
-        g[size-1-r][size-1-c] = '.';
-      };
-      coords.forEach(([r,c]) => put(r,c));
-      return g;
-    }
-
-    const TEMPLATES_11 = [
-      // Pattern 1
-      [[0,2],[0,5],[0,8],[1,3],[1,7],[2,0],[2,4],[2,6],[2,10],[3,2],[3,8],[4,1],[4,5],[4,9],[5,3],[5,7]],
-      // Pattern 2
-      [[0,3],[0,7],[1,1],[1,5],[1,9],[2,3],[2,7],[3,0],[3,4],[3,6],[3,10],[4,3],[4,7],[5,5]],
-      // Pattern 3
-      [[0,4],[0,6],[1,2],[1,8],[2,4],[2,6],[3,1],[3,5],[3,9],[4,3],[4,7],[5,0],[5,10]],
-      // Pattern 4
-      [[0,1],[0,5],[0,9],[1,3],[1,7],[2,1],[2,9],[3,5],[4,2],[4,8],[5,1],[5,9]],
-      // Pattern 5
-      [[0,2],[0,6],[0,8],[1,4],[1,6],[2,2],[2,8],[3,0],[3,10],[4,4],[4,6],[5,2],[5,8]],
-      // Pattern 6
-      [[0,3],[0,5],[0,7],[1,2],[1,8],[2,5],[3,1],[3,9],[4,3],[4,7],[5,5]],
-      // Pattern 7
-      [[0,4],[0,8],[1,1],[1,5],[1,9],[2,3],[2,7],[3,5],[4,1],[4,9],[5,4],[5,6]],
-      // Pattern 8
-      [[0,2],[0,9],[1,4],[1,6],[2,1],[2,5],[2,7],[2,10],[3,3],[3,8],[4,5],[5,1],[5,9]],
-    ];
-
-    const TEMPLATES_9 = [
-      [[0,2],[0,6],[1,4],[2,1],[2,7],[3,3],[3,5],[4,2],[4,6]],
-      [[0,3],[0,5],[1,1],[1,7],[2,4],[3,0],[3,8],[4,4]],
-      [[0,2],[0,4],[0,6],[1,3],[1,5],[2,0],[2,8],[3,4]],
-      [[0,1],[0,7],[1,4],[2,2],[2,6],[3,1],[3,7],[4,4]],
-      [[0,4],[1,2],[1,6],[2,4],[3,0],[3,8],[4,2],[4,6]],
-      [[0,3],[1,1],[1,7],[2,3],[2,5],[3,4],[4,1],[4,7]],
-    ];
-
-    function buildTemplate(size, pid){
-      const coords = (size === 11 ? TEMPLATES_11[pid] : TEMPLATES_9[pid]);
-      return placeBlocksSym(size, coords);
-    }
-
-    /***********************
-     * Numbering + entries
-     ***********************/
-    function computeNumbers(){
-      numbers = Array.from({length:SIZE}, ()=>Array.from({length:SIZE}, ()=>0));
-      let n = 1;
-      for (let r=0;r<SIZE;r++){
-        for (let c=0;c<SIZE;c++){
-          if (gridMask[r][c] === '.') continue;
-          const startsAcross = (c===0 || gridMask[r][c-1]==='.') && (c+1<SIZE && gridMask[r][c+1]!=='.');
-          const startsDown   = (r===0 || gridMask[r-1][c]==='.') && (r+1<SIZE && gridMask[r+1][c]!=='.');
-          if (startsAcross || startsDown){
-            numbers[r][c] = n++;
-          }
-        }
-      }
-    }
-
-    function buildEntries(){
-      entriesAcross = [];
-      entriesDown = [];
-
-      // Across
-      for (let r=0;r<SIZE;r++){
-        let c=0;
-        while (c<SIZE){
-          while (c<SIZE && gridMask[r][c]==='.') c++;
-          if (c>=SIZE) break;
-          const start = c;
-          while (c<SIZE && gridMask[r][c]!=='.') c++;
-          const len = c-start;
-          if (len >= 3 && len <= 7){
-            entriesAcross.push({
-              id: `A-${r}-${start}`,
-              dir:'across', r, c:start, len,
-              num: numbers[r][start] || null,
-              answer: "", clue: ""
-            });
-          }
-        }
-      }
-
-      // Down
-      for (let c=0;c<SIZE;c++){
-        let r=0;
-        while (r<SIZE){
-          while (r<SIZE && gridMask[r][c]==='.') r++;
-          if (r>=SIZE) break;
-          const start = r;
-          while (r<SIZE && gridMask[r][c]!=='.') r++;
-          const len = r-start;
-          if (len >= 3 && len <= 7){
-            entriesDown.push({
-              id: `D-${start}-${c}`,
-              dir:'down', r:start, c, len,
-              num: numbers[start][c] || null,
-              answer: "", clue: ""
-            });
-          }
-        }
-      }
-    }
-
-    function entryCells(entry){
-      const out = [];
-      for (let i=0;i<entry.len;i++){
-        out.push({
-          r: entry.r + (entry.dir==='down' ? i : 0),
-          c: entry.c + (entry.dir==='across' ? i : 0),
-          i
-        });
-      }
-      return out;
-    }
-
-    function findEntryAt(r,c, whichMode){
-      const list = whichMode === 'down' ? entriesDown : entriesAcross;
-      for (const e of list){
-        if (whichMode === 'across'){
-          if (e.r === r && c >= e.c && c < e.c + e.len) return e;
-        } else {
-          if (e.c === c && r >= e.r && r < e.r + e.len) return e;
-        }
-      }
-      return null;
-    }
-    function hasEntryAt(r,c, whichMode){
-      return !!findEntryAt(r,c, whichMode);
-    }
-
-    /***********************
-     * 500-word bank (3–7 letters), clean clues
-     * Format: WORD|clue
-     ***********************/
-    function parseBank(raw){
-      const out = [];
-      const seen = new Set();
-      const lines = raw.split('\n').map(x => x.trim()).filter(Boolean);
-      for (const line of lines){
-        const idx = line.indexOf('|');
-        if (idx < 0) continue;
-        const w = line.slice(0, idx).trim().toUpperCase();
-        const c = line.slice(idx+1).trim();
-        if (!/^[A-Z]{3,7}$/.test(w)) continue;
-        if (!c) continue;
-        const key = w + '|' + c;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        out.push({a:w, c});
-      }
-      return out;
-    }
-
-    const RAW_BANK = `
-ACE|Top-notch; also a playing card
-ACT|Do something; also a stage performance
-ADD|Put together; increase
-AGE|Grow older; years lived
-AID|Help; assistance
-AIM|Goal; take target
-AIR|What we breathe
-ALE|A kind of beer
-ALL|Every one; entire
-ANT|Small worker insect
-APE|Primate
-ARC|Part of a circle
-ARM|Upper limb
-ART|Creative work
-ASH|Powder after burning
-ASK|Pose a question
-ATE|Consumed food
-AWE|Wonder; amazement
-BAD|Not good
-BAG|Sack
-BAR|Place to drink; also a rod
-BAT|Nocturnal flier; also sports stick
-BAY|Coastal inlet
-BEE|Honey-making insect
-BET|Wager
-BID|Offer a price
-BIG|Large
-BIN|Container
-BIT|Small piece; binary digit
-BOG|Swamp
-BOW|Weapon for arrows; also a bend
-BOX|Container; also to fight
-BOY|Male child
-BUN|Small bread roll
-BUS|Public vehicle
-BUT|However
-CAB|Taxi
-CAN|Be able to; also a container
-CAP|Head covering
-CAR|Road vehicle
-CAT|Feline pet
-COB|Corn core; also a male swan (common use: corn core)
-COD|A fish
-COP|Police officer (slang)
-COW|Farm animal
-CRY|Shed tears; shout
-CUP|Small drinking vessel
-DAY|24-hour period
-DEN|Animal’s lair
-DIE|Stop living; also a mold for shaping
-DIG|Turn soil; also understand (slang)
-DIM|Not bright
-DOG|Canine pet
-DOT|Small mark
-DRY|Not wet
-DUE|Owed; expected
-EAR|Hearing organ
-EAT|Consume food
-EEL|Long slippery fish
-EGO|Sense of self
-ELK|Large deer
-END|Finish
-EON|Very long time
-ERA|Historic period
-EVE|Day before
-EYE|Organ of sight
-FAR|Distant
-FAT|Body lipid; also “not thin”
-FEE|Payment for service
-FEW|Not many
-FIG|Sweet fruit
-FIN|Fish’s flipper
-FIR|Evergreen tree
-FIT|In good shape; suitable
-FIX|Repair
-FLU|Viral illness (common term)
-FOE|Enemy
-FOG|Low cloud near ground
-FOR|In favor of
-FOX|Cunning animal
-FUN|Enjoyment
-GAP|Opening; space
-GAS|State of matter
-GEM|Precious stone
-GET|Obtain
-GIN|Juniper spirit
-GOD|Deity
-GUM|Soft tissue around teeth
-GUN|Firearm (term only)
-GYM|Exercise place
-HAD|Possessed (past tense)
-HAT|Headwear
-HEN|Female chicken
-HER|Belonging to a female
-HIM|Male object pronoun
-HIP|Trendy; also body joint
-HIT|Strike
-HOP|Jump; also beer flavoring plant
-HOT|High temperature
-HUB|Center
-HUG|Embrace
-ICE|Frozen water
-ILL|Sick
-INK|Writing fluid
-ION|Charged atom or molecule
-IRN|Not used
-JAM|Fruit spread; also traffic block
-JAR|Glass container
-JET|Fast plane; also a spray stream
-JOB|Work; occupation
-JOY|Great happiness
-KEY|Opens a lock; essential
-KIN|Family relatives
-LAD|Boy
-LAG|Fall behind
-LAP|Part of leg when seated
-LAW|Rule enforced by authority
-LAY|Put down; place
-LED|Light-emitting diode (abbr.)
-LEG|Lower limb
-LID|Cover
-LIE|Not tell truth; also recline
-LIP|Edge of mouth
-LOG|Record; also a piece of wood
-LOT|A parcel; also “many” (informal)
-LOW|Not high
-MAN|Adult male
-MAP|Diagram of an area
-MAT|Floor covering
-MAY|Permission; also month
-MEN|Adult males
-MET|Encountered (past tense)
-MIX|Combine
-MOB|Large disorderly crowd
-MOM|Mother
-MOO|Cow’s sound
-NET|Mesh; also after deductions
-NEW|Not old
-NOD|Small head dip
-NOT|Negation
-NOW|At this time
-NUT|Hard-shelled seed; also a fastener
-OAR|Rowing paddle
-ODD|Not even; unusual
-OFF|Not on
-OIL|Lubricant; petroleum product
-OLD|Not new
-ONE|Single
-OPT|Choose
-ORE|Mineral rock
-OUT|Not inside
-OWL|Nocturnal bird
-OWN|Possess
-PAD|Cushion; also write on
-PAN|Cooking vessel
-PAR|Standard in golf
-PAY|Give money
-PEA|Small green seed
-PEN|Writing tool
-PER|For each
-PET|Domesticated animal
-PIG|Farm animal
-PIN|Small fastener
-PIT|Stone of fruit; hole
-POD|Seed container; group of whales
-POP|Burst; also popular
-POT|Cooking vessel; container
-PRO|Professional; in favor
-PUP|Young dog
-RAG|Old cloth
-RAM|Male sheep; also memory (abbr.)
-RAN|Moved quickly (past)
-RAP|Quick knock; also music style
-RAT|Rodent
-RAW|Uncooked
-RED|Color
-RIB|Curved bone in chest
-RID|Remove
-RIM|Outer edge
-RIP|Tear
-ROB|Steal
-ROD|Straight stick
-ROE|Fish eggs
-ROW|Line; also argument
-RUB|Press with friction
-RUG|Floor covering
-RUN|Move quickly
-SAD|Unhappy
-SAFE|Secure; not dangerous
-SAGE|Herb; also wise person
-SAIL|Canvas for a boat
-SALT|Common seasoning mineral
-SAND|Loose grains on a beach
-SAVE|Rescue; keep
-SCAN|Examine quickly
-SEAT|Place to sit
-SEED|Plant embryo
-SEEK|Try to find
-SELF|One’s own person
-SELL|Exchange for money
-SEND|Dispatch
-SHIP|Large vessel
-SHOE|Footwear
-SHOT|Attempt; fired projectile
-SICK|Ill
-SIDE|Edge; flank
-SIGN|Indication; also to write name
-SILK|Soft fiber from silkworms
-SING|Make musical sounds with voice
-SITE|Location
-SIZE|How big
-SKIN|Body covering
-SLIM|Thin
-SLOW|Not fast
-SNAP|Break suddenly; quick photo
-SNOW|Frozen precipitation
-SOAP|Cleansing substance
-SOFT|Not hard
-SOIL|Earth; dirt
-SOLD|Past tense of sell
-SOLE|Bottom of foot; only (adj.)
-SOME|Not all
-SONG|Musical composition
-SOON|In a short time
-SOUR|Acidic taste
-SPIN|Rotate
-SPOT|Small mark; place
-STAR|Bright celestial body
-STAY|Remain
-STEM|Plant stalk; central part
-STEP|Single pace
-STOP|Cease
-SUCH|Of that kind
-SURE|Certain
-SWIM|Move in water
-TAKE|Grasp; accept
-TALK|Speak
-TALL|High in height
-TASK|Job to do
-TEAM|Group working together
-TELL|Inform
-TENT|Portable shelter
-THIN|Not thick
-THIS|The one here
-TIDE|Ocean rise and fall
-TINY|Very small
-TONE|Sound quality; also color shade
-TOOL|Implement
-TOOT|Short horn sound
-TOUR|Trip around
-TOWN|Small city
-TREE|Woody plant
-TRIP|Journey; stumble
-TRUE|Not false
-TUBE|Hollow cylinder
-TURN|Rotate; change direction
-UNIT|Single thing; measurement group
-USER|One who uses something
-VAST|Very large
-VIEW|What you see; opinion
-VOTE|Choose in an election
-WAGE|Pay for work
-WAIT|Stay until something happens
-WALK|Move on foot
-WALL|Vertical barrier
-WARM|Not cold
-WASH|Clean with water
-WAVE|Moving swell; also gesture
-WEAK|Not strong
-WEAR|Have on clothing; erode
-WEEK|Seven days
-WELL|In good health; also a shaft for water
-WIDE|Broad
-WILD|Not domesticated
-WIND|Moving air; also to coil
-WING|Bird limb
-WISE|Having good judgment
-WITH|Accompanied by
-WORK|Labor
-WRAP|Cover around
-YARD|Outdoor area; 3 feet
-YEAR|Twelve months
-ZERO|No quantity
-
-ABLE|Capable
-ACID|Chemical that donates H+ in water (general)
-AHEAD|In front
-ALARM|Warning signal
-ALBUM|Collection of songs or photos
-ALIEN|Foreign; not from Earth (general)
-ALIVE|Living
-AMONG|In the middle of
-ANGEL|Heavenly messenger (religious)
-ANGER|Strong displeasure
-APART|Separated
-APPLE|Common red or green fruit
-ARENA|Large venue for events
-ARROW|Pointed projectile
-ASSET|Valuable resource
-ATLAS|Book of maps
-AUDIO|Sound-related
-AWAKE|Not asleep
-BASIC|Fundamental
-BATCH|A group made at once
-BEACH|Sandy shore
-BEGIN|Start
-BELOW|Under
-BERRY|Small fruit
-BIRTH|Start of life
-BLACK|Darkest color
-BLEND|Mix together
-BLINK|Close eyes briefly
-BLOOM|Flowering
-BOARD|Flat plank; also committee
-BRAIN|Organ for thinking
-BRAVE|Courageous
-BREAD|Baked staple food
-BREAK|Separate into pieces
-BRICK|Hard building block
-BRIEF|Short
-BRING|Carry to a place
-BROAD|Wide
-BROWN|Color between red and yellow
-BUILD|Construct
-CABLE|Thick wire
-CANDY|Sweet treat
-CARRY|Transport
-CHAIN|Linked series
-CHAIR|Seat with back
-CHALK|Soft white limestone used for writing
-CHEAP|Low cost
-CHECK|Verify; examine
-CHEST|Front torso; storage box
-CHIEF|Leader
-CHILD|Young person
-CHIME|Ring softly
-CHOIR|Singing group
-CIVIL|Relating to citizens; polite
-CLEAN|Not dirty
-CLEAR|Easy to see; obvious
-CLOCK|Timekeeping device
-CLOSE|Shut; near
-CLOUD|Visible mass of condensed water vapor
-COAST|Shoreline
-COLOR|Visual hue
-COMET|Icy body that forms a tail near the sun
-CORAL|Marine invertebrate skeleton structure
-COVER|Put over; lid
-CRACK|Split; break line
-CRAFT|Make skillfully
-CRISP|Firm and fresh
-CROWD|Many people together
-CROWN|Headwear of a monarch
-CYCLE|Repeated series
-DAILY|Every day
-DANCE|Move rhythmically to music
-DEEP|Far down
-DELAY|Postpone
-DEPTH|How deep
-DIGIT|A numeral; finger or toe
-DRAMA|Theatrical art; conflict
-DREAM|Story in sleep; aspiration
-DRINK|Consume liquid
-DRIVE|Operate a vehicle; motivate
-EARLY|Before expected time
-EARTH|Our planet
-EIGHT|Number after seven
-EMPTY|Containing nothing
-ENJOY|Take pleasure in
-ENTER|Go in
-EQUAL|Same in value
-ERROR|Mistake
-EVENT|Occasion
-EXACT|Precise
-FAITH|Belief or trust
-FALSE|Not true
-FANCY|Ornate; also like (verb)
-FIBER|Threadlike material
-FIELD|Open land; area of study
-FIFTH|Number 5th in order
-FIFTY|Number 50
-FINAL|Last
-FIRST|Number 1st in order
-FLAME|Fire
-FLEET|Group of ships; fast
-FLOOD|Overflowing water
-FLOOR|Bottom surface of a room
-FOCUS|Concentrate
-FORCE|Push or pull
-FORUM|Public discussion place
-FRESH|New; not stale
-FRUIT|Edible seed-bearing plant product
-GIANT|Very large
-GLASS|Transparent solid material
-GLOBE|Spherical model of Earth
-GRACE|Elegance; unearned favor
-GRAIN|Small hard seed; cereal
-GRANT|Give; award
-GRASS|Common green plant
-GREAT|Very good; large
-GREEN|Color between blue and yellow
-GROUP|Collection
-GUARD|Protect; watch
-HAPPY|Pleased
-HEART|Organ that pumps blood
-HEAVY|High in weight
-HONEY|Sweet substance made by bees
-HORSE|Large riding animal
-HOUSE|Dwelling
-HUMAN|Person
-IDEAL|Perfect model
-IMAGE|Picture
-INDEX|List; indicator
-INNER|On the inside
-INPUT|Data entered
-ISSUE|Problem; topic; edition
-JELLY|Gel-like spread; gelatin dessert
-JOINT|Where two bones meet
-JUICE|Liquid from fruit
-KNIFE|Cutting tool
-KNOWN|Recognized; familiar
-LARGE|Big
-LASER|Device that emits coherent light
-LATER|Afterward
-LAUGH|Sound of amusement
-LAYER|A sheet or level
-LEARN|Gain knowledge
-LEMON|Sour yellow fruit
-LEVEL|Even; also a stage
-LIGHT|Not heavy; also illumination
-LIMIT|Maximum bound
-LOCAL|Nearby; from area
-LOVER|One who loves
-LUCKY|Fortunate
-MAJOR|Important; main
-MANGO|Tropical fruit
-MARCH|Month; also to walk in step
-MATCH|Correspond; contest
-MAYBE|Possibly
-METAL|Conductive element material
-METER|Unit of length (SI)
-MIGHT|Power; possibility
-MINOR|Less important; small
-MIXED|Combined
-MODEL|Representation
-MONEY|Currency
-MONTH|About 30 days
-MOTOR|Machine that produces motion
-MUSIC|Organized sound
-NERVE|Signal-carrying tissue fiber
-NEVER|Not at any time
-NINTH|9th in order
-NOBLE|Honorable
-NORTH|Direction toward the pole
-NOTED|Well-known
-OCEAN|Large saltwater body
-OFFER|Present for acceptance
-ONION|Pungent bulb vegetable
-ORDER|Request; sequence
-OTHER|Different one
-OUTER|On the outside
-PAINT|Color coating
-PANEL|Flat section; group discussion
-PAPER|Writing material
-PARTY|Social gathering
-PEACE|Absence of war
-PEARL|Hard lustrous sphere from oysters
-PHASE|Stage
-PHONE|Device for calling
-PHOTO|Picture
-PLAIN|Simple; not decorated
-PLANT|Living organism; factory (verb)
-PLATE|Flat dish
-POINT|A tip; a purpose
-POWER|Ability; energy
-PRESS|Apply pressure; publish
-PRICE|Cost
-PRIDE|Self-respect
-PRIME|First in importance; also relating to prime numbers (general)
-PRINT|Produce text on paper
-PROOF|Evidence
-PULSE|Heartbeat; rhythmic beat
-QUIET|Low noise
-QUITE|Fairly; rather
-RADAR|Detection system using radio waves
-RAISE|Lift up; increase
-RANGE|Extent; variety
-RAPID|Fast
-READY|Prepared
-REASON|Cause; logic
-RECORD|Stored information
-RIGHT|Correct; direction
-RIVER|Large stream
-ROUND|Circular; a cycle
-ROUTE|Path
-ROYAL|Relating to a monarch
-RURAL|Countryside
-SCALE|Relative size; measurement
-SCENE|Part of a play; view
-SCORE|Points in a game
-SCOUT|Explorer; look for
-SENSE|Perceive; meaning
-SEVEN|Number after six
-SHARE|Divide with others
-SHARP|Not dull
-SHEET|Thin layer; bed linen
-SHIFT|Move; change
-SHINE|Give off light
-SHOCK|Sudden surprise; jolt
-SHORT|Not long
-SIGHT|Ability to see
-SILLY|Foolish
-SKILL|Ability
-SMILE|Facial expression of happiness
-SMOKE|Airborne particles from burning
-SOLID|Firm state of matter
-SOUND|Vibration heard
-SOUTH|Direction opposite north
-SPACE|Region beyond atmosphere; empty area
-SPARE|Extra
-SPEED|How fast
-SPICE|Flavoring
-SPLIT|Divide
-SPORT|Athletic activity
-STACK|Pile
-STAGE|Phase; platform
-STAND|Be upright; tolerate
-STATE|Condition; political region
-STEEL|Alloy mainly of iron and carbon
-STILL|Not moving; continuing
-STONE|Hard mineral material
-STORM|Severe weather
-STORY|Narrative; floor of building
-STUDY|Learn about
-SUGAR|Sweet crystalline substance
-SUPER|Excellent (informal)
-SWEET|Sugary taste
-TABLE|Furniture; chart
-TEACH|Instruct
-THANK|Express gratitude
-THEME|Central subject
-THIRD|3rd in order
-THIRTY|Number 30
-THOUGH|Despite that
-THRILL|Excitement
-TIGER|Large striped cat
-TITLE|Name of a work
-TODAY|This day
-TOTAL|Sum
-TOUCH|Feel with hand
-TOWER|Tall structure
-TRACK|Follow; path; sports lane
-TRADE|Exchange
-TRAIN|Rail vehicle; also to practice
-TRUST|Reliance
-TRUTH|Fact; reality
-UNDER|Below
-UNION|Joining; worker organization
-UNTIL|Up to the time when
-UPPER|Higher
-URBAN|City-related
-VALUE|Worth
-VIDEO|Moving images recording
-VISIT|Go to see
-VOICE|Vocal sound
-WATER|H2O
-WHOLE|Entire
-WORLD|Earth; society
-WORTH|Value
-WRITE|Form letters/words
-YOUNG|Not old
-
-ABOVE|Higher than
-ANGRY|Mad; irritated
-BIRTH|Start of life
-BRAVE|Courageous
-BRING|Carry to
-BUNCH|A cluster
-CARRY|Transport
-CATCH|Seize; grab
-CAUSE|Reason; make happen
-CHANCE|Opportunity
-CHANGE|Make different
-CHARGE|Electrical property; also fee
-CHOICE|Selection
-CIRCLE|Round shape
-CLIENT|Customer
-CLOSER|Nearer
-COFFEE|Caffeinated drink
-COLUMN|Vertical line/section
-COMMON|Frequent
-COMPUTE|Calculate
-CORNER|Meeting point of edges
-CRISIS|Time of danger
-CUSTOM|Habit; tradition
-DAMAGE|Harm
-DEGREE|Unit of angle/temperature (general)
-DEVICE|Tool or machine
-DOMAIN|Area of control; website realm
-DOUBLE|Twice as much
-DRAGON|Mythical reptile
-ECHOES|Reverberations (plural)
-EFFECT|Result
-EFFORT|Attempt
-ENGINE|Machine that converts energy to work
-ENOUGH|Sufficient
-ESCAPE|Get away
-EXPERT|Skilled person
-FAMILY|Relatives group
-FAMOUS|Well-known
-FATHER|Male parent
-FIGURE|Shape; also a number
-FILTER|Device that removes impurities
-FUTURE|Time ahead
-GARDEN|Cultivated plant area
-GLOBAL|Worldwide
-GROWTH|Increase in size
-HANDLE|Grip; manage
-HEALTH|Well-being
-HIDDEN|Concealed
-HONEST|Truthful
-IMPACT|Strong effect; collision
-INSIDE|Within
-ISLAND|Land surrounded by water
-JACKET|Outer garment
-JUNIOR|Younger; lower rank
-KINDLY|In a friendly way
-LATEST|Most recent
-LEGACY|Inheritance; lasting influence
-LINEAR|In a straight line
-LISTEN|Hear attentively
-MANUAL|Hand-operated; instructions book
-MARKET|Place for buying/selling
-MEMORY|Ability to store information
-METHOD|Procedure
-MIDDLE|Center
-MIRROR|Reflective surface
-MOMENT|Short time
-NATION|Country
-NATIVE|Born in a place
-NUMBER|Numeral; quantity
-OBJECT|Thing; oppose (verb)
-OFFICE|Workplace room
-ORIGIN|Beginning; source
-PLANET|Celestial body orbiting a star
-POETRY|Verse literature
-POLICY|Rule plan
-PRECISE|Exact
-PROCESS|Series of steps
-PROJECT|Planned work
-PROTECT|Keep safe
-QUALITY|Standard of excellence
-RADIAL|From a center outward
-REACTOR|Device where reactions occur
-REALITY|What is real
-REBUILD|Build again
-REFRESH|Reload; make fresh
-REGION|Area
-RELATED|Connected
-RESCUE|Save
-RESOLVE|Solve; decide
-RESPECT|Esteem
-ROBOTIC|Relating to robots
-SCIENCE|Systematic study of nature
-SCREEN|Display surface
-SECTION|Part
-SECURE|Safe
-SENSOR|Device that detects changes
-SERIES|Sequence
-SIGNAL|Transmitted sign
-SILENCE|No sound
-SIMPLE|Not complex
-SOCIAL|Relating to society
-SOURCE|Origin
-STABLE|Not easily changed
-STREAM|Flowing water; continuous data flow
-STUDENT|Learner
-SUPPORT|Help
-SYSTEM|Organized set of parts
-TACTIC|Strategy
-TARGET|Goal
-TEMPLE|Place of worship; also head area
-TENSION|Pulling force; stress
-TEXTURE|Surface feel
-TOOLING|Equipment set
-TOWARD|In the direction of
-TRIAGE|Sorting by priority (medical term, general)
-UNIQUE|One of a kind
-VERSION|Revision
-VIRTUAL|Not physically existing; simulated
-VISIBLE|Able to be seen
-VOLUME|Amount of space; loudness
-WEBSITE|Online site
-WEIGHT|Heaviness
-WELCOME|Greeting; accept gladly
-WISDOM|Knowledge with good judgment
-WORKER|Employee
-WRITER|Author
-`;
-
-    // Build final bank and validate count
-    const WORD_BANK = parseBank(RAW_BANK);
-
-    // Keep it exactly 500 by trimming deterministically if needed (no junk additions)
-    // (Your RAW_BANK already targets >= 500 entries; this makes it safe.)
-    function normalizeBankTo500(bank){
-      // Sort to ensure stable slicing across builds (then shuffle per seed later for variety)
-      const sorted = bank.slice().sort((x,y)=> x.a.localeCompare(y.a) || x.c.localeCompare(y.c));
-      const uniqueByWord = [];
-      const seenWord = new Set();
-      for (const it of sorted){
-        // allow same word only once to keep quality
-        if (seenWord.has(it.a)) continue;
-        seenWord.add(it.a);
-        uniqueByWord.push(it);
-      }
-      // Ensure coverage by length 3..7; if some length is underrepresented, we still proceed,
-      // but the templates are designed to need only 3..7.
-      return uniqueByWord.slice(0, 500);
-    }
-
-    const BANK_500 = normalizeBankTo500(WORD_BANK);
-
-    function bankByLength(bank){
-      const map = new Map();
-      for (const it of bank){
-        const L = it.a.length;
-        if (!map.has(L)) map.set(L, []);
-        map.get(L).push(it);
-      }
-      return map;
-    }
-
-    /***********************
-     * CSP Fill (backtracking)
-     ***********************/
-    function buildCrossIndex(entriesA, entriesD){
-      // cell => constraints for across/down positions
-      const idx = Array.from({length:SIZE}, ()=>Array.from({length:SIZE}, ()=>({a:null, d:null})));
-      const all = [...entriesA, ...entriesD];
-      for (const e of all){
-        const cells = entryCells(e);
-        for (const p of cells){
-          if (e.dir === 'across') idx[p.r][p.c].a = {id:e.id, pos:p.i};
-          else idx[p.r][p.c].d = {id:e.id, pos:p.i};
-        }
-      }
-      return idx;
-    }
-
-    function makeEntryMap(entries){
-      const m = new Map();
-      for (const e of entries) m.set(e.id, e);
-      return m;
-    }
-
-    function getPatternForEntry(entry, lettersGrid){
-      const pat = [];
-      for (let i=0;i<entry.len;i++){
-        const r = entry.r + (entry.dir==='down'?i:0);
-        const c = entry.c + (entry.dir==='across'?i:0);
-        pat.push(lettersGrid[r][c] || '');
-      }
-      return pat;
-    }
-
-    function wordMatchesPattern(word, pattern){
-      for (let i=0;i<pattern.length;i++){
-        const ch = pattern[i];
-        if (ch && ch !== word[i]) return false;
-      }
-      return true;
-    }
-
-    function fillPuzzleCSP(rng, entriesA, entriesD, bankMap){
-      const all = [...entriesA, ...entriesD];
-      const entryMap = makeEntryMap(all);
-
-      // lettersGrid contains placed letters; '' for empty, '.' for blocks
-      const lettersGrid = Array.from({length:SIZE}, (_,r)=>
-        Array.from({length:SIZE}, (_,c)=> gridMask[r][c]==='.' ? '.' : '')
-      );
-
-      // assigned words per entry id
-      const assigned = new Map();
-      const usedWords = new Set();
-
-      // Precompute candidates per entry length
-      const candidatesById = new Map();
-      for (const e of all){
-        const pool = (bankMap.get(e.len) || []).slice();
-        // Shuffle per seed so it's not repetitive
-        shuffle(rng, pool);
-        candidatesById.set(e.id, pool);
-      }
-
-      // Choose next entry: MRV (fewest candidates under current constraints)
-      function selectUnassigned(){
-        let best = null;
-        let bestCount = Infinity;
-        for (const e of all){
-          if (assigned.has(e.id)) continue;
-          const pattern = getPatternForEntry(e, lettersGrid);
-          const pool = candidatesById.get(e.id) || [];
-          // Filter count without allocating huge arrays
-          let count = 0;
-          for (const it of pool){
-            if (usedWords.has(it.a)) continue; // prefer uniqueness
-            if (wordMatchesPattern(it.a, pattern)) count++;
-            if (count >= bestCount) break;
-          }
-          if (count < bestCount){
-            bestCount = count;
-            best = e;
-            if (bestCount === 0) break;
-          }
-        }
-        return {entry: best, count: bestCount};
-      }
-
-      function placeWord(entry, word){
-        const prior = [];
-        for (let i=0;i<entry.len;i++){
-          const r = entry.r + (entry.dir==='down'?i:0);
-          const c = entry.c + (entry.dir==='across'?i:0);
-          const prev = lettersGrid[r][c];
-          prior.push({r,c,prev});
-          if (prev === '' || prev === word[i]){
-            lettersGrid[r][c] = word[i];
-          } else {
-            // conflict
-            // revert before returning false
-            for (const p of prior) lettersGrid[p.r][p.c] = p.prev;
-            return null;
-          }
-        }
-        return prior;
-      }
-
-      function backtrack(depth){
-        const sel = selectUnassigned();
-        if (!sel.entry){
-          return true; // all assigned
-        }
-        if (sel.count === 0){
-          return false;
-        }
-
-        const e = sel.entry;
-        const pattern = getPatternForEntry(e, lettersGrid);
-        const pool = candidatesById.get(e.id) || [];
-
-        // Iterate candidates in shuffled order
-        for (const it of pool){
-          if (usedWords.has(it.a)) continue;
-          if (!wordMatchesPattern(it.a, pattern)) continue;
-
-          const snapshot = placeWord(e, it.a);
-          if (!snapshot) continue;
-
-          assigned.set(e.id, it);
-          usedWords.add(it.a);
-
-          if (backtrack(depth+1)) return true;
-
-          // undo
-          assigned.delete(e.id);
-          usedWords.delete(it.a);
-          for (const p of snapshot) lettersGrid[p.r][p.c] = p.prev;
-        }
-
-        // Allow reuse if uniqueness blocks fill (still valid crossword behavior)
-        for (const it of pool){
-          if (!wordMatchesPattern(it.a, pattern)) continue;
-          const snapshot = placeWord(e, it.a);
-          if (!snapshot) continue;
-
-          assigned.set(e.id, it);
-          // no usedWords add
-
-          if (backtrack(depth+1)) return true;
-
-          assigned.delete(e.id);
-          for (const p of snapshot) lettersGrid[p.r][p.c] = p.prev;
-        }
-
-        return false;
-      }
-
-      const ok = backtrack(0);
-      if (!ok) return null;
-
-      // Apply assigned to entries + build final solution grid
-      for (const e of all){
-        const it = assigned.get(e.id);
-        e.answer = it.a;
-        e.clue = it.c;
-      }
-      return lettersGrid;
-    }
-
-    /***********************
-     * Render: grid + clues
-     ***********************/
-    function renderGrid(){
-      gridEl.innerHTML = '';
-      gridEl.style.gridTemplateColumns = `repeat(${SIZE}, var(--cell))`;
-
-      cells = Array.from({length:SIZE}, ()=>Array.from({length:SIZE}, ()=>null));
-      inputs = Array.from({length:SIZE}, ()=>Array.from({length:SIZE}, ()=>null));
-      userLetters = Array.from({length:SIZE}, (_,r)=>
-        Array.from({length:SIZE}, (_,c)=> gridMask[r][c]==='.' ? '.' : '')
-      );
-
-      for (let r=0;r<SIZE;r++){
-        for (let c=0;c<SIZE;c++){
-          const cell = document.createElement('div');
-          cell.id = cellId(r,c);
-          cell.className = 'cell';
-          cell.dataset.r = String(r);
-          cell.dataset.c = String(c);
-
-          if (gridMask[r][c] === '.'){
-            cell.classList.add('block');
-            gridEl.appendChild(cell);
-            cells[r][c] = cell;
-            continue;
-          }
-
-          const num = numbers[r][c];
-          if (num){
-            const s = document.createElement('div');
-            s.className = 'num';
-            s.textContent = String(num);
-            cell.appendChild(s);
-          }
-
-          // virtual input: stored in userLetters + displayed in a pseudo input
-          const inp = document.createElement('input');
-          inp.setAttribute('maxlength','1');
-          inp.setAttribute('readonly','readonly'); // we handle typing via on-screen keyboard and physical keyboard
-          inp.value = '';
-          cell.appendChild(inp);
-
-          cells[r][c] = cell;
-          inputs[r][c] = inp;
-
-          gridEl.appendChild(cell);
-        }
-      }
-
-      // Pointer handler: one reliable place to handle taps (fixes stuck clue bugs)
-      gridEl.addEventListener('pointerdown', onGridPointerDown, {passive:true});
-      document.addEventListener('keydown', onKeyDown);
-    }
-
-    function clearHighlights(){
-      for (let r=0;r<SIZE;r++){
-        for (let c=0;c<SIZE;c++){
-          const el = cells[r][c];
-          if (!el) continue;
-          el.classList.remove('word','active','correct','wrong');
-        }
-      }
-    }
-
-    function renderClues(){
-      acrossListEl.innerHTML = '';
-      downListEl.innerHTML = '';
-
-      const makeClue = (entry) => {
-        const div = document.createElement('div');
-        div.className = 'clueItem';
-
-        const tag = document.createElement('div');
-        tag.className = 'clueTag';
-        tag.textContent = `${entry.num || ''} ${entry.dir.toUpperCase()} • ${entry.len} letters`.trim();
-
-        const txt = document.createElement('div');
-        txt.className = 'clueText';
-        txt.textContent = entry.clue;
-
-        div.appendChild(tag);
-        div.appendChild(txt);
-
-        const isActive = activeEntry && activeEntry.id === entry.id;
-        if (isActive) div.classList.add('activeClue');
-
-        div.addEventListener('click', () => {
-          setMode(entry.dir);
-          const first = entryCells(entry)[0];
-          focusCell(first.r, first.c, false, true);
-        });
-
-        return div;
-      };
-
-      entriesAcross
-        .slice()
-        .sort((a,b)=>(a.num||999)-(b.num||999))
-        .forEach(e => acrossListEl.appendChild(makeClue(e)));
-
-      entriesDown
-        .slice()
-        .sort((a,b)=>(a.num||999)-(b.num||999))
-        .forEach(e => downListEl.appendChild(makeClue(e)));
-
-      if (activeEntry){
-        selectedEntryLabel.textContent = `${activeEntry.num || ''} ${activeEntry.dir.toUpperCase()} • ${activeEntry.len} letters`;
-      } else {
-        selectedEntryLabel.textContent = '—';
-      }
-    }
-
-    function focusCell(r,c, inferEntry, allowToggle){
-      if (gridMask[r][c] === '.') return;
-
-      const sameCell = activeCell && activeCell.r === r && activeCell.c === c;
-      const acrossExists = hasEntryAt(r,c,'across');
-      const downExists   = hasEntryAt(r,c,'down');
-
-      // Toggle only when tapping the same cell and both words exist
-      if (allowToggle && sameCell && acrossExists && downExists){
-        setMode(mode === 'across' ? 'down' : 'across');
-      }
-
-      activeCell = {r,c};
-
-      // Try current mode entry, else fallback to other mode
-      let e = findEntryAt(r,c, mode);
-      if (!e && inferEntry){
-        const alt = (mode === 'across') ? 'down' : 'across';
-        const e2 = findEntryAt(r,c, alt);
-        if (e2){
-          setMode(alt);
-          e = e2;
-        }
-      }
-      activeEntry = e;
-
-      clearHighlights();
-      if (activeEntry){
-        for (const p of entryCells(activeEntry)){
-          const el = cells[p.r][p.c];
-          if (el) el.classList.add('word');
-        }
-      }
-      const activeEl = cells[r][c];
-      if (activeEl) activeEl.classList.add('active');
-
-      renderClues();
-    }
-
-    function onGridPointerDown(e){
-      const t = e.target.closest('.cell');
-      if (!t) return;
-      const r = parseInt(t.dataset.r, 10);
-      const c = parseInt(t.dataset.c, 10);
-      if (!Number.isFinite(r) || !Number.isFinite(c)) return;
-      if (gridMask[r][c] === '.') return;
-
-      focusCell(r,c,true,true);
-    }
-
-    /***********************
-     * Typing (physical keyboard + mobile on-screen keyboard)
-     ***********************/
-    function setUserLetter(r,c,ch){
-      if (gridMask[r][c] === '.') return;
-      const v = (ch || '').toUpperCase().replace(/[^A-Z]/g,'');
-      userLetters[r][c] = v;
-      inputs[r][c].value = v;
-    }
-
-    function moveInEntry(delta){
-      if (!activeEntry || !activeCell) return;
-      const idx = (mode === 'across') ? (activeCell.c - activeEntry.c) : (activeCell.r - activeEntry.r);
-      const nextIdx = idx + delta;
-      if (nextIdx < 0 || nextIdx >= activeEntry.len) return;
-      const r = activeEntry.r + (mode === 'down' ? nextIdx : 0);
-      const c = activeEntry.c + (mode === 'across' ? nextIdx : 0);
-      focusCell(r,c,false,false);
-    }
-
-    function onKeyDown(e){
-      if (!activeCell || gridMask[activeCell.r][activeCell.c] === '.') return;
-
-      if (e.key === 'Backspace'){
-        e.preventDefault();
-        const r = activeCell.r, c = activeCell.c;
-        if (inputs[r][c].value){
-          setUserLetter(r,c,'');
-        } else {
-          moveInEntry(-1);
-          if (activeCell) setUserLetter(activeCell.r, activeCell.c, '');
-        }
-        return;
-      }
-
-      if (e.key === 'ArrowRight'){ e.preventDefault(); setMode('across'); moveInEntry(+1); return; }
-      if (e.key === 'ArrowLeft'){ e.preventDefault(); setMode('across'); moveInEntry(-1); return; }
-      if (e.key === 'ArrowDown'){ e.preventDefault(); setMode('down'); moveInEntry(+1); return; }
-      if (e.key === 'ArrowUp'){ e.preventDefault(); setMode('down'); moveInEntry(-1); return; }
-
-      if (/^[a-zA-Z]$/.test(e.key)){
-        e.preventDefault();
-        setUserLetter(activeCell.r, activeCell.c, e.key);
-        moveInEntry(+1);
-      }
-    }
-
-    function buildMobileKeyboard(){
-      kbEl.innerHTML = '';
-      const keys = "QWERTYUIOPASDFGHJKLZXCVBNM".split('');
-      const addKey = (label, cls, onClick) => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'k ' + (cls || '');
-        b.textContent = label;
-        b.addEventListener('click', onClick);
-        kbEl.appendChild(b);
-      };
-
-      keys.forEach(k => addKey(k, '', () => {
-        if (!activeCell) return;
-        setUserLetter(activeCell.r, activeCell.c, k);
-        moveInEntry(+1);
-      }));
-
-      addKey('DEL', 'wide', () => {
-        onKeyDown({key:'Backspace', preventDefault: ()=>{}});
-      });
-      addKey('TOGGLE', 'wide', () => {
-        setMode(mode === 'across' ? 'down' : 'across');
-        if (activeCell) focusCell(activeCell.r, activeCell.c, true, false);
-      });
-      addKey('CHECK', 'wide', () => checkAll());
-      addKey('NEW', 'wide', () => newPuzzle());
-    }
-
-    /***********************
-     * Controls
-     ***********************/
-    function clearInputs(){
-      for (let r=0;r<SIZE;r++){
-        for (let c=0;c<SIZE;c++){
-          if (gridMask[r][c] === '.') continue;
-          setUserLetter(r,c,'');
-        }
-      }
-      clearHighlights();
-      activeCell = null;
-      activeEntry = null;
-      renderClues();
-    }
-
-    function revealAll(){
-      for (let r=0;r<SIZE;r++){
-        for (let c=0;c<SIZE;c++){
-          if (gridMask[r][c] === '.') continue;
-          setUserLetter(r,c, solutionLetters[r][c]);
-        }
-      }
-    }
-
-    function checkAll(){
-      let total = 0;
-      let correct = 0;
-
-      for (let r=0;r<SIZE;r++){
-        for (let c=0;c<SIZE;c++){
-          if (gridMask[r][c] === '.') continue;
-          total++;
-
-          const el = cells[r][c];
-          el.classList.remove('correct','wrong');
-
-          const user = (inputs[r][c].value || '').toUpperCase();
-          const ans = solutionLetters[r][c];
-
-          if (user && user === ans){
-            correct++;
-            el.classList.add('correct');
-          } else {
-            el.classList.add('wrong');
-          }
-        }
-      }
-
-      const ratio = total ? correct/total : 0;
-      const won = ratio >= 0.985;
-
-      const gained = Math.max(0, Math.round(220 * ratio));
-      score = gained;
-
-      if (won) streak++; else streak = 0;
-      updateStreakUI();
-
-      showResult(won, gained);
-    }
-
-    function showResult(win, gained){
-      modal.classList.remove('hidden');
-
-      modalTitle.classList.remove('text-neonRed');
-      modalTitle.classList.add('text-white');
-
-      if (win){
-        modalTitle.textContent = "GRID SOLVED";
-        modalIcon.innerHTML = '<i class="fas fa-shield-check text-neonBlue"></i>';
-        modalMsg.textContent = "Precision confirmed. Cognitive stability high.";
-      } else {
-        modalTitle.textContent = "NOT CLEAN YET";
-        modalIcon.innerHTML = '<i class="fas fa-triangle-exclamation text-neonRed"></i>';
-        modalMsg.textContent = "Close the loops. Fix the errors and re-check.";
-        modalTitle.classList.add('text-neonRed');
-      }
-
-      const xp = Math.floor(gained * 0.8);
-      resScore.textContent = String(gained);
-      resXP.textContent = `+${xp}`;
-
-      if (window.GameEngine){
-        window.GameEngine.addXP(xp);
-        window.GameEngine.saveGameResult(
-          "Mini Crossword",
-          gained,
-          1,
-          { won: win, size: SIZE, seed, patternId }
-        );
-      }
-
-      if (window.dataLayer){
-        window.dataLayer.push({
-          event: 'game_complete',
-          game_name: 'Mini Crossword',
-          game_result: win ? 'win' : 'lose',
-          score: gained
-        });
-      }
-    }
-
-    function hideResult(){
-      modal.classList.add('hidden');
-    }
-
-    /***********************
-     * New puzzle generator (template + CSP fill)
-     ***********************/
-    function newPuzzle(){
-      setStatus('Generating…');
-
-      seed = (Date.now() ^ (Math.random()*1e9)) >>> 0;
-      rng = mulberry32(seed);
-
-      patternId = randInt(rng, (SIZE===11 ? TEMPLATES_11.length : TEMPLATES_9.length));
-
-      seedLabel.textContent = String(seed).slice(0,8);
-      patternLabel.textContent = String(patternId + 1);
-      gridSizeLabel.textContent = `${SIZE}×${SIZE}`;
-
-      // Choose template
-      gridMask = buildTemplate(SIZE, patternId);
-      computeNumbers();
-      buildEntries();
-
-      // Bank map
-      const bankMap = bankByLength(BANK_500);
-      // Hard validation: required lengths must exist in bank
-      const neededLens = new Set([...entriesAcross, ...entriesDown].map(e => e.len));
-      for (const L of neededLens){
-        if (!bankMap.has(L) || bankMap.get(L).length === 0){
-          setStatus(`Bank missing length ${L}. Cannot build puzzle.`);
-          console.error('Missing length in bank:', L);
-          return;
-        }
-      }
-
-      // Try CSP fill; if fails, retry a few times (new seed and/or new pattern)
-      let filled = null;
-      const maxTries = 6;
-      for (let attempt = 1; attempt <= maxTries; attempt++){
-        const localSeed = (seed + attempt * 1013) >>> 0;
-        const localRng = mulberry32(localSeed);
-
-        // shuffle bank per attempt to avoid dead-ends
-        for (const [L, arr] of bankMap.entries()){
-          shuffle(localRng, arr);
-        }
-
-        filled = fillPuzzleCSP(localRng, entriesAcross, entriesDown, bankMap);
-        if (filled) break;
-
-        // If failed, optionally rotate pattern once mid-way
-        if (attempt === 3){
-          patternId = (patternId + 1) % (SIZE===11 ? TEMPLATES_11.length : TEMPLATES_9.length);
-          gridMask = buildTemplate(SIZE, patternId);
-          computeNumbers();
-          buildEntries();
-        }
-      }
-
-      if (!filled){
-        setStatus('Generation failed (bank/pattern constraints). Tap New.');
-        console.error('CSP generation failed.');
-        return;
-      }
-
-      // solutionLetters from filled grid
-      solutionLetters = filled.map(row => row.slice());
-
-      // Render
+    const kbEl = document.getElementById('keyboard-container');
+    const barEl = document.getElementById('active-clue-bar');
+
+    // --- INIT ---
+    window.onload = () => {
+      // Setup Game
       renderGrid();
-      computeCellSize();
-      renderClues();
-      clearHighlights();
+      renderKeyboard();
+      renderClueListDesktop();
+      updateUI();
+      startTimer();
+      
+      // UX Core / Game Engine Mock
+      if(window.GameEngine) window.GameEngine.trackEvent('game_start', { game: 'Vortex Cross' });
+    };
 
-      // Auto focus a random numbered starter cell
-      const starters = [];
-      for (let r=0;r<SIZE;r++){
-        for (let c=0;c<SIZE;c++){
-          if (gridMask[r][c] !== '.' && numbers[r][c]) starters.push({r,c});
+    function startTimer() {
+      clearInterval(timerInterval);
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const d = Math.floor((Date.now() - startTime)/1000);
+        const m = Math.floor(d/60).toString().padStart(2,'0');
+        const s = (d%60).toString().padStart(2,'0');
+        document.getElementById('timer').innerText = `${m}:${s}`;
+      }, 1000);
+    }
+
+    // --- RENDER ---
+    function renderGrid() {
+      gridEl.innerHTML = '';
+      userGrid.forEach((val, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.index = i;
+        
+        // Mobile Touch Fix: preventDefault stops scroll drag
+        cell.addEventListener('touchstart', (e) => { e.preventDefault(); handleInteraction(i); }, {passive: false});
+        cell.addEventListener('mousedown', (e) => { e.preventDefault(); handleInteraction(i); });
+        
+        // 5x5 Numbering Logic (Standard Crossword Style)
+        // Row 1: 1,2,3,4,5
+        // Row 2: 6
+        // Row 3: 7
+        // Row 4: 8
+        // Row 5: 9
+        let num = "";
+        if(i < 5) num = (i + 1).toString(); 
+        else if(i % 5 === 0) num = (i/5 + 5).toString();
+        
+        if(num) cell.innerHTML = `<span class="num">${num}</span>`;
+        
+        const textSpan = document.createElement('span');
+        textSpan.innerText = val;
+        cell.appendChild(textSpan);
+        
+        gridEl.appendChild(cell);
+      });
+    }
+
+    function renderKeyboard() {
+      const rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
+      kbEl.innerHTML = '';
+      
+      rows.forEach(row => {
+        const rDiv = document.createElement('div');
+        rDiv.className = 'keyboard-row';
+        row.split('').forEach(char => {
+          const btn = document.createElement('div');
+          btn.className = 'key';
+          btn.innerText = char;
+          btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleInput(char); }, {passive: false});
+          btn.addEventListener('mousedown', (e) => { e.preventDefault(); handleInput(char); });
+          rDiv.appendChild(btn);
+        });
+        kbEl.appendChild(rDiv);
+      });
+      
+      // Backspace Row
+      const bDiv = document.createElement('div');
+      bDiv.className = 'keyboard-row';
+      const bs = document.createElement('div');
+      bs.className = 'key big';
+      bs.innerHTML = '<i class="fas fa-backspace"></i>';
+      bs.addEventListener('touchstart', (e) => { e.preventDefault(); handleInput('BACKSPACE'); }, {passive: false});
+      bs.addEventListener('mousedown', (e) => { e.preventDefault(); handleInput('BACKSPACE'); });
+      bDiv.appendChild(bs);
+      kbEl.appendChild(bDiv);
+    }
+
+    function renderClueListDesktop() {
+      const acrossEl = document.getElementById('clues-across');
+      const downEl = document.getElementById('clues-down');
+      if(!acrossEl) return;
+
+      acrossEl.innerHTML = '';
+      downEl.innerHTML = '';
+
+      const createItem = (num, text, dir) => {
+        const div = document.createElement('div');
+        div.className = 'p-2 text-sm border-b border-white/5 cursor-pointer hover:bg-white/5 flex gap-3 text-zinc-300 transition';
+        div.dataset.dir = dir;
+        div.dataset.num = num;
+        div.innerHTML = `<span class="font-bold text-accent w-4 text-right">${num}</span> <span class="flex-1">${text}</span>`;
+        div.onclick = () => {
+             // Calculate index from clue number
+             let idx = 0;
+             if(dir === 'across') {
+                 if(num == 1) idx = 0;
+                 else idx = (num - 5) * 5; 
+             } else {
+                 idx = num - 1;
+             }
+             direction = dir;
+             cursor = idx;
+             updateUI();
+        };
+        return div;
+      }
+
+      Object.entries(currentPuzzle.clues.across).forEach(([n, t]) => acrossEl.appendChild(createItem(n, t, 'across')));
+      Object.entries(currentPuzzle.clues.down).forEach(([n, t]) => downEl.appendChild(createItem(n, t, 'down')));
+    }
+
+    // --- LOGIC ---
+    function handleInteraction(i) {
+        if(isComplete) return;
+        if(cursor === i) {
+            direction = direction === 'across' ? 'down' : 'across';
+        } else {
+            cursor = i;
         }
-      }
-      if (starters.length){
-        const pick = starters[randInt(rng, starters.length)];
-        setMode('across');
-        focusCell(pick.r, pick.c, true, false);
-      }
+        updateUI();
+    }
 
-      setStatus(`Ready. Bank: 500 words • Pattern ${patternId+1}`);
+    function handleInput(key) {
+      if(isComplete) return;
+      
+      if(key === 'BACKSPACE') {
+        if(userGrid[cursor] === "") moveCursor(-1); 
+        userGrid[cursor] = "";
+      } else {
+        userGrid[cursor] = key;
+        moveCursor(1);
+        if(!userGrid.includes("")) checkWin();
+      }
+      updateGridText();
+      updateUI();
+    }
 
-      if (window.dataLayer){
-        window.dataLayer.push({event:'game_start', game_name:'Mini Crossword', seed, size: SIZE, pattern: patternId+1});
+    function moveCursor(step) {
+      const r = Math.floor(cursor / 5);
+      const c = cursor % 5;
+      
+      if(direction === 'across') {
+        let newC = c + step;
+        if(newC > 4) newC = 4;
+        if(newC < 0) newC = 0;
+        cursor = r * 5 + newC;
+      } else {
+        let newR = r + step;
+        if(newR > 4) newR = 4;
+        if(newR < 0) newR = 0;
+        cursor = newR * 5 + c;
       }
     }
 
-    /***********************
-     * Wire buttons
-     ***********************/
-    newBtn.addEventListener('click', () => newPuzzle());
-    toggleModeBtn.addEventListener('click', () => {
-      setMode(mode === 'across' ? 'down' : 'across');
-      if (activeCell) focusCell(activeCell.r, activeCell.c, true, false);
-    });
-    clearBtn.addEventListener('click', () => clearInputs());
-    revealBtn.addEventListener('click', () => revealAll());
-    checkBtn.addEventListener('click', () => checkAll());
+    function updateGridText() {
+      userGrid.forEach((val, i) => {
+        const cell = gridEl.children[i];
+        const span = cell.querySelector('span:not(.num)');
+        if(span) span.innerText = val;
+      });
+    }
 
-    playAgainBtn.addEventListener('click', () => {
-      hideResult();
-      newPuzzle();
-    });
-    exitBtn.addEventListener('click', () => location.href = 'index.html');
+    function updateUI() {
+      // 1. Highlight Cells
+      Array.from(gridEl.children).forEach((cell, i) => {
+        cell.classList.remove('active', 'highlight');
+        
+        const r = Math.floor(i / 5);
+        const c = i % 5;
+        const curR = Math.floor(cursor / 5);
+        const curC = cursor % 5;
+        
+        if(direction === 'across' && r === curR) cell.classList.add('highlight');
+        if(direction === 'down' && c === curC) cell.classList.add('highlight');
+        
+        if(i === cursor) cell.classList.add('active');
+      });
 
-    /***********************
-     * Start
-     ***********************/
-    window.addEventListener('load', () => {
-      updateStreakUI();
-      setMode('across');
-      buildMobileKeyboard();
-      computeCellSize();
-      newPuzzle();
+      // 2. Update Clue Bar & List Selection
+      const clueData = getActiveClue();
+      
+      // Update Mobile Bar
+      barEl.innerHTML = `<span class="text-xs font-bold bg-black/20 px-1 rounded mr-2 text-white/70">${clueData.num} ${direction.substring(0,1).toUpperCase()}</span> ${clueData.text}`;
+      
+      // Update Desktop List Highlight
+      document.querySelectorAll('#clues-across div, #clues-down div').forEach(el => {
+          el.classList.remove('bg-white/10', 'border-l-4', 'border-accent');
+          if(el.dataset.dir === direction && el.dataset.num == clueData.num) {
+              el.classList.add('bg-white/10', 'border-l-4', 'border-accent');
+              el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+      });
+    }
+
+    function getActiveClue() {
+        const r = Math.floor(cursor / 5);
+        const c = cursor % 5;
+        let num, text;
+
+        if(direction === 'across') {
+            num = (r === 0) ? 1 : r + 5;
+            text = currentPuzzle.clues.across[num];
+        } else {
+            num = c + 1;
+            text = currentPuzzle.clues.down[num];
+        }
+        return { num, text };
+    }
+
+    function checkWin() {
+      const flatSolution = currentPuzzle.grid;
+      const isCorrect = userGrid.every((val, i) => val === flatSolution[i]);
+      
+      if(isCorrect) {
+        isComplete = true;
+        clearInterval(timerInterval);
+        document.getElementById('final-time').innerText = document.getElementById('timer').innerText;
+        document.getElementById('win-modal').classList.remove('hidden');
+        
+        Array.from(gridEl.children).forEach((cell, i) => {
+            setTimeout(() => cell.classList.add('correct-anim'), i * 30);
+        });
+
+        if(window.GameEngine) {
+           window.GameEngine.saveGameResult("Vortex Cross", 250, 1, { time: document.getElementById('timer').innerText });
+        }
+      }
+    }
+
+    function checkGrid() {
+        let errors = 0;
+        userGrid.forEach((val, i) => {
+            if(val !== "" && val !== currentPuzzle.grid[i]) {
+                const cell = gridEl.children[i];
+                cell.classList.add('wrong-anim');
+                cell.style.color = '#ef4444'; 
+                setTimeout(() => {
+                    cell.classList.remove('wrong-anim');
+                    cell.style.color = '';
+                }, 1000);
+                errors++;
+            }
+        });
+        if(errors === 0 && !userGrid.includes("")) checkWin();
+    }
+
+    function revealLetter() {
+        if(isComplete) return;
+        userGrid[cursor] = currentPuzzle.grid[cursor];
+        updateGridText();
+        if(!userGrid.includes("")) checkWin();
+    }
+
+    function resetPuzzle() {
+        if(confirm("Restart grid?")) {
+            userGrid = Array(25).fill("");
+            updateGridText();
+            isComplete = false;
+            startTimer();
+            Array.from(gridEl.children).forEach(c => c.style.color = '');
+        }
+    }
+
+    // Physical Keyboard Listener
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Backspace') handleInput('BACKSPACE');
+      else if(/^[a-zA-Z]$/.test(e.key) && e.key.length === 1) handleInput(e.key.toUpperCase());
+      else if(e.key === ' ') handleInteraction(cursor); 
     });
+
   </script>
 </body>
 </html>

@@ -1,9 +1,8 @@
-// components.js - QUIZREALM GLOBAL LAYOUT (HEADER + FOOTER)
 // components.js - QUIZREALM GLOBAL LAYOUT
 console.log("Loading QuizRealm Components...");
 
 /* =========================================
-   1. HELPER: GET USER DATA
+   1. DATA HELPERS
    ========================================= */
 function getHeaderUserSnapshot() {
     let snapshot = { level: 1, coins: 0, xp: 0, avatarSeed: "Player" };
@@ -35,9 +34,6 @@ function getHeaderUserSnapshot() {
     return snapshot;
 }
 
-/* =========================================
-   2. HELPER: ARCADE LINKS
-   ========================================= */
 function getArcadeLinksMarkup() {
     const games = [
         { url: 'fusion-core.html', icon: 'fa-microchip', color: 'green', title: 'Logic League', sub: 'Mastermind' },
@@ -69,24 +65,22 @@ function getArcadeLinksMarkup() {
 }
 
 /* =========================================
-   3. MAIN HEADER COMPONENT
+   2. MARKUP GENERATORS
    ========================================= */
+
+// --- HEADER MARKUP ---
 function getQuizHeaderMarkup() {
     const user = getHeaderUserSnapshot();
     const level = user.level || 1;
     const coins = user.coins || 0;
-    const xp = user.xp || 0;
     const avatarUrl = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(user.avatarSeed)}`;
 
     return `
     <header class="w-full sticky top-0 z-50 backdrop-blur-2xl bg-[#020617]/90 border-b border-white/10 shadow-xl shadow-black/40 relative mb-0">
-        <!-- slim top accent line -->
         <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-60"></div>
 
-        <!-- MAIN BAR (reduced height for less gap) -->
         <div class="max-w-[1400px] mx-auto px-3 sm:px-4 h-14 md:h-16 flex items-center justify-between gap-3">
             
-            <!-- BRAND -->
             <a href="index.html" class="flex items-center gap-2.5 group shrink-0">
                 <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-900 to-[#020617] border border-blue-500/30 flex items-center justify-center shadow-[0_0_14px_rgba(59,130,246,0.35)] group-hover:shadow-[0_0_22px_rgba(59,130,246,0.6)] transition-all duration-300 group-hover:scale-105">
                     <i class="fas fa-ghost text-base md:text-lg text-blue-400 group-hover:text-white transition-colors"></i>
@@ -101,10 +95,8 @@ function getQuizHeaderMarkup() {
                 </div>
             </a>
 
-            <!-- DESKTOP NAV -->
             <nav class="hidden xl:flex items-center gap-1 bg-white/5/0 px-1 py-0.5 rounded-full border border-white/5">
                 
-                <!-- Premium CTA -->
                 <a href="premium.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden mr-1">
                     <div class="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 opacity-100 group-hover:opacity-95 transition-opacity"></div>
                     <div class="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.35)_0,transparent_40%,transparent_60%,rgba(255,255,255,0.35)_100%)] opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
@@ -114,7 +106,6 @@ function getQuizHeaderMarkup() {
                     </div>
                 </a>
 
-                <!-- Identity Lab -->
                 <a href="identity-lab.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] mr-1">
                     <div class="absolute inset-0 bg-gradient-to-r from-violet-900/50 to-fuchsia-900/50 border border-violet-500/40 group-hover:border-fuchsia-400/70 rounded-full transition-colors"></div>
                     <div class="relative flex items-center gap-1.5">
@@ -123,7 +114,6 @@ function getQuizHeaderMarkup() {
                     </div>
                 </a>
 
-                <!-- Categories -->
                 <a href="categories.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5 group/cat">
                     <i class="fas fa-layer-group text-slate-500 group-hover/cat:text-blue-400 transition-colors text-xs"></i>
                     <span>Categories</span>
@@ -131,7 +121,6 @@ function getQuizHeaderMarkup() {
 
                 <div class="w-px h-4 bg-white/10 mx-1"></div>
 
-                <!-- Arcade + dropdown -->
                 <div class="relative group h-full">
                     <a href="arcade.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
                         <i class="fas fa-gamepad text-slate-500 group-hover:text-pink-400 transition-colors text-xs"></i> 
@@ -152,9 +141,7 @@ function getQuizHeaderMarkup() {
                 </div>
             </nav>
 
-            <!-- USER CLUSTER -->
             <div class="flex items-center gap-3 shrink-0">
-                <!-- Coins / XP (desktop) -->
                 <div class="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-black/40 border border-amber-500/25 shadow-inner">
                     <div class="w-5 h-5 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/60">
                         <i class="fas fa-coins text-[10px] text-amber-300"></i>
@@ -167,7 +154,6 @@ function getQuizHeaderMarkup() {
                     </span>
                 </div>
                 
-                <!-- Profile -->
                 <button onclick="window.location.href='profile.html'" class="flex items-center gap-2.5 pl-1.5 pr-1.5 md:pr-4 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/25 transition-all group relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none"></div>
                     <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 p-[1px] relative z-10 shadow-lg">
@@ -175,13 +161,11 @@ function getQuizHeaderMarkup() {
                     </div>
                     <div class="hidden md:flex flex-col items-start leading-none relative z-10">
                         <span class="text-[11px] font-semibold text-slate-100 group-hover:text-white">Profile</span>
-                       
                     </div>
                 </button>
             </div>
         </div>
 
-        <!-- MOBILE DOCK NAV (moved slightly up + centered FAB fully visible) -->
         <div class="xl:hidden fixed left-0 right-0 bottom-3 sm:bottom-4 z-[80]">
             <div class="mx-auto max-w-md rounded-[1.25rem] bg-[#020617]/95 backdrop-blur-2xl border border-white/10 shadow-[0_18px_60px_-20px_rgba(0,0,0,0.9)] pb-[env(safe-area-inset-bottom)]">
                 <div class="flex justify-around items-center px-2 pt-2 pb-3 relative">
@@ -196,7 +180,6 @@ function getQuizHeaderMarkup() {
                         <span class="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500 group-hover:text-slate-200">Arcade</span>
                     </a>
 
-                    <!-- Center FAB: raised enough so it's never cut off -->
                     <a href="premium.html" class="absolute left-1/2 -translate-x-1/2 -translate-y-5">
                         <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300 to-yellow-600 p-[2px] shadow-[0_0_22px_rgba(245,158,11,0.65)]">
                             <div class="w-full h-full rounded-full bg-[#020617] flex flex-col items-center justify-center relative overflow-hidden group">
@@ -223,73 +206,7 @@ function getQuizHeaderMarkup() {
     `;
 }
 
-/* =========================================
-   4. COMPONENT INJECTION
-   ========================================= */
-class QuizHeader extends HTMLElement {
-    connectedCallback() {
-        this.innerHTML = getQuizHeaderMarkup();
-    }
-}
-
-if (!customElements.get('quiz-header')) {
-    customElements.define('quiz-header', QuizHeader);
-}
-
-class QuizFooter extends HTMLElement {
-    connectedCallback() {
-        this.innerHTML = `
-        <footer class="bg-[#020617] border-t border-white/5 pt-16 pb-8">
-            <div class="max-w-[1400px] mx-auto px-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-                    <div class="col-span-1 md:col-span-2">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-900 to-[#020617] border border-blue-500/20 flex items-center justify-center">
-                                <i class="fas fa-ghost text-blue-400"></i>
-                            </div>
-                            <span class="font-arcade text-xl text-white tracking-[0.2em]">QUIZ<span class="text-blue-500">REALM</span></span>
-                        </div>
-                        <p class="text-slate-500 text-sm leading-relaxed max-w-md">
-                            The world's most advanced quiz engine. Combining psychology, pop culture, and cognitive training.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Ecosystem</h4>
-                        <ul class="space-y-3 text-sm text-slate-500">
-                            <li><a href="identity-lab.html" class="hover:text-blue-400 transition">Identity Lab</a></li>
-                            <li><a href="arcade.html" class="hover:text-blue-400 transition">The Arcade</a></li>
-                            <li><a href="categories.html" class="hover:text-blue-400 transition">Knowledge Base</a></li>
-                            <li><a href="premium.html" class="hover:text-amber-400 transition">QuizRealm Gold</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Company</h4>
-                        <ul class="space-y-3 text-sm text-slate-500">
-                            <li><a href="about.html" class="hover:text-white transition">About Protocol</a></li>
-                            <li><a href="privacy.html" class="hover:text-white transition">Privacy & Data</a></li>
-                            <li><a href="contact.html" class="hover:text-white transition">Contact Support</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
-                    <p>&copy; 2025 QuizRealm Inc. All systems operational.</p>
-                    <div class="flex gap-6">
-                        <a href="#" class="hover:text-white transition"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="hover:text-white transition"><i class="fab fa-discord"></i></a>
-                        <a href="#" class="hover:text-white transition"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        `;
-    }
-}
-
-customElements.define('quiz-header', QuizHeader);
-customElements.define('quiz-footer', QuizFooter);
-// =================================================================
-// 2. FOOTER MARKUP GENERATOR
-// =================================================================
+// --- FOOTER MARKUP ---
 function getQuizFooterMarkup() {
     const year = new Date().getFullYear();
     return `
@@ -361,62 +278,93 @@ function getQuizFooterMarkup() {
     </footer>`;
 }
 
-// =================================================================
-// 3. CUSTOM ELEMENTS
-// =================================================================
+// --- SEO CONTENT MARKUP ---
+function getQuizSeoMarkup() {
+    return `
+    <section class="mt-12 mb-8 rounded-xl border border-white/10 p-6 md:p-8 relative overflow-hidden group bg-black/50">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -z-10 group-hover:bg-blue-500/10 transition-all duration-700"></div>
+
+        <h1 class="text-xl md:text-2xl font-sans font-bold text-white mb-6 tracking-wide flex items-center gap-3">
+            <i class="fas fa-info-circle text-blue-500"></i>
+            ABOUT <span class="text-blue-500">QUIZREALM</span>
+        </h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
+            <div>
+                <h2 class="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">
+                    How It Works
+                </h2>
+                <p class="text-sm text-slate-300 leading-relaxed mb-4 text-justify">
+                    Welcome to QuizRealm, the premier destination for online trivia. Our platform is designed to test your knowledge across <strong>science, history, technology, and geography</strong>.
+                </p>
+                <p class="text-sm text-slate-300 leading-relaxed text-justify">
+                    Challenge yourself with our daily modes. You have exactly <strong>30 seconds per question</strong> to select the correct answer. Quick thinking is key to maintaining your daily streak and climbing the leaderboards.
+                </p>
+            </div>
+            <div>
+                <h2 class="text-sm font-bold text-pink-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">
+                    Features & Rewards
+                </h2>
+                <p class="text-sm text-slate-300 leading-relaxed mb-4 text-justify">
+                    Playing regularly helps improve your global ranking. Successful games award <strong>XP (Experience Points)</strong> and unlock unique <strong>digital achievements</strong> to display on your profile.
+                </p>
+                <div class="bg-white/5 rounded-lg p-3 border-l-2 border-blue-500">
+                    <p class="text-xs text-slate-400">
+                        <strong class="text-white">PRO TIP:</strong> Check out <strong>The Arcade</strong> to play unique mini-games like Logic League and History Timeline to earn extra coins.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-white/5 flex flex-wrap gap-2 text-[10px] text-slate-600 uppercase tracking-widest">
+            <span><i class="fas fa-tag mr-1"></i>Brain Training</span>
+            <span>•</span>
+            <span><i class="fas fa-tag mr-1"></i>Trivia Games</span>
+            <span>•</span>
+            <span><i class="fas fa-tag mr-1"></i>Educational</span>
+            <span>•</span>
+            <span><i class="fas fa-tag mr-1"></i>Leaderboards</span>
+        </div>
+    </section>
+    `;
+}
+
+/* =========================================
+   3. LOGIC & EVENTS
+   ========================================= */
 
 function setupHeaderElement(el) {
-  // Initial render
-  el.innerHTML = getQuizHeaderMarkup();
+    // Initial render
+    el.innerHTML = getQuizHeaderMarkup();
 
-  // Render header from a snapshot (no events fired)
-  const renderHeaderFromSnapshot = (s) => {
-    if (!s) return;
+    // Render header from a snapshot (no events fired)
+    const renderHeaderFromSnapshot = (s) => {
+        if (!s) return;
+        const lvlEl = el.querySelector("#headerLevel");
+        if (lvlEl) lvlEl.textContent = s.level || 1;
+        const xpEl = el.querySelector("#headerXP");
+        if (xpEl) xpEl.textContent = s.xp || 0;
+        const coinEl = el.querySelector("#headerCoins");
+        if (coinEl) coinEl.textContent = (s.coins || 0).toLocaleString();
+        const avatarEl = el.querySelector("#headerAvatar");
+        if (avatarEl) {
+            avatarEl.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(s.avatarSeed || "Player")}`;
+        }
+    };
 
-    const lvlEl = el.querySelector("#headerLevel");
-    if (lvlEl) lvlEl.textContent = s.level || 1;
+    // Listen for userUpdate events
+    const handler = (e) => {
+        renderHeaderFromSnapshot(e?.detail);
+    };
 
-    const xpEl = el.querySelector("#headerXP");
-    if (xpEl) xpEl.textContent = s.xp || 0;
+    el._qrUserHandler = handler;
+    window.addEventListener("userUpdate", handler);
 
-    const coinEl = el.querySelector("#headerCoins");
-    if (coinEl) coinEl.textContent = (s.coins || 0).toLocaleString();
-
-    const avatarEl = el.querySelector("#headerAvatar");
-    if (avatarEl) {
-      avatarEl.src = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${encodeURIComponent(s.avatarSeed || "Player")}`;
+    // Initial load check
+    if (window.GameEngine?.getUserSnapshot) {
+        renderHeaderFromSnapshot(window.GameEngine.getUserSnapshot());
     }
-  };
-
-  // One-time update after init (OK even if it dispatches userUpdate once)
-  if (window.GameEngine?.updateHeaderUI) {
-    window.GameEngine.updateHeaderUI();
-  }
-
-  // Listen for userUpdate events and render from e.detail (NO calling updateHeaderUI here)
-  const handler = (e) => {
-    renderHeaderFromSnapshot(e?.detail);
-  };
-
-  el._qrUserHandler = handler;
-  window.addEventListener("userUpdate", handler);
-
-  // If GameEngine already exists, render immediately (useful on SPA-like pages)
-  if (window.GameEngine?.getUserSnapshot) {
-    renderHeaderFromSnapshot(window.GameEngine.getUserSnapshot());
-  }
 }
-
-function makeHeaderLinksRootScoped(root = "/") {
-  document.querySelectorAll("quiz-header a[href], quiz-footer a[href]").forEach(a => {
-    const href = a.getAttribute("href") || "";
-    // Ignore external, anchors, mailto/tel, already-rooted
-    if (!href || href.startsWith("http") || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("/")) return;
-    a.setAttribute("href", root + href.replace(/^\.\//, ""));
-  });
-}
-
-window.addEventListener("DOMContentLoaded", () => makeHeaderLinksRootScoped("/"));
 
 function teardownHeaderElement(el) {
     if (el._qrUserHandler) {
@@ -425,33 +373,38 @@ function teardownHeaderElement(el) {
     }
 }
 
-// Define Header
+function makeHeaderLinksRootScoped(root = "/") {
+    document.querySelectorAll("quiz-header a[href], quiz-footer a[href]").forEach(a => {
+        const href = a.getAttribute("href") || "";
+        if (!href || href.startsWith("http") || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("/")) return;
+        a.setAttribute("href", root + href.replace(/^\.\//, ""));
+    });
+}
+window.addEventListener("DOMContentLoaded", () => makeHeaderLinksRootScoped("/"));
+
+/* =========================================
+   4. COMPONENT REGISTRATION
+   ========================================= */
+
+// HEADER
 if (!customElements.get("quiz-header")) {
     class QuizHeader extends HTMLElement {
-        connectedCallback() {
-            setupHeaderElement(this);
-        }
-        disconnectedCallback() {
-            teardownHeaderElement(this);
-        }
+        connectedCallback() { setupHeaderElement(this); }
+        disconnectedCallback() { teardownHeaderElement(this); }
     }
     customElements.define("quiz-header", QuizHeader);
 }
 
-// Define Home Header (same behavior, just a different tag)
+// HOME HEADER (Alias)
 if (!customElements.get("quiz-home-header")) {
     class QuizHomeHeader extends HTMLElement {
-        connectedCallback() {
-            setupHeaderElement(this);
-        }
-        disconnectedCallback() {
-            teardownHeaderElement(this);
-        }
+        connectedCallback() { setupHeaderElement(this); }
+        disconnectedCallback() { teardownHeaderElement(this); }
     }
     customElements.define("quiz-home-header", QuizHomeHeader);
 }
 
-// Define Footer
+// FOOTER
 if (!customElements.get("quiz-footer")) {
     class QuizFooter extends HTMLElement {
         connectedCallback() {
@@ -461,71 +414,19 @@ if (!customElements.get("quiz-footer")) {
     customElements.define("quiz-footer", QuizFooter);
 }
 
-// Define SEO Content (unchanged)
+// SEO CONTENT
 if (!customElements.get("quiz-seo-content")) {
     class QuizSeoContent extends HTMLElement {
         connectedCallback() {
-            this.innerHTML = `
-            <section class="mt-12 mb-8 rounded-xl border border-white/10 p-6 md:p-8 relative overflow-hidden group bg-black/50">
-                
-                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -z-10 group-hover:bg-blue-500/10 transition-all duration-700"></div>
-
-                <h1 class="text-xl md:text-2xl font-sans font-bold text-white mb-6 tracking-wide flex items-center gap-3">
-                    <i class="fas fa-info-circle text-blue-500"></i>
-                    ABOUT <span class="text-blue-500">QUIZREALM</span>
-                </h1>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
-                    
-                    <div>
-                        <h2 class="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">
-                            How It Works
-                        </h2>
-                        <p class="text-sm text-slate-300 leading-relaxed mb-4 text-justify">
-                            Welcome to QuizRealm, the premier destination for online trivia. Our platform is designed to test your knowledge across <strong>science, history, technology, and geography</strong>.
-                        </p>
-                        <p class="text-sm text-slate-300 leading-relaxed text-justify">
-                            Challenge yourself with our daily modes. You have exactly <strong>30 seconds per question</strong> to select the correct answer. Quick thinking is key to maintaining your daily streak and climbing the leaderboards.
-                        </p>
-                    </div>
-
-                    <div>
-                        <h2 class="text-sm font-bold text-pink-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">
-                            Features & Rewards
-                        </h2>
-                        <p class="text-sm text-slate-300 leading-relaxed mb-4 text-justify">
-                            Playing regularly helps improve your global ranking. Successful games award <strong>XP (Experience Points)</strong> and unlock unique <strong>digital achievements</strong> to display on your profile.
-                        </p>
-                        <div class="bg-white/5 rounded-lg p-3 border-l-2 border-blue-500">
-                            <p class="text-xs text-slate-400">
-                                <strong class="text-white">PRO TIP:</strong> Check out <strong>The Arcade</strong> to play unique mini-games like Logic League and History Timeline to earn extra coins.
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="mt-6 pt-6 border-t border-white/5 flex flex-wrap gap-2 text-[10px] text-slate-600 uppercase tracking-widest">
-                    <span><i class="fas fa-tag mr-1"></i>Brain Training</span>
-                    <span>•</span>
-                    <span><i class="fas fa-tag mr-1"></i>Trivia Games</span>
-                    <span>•</span>
-                    <span><i class="fas fa-tag mr-1"></i>Educational</span>
-                    <span>•</span>
-                    <span><i class="fas fa-tag mr-1"></i>Leaderboards</span>
-                </div>
-            </section>
-            `;
+            this.innerHTML = getQuizSeoMarkup();
         }
     }
     customElements.define("quiz-seo-content", QuizSeoContent);
 }
 
-console.log("Components.js loaded successfully.");
-
-// =================================================================
-// 4. AUTO-INJECT FAVICONS (SEO & BRANDING)
-// =================================================================
+/* =========================================
+   5. AUTO-INJECT FAVICONS
+   ========================================= */
 (function injectFavicons() {
     const favicons = `
         <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
@@ -546,9 +447,9 @@ console.log("Components.js loaded successfully.");
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
         <meta name="theme-color" content="#ffffff">
     `;
-
-    // Check if favicons already exist to avoid duplicates
     if (!document.querySelector("link[rel='apple-touch-icon']")) {
         document.head.insertAdjacentHTML('beforeend', favicons);
     }
 })();
+
+console.log("Components.js loaded successfully.");
