@@ -9,7 +9,6 @@
     <meta name="theme-color" content="#0f172a">
 
     <script type="module" src="firebase-config.js"></script>
-    
     <script type="module">
         import { doc, updateDoc, onSnapshot, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         window.fs = { doc, updateDoc, onSnapshot, getDoc, setDoc };
@@ -52,13 +51,8 @@
                 <i class="fas fa-user-astronaut text-3xl text-white"></i>
             </div>
             <h2 class="text-2xl font-black text-white mb-2">Join Game</h2>
-            <p class="text-slate-400 text-sm mb-6">Enter a nickname to enter the room.</p>
-            
             <input type="text" id="join-nick" placeholder="NICKNAME" maxlength="12" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-4 text-center font-bold text-white mb-4 focus:border-brand focus:outline-none uppercase placeholder-slate-600">
-            
-            <button onclick="confirmJoin()" class="w-full py-4 bg-gradient-to-r from-brand to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:scale-[1.02] transition-transform">
-                ENTER LOBBY
-            </button>
+            <button onclick="confirmJoin()" class="w-full py-4 bg-gradient-to-r from-brand to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:scale-[1.02] transition-transform">ENTER LOBBY</button>
         </div>
     </div>
 
@@ -71,50 +65,34 @@
     </nav>
 
     <div id="loading-screen" class="fixed inset-0 bg-background z-40 flex items-center justify-center">
-        <div class="text-center animate-pulse">
-            <i class="fas fa-satellite-dish text-4xl text-brand mb-4"></i>
-            <p class="text-slate-400 font-mono text-sm">CONNECTING...</p>
-        </div>
+        <div class="text-center animate-pulse"><i class="fas fa-satellite-dish text-4xl text-brand mb-4"></i><p class="text-slate-400 font-mono text-sm">CONNECTING...</p></div>
     </div>
 
     <main class="flex-grow pt-20 px-4 pb-6 relative z-10 w-full max-w-md mx-auto h-full overflow-hidden">
         
         <div id="view-lobby" class="hidden flex-col items-center justify-center h-full text-center animate-pop">
-            <div class="w-24 h-24 bg-surface rounded-full flex items-center justify-center mb-6 shadow-xl border border-white/10">
-                <i class="fas fa-gamepad text-4xl text-brand animate-pulse"></i>
-            </div>
+            <div class="w-24 h-24 bg-surface rounded-full flex items-center justify-center mb-6 shadow-xl border border-white/10"><i class="fas fa-gamepad text-4xl text-brand animate-pulse"></i></div>
             <h1 class="text-3xl font-extrabold text-white mb-2">You're In!</h1>
             <p class="text-slate-400 text-sm">Watch the big screen.</p>
-            <div class="mt-4 px-3 py-1 bg-green-500/20 text-green-400 text-xs font-bold rounded-full">CONNECTED</div>
         </div>
 
         <div id="view-game" class="hidden flex-col h-full">
-            <div id="q-card" class="hidden mb-4 p-4 bg-surface rounded-2xl border border-white/10 shadow-lg animate-pop">
+            <div id="q-card" class="mb-4 p-4 bg-surface rounded-2xl border border-white/10 shadow-lg animate-pop">
                 <p id="q-text" class="text-lg font-bold text-white leading-tight">Loading...</p>
             </div>
             
             <div class="grid grid-cols-2 gap-4 flex-grow content-center pb-safe">
-                <button onclick="submit(0)" class="game-btn bg-opt0 h-full text-white">
-                    <i class="fas fa-square text-3xl mb-2"></i><span class="text-xl font-black">A</span>
-                </button>
-                <button onclick="submit(1)" class="game-btn bg-opt1 h-full text-white">
-                    <i class="fas fa-circle text-3xl mb-2"></i><span class="text-xl font-black">B</span>
-                </button>
-                <button onclick="submit(2)" class="game-btn bg-opt2 h-full text-white">
-                    <i class="fas fa-play rotate-[-90deg] text-3xl mb-2"></i><span class="text-xl font-black">C</span>
-                </button>
-                <button onclick="submit(3)" class="game-btn bg-opt3 h-full text-white">
-                    <i class="fas fa-diamond text-3xl mb-2"></i><span class="text-xl font-black">D</span>
-                </button>
+                <button onclick="submit(0)" class="game-btn bg-opt0 h-full text-white"><i class="fas fa-square text-3xl mb-2"></i><span class="text-xl font-black">A</span></button>
+                <button onclick="submit(1)" class="game-btn bg-opt1 h-full text-white"><i class="fas fa-circle text-3xl mb-2"></i><span class="text-xl font-black">B</span></button>
+                <button onclick="submit(2)" class="game-btn bg-opt2 h-full text-white"><i class="fas fa-play rotate-[-90deg] text-3xl mb-2"></i><span class="text-xl font-black">C</span></button>
+                <button onclick="submit(3)" class="game-btn bg-opt3 h-full text-white"><i class="fas fa-diamond text-3xl mb-2"></i><span class="text-xl font-black">D</span></button>
             </div>
         </div>
 
         <div id="view-feedback" class="hidden flex-col items-center justify-center h-full text-center animate-pop">
-            <div class="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mb-4">
-                <i class="fas fa-lock text-3xl text-white"></i>
-            </div>
+            <div class="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mb-4"><i class="fas fa-lock text-3xl text-white"></i></div>
             <h2 class="text-2xl font-bold text-white">Locked In</h2>
-            <p class="text-slate-400">Wait for results...</p>
+            <p class="text-slate-400 mt-2" id="wait-msg">Waiting for players...</p>
         </div>
 
         <div id="view-result" class="hidden flex-col items-center justify-center h-full text-center animate-pop">
@@ -127,135 +105,101 @@
     </main>
 
     <script type="module">
-        // --- 1. SETUP ---
         let info = {};
         const urlParams = new URLSearchParams(window.location.search);
-        const urlCode = urlParams.get('code'); // Get code from QR scan
+        const urlCode = urlParams.get('code');
 
-        // --- 2. GLOBAL STATE ---
         let ROOM_REF;
         let myAnswer = null;
 
-        // --- 3. INITIALIZATION LOGIC ---
         function initController() {
             try { info = JSON.parse(localStorage.getItem('qr_player_info')); } catch(e){}
 
-            // SCENARIO A: No Saved Data, but scanned QR Code
             if ((!info || !info.nickname) && urlCode) {
-                // Show Join Modal
                 document.getElementById('loading-screen').classList.add('hidden');
                 document.getElementById('join-modal').classList.remove('hidden');
                 return;
             }
-
-            // SCENARIO B: Has Data, but wrong room (Scanned new QR)
             if (info && urlCode && info.roomCode !== urlCode) {
-                info.roomCode = urlCode; // Update room, keep name
+                info.roomCode = urlCode;
                 localStorage.setItem('qr_player_info', JSON.stringify(info));
             }
-
-            // SCENARIO C: No Data, No Code -> Go Hub
             if ((!info || !info.roomCode) && !urlCode) {
                 window.location.href = 'group-hub.html';
                 return;
             }
-
-            // SCENARIO D: Ready to Connect
             if (info && info.nickname && info.roomCode) {
                 boot();
             }
         }
 
-        // --- 4. JOIN HANDLER ---
         window.confirmJoin = function() {
             const nick = document.getElementById('join-nick').value.trim().toUpperCase();
             if (nick.length < 2) { alert("Enter a nickname!"); return; }
-
-            const newInfo = {
-                nickname: nick,
-                roomCode: urlCode,
-                role: 'player',
-                timestamp: Date.now()
-            };
+            const newInfo = { nickname: nick, roomCode: urlCode, role: 'player', timestamp: Date.now() };
             localStorage.setItem('qr_player_info', JSON.stringify(newInfo));
-            
-            // Reload with data
             info = newInfo;
             document.getElementById('join-modal').classList.add('hidden');
             document.getElementById('loading-screen').classList.remove('hidden');
             boot();
         }
 
-        // --- 5. BOOTSTRAP ---
         async function boot() {
-            // Wait for window.fs
-            if (!window.db || !window.fs) {
-                setTimeout(boot, 100);
-                return;
-            }
+            if (!window.db || !window.fs) { setTimeout(boot, 100); return; }
 
             try {
-                // Init UI
                 document.getElementById('nick-disp').innerText = info.nickname;
                 document.getElementById('avatar-disp').innerText = info.nickname.charAt(0).toUpperCase();
 
-                // Connect to Room
                 ROOM_REF = window.fs.doc(window.db, "group_rooms", info.roomCode);
 
-                // Add Player to DB (This triggers the Host screen update)
                 const playerKey = `players.${info.nickname}`;
                 let joinData = {};
                 joinData[playerKey] = { score: 0, avatar: 'A', joinedAt: Date.now() };
 
                 await window.fs.updateDoc(ROOM_REF, joinData).catch(async (err) => {
-                    console.warn("Update failed, trying Set...", err);
                     await window.fs.setDoc(ROOM_REF, joinData, { merge: true });
                 });
 
                 document.getElementById('loading-screen').classList.add('hidden');
                 
-                // Start Listener
                 window.fs.onSnapshot(ROOM_REF, (snap) => {
-                    if(!snap.exists()) {
-                        alert("Room closed or invalid code.");
-                        window.location.href = 'group-hub.html';
-                        return;
-                    }
-                    const data = snap.data();
-                    handleState(data);
+                    if(!snap.exists()) { alert("Room closed"); window.location.href = 'group-hub.html'; return; }
+                    handleState(snap.data());
                 });
 
-            } catch (err) {
-                console.error(err);
-                alert("Connection Error: " + err.message);
-                window.location.href = 'group-hub.html';
-            }
+            } catch (err) { alert("Connection Error"); window.location.href = 'group-hub.html'; }
         }
 
         function handleState(data) {
-            // Score Update
             if(data.players && data.players[info.nickname]) {
                 document.getElementById('score-disp').innerText = data.players[info.nickname].score;
             }
 
-            // View Management
             if(data.status === 'LOBBY') showView('view-lobby');
             
             if(data.status === 'GAME') {
-                myAnswer = null;
-                showView('view-game');
-                
-                // Mobile Text
-                if(data.currentQuestion && data.currentQuestion.mobileMode) {
-                    document.getElementById('q-card').classList.remove('hidden');
-                    document.getElementById('q-text').innerText = data.currentQuestion.text;
-                } else {
-                    document.getElementById('q-card').classList.add('hidden');
+                // Reset local answer if it's a new question (tracked by text change or null check)
+                if (document.getElementById('q-text').innerText !== data.currentQuestion.text) {
+                    myAnswer = null; // New Round
                 }
+
+                if (myAnswer === null) {
+                    showView('view-game');
+                } else {
+                    // Update Waiting Status
+                    const total = Object.keys(data.players).length;
+                    const answered = Object.keys(data.answers || {}).length;
+                    document.getElementById('wait-msg').innerText = `Waiting for ${total - answered} players...`;
+                    showView('view-feedback');
+                }
+                
+                document.getElementById('q-text').innerText = data.currentQuestion.text;
             }
 
             if(data.status === 'RESULT') {
-                const isCorrect = (myAnswer === data.correctIndex);
+                // FIX 3: Strict Number Comparison
+                const isCorrect = (Number(myAnswer) === Number(data.correctIndex));
                 
                 const title = document.getElementById('res-title');
                 const bg = document.getElementById('res-icon-bg');
@@ -267,7 +211,7 @@
                     title.className = "text-4xl font-black text-green-500 mb-2";
                     bg.className = "w-28 h-28 rounded-full bg-green-500 flex items-center justify-center mb-6 shadow-2xl";
                     icon.className = "fas fa-check text-5xl text-white";
-                    pts.innerText = "+1000"; 
+                    pts.innerText = "NICE!"; 
                     if(navigator.vibrate) navigator.vibrate([50,50,50]);
                 } else {
                     title.innerText = "Wrong!";
@@ -281,7 +225,6 @@
             }
         }
 
-        // --- ACTIONS ---
         window.submit = function(idx) {
             myAnswer = idx;
             if(navigator.vibrate) navigator.vibrate(50);
@@ -290,21 +233,21 @@
             ansData[`answers.${info.nickname}`] = { val: idx, time: Date.now() };
             
             window.fs.updateDoc(ROOM_REF, ansData).catch(e => console.error(e));
+            // Transition handled by snapshot listener now for accuracy, but we force view update for responsiveness
             showView('view-feedback');
         }
 
         function showView(id) {
-            ['view-lobby','view-game','view-feedback','view-result'].forEach(v => document.getElementById(v).classList.add('hidden'));
-            document.getElementById(v => document.getElementById(v).classList.remove('flex'));
-            
+            ['view-lobby','view-game','view-feedback','view-result'].forEach(v => {
+                document.getElementById(v).classList.add('hidden');
+                document.getElementById(v).classList.remove('flex');
+            });
             const el = document.getElementById(id);
             el.classList.remove('hidden');
             el.classList.add('flex');
         }
 
-        // Initialize based on entry method
         initController();
-
     </script>
 </body>
 </html>
