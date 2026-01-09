@@ -10,6 +10,9 @@
   <meta name="description" content="A premium 15×15 crossword experience built per category. Friends, Marvel, Geography and more. Clean grid, crisp clues, perfect mobile UX." />
   <meta name="theme-color" content="#09090b" />
 
+  <!-- Indexing recommendation for THIS page: INDEX (keep as-is). See note at bottom. -->
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="game-engine.js"></script>
   <script src="components.js" defer></script>
@@ -18,25 +21,28 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="assets/crossword-banks-general.js" defer></script>
-<script src="assets/crossword-banks-categories.js" defer></script>
-<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
-<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
-<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
-<link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
-<link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
-<link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
-<link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
-<link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/manifest.json">
-<meta name="msapplication-TileColor" content="#ffffff">
-<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-<meta name="theme-color" content="#ffffff">
+
+  <script src="assets/crossword-banks-general.js" defer></script>
+  <script src="assets/crossword-banks-categories.js" defer></script>
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
   <script>
     tailwind.config = {
       theme: {
@@ -95,6 +101,8 @@
     .btn:active { transform: translateY(1px); }
     .btnAccent { background:#facc15; color:#0a0a0b; border-color: rgba(250,204,21,0.55); }
     .btnDanger { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.26); color:#fecaca; }
+    .btnSoft { background: rgba(250,204,21,0.10); border-color: rgba(250,204,21,0.22); color: rgba(250,204,21,0.95); }
+    .btnSoft:hover { background: rgba(250,204,21,0.14); border-color: rgba(250,204,21,0.28); }
 
     .layout { display:grid; gap:16px; grid-template-columns: 1fr; }
     @media (min-width: 1024px){ .layout { grid-template-columns: minmax(0, 1fr) 420px; align-items:start; } }
@@ -102,8 +110,11 @@
     .paper {
       background: linear-gradient(180deg, #fbfbfc 0%, #f3f4f6 100%);
       border: 1px solid rgba(0,0,0,0.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
-      border-radius: 20px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.7),
+        0 22px 70px rgba(0,0,0,0.18);
+      border-radius: 22px;
+      overflow:hidden;
     }
 
     .cw {
@@ -120,25 +131,33 @@
       position: relative;
       aspect-ratio: 1 / 1;
       border-radius: 10px;
-      background: rgba(255,255,255,0.92);
+      background:
+        radial-gradient(100px 60px at 30% 20%, rgba(255,255,255,0.90), rgba(255,255,255,0.85)),
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,246,248,0.92));
       border: 1px solid rgba(0,0,0,0.12);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.10);
       display:flex;
       align-items:center;
       justify-content:center;
       cursor:pointer;
       user-select:none;
-      transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease, background-color .15s ease;
+      transition: transform .08s ease, box-shadow .15s ease, border-color .15s ease, background-color .15s ease, filter .15s ease;
       font-family: 'JetBrains Mono', monospace;
       font-weight: 900;
       color:#0b0b0f;
     }
-    .cell:active { transform: translateY(1px); }
+    .cell:hover { transform: translateY(-1px); filter: brightness(1.01); }
+    .cell:active { transform: translateY(0px); }
 
     .cell.block {
-      background: #0b0b0f;
-      border-color: rgba(0,0,0,0.30);
+      background:
+        radial-gradient(100px 80px at 30% 20%, rgba(255,255,255,0.06), rgba(0,0,0,0.0)),
+        linear-gradient(180deg, #0b0b10, #07070a);
+      border-color: rgba(0,0,0,0.40);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
       cursor: default;
     }
+    .cell.block:hover { transform:none; filter:none; }
 
     .cell .n {
       position:absolute;
@@ -160,20 +179,21 @@
 
     .cell.active {
       border-color: rgba(250,204,21,0.85);
-      box-shadow: 0 0 0 4px rgba(250,204,21,0.20);
+      box-shadow: 0 0 0 4px rgba(250,204,21,0.22), 0 12px 30px rgba(0,0,0,0.12);
       background: #fff;
     }
     .cell.word {
-      background: rgba(250,204,21,0.16);
+      background: rgba(250,204,21,0.18);
       border-color: rgba(250,204,21,0.38);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.10);
     }
     .cell.good {
       border-color: rgba(34,197,94,0.65);
-      box-shadow: 0 0 0 4px rgba(34,197,94,0.12);
+      box-shadow: 0 0 0 4px rgba(34,197,94,0.12), 0 12px 30px rgba(0,0,0,0.10);
     }
     .cell.bad {
       border-color: rgba(239,68,68,0.65);
-      box-shadow: 0 0 0 4px rgba(239,68,68,0.12);
+      box-shadow: 0 0 0 4px rgba(239,68,68,0.12), 0 12px 30px rgba(0,0,0,0.10);
     }
 
     .side {
@@ -237,16 +257,22 @@
       width: 34px; height: 40px;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
+      background:
+        radial-gradient(100px 60px at 20% 15%, rgba(250,204,21,0.12), transparent 55%),
+        rgba(255,255,255,0.04);
       color: #fff;
       font-family: 'JetBrains Mono', monospace;
       font-weight: 900;
-      transition: background-color .15s ease, transform .06s ease, border-color .15s ease, filter .15s ease;
+      transition: background-color .15s ease, transform .06s ease, border-color .15s ease, filter .15s ease, box-shadow .15s ease;
       user-select:none;
     }
     .key:hover{ background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); filter: brightness(1.02); }
     .key:active{ transform: translateY(1px); }
     .key.wide{ width: 78px; }
+    .key.flash{
+      box-shadow: 0 0 0 4px rgba(250,204,21,0.16);
+      border-color: rgba(250,204,21,0.22);
+    }
 
     .toast {
       position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
@@ -286,50 +312,6 @@
       background: rgba(20,20,24,0.92);
       border: 1px solid rgba(255,255,255,0.10);
       box-shadow: 0 26px 90px rgba(0,0,0,0.68);
-    }
-    .catGrid{
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 10px;
-      padding: 14px;
-    }
-    @media (min-width: 640px){ .catGrid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
-    @media (min-width: 900px){ .catGrid{ grid-template-columns: repeat(4, minmax(0,1fr)); } }
-    .catBtn{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-      padding: 12px 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
-      color: rgba(228,228,231,0.92);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      font-size: 12px;
-      transition: background-color .15s ease, border-color .15s ease, transform .06s ease, filter .15s ease;
-      user-select:none;
-    }
-    .catBtn:hover{ background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); filter: brightness(1.02); }
-    .catBtn:active{ transform: translateY(1px); }
-    .catMeta{
-      margin-top: 6px;
-      font-family:'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing:.14em;
-      color: rgba(161,161,170,0.95);
-      text-transform: uppercase;
-    }
-    .tag{
-      font-family:'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing:.14em;
-      color: rgba(250,204,21,0.95);
-      background: rgba(250,204,21,0.10);
-      border: 1px solid rgba(250,204,21,0.20);
-      padding: 4px 8px;
-      border-radius: 999px;
-      white-space:nowrap;
-      margin-top: 2px;
     }
 
     .srOnly {
@@ -390,218 +372,273 @@
     }
     .drawerBody{ overflow:auto; padding: 12px 12px; }
 
+    /* ==============================
+       MOBILE FIT + PREMIUM OVERRIDES
+       ============================== */
+    *, *::before, *::after { box-sizing: border-box; }
+    .actionsStrip{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:flex-start;
+      align-items:center;
+    }
+    @media (max-width: 640px){
+      .actionsStrip{
+        flex-wrap:nowrap;
+        overflow-x:auto;
+        padding: 2px 2px 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .actionsStrip::-webkit-scrollbar{ display:none; }
+      .btn{
+        flex:0 0 auto;
+        padding: 10px 12px;
+        border-radius: 14px;
+      }
+    }
+    .cw{
+      width: 100%;
+      max-width: min(620px, calc(100vw - 32px));
+      margin-inline: auto;
+      padding: clamp(8px, 2.4vw, 14px);
+      gap: clamp(2px, 0.9vw, 3px);
+    }
+    .cell{ border-radius: clamp(6px, 1.6vw, 10px); }
+    .cell .n{
+      top: clamp(4px, 1.1vw, 6px);
+      left: clamp(5px, 1.2vw, 7px);
+      font-size: clamp(8px, 2.0vw, 9px);
+    }
+    .cell .l{
+      font-size: clamp(12px, 3.9vw, 20px);
+      letter-spacing: clamp(.04em, 0.9vw, .14em);
+      transform: translateX(0.04em);
+    }
+    @media (max-width: 420px){
+      .chip{ font-size:10px; padding:5px 9px; }
+      h1{ letter-spacing: -0.02em; }
+    }
 
     /* ==============================
-   MOBILE FIT + PREMIUM OVERRIDES
-   Paste at END of <style>
-   ============================== */
+       CATEGORY MODAL: premium catalog
+       ============================== */
+    .modalCard{ max-height: 86vh; display:flex; flex-direction:column; }
+    .catBody{ flex: 1 1 auto; min-height: 0; overflow:auto; padding: 14px; }
+    .catBody::-webkit-scrollbar{ width:10px; }
+    .catBody::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius:999px; }
+    .catBody::-webkit-scrollbar-track{ background: rgba(0,0,0,0.20); }
 
-*, *::before, *::after { box-sizing: border-box; }
+    .catGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 0;
+    }
+    @media (min-width: 640px){ .catGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (min-width: 1024px){ .catGrid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
 
-/* Make top action buttons feel premium on phones: single-row scroll instead of ugly wrapping */
-.actionsStrip{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  justify-content:flex-start;
-}
-@media (max-width: 640px){
-  .actionsStrip{
-    flex-wrap:nowrap;
-    overflow-x:auto;
-    padding: 2px 2px 8px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .actionsStrip::-webkit-scrollbar{ display:none; }
-  .btn{
-    flex:0 0 auto;
-    padding: 10px 12px;
-    border-radius: 14px;
-  }
-}
+    .recentRow{
+      padding: 10px 14px 0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .recentChip{
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-family:'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing:.14em;
+      text-transform: uppercase;
+      color: rgba(228,228,231,0.90);
+      transition: background-color .15s ease, border-color .15s ease, transform .06s ease;
+    }
+    .recentChip:hover{ background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); }
+    .recentChip:active{ transform: translateY(1px); }
 
-/* Ensure the paper card never causes side overflow on phones */
-.paper{ overflow:hidden; }
+    /* Premium category card */
+    .catBtn{
+      position: relative;
+      display:flex;
+      align-items:stretch;
+      gap:14px;
+      padding: 16px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background:
+        radial-gradient(800px 180px at 18% 0%, rgba(250,204,21,0.12), transparent 60%),
+        radial-gradient(700px 220px at 85% 20%, rgba(255,255,255,0.06), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      color: rgba(228,228,231,0.95);
+      transition: transform .12s ease, border-color .18s ease, filter .18s ease, box-shadow .18s ease;
+      user-select:none;
+      overflow:hidden;
+    }
+    .catBtn::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+      opacity: 0.10;
+      pointer-events:none;
+    }
+    .catBtn:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+      filter: brightness(1.04);
+      box-shadow: 0 18px 55px rgba(0,0,0,0.55);
+    }
+    .catBtn:active{ transform: translateY(0px); }
+    .catBtn:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 5px rgba(250,204,21,0.18), 0 18px 55px rgba(0,0,0,0.55);
+      border-color: rgba(250,204,21,0.40);
+    }
+    .catIcon{
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(120px 80px at 30% 20%, rgba(250,204,21,0.18), transparent 70%),
+        rgba(0,0,0,0.20);
+      flex: 0 0 auto;
+      position:relative;
+      z-index: 1;
+    }
+    .catMain{ flex: 1 1 auto; min-width: 0; position:relative; z-index: 1; }
+    .catTitle{
+      font-size: 15px;
+      font-weight: 950;
+      color: #fff;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+    .catStatsRow{
+      margin-top: 9px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      font-family:'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing:.14em;
+      text-transform: uppercase;
+      color: rgba(161,161,170,0.95);
+    }
+    .catStat strong{
+      color: rgba(228,228,231,0.94);
+      font-weight: 900;
+    }
+    .catRight{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:10px;
+      position:relative;
+      z-index: 1;
+    }
+    .catTier{
+      font-family:'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing:.14em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.20);
+      color: rgba(228,228,231,0.92);
+      white-space:nowrap;
+    }
+    .catTier[data-tier="Elite"]{
+      color: rgba(250,204,21,0.95);
+      border-color: rgba(250,204,21,0.25);
+      background: rgba(250,204,21,0.10);
+    }
+    .catTier[data-tier="Pro"]{
+      color: rgba(250,204,21,0.92);
+      border-color: rgba(250,204,21,0.18);
+      background: rgba(250,204,21,0.07);
+    }
+    .catTier[data-tier="Needs More"]{
+      color: rgba(244,114,182,0.92);
+      border-color: rgba(244,114,182,0.18);
+      background: rgba(244,114,182,0.07);
+      opacity: 0.95;
+    }
+    .catRef{
+      font-family:'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing:.14em;
+      text-transform: uppercase;
+      color: rgba(161,161,170,0.92);
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.03);
+      max-width: 180px;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space:nowrap;
+    }
+    .catChevron{
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color: rgba(228,228,231,0.9);
+    }
+    .catProgress{
+      width: 160px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow:hidden;
+    }
+    .catProgress > span{
+      display:block;
+      height:100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(250,204,21,0.90), rgba(34,197,94,0.75));
+    }
 
-/* Responsive crossword sizing (no horizontal overflow, better density on small screens) */
-.cw{
-  width: 100%;
-  max-width: min(620px, calc(100vw - 32px));
-  margin-inline: auto;
-  padding: clamp(8px, 2.4vw, 14px);
-  gap: clamp(2px, 0.9vw, 3px);
-}
-
-/* Cells scale down cleanly on small screens */
-.cell{
-  border-radius: clamp(6px, 1.6vw, 10px);
-}
-.cell .n{
-  top: clamp(4px, 1.1vw, 6px);
-  left: clamp(5px, 1.2vw, 7px);
-  font-size: clamp(8px, 2.0vw, 9px);
-}
-.cell .l{
-  font-size: clamp(12px, 3.9vw, 20px);
-  letter-spacing: clamp(.04em, 0.9vw, .14em);
-  transform: translateX(0.04em);
-}
-
-/* Reduce header density on tiny phones */
-@media (max-width: 420px){
-  .chip{ font-size:10px; padding:5px 9px; }
-  h1{ letter-spacing: -0.02em; }
-}
-
-/* ==============================
-   CATEGORY MODAL: less crowded,
-   scrollable, more premium
-   ============================== */
-
-.modalCard{
-  max-height: 86vh;
-  display:flex;
-  flex-direction:column;
-}
-.catBody{
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow:auto;
-  padding: 14px;
-}
-.catBody::-webkit-scrollbar{ width:10px; }
-.catBody::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius:999px; }
-.catBody::-webkit-scrollbar-track{ background: rgba(0,0,0,0.20); }
-
-/* 1 column on mobile, 2 on small desktop, 3 on large desktop (never 4 cramped columns) */
-.catGrid{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  padding: 0;
-}
-@media (min-width: 640px){ .catGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; } }
-@media (min-width: 1024px){ .catGrid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
-
-/* Premium category card */
-.catBtn{
-  display:flex;
-  align-items:stretch;
-  gap:12px;
-  padding: 14px 14px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background:
-    radial-gradient(800px 140px at 20% 0%, rgba(250,204,21,0.10), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-  color: rgba(228,228,231,0.94);
-  text-transform:none;
-  letter-spacing: normal;
-  font-weight: 800;
-  transition: transform .08s ease, border-color .15s ease, filter .15s ease, background-color .15s ease;
-  user-select:none;
-}
-.catBtn:hover{
-  transform: translateY(-1px);
-  border-color: rgba(255,255,255,0.16);
-  filter: brightness(1.03);
-}
-.catBtn:active{ transform: translateY(0px); }
-
-.catIcon{
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.20);
-  flex: 0 0 auto;
-}
-.catMain{ flex: 1 1 auto; min-width: 0; }
-.catTitle{
-  font-size: 14px;
-  font-weight: 900;
-  color: #fff;
-  line-height: 1.2;
-}
-.catSub{
-  margin-top: 6px;
-  font-family:'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing:.14em;
-  color: rgba(161,161,170,0.95);
-  text-transform: uppercase;
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
-.catPill{
-  font-family:'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing:.14em;
-  color: rgba(250,204,21,0.95);
-  background: rgba(250,204,21,0.10);
-  border: 1px solid rgba(250,204,21,0.20);
-  padding: 4px 10px;
-  border-radius: 999px;
-  white-space:nowrap;
-  flex: 0 0 auto;
-}
-.catMetaStrong{
-  color: rgba(228,228,231,0.92);
-}
-.recentRow{
-  padding: 10px 14px 0;
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-.recentChip{
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
-  border-radius: 999px;
-  padding: 8px 10px;
-  font-family:'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing:.14em;
-  text-transform: uppercase;
-  color: rgba(228,228,231,0.90);
-  transition: background-color .15s ease, border-color .15s ease, transform .06s ease;
-}
-.recentChip:hover{ background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); }
-.recentChip:active{ transform: translateY(1px); }
-
-/* SEO cards styling */
-.seoCard{
-  border-radius: 26px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(20,20,24,0.76);
-  box-shadow: 0 26px 90px rgba(0,0,0,0.55);
-  backdrop-filter: blur(12px);
-}
-.seoCard h2{
-  color:#fff;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-.seoCard p, .seoCard li{
-  color: rgba(228,228,231,0.86);
-  line-height: 1.6;
-}
-.seoCard .k{
-  font-family:'JetBrains Mono', monospace;
-  letter-spacing:.14em;
-  text-transform: uppercase;
-  font-size: 11px;
-  color: rgba(250,204,21,0.92);
-}
-.catBtn[data-tier="Elite"]{ box-shadow: 0 0 0 1px rgba(250,204,21,0.10), 0 24px 80px rgba(0,0,0,0.55); }
-.catBtn[data-tier="Pro"]{ box-shadow: 0 0 0 1px rgba(250,204,21,0.06), 0 20px 70px rgba(0,0,0,0.50); }
-.catBtn[data-tier="Ready"]{ box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 18px 60px rgba(0,0,0,0.48); }
-.catBtn[data-tier="Needs More"]{ opacity: 0.88; }
+    /* SEO cards styling */
+    .seoCard{
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(20,20,24,0.76);
+      box-shadow: 0 26px 90px rgba(0,0,0,0.55);
+      backdrop-filter: blur(12px);
+    }
+    .seoCard h2{
+      color:#fff;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .seoCard p, .seoCard li{
+      color: rgba(228,228,231,0.86);
+      line-height: 1.6;
+    }
+    .seoCard .k{
+      font-family:'JetBrains Mono', monospace;
+      letter-spacing:.14em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: rgba(250,204,21,0.92);
+    }
 
   </style>
 </head>
@@ -632,6 +669,7 @@
             <span class="chip"><i class="fa-solid fa-layer-group text-accent"></i> <span id="catBadge">—</span></span>
             <span class="chip"><i class="fa-solid fa-hashtag text-accent"></i> <span id="puzzleBadge">—</span></span>
             <span class="chip"><i class="fa-solid fa-stopwatch text-accent"></i> <span id="timer">00:00</span></span>
+            <span class="chip"><i class="fa-solid fa-wand-magic-sparkles text-accent"></i> Hints <span id="hintBadge" class="ml-1 font-black">0</span>/5</span>
           </div>
           <h1 class="mt-3 text-3xl md:text-4xl font-black text-white tracking-tight">CATEGORY CROSSWORD</h1>
           <p class="mt-1 text-sm text-zinc-400 max-w-2xl">
@@ -639,11 +677,13 @@
           </p>
         </div>
 
-      <div class="actionsStrip lg:justify-end">
+        <div class="actionsStrip lg:justify-end">
           <button id="categoryBtn" class="btn btnAccent"><i class="fa-solid fa-grid-2"></i> Categories</button>
           <button id="newBtn" class="btn"><i class="fa-solid fa-arrows-rotate"></i> New Puzzle</button>
           <button id="resetBtn" class="btn"><i class="fa-solid fa-eraser"></i> Reset</button>
           <button id="checkBtn" class="btn"><i class="fa-solid fa-check"></i> Check</button>
+          <button id="hintBtn" class="btn btnSoft"><i class="fa-solid fa-wand-magic-sparkles"></i> Hint</button>
+          <button id="helpBtn" class="btn"><i class="fa-solid fa-circle-question"></i> Help</button>
           <button id="revealBtn" class="btn btnDanger"><i class="fa-solid fa-eye"></i> Reveal</button>
         </div>
       </div>
@@ -672,6 +712,7 @@
             <div class="flex flex-wrap gap-2 items-center justify-between">
               <div class="text-xs text-zinc-700">
                 Tap a cell. Press <span class="font-mono font-black">SPACE</span> to switch direction. <span class="font-mono font-black">ENTER</span> checks the current word.
+                Use <span class="font-mono font-black">ARROWS</span> to move.
               </div>
               <div class="text-[11px] font-mono uppercase tracking-widest text-zinc-600">
                 Bank: <span id="bankLine" class="text-zinc-800 font-black">—</span>
@@ -715,232 +756,220 @@
         <button id="openClues" class="dockBtn" type="button"><i class="fa-solid fa-list"></i> Clues</button>
         <button id="openKeys" class="dockBtn" type="button"><i class="fa-solid fa-keyboard"></i> Keys</button>
       </div>
-    
+
     </section>
 
-
-
-
-
-
+    <!-- YOUR SEO CONTENT (kept as-is) -->
     <section class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-  <article class="seoCard p-6 md:p-7">
-    <div class="k">15×15 Crossword • Category Edition</div>
-    <h2 class="mt-2 text-2xl md:text-3xl">A Category Crossword That Actually Feels Themed</h2>
-    <p class="mt-3">
-      A good online crossword puzzle is more than a grid and a clue list. The experience has to feel consistent: every answer should belong to the theme, the clue tone should match the category, and the puzzle should remain readable on phones without sacrificing precision. This 15×15 category crossword is designed around that idea. When you select a category—Friends, Marvel, Geography, History, Science, and more—the puzzle is generated from a dedicated bank of answers and clues that live inside your category files. That means the crossword does not “accidentally” drift into unrelated trivia. If you choose Friends, the answers and clue references remain Friends-only, including character names, iconic locations, recurring phrases, episode moments, and in-universe details that fans recognize immediately.
-    </p>
-    <p class="mt-3">
-      The 15×15 format is the classic crossword size because it supports real crossing density: you get enough intersections to validate guesses, but not so many blocks that the puzzle feels fragmented. The category approach makes that density even more satisfying because crossings reinforce the theme instead of pulling you out of it. A Marvel crossword crossing a hero alias with a location, or a Geography crossword crossing a capital with a river, feels like a coherent “knowledge map” rather than random vocabulary. On top of that, the interface is built for modern play: tap a cell to focus, switch direction, use the on-screen keyboard, and check or reveal a word when you want feedback.
-    </p>
-    <p class="mt-3">
-      If you are searching for a premium crossword puzzle online, a themed 15×15 grid is one of the strongest formats for both casual sessions and longer problem-solving. It is approachable for new players, yet deep enough for experienced solvers who want efficient navigation, clear clue grouping, and satisfying completion. Category selection keeps the puzzle aligned with what you actually want to play—sitcom fans can stay in TV mode, film fans can stay in franchise mode, and trivia players can rotate through knowledge categories without changing the core mechanics. This is exactly how a modern category crossword should behave: one stable interface, many themed worlds.
-    </p>
-  </article>
+      <article class="seoCard p-6 md:p-7">
+        <div class="k">15×15 Crossword • Category Edition</div>
+        <h2 class="mt-2 text-2xl md:text-3xl">A Category Crossword That Actually Feels Themed</h2>
+        <p class="mt-3">
+          A good online crossword puzzle is more than a grid and a clue list. The experience has to feel consistent: every answer should belong to the theme, the clue tone should match the category, and the puzzle should remain readable on phones without sacrificing precision. This 15×15 category crossword is designed around that idea. When you select a category—Friends, Marvel, Geography, History, Science, and more—the puzzle is generated from a dedicated bank of answers and clues that live inside your category files. That means the crossword does not “accidentally” drift into unrelated trivia. If you choose Friends, the answers and clue references remain Friends-only, including character names, iconic locations, recurring phrases, episode moments, and in-universe details that fans recognize immediately.
+        </p>
+        <p class="mt-3">
+          The 15×15 format is the classic crossword size because it supports real crossing density: you get enough intersections to validate guesses, but not so many blocks that the puzzle feels fragmented. The category approach makes that density even more satisfying because crossings reinforce the theme instead of pulling you out of it. A Marvel crossword crossing a hero alias with a location, or a Geography crossword crossing a capital with a river, feels like a coherent “knowledge map” rather than random vocabulary. On top of that, the interface is built for modern play: tap a cell to focus, switch direction, use the on-screen keyboard, and check or reveal a word when you want feedback.
+        </p>
+        <p class="mt-3">
+          If you are searching for a premium crossword puzzle online, a themed 15×15 grid is one of the strongest formats for both casual sessions and longer problem-solving. It is approachable for new players, yet deep enough for experienced solvers who want efficient navigation, clear clue grouping, and satisfying completion. Category selection keeps the puzzle aligned with what you actually want to play—sitcom fans can stay in TV mode, film fans can stay in franchise mode, and trivia players can rotate through knowledge categories without changing the core mechanics. This is exactly how a modern category crossword should behave: one stable interface, many themed worlds.
+        </p>
+      </article>
 
-  <article class="seoCard p-6 md:p-7">
-    <div class="k">How To Play • Mobile First</div>
-    <h2 class="mt-2 text-2xl md:text-3xl">Solving Strategy That Works For Any Category</h2>
-    <p class="mt-3">
-      If you want to solve a 15×15 crossword efficiently—especially on mobile—the goal is to build reliable crossings as early as possible. Start by scanning the Across and Down clue groups for anything that is instantly obvious in the current category. In a sitcom category like Friends, that might be a well-known location, a character surname, or a famous catchphrase. In Geography, it could be a capital city, a continent, or a common map term. Fill those “free points” first, because every completed entry becomes a set of letter anchors that narrow down the harder clues. Crosswords reward momentum: once you have a few anchored words, the rest of the grid becomes a process of constraint solving rather than raw guessing.
-    </p>
-    <p class="mt-3">
-      Next, focus on medium clues that intersect your existing letters. A letter you are unsure about is not a problem if multiple crossings support it. This is why 15×15 is so effective: the intersection network acts like built-in verification. When you tap a clue, the game highlights the full word path so you always know what you are filling. On phones, the best habit is to work in short loops: fill a few letters, switch direction when it helps, and let crossings confirm or eliminate your options. If a clue is close but not correct, a quick “Check” on the active word can show whether your current direction is consistent without revealing the entire answer. Use “Reveal” sparingly; it is most useful when a single missing fact blocks multiple intersections and stops progress.
-    </p>
-    <p class="mt-3">
-      Category crosswords also benefit from “theme thinking.” When the puzzle is themed, clues are rarely isolated facts; they usually reference a shared world. That means you should interpret uncertain clues through the category lens: a “bank” in a Marvel crossword is unlikely to be a finance term; it could be a proper noun or a location reference. In a Friends crossword, a vague clue often points to a recurring gag or episode event rather than a dictionary definition. Treat the category as a filter and you will reduce the search space dramatically. Over time, you will notice that your solve speed increases not because you type faster, but because your guesses become more informed and your crossings become more meaningful. That is the point of a premium category crossword: the theme is not decoration—it is the solving engine.
-    </p>
-  </article>
-</section>
-
+      <article class="seoCard p-6 md:p-7">
+        <div class="k">How To Play • Mobile First</div>
+        <h2 class="mt-2 text-2xl md:text-3xl">Solving Strategy That Works For Any Category</h2>
+        <p class="mt-3">
+          If you want to solve a 15×15 crossword efficiently—especially on mobile—the goal is to build reliable crossings as early as possible. Start by scanning the Across and Down clue groups for anything that is instantly obvious in the current category. In a sitcom category like Friends, that might be a well-known location, a character surname, or a famous catchphrase. In Geography, it could be a capital city, a continent, or a common map term. Fill those “free points” first, because every completed entry becomes a set of letter anchors that narrow down the harder clues. Crosswords reward momentum: once you have a few anchored words, the rest of the grid becomes a process of constraint solving rather than raw guessing.
+        </p>
+        <p class="mt-3">
+          Next, focus on medium clues that intersect your existing letters. A letter you are unsure about is not a problem if multiple crossings support it. This is why 15×15 is so effective: the intersection network acts like built-in verification. When you tap a clue, the game highlights the full word path so you always know what you are filling. On phones, the best habit is to work in short loops: fill a few letters, switch direction when it helps, and let crossings confirm or eliminate your options. If a clue is close but not correct, a quick “Check” on the active word can show whether your current direction is consistent without revealing the entire answer. Use “Reveal” sparingly; it is most useful when a single missing fact blocks multiple intersections and stops progress.
+        </p>
+        <p class="mt-3">
+          Category crosswords also benefit from “theme thinking.” When the puzzle is themed, clues are rarely isolated facts; they usually reference a shared world. That means you should interpret uncertain clues through the category lens: a “bank” in a Marvel crossword is unlikely to be a finance term; it could be a proper noun or a location reference. In a Friends crossword, a vague clue often points to a recurring gag or episode event rather than a dictionary definition. Treat the category as a filter and you will reduce the search space dramatically. Over time, you will notice that your solve speed increases not because you type faster, but because your guesses become more informed and your crossings become more meaningful. That is the point of a premium category crossword: the theme is not decoration—it is the solving engine.
+        </p>
+      </article>
+    </section>
 
   </main>
-<div class="qr-seo-wrapper">
+
+  <!-- YOUR EXISTING HUB CONTENT (kept as-is) -->
+  <div class="qr-seo-wrapper">
     <style>
-        .qr-seo-wrapper { display: flex; flex-direction: column; gap: 3rem; width: 100%; max-width: 1200px; margin: 4rem auto; padding: 0 1rem; font-family: system-ui, -apple-system, sans-serif; color: #94a3b8; line-height: 1.6; }
-        .qr-hub-card { position: relative; background: linear-gradient(145deg, #060b18, #0f172a); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5); padding: 2.5rem; display: flex; flex-direction: column; }
-        
-        /* THEMES */
-        .theme-green { border-left: 4px solid #10b981; } .theme-green h2 span { color: #34d399; } .theme-green .qr-badge { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; } .theme-green a { color: #34d399; }
-        .theme-purple { border-left: 4px solid #a855f7; } .theme-purple h2 span { color: #c084fc; } .theme-purple .qr-badge { background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); color: #d8b4fe; } .theme-purple a { color: #c084fc; }
-        .theme-cyan { border-left: 4px solid #06b6d4; } .theme-cyan h2 span { color: #22d3ee; } .theme-cyan .qr-badge { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9; } .theme-cyan a { color: #22d3ee; }
-        .theme-amber { border-left: 4px solid #f59e0b; } .theme-amber h2 span { color: #fbbf24; } .theme-amber .qr-badge { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; } .theme-amber a { color: #fbbf24; }
-
-        /* LAYOUT */
-        .qr-card-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 2rem; height: 100%; }
-        @media (min-width: 900px) { .qr-card-content { flex-direction: row; align-items: flex-start; } }
-        .qr-main-col { flex: 1; }
-        .qr-side-col { width: 100%; max-width: 320px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(10px); flex-shrink: 0; }
-        
-        /* ELEMENTS */
-        .qr-badge { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 1rem; font-weight: 700; }
-        .qr-hub-card h2 { color: #fff; font-size: 1.8rem; margin: 0 0 1rem 0; line-height: 1.2; letter-spacing: -0.02em; }
-        .qr-hub-card p { margin-bottom: 1.5rem; font-size: 0.95rem; text-align: justify; }
-        .qr-hub-card strong { color: #fff; }
-        .qr-hub-card a { font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
-        .qr-hub-card a:hover { border-bottom-color: currentColor; }
-        
-        /* SIDEBAR */
-        .qr-sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px; margin-bottom: 8px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; text-decoration: none !important; }
-        .qr-sidebar-link:hover { background: rgba(255, 255, 255, 0.08); }
-        .qr-link-text { display: flex; flex-direction: column; }
-        .qr-link-head { color: #e2e8f0; font-size: 0.85rem; font-weight: 700; }
-        .qr-link-sub { color: #64748b; font-size: 0.7rem; }
-        .qr-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px; }
-
-        /* GRIDS */
-        .qr-game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-        .qr-mini-link { padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 0.75rem; color: #cbd5e1 !important; }
-        .qr-mini-link:hover { background: rgba(255,255,255,0.1); }
-        .qr-link-matrix { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
-        .qr-matrix-item { font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; background: rgba(251, 191, 36, 0.1); color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.2); }
-        .qr-matrix-item:hover { background: rgba(251, 191, 36, 0.2); }
-
-        @media (max-width: 600px) { .qr-hub-card { padding: 1.5rem; } .qr-side-col { max-width: 100%; } }
+      .qr-seo-wrapper { display: flex; flex-direction: column; gap: 3rem; width: 100%; max-width: 1200px; margin: 4rem auto; padding: 0 1rem; font-family: system-ui, -apple-system, sans-serif; color: #94a3b8; line-height: 1.6; }
+      .qr-hub-card { position: relative; background: linear-gradient(145deg, #060b18, #0f172a); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5); padding: 2.5rem; display: flex; flex-direction: column; }
+      .theme-green { border-left: 4px solid #10b981; } .theme-green h2 span { color: #34d399; } .theme-green .qr-badge { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; } .theme-green a { color: #34d399; }
+      .theme-purple { border-left: 4px solid #a855f7; } .theme-purple h2 span { color: #c084fc; } .theme-purple .qr-badge { background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); color: #d8b4fe; } .theme-purple a { color: #c084fc; }
+      .theme-cyan { border-left: 4px solid #06b6d4; } .theme-cyan h2 span { color: #22d3ee; } .theme-cyan .qr-badge { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9; } .theme-cyan a { color: #22d3ee; }
+      .theme-amber { border-left: 4px solid #f59e0b; } .theme-amber h2 span { color: #fbbf24; } .theme-amber .qr-badge { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; } .theme-amber a { color: #fbbf24; }
+      .qr-card-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 2rem; height: 100%; }
+      @media (min-width: 900px) { .qr-card-content { flex-direction: row; align-items: flex-start; } }
+      .qr-main-col { flex: 1; }
+      .qr-side-col { width: 100%; max-width: 320px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(10px); flex-shrink: 0; }
+      .qr-badge { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 1rem; font-weight: 700; }
+      .qr-hub-card h2 { color: #fff; font-size: 1.8rem; margin: 0 0 1rem 0; line-height: 1.2; letter-spacing: -0.02em; }
+      .qr-hub-card p { margin-bottom: 1.5rem; font-size: 0.95rem; text-align: justify; }
+      .qr-hub-card strong { color: #fff; }
+      .qr-hub-card a { font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
+      .qr-hub-card a:hover { border-bottom-color: currentColor; }
+      .qr-sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px; margin-bottom: 8px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; text-decoration: none !important; }
+      .qr-sidebar-link:hover { background: rgba(255, 255, 255, 0.08); }
+      .qr-link-text { display: flex; flex-direction: column; }
+      .qr-link-head { color: #e2e8f0; font-size: 0.85rem; font-weight: 700; }
+      .qr-link-sub { color: #64748b; font-size: 0.7rem; }
+      .qr-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px; }
+      .qr-game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+      .qr-mini-link { padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 0.75rem; color: #cbd5e1 !important; }
+      .qr-mini-link:hover { background: rgba(255,255,255,0.1); }
+      .qr-link-matrix { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+      .qr-matrix-item { font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; background: rgba(251, 191, 36, 0.1); color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.2); }
+      .qr-matrix-item:hover { background: rgba(251, 191, 36, 0.2); }
+      @media (max-width: 600px) { .qr-hub-card { padding: 1.5rem; } .qr-side-col { max-width: 100%; } }
     </style>
 
+    <!-- (unchanged hub cards...) -->
     <div class="qr-hub-card theme-green">
-        <div class="qr-card-content">
-            <div class="qr-main-col">
-                <div class="qr-badge"><i class="fas fa-stopwatch"></i> Time Attack Mode</div>
-                <h2>Beat The Clock: <span>High-Stakes Puzzles</span></h2>
-                <p>
-                    In the <strong>Quiz Realm Arcade</strong>, intelligence is nothing without speed. Our game modes are built to simulate high-pressure environments where hesitation leads to failure. Challenges like <a href="rapid.html">Rapid Fire</a> force you to make split-second decisions, training your brain to retrieve information instantly rather than just memorizing it.
-                </p>
-                <p>
-                    We track your "Time-to-Answer" metrics across all modes, from the deductive grids of <a href="fusion-core.html">Logic League</a> to the fast-paced pattern matching of <a href="nexus.html">Connections</a>. Are you faster than 90% of the global player base? Only the leaderboard tells the truth. Jump into a session now and set a new personal best.
-                </p>
-                
-                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1rem; color: #fff;">Speed Modules</div>
-                <div class="qr-game-grid">
-                    <a href="rapid.html" class="qr-mini-link">Rapid Fire</a>
-                    <a href="mini-crossword.html" class="qr-mini-link">Speed Cross</a>
-                    <a href="odd-one-out.html" class="qr-mini-link">Odd One Out</a>
-                    <a href="cryptex.html" class="qr-mini-link">Cryptex</a>
-                    <a href="word-ladder.html" class="qr-mini-link">Ladder Run</a>
-                    <a href="timeline-history.html" class="qr-mini-link">Timeline</a>
-                </div>
-            </div>
-            <div class="qr-side-col">
-                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Compete</div>
-                <a href="daily.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-trophy text-green-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Daily Rank</span><span class="qr-link-sub">Today's Leaderboard</span></div>
-                </a>
-                <a href="arcade.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-list-ol text-green-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">All Games</span><span class="qr-link-sub">Browse Collection</span></div>
-                </a>
-            </div>
+      <div class="qr-card-content">
+        <div class="qr-main-col">
+          <div class="qr-badge"><i class="fas fa-stopwatch"></i> Time Attack Mode</div>
+          <h2>Beat The Clock: <span>High-Stakes Puzzles</span></h2>
+          <p>
+            In the <strong>Quiz Realm Arcade</strong>, intelligence is nothing without speed. Our game modes are built to simulate high-pressure environments where hesitation leads to failure. Challenges like <a href="rapid.html">Rapid Fire</a> force you to make split-second decisions, training your brain to retrieve information instantly rather than just memorizing it.
+          </p>
+          <p>
+            We track your "Time-to-Answer" metrics across all modes, from the deductive grids of <a href="fusion-core.html">Logic League</a> to the fast-paced pattern matching of <a href="nexus.html">Connections</a>. Are you faster than 90% of the global player base? Only the leaderboard tells the truth. Jump into a session now and set a new personal best.
+          </p>
+
+          <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1rem; color: #fff;">Speed Modules</div>
+          <div class="qr-game-grid">
+            <a href="rapid.html" class="qr-mini-link">Rapid Fire</a>
+            <a href="mini-crossword.html" class="qr-mini-link">Speed Cross</a>
+            <a href="odd-one-out.html" class="qr-mini-link">Odd One Out</a>
+            <a href="cryptex.html" class="qr-mini-link">Cryptex</a>
+            <a href="word-ladder.html" class="qr-mini-link">Ladder Run</a>
+            <a href="timeline-history.html" class="qr-mini-link">Timeline</a>
+          </div>
         </div>
+        <div class="qr-side-col">
+          <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Compete</div>
+          <a href="daily.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-trophy text-green-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">Daily Rank</span><span class="qr-link-sub">Today's Leaderboard</span></div>
+          </a>
+          <a href="arcade.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-list-ol text-green-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">All Games</span><span class="qr-link-sub">Browse Collection</span></div>
+          </a>
+        </div>
+      </div>
     </div>
 
     <div class="qr-hub-card theme-purple">
-        <div class="qr-card-content">
-            <div class="qr-main-col">
-                <div class="qr-badge"><i class="fas fa-dungeon"></i> Hardcore Mode</div>
-                <h2>The Deep End: <span>Impossible Trivia</span></h2>
-                <p>
-                    Casual fans need not apply. The <strong>Knowledge Nexus</strong> is home to our "Deep Dive" hubs, where we house questions that go far beyond the movie posters. We test your knowledge of specific issue numbers, alien dialects, and background Easter eggs found in the <a href="marvel.html">Marvel</a> and <a href="dc.html">DC Universes</a>.
-                </p>
-                <p>
-                    Our algorithm adjusts to your skill level. If you consistently answer easy questions correctly, the system will begin serving "Omega-Level" threats—questions designed to stump even professional archivists. From <a href="rick-and-morty.html">Rick and Morty's</a> multidimensional coordinates to the exact dates of historical battles, this is the ultimate test of your fandom retention.
-                </p>
-            </div>
-            <div class="qr-side-col">
-                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Select Challenge</div>
-                <a href="marvel.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-hand-rock text-purple-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Infinity War</span><span class="qr-link-sub">Marvel Hard Mode</span></div>
-                </a>
-                <a href="dc.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-city text-purple-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Gotham City</span><span class="qr-link-sub">DC Hard Mode</span></div>
-                </a>
-                <a href="christmas-hub.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-gift text-purple-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Holiday Lore</span><span class="qr-link-sub">Seasonal Facts</span></div>
-                </a>
-            </div>
+      <div class="qr-card-content">
+        <div class="qr-main-col">
+          <div class="qr-badge"><i class="fas fa-dungeon"></i> Hardcore Mode</div>
+          <h2>The Deep End: <span>Impossible Trivia</span></h2>
+          <p>
+            Casual fans need not apply. The <strong>Knowledge Nexus</strong> is home to our "Deep Dive" hubs, where we house questions that go far beyond the movie posters. We test your knowledge of specific issue numbers, alien dialects, and background Easter eggs found in the <a href="marvel.html">Marvel</a> and <a href="dc.html">DC Universes</a>.
+          </p>
+          <p>
+            Our algorithm adjusts to your skill level. If you consistently answer easy questions correctly, the system will begin serving "Omega-Level" threats—questions designed to stump even professional archivists. From <a href="rick-and-morty.html">Rick and Morty's</a> multidimensional coordinates to the exact dates of historical battles, this is the ultimate test of your fandom retention.
+          </p>
         </div>
+        <div class="qr-side-col">
+          <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Select Challenge</div>
+          <a href="marvel.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-hand-rock text-purple-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">Infinity War</span><span class="qr-link-sub">Marvel Hard Mode</span></div>
+          </a>
+          <a href="dc.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-city text-purple-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">Gotham City</span><span class="qr-link-sub">DC Hard Mode</span></div>
+          </a>
+          <a href="christmas-hub.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-gift text-purple-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">Holiday Lore</span><span class="qr-link-sub">Seasonal Facts</span></div>
+          </a>
+        </div>
+      </div>
     </div>
 
     <div class="qr-hub-card theme-cyan">
-        <div class="qr-card-content">
-            <div class="qr-main-col">
-                <div class="qr-badge"><i class="fas fa-crown"></i> Prestige System</div>
-                <h2>Global Status: <span>Earn Your Rank</span></h2>
-                <p>
-                    In the Quiz Realm, knowledge is currency. Our <strong>Prestige System</strong> rewards dedicated players with exclusive profile borders, titles, and badges. Completing a "Perfect Run" in the Daily Challenge or achieving a 7-day streak grants you XP multipliers that accelerate your rise through the ranks.
-                </p>
-                <p>
-                    Don't just play anonymously. Sign in to track your <strong>Lifetime Stats</strong>. See which categories are your strongest (e.g., "Science Geek") and where you need improvement. Compare your "Brain Age" and reaction times against friends to see who truly has the sharpest mind in your circle.
-                </p>
-            </div>
-            <div class="qr-side-col">
-                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Your Legacy</div>
-                <a href="achievements.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-award text-cyan-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Hall of Fame</span><span class="qr-link-sub">View Trophies</span></div>
-                </a>
-                <a href="profile.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-sliders-h text-cyan-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Customize</span><span class="qr-link-sub">Edit Avatar</span></div>
-                </a>
-            </div>
+      <div class="qr-card-content">
+        <div class="qr-main-col">
+          <div class="qr-badge"><i class="fas fa-crown"></i> Prestige System</div>
+          <h2>Global Status: <span>Earn Your Rank</span></h2>
+          <p>
+            In the Quiz Realm, knowledge is currency. Our <strong>Prestige System</strong> rewards dedicated players with exclusive profile borders, titles, and badges. Completing a "Perfect Run" in the Daily Challenge or achieving a 7-day streak grants you XP multipliers that accelerate your rise through the ranks.
+          </p>
+          <p>
+            Don't just play anonymously. Sign in to track your <strong>Lifetime Stats</strong>. See which categories are your strongest (e.g., "Science Geek") and where you need improvement. Compare your "Brain Age" and reaction times against friends to see who truly has the sharpest mind in your circle.
+          </p>
         </div>
+        <div class="qr-side-col">
+          <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Your Legacy</div>
+          <a href="achievements.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-award text-cyan-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">Hall of Fame</span><span class="qr-link-sub">View Trophies</span></div>
+          </a>
+          <a href="profile.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-sliders-h text-cyan-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">Customize</span><span class="qr-link-sub">Edit Avatar</span></div>
+          </a>
+        </div>
+      </div>
     </div>
 
     <div class="qr-hub-card theme-amber">
-        <div class="qr-card-content">
-            <div class="qr-main-col">
-                <div class="qr-badge"><i class="fas fa-graduation-cap"></i> Study Guide</div>
-                <h2>The Library: <span>Prep for Trivia Night</span></h2>
-                <p>
-                    Are you the weak link in your pub trivia team? The <strong>Quiz Realm Library</strong> is your training ground. We have categorized thousands of questions into study-friendly blocks. Spend 10 minutes a day in our "Geography" or "Classic Literature" sections, and you will see immediate improvements in your general knowledge retention.
-                </p>
-                <p>
-                    Our database covers everything from <strong>Ancient Civilizations</strong> to <strong>Modern Tech</strong>. Use the quick links below to target your weak spots. Whether you need to memorize capital cities or understand basic quantum mechanics, we have a quiz module ready for you.
-                </p>
+      <div class="qr-card-content">
+        <div class="qr-main-col">
+          <div class="qr-badge"><i class="fas fa-graduation-cap"></i> Study Guide</div>
+          <h2>The Library: <span>Prep for Trivia Night</span></h2>
+          <p>
+            Are you the weak link in your pub trivia team? The <strong>Quiz Realm Library</strong> is your training ground. We have categorized thousands of questions into study-friendly blocks. Spend 10 minutes a day in our "Geography" or "Classic Literature" sections, and you will see immediate improvements in your general knowledge retention.
+          </p>
+          <p>
+            Our database covers everything from <strong>Ancient Civilizations</strong> to <strong>Modern Tech</strong>. Use the quick links below to target your weak spots. Whether you need to memorize capital cities or understand basic quantum mechanics, we have a quiz module ready for you.
+          </p>
 
-                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem; color: #fff;">Study Topics</div>
-                <div class="qr-link-matrix">
-                    <a href="categories.html" class="qr-matrix-item">Periodic Table</a>
-                    <a href="categories.html" class="qr-matrix-item">World Wars</a>
-                    <a href="categories.html" class="qr-matrix-item">Film Directors</a>
-                    <a href="categories.html" class="qr-matrix-item">Human Anatomy</a>
-                    <a href="categories.html" class="qr-matrix-item">Solar System</a>
-                    <a href="categories.html" class="qr-matrix-item">Capitals</a>
-                    <a href="categories.html" class="qr-matrix-item">Grammar</a>
-                    <a href="categories.html" class="qr-matrix-item">Coding</a>
-                    <a href="categories.html" class="qr-matrix-item">Fine Art</a>
-                    <a href="categories.html" class="qr-matrix-item">Olympics</a>
-                    <a href="categories.html" class="qr-matrix-item">Oscar Winners</a>
-                    <a href="categories.html" class="qr-matrix-item">Philosophy</a>
-                </div>
-            </div>
-            
-            <div class="qr-side-col">
-                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Resources</div>
-                <a href="about.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-users text-amber-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Our Team</span><span class="qr-link-sub">Who we are</span></div>
-                </a>
-                <a href="FAQ.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-life-ring text-amber-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Support</span><span class="qr-link-sub">Get Help</span></div>
-                </a>
-                <a href="privacy.html" class="qr-sidebar-link">
-                    <div class="qr-icon"><i class="fas fa-shield-alt text-amber-400"></i></div>
-                    <div class="qr-link-text"><span class="qr-link-head">Security</span><span class="qr-link-sub">Your Data</span></div>
-                </a>
-            </div>
+          <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem; color: #fff;">Study Topics</div>
+          <div class="qr-link-matrix">
+            <a href="categories.html" class="qr-matrix-item">Periodic Table</a>
+            <a href="categories.html" class="qr-matrix-item">World Wars</a>
+            <a href="categories.html" class="qr-matrix-item">Film Directors</a>
+            <a href="categories.html" class="qr-matrix-item">Human Anatomy</a>
+            <a href="categories.html" class="qr-matrix-item">Solar System</a>
+            <a href="categories.html" class="qr-matrix-item">Capitals</a>
+            <a href="categories.html" class="qr-matrix-item">Grammar</a>
+            <a href="categories.html" class="qr-matrix-item">Coding</a>
+            <a href="categories.html" class="qr-matrix-item">Fine Art</a>
+            <a href="categories.html" class="qr-matrix-item">Olympics</a>
+            <a href="categories.html" class="qr-matrix-item">Oscar Winners</a>
+            <a href="categories.html" class="qr-matrix-item">Philosophy</a>
+          </div>
         </div>
-    </div>
 
-</div>
+        <div class="qr-side-col">
+          <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Resources</div>
+          <a href="about.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-users text-amber-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">Our Team</span><span class="qr-link-sub">Who we are</span></div>
+          </a>
+          <a href="FAQ.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-life-ring text-amber-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">Support</span><span class="qr-link-sub">Get Help</span></div>
+          </a>
+          <a href="privacy.html" class="qr-sidebar-link">
+            <div class="qr-icon"><i class="fas fa-shield-alt text-amber-400"></i></div>
+            <div class="qr-link-text"><span class="qr-link-head">Security</span><span class="qr-link-sub">Your Data</span></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <quiz-footer></quiz-footer>
 
+  <!-- Category modal -->
   <div id="categoryModal" class="modal" role="dialog" aria-modal="true" aria-label="Choose category">
     <div class="modalCard">
       <div class="px-4 md:px-5 py-4 border-b border-white/10 bg-black/20 flex items-start justify-between gap-3">
@@ -958,13 +987,14 @@
                placeholder="Search categories (auto-detected)"/>
       </div>
 
-        <div id="catRecent" class="recentRow" aria-label="Recently used categories"></div>
-        <div class="catBody">
-          <div id="catGrid" class="catGrid"></div>
-        </div>
+      <div id="catRecent" class="recentRow" aria-label="Recently used categories"></div>
+      <div class="catBody">
+        <div id="catGrid" class="catGrid"></div>
+      </div>
     </div>
   </div>
 
+  <!-- Mobile drawers -->
   <div id="drawerClues" class="drawer" aria-hidden="true">
     <div class="drawerSheet">
       <div class="drawerHead">
@@ -1000,6 +1030,7 @@
     </div>
   </div>
 
+  <!-- Win modal -->
   <div id="winModal" class="modal" role="dialog" aria-modal="true" aria-label="Puzzle completed">
     <div class="modalCard" style="max-width: 520px;">
       <div class="px-5 py-5 text-center">
@@ -1028,10 +1059,88 @@
     </div>
   </div>
 
+  <!-- Help modal (new) -->
+  <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-label="How to play">
+    <div class="modalCard" style="max-width: 720px;">
+      <div class="px-5 py-5">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="text-white font-black text-2xl">How to Play</div>
+            <div class="text-zinc-400 text-sm mt-1">Premium controls, fast solving.</div>
+          </div>
+          <button id="helpClose" class="text-zinc-400 hover:text-white transition" type="button" aria-label="Close">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-widest text-zinc-500 font-mono">Core</div>
+            <ul class="mt-2 text-sm text-zinc-200 space-y-2">
+              <li><span class="text-accent font-black">Tap</span> a cell to focus.</li>
+              <li><span class="text-accent font-black">Space</span> toggles Across/Down.</li>
+              <li><span class="text-accent font-black">Enter</span> checks the active word.</li>
+              <li><span class="text-accent font-black">Backspace</span> deletes.</li>
+              <li><span class="text-accent font-black">Arrows</span> move the cursor.</li>
+            </ul>
+          </div>
+
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div class="text-[10px] uppercase tracking-widest text-zinc-500 font-mono">Premium Tools</div>
+            <ul class="mt-2 text-sm text-zinc-200 space-y-2">
+              <li><span class="text-accent font-black">Hint</span> fills one correct letter in the active word (max 5).</li>
+              <li><span class="text-accent font-black">Autosave</span> keeps your puzzle progress if you refresh.</li>
+              <li><span class="text-accent font-black">Categories</span> are ranked by bank readiness (clue coverage + size).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div class="text-[10px] uppercase tracking-widest text-zinc-500 font-mono">Tip</div>
+          <div class="mt-2 text-sm text-zinc-200">
+            Start with easy clues to create crossings. Use <span class="font-mono font-black">Check</span> for quick verification, and save <span class="font-mono font-black">Reveal</span> for hard blocks.
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <button id="helpOkay" class="btn btnAccent w-full" type="button"><i class="fa-solid fa-check"></i> Got it</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reveal confirmation modal (new) -->
+  <div id="revealConfirmModal" class="modal" role="dialog" aria-modal="true" aria-label="Confirm reveal">
+    <div class="modalCard" style="max-width: 520px;">
+      <div class="px-5 py-5">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="text-white font-black text-2xl">Reveal Word?</div>
+            <div class="text-zinc-400 text-sm mt-1">This fills the active answer with the solution.</div>
+          </div>
+          <button id="revealCancelX" class="text-zinc-400 hover:text-white transition" type="button" aria-label="Close">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <div class="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-zinc-200">
+          If you reveal too early, you lose the satisfaction of crossings. Use it only when you are blocked.
+        </div>
+
+        <div class="mt-5 grid grid-cols-2 gap-3">
+          <button id="revealCancel" class="btn w-full" type="button"><i class="fa-solid fa-ban"></i> Cancel</button>
+          <button id="revealConfirm" class="btn btnDanger w-full" type="button"><i class="fa-solid fa-eye"></i> Reveal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SIZE = 15;
     const MIN_WORDS = 20;
     const STORE_KEY = "qr_crossword_category_v2";
+    const AUTOSAVE_KEY = "qr_crossword_category_autosave_v1";
+    const MAX_HINTS = 5;
 
     const DEMO_FRIENDS_BANK = {
       label: "Friends",
@@ -1127,218 +1236,194 @@
       toast._t = setTimeout(() => wrap.classList.remove("show"), 1500);
     }
 
+    function loadPrefs(){
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if (!raw) return {};
+        return JSON.parse(raw) || {};
+      }catch(e){
+        return {};
+      }
+    }
+
     function savePrefs(categoryKey){
-  try{
-    const prev = loadPrefs() || {};
-    const recents = Array.isArray(prev.recents) ? prev.recents : [];
-    const nextRecents = [categoryKey, ...recents.filter(k => k !== categoryKey)].slice(0, 8);
-    localStorage.setItem(STORE_KEY, JSON.stringify({ categoryKey, recents: nextRecents }));
-  }catch(e){}
-}
+      try{
+        const prev = loadPrefs() || {};
+        const recents = Array.isArray(prev.recents) ? prev.recents : [];
+        const nextRecents = [categoryKey, ...recents.filter(k => k !== categoryKey)].slice(0, 8);
+        localStorage.setItem(STORE_KEY, JSON.stringify({ categoryKey, recents: nextRecents }));
+      }catch(e){}
+    }
 
     function discoverCrosswordBanks(){
-  const out = [];
-  const seen = new Set();
+      const out = [];
+      const seen = new Set();
 
-  // ---------- helpers ----------
-  const safeLower = (v) => String(v || "").trim().toLowerCase();
+      const safeLower = (v) => String(v || "").trim().toLowerCase();
 
-  const inferIcon = (key) => {
-    const k = safeLower(key);
-    if (/(friends|tbbt|himym|twoandahalfmen|sitcom|tv)/.test(k)) return "fa-tv";
-    if (/(marvel|dc|superhero|avengers|spider|batman)/.test(k)) return "fa-bolt";
-    if (/(avatar)/.test(k)) return "fa-water";
-    if (/(geography|countries|capitals|maps|europe|asia|africa|america)/.test(k)) return "fa-earth-europe";
-    if (/(history|timeline|ancient|war|empire)/.test(k)) return "fa-landmark";
-    if (/(science|biology|anatomy|physics|chem|space)/.test(k)) return "fa-flask";
-    if (/(engineering|mechanic|robot|mechatronic)/.test(k)) return "fa-gear";
-    if (/(football|soccer|nba|nfl|mlb|sport)/.test(k)) return "fa-futbol";
-    if (/(comput|internet|iphone|tech|ai|code)/.test(k)) return "fa-microchip";
-    if (/(food|cooking|kitchen|recipe)/.test(k)) return "fa-burger";
-    return "fa-layer-group";
-  };
-
-  const summarizeEntries = (entries) => {
-    // entries expected already normalized by extractEntries/shapeBank
-    const total = Array.isArray(entries) ? entries.length : 0;
-    if (!total) return {
-      total: 0, valid: 0, clueFill: 0, avgLen: 0, maxLen: 0, minLen: 0
-    };
-
-    let valid = 0;
-    let clueOk = 0;
-    let sumLen = 0;
-    let maxLen = 0;
-    let minLen = 999;
-
-    for (const e of entries){
-      const a = e?.answer;
-      if (!a || typeof a !== "string") continue;
-      const len = a.length;
-      if (len < 3 || len > SIZE) continue;
-
-      valid++;
-      sumLen += len;
-      maxLen = Math.max(maxLen, len);
-      minLen = Math.min(minLen, len);
-
-      const clue = String(e?.clue || "").trim();
-      if (clue && clue !== "—") clueOk++;
-    }
-
-    return {
-      total,
-      valid,
-      clueFill: valid ? Math.round((clueOk / valid) * 100) : 0,
-      avgLen: valid ? Math.round((sumLen / valid) * 10) / 10 : 0,
-      maxLen,
-      minLen: minLen === 999 ? 0 : minLen
-    };
-  };
-
-  const summarizeShapedBank = (shaped) => {
-    // shaped = { label, entries|null, puzzles|null }
-    const hasPuzzles = !!(shaped && Array.isArray(shaped.puzzles) && shaped.puzzles.length);
-    const hasEntries = !!(shaped && Array.isArray(shaped.entries) && shaped.entries.length);
-
-    if (hasEntries){
-      const s = summarizeEntries(shaped.entries);
-      return {
-        mode: "entries",
-        unitCount: s.valid,
-        clueFill: s.clueFill,
-        avgLen: s.avgLen,
-        maxLen: s.maxLen,
-        minLen: s.minLen,
-        puzzles: 0
+      const inferIcon = (key) => {
+        const k = safeLower(key);
+        if (/(friends|tbbt|himym|twoandahalfmen|sitcom|tv)/.test(k)) return "fa-tv";
+        if (/(marvel|dc|superhero|avengers|spider|batman)/.test(k)) return "fa-bolt";
+        if (/(avatar)/.test(k)) return "fa-water";
+        if (/(geography|countries|capitals|maps|europe|asia|africa|america)/.test(k)) return "fa-earth-europe";
+        if (/(history|timeline|ancient|war|empire)/.test(k)) return "fa-landmark";
+        if (/(science|biology|anatomy|physics|chem|space)/.test(k)) return "fa-flask";
+        if (/(engineering|mechanic|robot|mechatronic)/.test(k)) return "fa-gear";
+        if (/(football|soccer|nba|nfl|mlb|sport)/.test(k)) return "fa-futbol";
+        if (/(comput|internet|iphone|tech|ai|code)/.test(k)) return "fa-microchip";
+        if (/(food|cooking|kitchen|recipe)/.test(k)) return "fa-burger";
+        return "fa-layer-group";
       };
-    }
 
-    if (hasPuzzles){
-      // sample puzzles for metadata; do NOT do heavy processing
-      const puzzles = shaped.puzzles;
-      let sampleValid = 0;
-      let sampleClueFill = 0;
-      let sampleAvgLen = 0;
-      let sampleMaxLen = 0;
-      let sampleMinLen = 0;
-      let samples = 0;
+      const summarizeEntries = (entries) => {
+        const total = Array.isArray(entries) ? entries.length : 0;
+        if (!total) return { total:0, valid:0, clueFill:0, avgLen:0, maxLen:0, minLen:0 };
 
-      for (let i = 0; i < Math.min(4, puzzles.length); i++){
-        const p = puzzles[i];
-        if (!p || !Array.isArray(p.entries) || !p.entries.length) continue;
-        const ents = extractEntries(p.entries); // uses your existing normalizer
-        const s = summarizeEntries(ents);
-        if (!s.valid) continue;
+        let valid = 0, clueOk = 0, sumLen = 0, maxLen = 0, minLen = 999;
+        for (const e of entries){
+          const a = e?.answer;
+          if (!a || typeof a !== "string") continue;
+          const len = a.length;
+          if (len < 3 || len > SIZE) continue;
 
-        sampleValid += s.valid;
-        sampleClueFill += s.clueFill;
-        sampleAvgLen += s.avgLen;
-        sampleMaxLen = Math.max(sampleMaxLen, s.maxLen);
-        sampleMinLen = (sampleMinLen === 0) ? s.minLen : Math.min(sampleMinLen, s.minLen);
-        samples++;
+          valid++;
+          sumLen += len;
+          maxLen = Math.max(maxLen, len);
+          minLen = Math.min(minLen, len);
+
+          const clue = String(e?.clue || "").trim();
+          if (clue && clue !== "—") clueOk++;
+        }
+
+        return {
+          total,
+          valid,
+          clueFill: valid ? Math.round((clueOk / valid) * 100) : 0,
+          avgLen: valid ? Math.round((sumLen / valid) * 10) / 10 : 0,
+          maxLen,
+          minLen: minLen === 999 ? 0 : minLen
+        };
+      };
+
+      const summarizeShapedBank = (shaped) => {
+        const hasPuzzles = !!(shaped && Array.isArray(shaped.puzzles) && shaped.puzzles.length);
+        const hasEntries = !!(shaped && Array.isArray(shaped.entries) && shaped.entries.length);
+
+        if (hasEntries){
+          const s = summarizeEntries(shaped.entries);
+          return { mode:"entries", unitCount:s.valid, clueFill:s.clueFill, avgLen:s.avgLen, maxLen:s.maxLen, minLen:s.minLen, puzzles:0 };
+        }
+
+        if (hasPuzzles){
+          const puzzles = shaped.puzzles;
+          let sampleValid = 0, sampleClueFill = 0, sampleAvgLen = 0, sampleMaxLen = 0, sampleMinLen = 0, samples = 0;
+
+          for (let i = 0; i < Math.min(4, puzzles.length); i++){
+            const p = puzzles[i];
+            if (!p || !Array.isArray(p.entries) || !p.entries.length) continue;
+            const ents = extractEntries(p.entries);
+            const s = summarizeEntries(ents);
+            if (!s.valid) continue;
+
+            sampleValid += s.valid;
+            sampleClueFill += s.clueFill;
+            sampleAvgLen += s.avgLen;
+            sampleMaxLen = Math.max(sampleMaxLen, s.maxLen);
+            sampleMinLen = (sampleMinLen === 0) ? s.minLen : Math.min(sampleMinLen, s.minLen);
+            samples++;
+          }
+
+          return {
+            mode:"puzzles",
+            unitCount: samples ? Math.round(sampleValid / samples) : 0,
+            clueFill: samples ? Math.round(sampleClueFill / samples) : 0,
+            avgLen: samples ? Math.round((sampleAvgLen / samples) * 10) / 10 : 0,
+            maxLen: sampleMaxLen || 0,
+            minLen: sampleMinLen || 0,
+            puzzles: puzzles.length
+          };
+        }
+
+        return { mode:"unknown", unitCount:0, clueFill:0, avgLen:0, maxLen:0, minLen:0, puzzles:0 };
+      };
+
+      const computeQualityScore = (m) => {
+        const density = Math.min(400, (m.unitCount || 0) * 4);
+        const clue = Math.min(250, (m.clueFill || 0) * 2.5);
+        const length = Math.min(120, (m.avgLen || 0) * 12);
+        const variety = Math.min(100, Math.max(0, (m.maxLen - m.minLen) * 10));
+        const puzzles = m.mode === "puzzles" ? Math.min(130, (m.puzzles || 0) * 6) : 0;
+        const unusablePenalty = (m.unitCount || 0) < MIN_WORDS ? 140 : 0;
+        return Math.max(0, Math.round(density + clue + length + variety + puzzles - unusablePenalty));
+      };
+
+      const add = (key, label, bank, refName, sourceKind) => {
+        if (!key || !bank) return;
+
+        const k = safeLower(key);
+        if (!k || seen.has(k)) return;
+
+        const shaped = shapeBank(bank);
+        if (!shaped) return;
+
+        const m = summarizeShapedBank(shaped);
+        const qualityScore = computeQualityScore(m);
+
+        const ready = (m.unitCount || 0) >= MIN_WORDS;
+        const premiumBadge = ready ? (qualityScore >= 700 ? "Elite" : qualityScore >= 520 ? "Pro" : "Ready") : "Needs More";
+
+        out.push({
+          key: k,
+          label: label || prettyLabel(k),
+          bank: shaped,
+          refName: refName || "CrosswordBanks",
+          sourceKind: sourceKind || "unknown",
+          ui: {
+            icon: inferIcon(k),
+            mode: m.mode,
+            unitCount: m.unitCount,
+            puzzles: m.puzzles,
+            clueFill: m.clueFill,
+            avgLen: m.avgLen,
+            badge: premiumBadge,
+            ready
+          },
+          qualityScore
+        });
+
+        seen.add(k);
+      };
+
+      if (window.CrosswordBanks && typeof window.CrosswordBanks === "object"){
+        for (const k of Object.keys(window.CrosswordBanks)){
+          const bank = window.CrosswordBanks[k];
+          const label = (bank && bank.label) ? bank.label : prettyLabel(k);
+          add(k, label, bank, "CrosswordBanks", "registry");
+        }
       }
 
-      return {
-        mode: "puzzles",
-        unitCount: samples ? Math.round(sampleValid / samples) : 0, // avg entries per puzzle sample
-        clueFill: samples ? Math.round(sampleClueFill / samples) : 0,
-        avgLen: samples ? Math.round((sampleAvgLen / samples) * 10) / 10 : 0,
-        maxLen: sampleMaxLen || 0,
-        minLen: sampleMinLen || 0,
-        puzzles: puzzles.length
-      };
+      const names = Object.getOwnPropertyNames(window);
+      for (const name of names){
+        if (!name) continue;
+        const lower = name.toLowerCase();
+        if (!lower.endsWith("crosswordbank")) continue;
+
+        const rawKey = name.slice(0, name.length - "CrosswordBank".length);
+        const bank = window[name];
+        if (!bank) continue;
+
+        const label = (bank && bank.label) ? bank.label : prettyLabel(rawKey);
+        add(rawKey, label, bank, name, "globalVar");
+      }
+
+      if (!out.length){
+        add("friends", "Friends", DEMO_FRIENDS_BANK, "DEMO_FRIENDS_BANK", "fallback");
+      }
+
+      out.sort((a,b) => (b.qualityScore - a.qualityScore) || a.label.localeCompare(b.label));
+      return out;
     }
-
-    return { mode: "unknown", unitCount: 0, clueFill: 0, avgLen: 0, maxLen: 0, minLen: 0, puzzles: 0 };
-  };
-
-  const computeQualityScore = (m) => {
-    // Tuned for your generator: needs density + clue coverage
-    // Score range ~0..1000
-    const density = Math.min(400, (m.unitCount || 0) * 4);         // more entries improves generation
-    const clue = Math.min(250, (m.clueFill || 0) * 2.5);           // clue completeness matters
-    const length = Math.min(120, (m.avgLen || 0) * 12);            // medium-long answers improve interlocks
-    const variety = Math.min(100, Math.max(0, (m.maxLen - m.minLen) * 10));
-    const puzzles = m.mode === "puzzles" ? Math.min(130, (m.puzzles || 0) * 6) : 0;
-
-    // small penalty if basically unusable
-    const unusablePenalty = (m.unitCount || 0) < MIN_WORDS ? 140 : 0;
-
-    return Math.max(0, Math.round(density + clue + length + variety + puzzles - unusablePenalty));
-  };
-
-  const add = (key, label, bank, refName, sourceKind) => {
-    if (!key || !bank) return;
-
-    const k = safeLower(key);
-    if (!k || seen.has(k)) return;
-
-    const shaped = shapeBank(bank);   // your existing function
-    if (!shaped) return;
-
-    const m = summarizeShapedBank(shaped);
-    const qualityScore = computeQualityScore(m);
-
-    const ready = (m.unitCount || 0) >= MIN_WORDS; // simple readiness gate
-    const premiumBadge = ready ? (qualityScore >= 700 ? "Elite" : qualityScore >= 520 ? "Pro" : "Ready") : "Needs More";
-
-    out.push({
-      key: k,
-      label: label || prettyLabel(k),
-      bank: shaped,
-      refName: refName || "CrosswordBanks",
-      sourceKind: sourceKind || "unknown",
-
-      // Premium UI metadata (use this for FIRST CLASS cards)
-      ui: {
-        icon: inferIcon(k),
-        mode: m.mode,
-        unitCount: m.unitCount,
-        puzzles: m.puzzles,
-        clueFill: m.clueFill,
-        avgLen: m.avgLen,
-        badge: premiumBadge,
-        ready
-      },
-
-      qualityScore
-    });
-
-    seen.add(k);
-  };
-
-  // ---------- discovery ----------
-  if (window.CrosswordBanks && typeof window.CrosswordBanks === "object"){
-    for (const k of Object.keys(window.CrosswordBanks)){
-      const bank = window.CrosswordBanks[k];
-      const label = (bank && bank.label) ? bank.label : prettyLabel(k);
-      add(k, label, bank, "CrosswordBanks", "registry");
-    }
-  }
-
-  const names = Object.getOwnPropertyNames(window);
-  for (const name of names){
-    if (!name) continue;
-    const lower = name.toLowerCase();
-    if (!lower.endsWith("crosswordbank")) continue;
-
-    const rawKey = name.slice(0, name.length - "CrosswordBank".length);
-    const bank = window[name];
-    if (!bank) continue;
-
-    const label = (bank && bank.label) ? bank.label : prettyLabel(rawKey);
-    add(rawKey, label, bank, name, "globalVar");
-  }
-
-  if (!out.length){
-    add("friends", "Friends", DEMO_FRIENDS_BANK, "DEMO_FRIENDS_BANK", "fallback");
-  }
-
-  // Premium ordering: best banks first, then alphabetical
-  out.sort((a,b) => (b.qualityScore - a.qualityScore) || a.label.localeCompare(b.label));
-  return out;
-}
 
     function prettyLabel(key){
       const s = String(key||"").replace(/[_\-]+/g," ").trim();
@@ -1661,13 +1746,18 @@
       return slots;
     }
 
+    // --------------------
+    // State
+    // --------------------
     let categories = [];
     let currentCategory = null;
     let currentSeedCounter = 0;
 
     let state = {
       startedAt: 0,
-      solved: false
+      solved: false,
+      hintsUsed: 0,
+      puzzleKey: ""
     };
 
     let solutionGrid = null;
@@ -1731,6 +1821,7 @@
           if (cell.isBlock){
             btn.classList.add("block");
             btn.setAttribute("aria-label", "Block");
+            btn.tabIndex = -1;
           } else {
             btn.setAttribute("aria-label", `Row ${r+1} col ${c+1}`);
             btn.innerHTML = `<span class="n">${cell.num ? cell.num : ""}</span><span class="l">${cell.val ? escapeHtml(cell.val) : "&nbsp;"}</span>`;
@@ -1760,6 +1851,7 @@
         b.type = "button";
         b.className = "clueBtn";
         b.dataset.id = obj.id;
+        b.setAttribute("aria-label", `${obj.num} ${obj.id.startsWith("A") ? "across" : "down"}: ${obj.clue || "—"}`);
         b.innerHTML = `<div class="clueNo">${obj.num}</div><div class="clueTxt">${escapeHtml(obj.clue || "—")}</div>`;
         b.addEventListener("click", () => focusClue(obj.id, obj.id.startsWith("A") ? "across" : "down"));
         return b;
@@ -1801,6 +1893,7 @@
     function updateClueButtons(){
       const solved = countSolvedClues();
       byId("solvedCount").textContent = String(solved);
+      byId("hintBadge").textContent = String(state.hintsUsed);
 
       document.querySelectorAll(".clueBtn").forEach(btn => {
         const id = btn.dataset.id;
@@ -1879,6 +1972,7 @@
       if (mi) mi.focus({ preventScroll:true });
 
       paintHighlights();
+      scheduleAutosave();
 
       if (window.dataLayer){
         window.dataLayer.push({ event:"cw_cell_click", game_name:"Crossword 15x15", category: currentCategory?.key || "unknown", dir: active.dir });
@@ -1897,6 +1991,8 @@
 
       const mi = byId("mobileInput");
       if (mi) mi.focus({ preventScroll:true });
+
+      scheduleAutosave();
 
       if (window.dataLayer){
         window.dataLayer.push({ event:"cw_clue_focus", game_name:"Crossword 15x15", category: currentCategory?.key || "unknown", clue_id: id, dir });
@@ -1941,6 +2037,13 @@
       }
     }
 
+    function flashKey(letter){
+      const btn = document.querySelector(`.key[data-k="${letter}"]`);
+      if (!btn) return;
+      btn.classList.add("flash");
+      setTimeout(() => btn.classList.remove("flash"), 140);
+    }
+
     function writeLetter(ch){
       if (!/^[A-Z]$/.test(ch)) return;
       const cell = cells[active.r][active.c];
@@ -1951,6 +2054,8 @@
       const el = document.querySelector(`.cell[data-r="${active.r}"][data-c="${active.c}"] .l`);
       if (el) el.textContent = ch;
 
+      flashKey(ch);
+
       if (window.dataLayer){
         window.dataLayer.push({ event:"cw_input", game_name:"Crossword 15x15", category: currentCategory?.key || "unknown", letter: ch });
       }
@@ -1958,6 +2063,7 @@
       moveToNextEmptyForward();
       updateProgressUI();
       updateClueButtons();
+      scheduleAutosave();
       checkWin();
     }
 
@@ -1981,6 +2087,7 @@
 
       updateProgressUI();
       updateClueButtons();
+      scheduleAutosave();
     }
 
     function clearCurrentWord(){
@@ -1994,6 +2101,7 @@
       toast("Cleared", "Current word cleared.", "accent");
       updateProgressUI();
       updateClueButtons();
+      scheduleAutosave();
     }
 
     function resetPuzzle(){
@@ -2005,15 +2113,19 @@
       }
       state.startedAt = Date.now();
       state.solved = false;
+      state.hintsUsed = 0;
+      byId("hintBadge").textContent = "0";
       startTimer();
       renderGrid();
       toast("Reset", "Puzzle cleared.", "accent");
+      scheduleAutosave(true);
 
       if (window.dataLayer){
         window.dataLayer.push({ event:"cw_reset", game_name:"Crossword 15x15", category: currentCategory?.key || "unknown" });
       }
     }
 
+  
     function checkCurrentWord(){
       const obj = getClueById(active.clueId);
       if (!obj) { toast("Check", "Tap a clue first.", "bad"); return; }
