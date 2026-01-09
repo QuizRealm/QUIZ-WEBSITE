@@ -11,8 +11,8 @@
     <script type="module" src="firebase-config.js"></script>
     
     <script type="module">
-        import { doc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        window.fs = { doc, updateDoc, onSnapshot, getDoc };
+        import { doc, updateDoc, onSnapshot, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        window.fs = { doc, updateDoc, onSnapshot, getDoc, setDoc };
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -39,16 +39,33 @@
         body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; overscroll-behavior: none; touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
         .game-btn { border: none; border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: all 0.1s; }
         .game-btn:active { transform: translateY(4px); box-shadow: none; filter: brightness(0.9); }
+        .glass-modal { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); }
     </style>
 </head>
 
 <body class="flex flex-col h-[100dvh]">
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
+    <div id="join-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-background hidden">
+        <div class="glass-modal w-full max-w-sm p-8 rounded-3xl border border-white/10 text-center shadow-2xl animate-pop">
+            <div class="w-16 h-16 bg-brand rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand/20">
+                <i class="fas fa-user-astronaut text-3xl text-white"></i>
+            </div>
+            <h2 class="text-2xl font-black text-white mb-2">Join Game</h2>
+            <p class="text-slate-400 text-sm mb-6">Enter a nickname to enter the room.</p>
+            
+            <input type="text" id="join-nick" placeholder="NICKNAME" maxlength="12" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-4 text-center font-bold text-white mb-4 focus:border-brand focus:outline-none uppercase placeholder-slate-600">
+            
+            <button onclick="confirmJoin()" class="w-full py-4 bg-gradient-to-r from-brand to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:scale-[1.02] transition-transform">
+                ENTER LOBBY
+            </button>
+        </div>
+    </div>
+
     <nav class="bg-surface/90 backdrop-blur border-b border-white/10 px-4 py-3 flex justify-between items-center fixed top-0 w-full z-50">
         <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-white text-xs" id="avatar-disp">?</div>
-            <span class="font-bold text-sm text-white truncate max-w-[120px]" id="nick-disp">Player</span>
+            <span class="font-bold text-sm text-white truncate max-w-[120px]" id="nick-disp">...</span>
         </div>
         <div class="bg-brand/20 px-3 py-1 rounded-full text-brand font-mono font-bold text-sm" id="score-disp">0</div>
     </nav>
@@ -111,23 +128,68 @@
 
     <script type="module">
         // --- 1. SETUP ---
-        // Read local storage for room info
         let info = {};
-        try { info = JSON.parse(localStorage.getItem('qr_player_info')); } catch(e){}
-
-        if(!info || !info.roomCode) {
-            window.location.href = 'group-hub.html';
-        }
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlCode = urlParams.get('code'); // Get code from QR scan
 
         // --- 2. GLOBAL STATE ---
         let ROOM_REF;
         let myAnswer = null;
 
-        // --- 3. BOOTSTRAP ---
+        // --- 3. INITIALIZATION LOGIC ---
+        function initController() {
+            try { info = JSON.parse(localStorage.getItem('qr_player_info')); } catch(e){}
+
+            // SCENARIO A: No Saved Data, but scanned QR Code
+            if ((!info || !info.nickname) && urlCode) {
+                // Show Join Modal
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('join-modal').classList.remove('hidden');
+                return;
+            }
+
+            // SCENARIO B: Has Data, but wrong room (Scanned new QR)
+            if (info && urlCode && info.roomCode !== urlCode) {
+                info.roomCode = urlCode; // Update room, keep name
+                localStorage.setItem('qr_player_info', JSON.stringify(info));
+            }
+
+            // SCENARIO C: No Data, No Code -> Go Hub
+            if ((!info || !info.roomCode) && !urlCode) {
+                window.location.href = 'group-hub.html';
+                return;
+            }
+
+            // SCENARIO D: Ready to Connect
+            if (info && info.nickname && info.roomCode) {
+                boot();
+            }
+        }
+
+        // --- 4. JOIN HANDLER ---
+        window.confirmJoin = function() {
+            const nick = document.getElementById('join-nick').value.trim().toUpperCase();
+            if (nick.length < 2) { alert("Enter a nickname!"); return; }
+
+            const newInfo = {
+                nickname: nick,
+                roomCode: urlCode,
+                role: 'player',
+                timestamp: Date.now()
+            };
+            localStorage.setItem('qr_player_info', JSON.stringify(newInfo));
+            
+            // Reload with data
+            info = newInfo;
+            document.getElementById('join-modal').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
+            boot();
+        }
+
+        // --- 5. BOOTSTRAP ---
         async function boot() {
-            // Wait for firebase-config to populate window.db
+            // Wait for window.fs
             if (!window.db || !window.fs) {
-                console.log("Waiting for DB...");
                 setTimeout(boot, 100);
                 return;
             }
@@ -142,14 +204,10 @@
 
                 // Add Player to DB (This triggers the Host screen update)
                 const playerKey = `players.${info.nickname}`;
-                // We use a dynamic key for the update
                 let joinData = {};
                 joinData[playerKey] = { score: 0, avatar: 'A', joinedAt: Date.now() };
 
-                // Use the 'updateDoc' from window.fs (imported SDK)
                 await window.fs.updateDoc(ROOM_REF, joinData).catch(async (err) => {
-                    // Fallback: If room doesn't exist or is empty, use setDoc with merge
-                    // This handles cases where updateDoc fails on new docs
                     console.warn("Update failed, trying Set...", err);
                     await window.fs.setDoc(ROOM_REF, joinData, { merge: true });
                 });
@@ -159,7 +217,7 @@
                 // Start Listener
                 window.fs.onSnapshot(ROOM_REF, (snap) => {
                     if(!snap.exists()) {
-                        alert("Room closed by host.");
+                        alert("Room closed or invalid code.");
                         window.location.href = 'group-hub.html';
                         return;
                     }
@@ -209,7 +267,7 @@
                     title.className = "text-4xl font-black text-green-500 mb-2";
                     bg.className = "w-28 h-28 rounded-full bg-green-500 flex items-center justify-center mb-6 shadow-2xl";
                     icon.className = "fas fa-check text-5xl text-white";
-                    pts.innerText = "+1000"; // Host calculates real score, this is visual
+                    pts.innerText = "+1000"; 
                     if(navigator.vibrate) navigator.vibrate([50,50,50]);
                 } else {
                     title.innerText = "Wrong!";
@@ -228,7 +286,6 @@
             myAnswer = idx;
             if(navigator.vibrate) navigator.vibrate(50);
             
-            // Send Answer
             let ansData = {};
             ansData[`answers.${info.nickname}`] = { val: idx, time: Date.now() };
             
@@ -245,7 +302,9 @@
             el.classList.add('flex');
         }
 
-        boot();
+        // Initialize based on entry method
+        initController();
+
     </script>
 </body>
 </html>
