@@ -106,6 +106,15 @@ function getQuizHeaderMarkup() {
                     </div>
                 </a>
 
+                 <a href="group-hub.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden mr-1">
+                <div class="absolute inset-0 bg-gradient-to-t from-sky-800 via-cyan-300 to-sky-900 opacity-100 group-hover:opacity-95 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.35)_0,transparent_40%,transparent_60%,rgba(255,255,255,0.35)_100%)] opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
+                <div class="relative flex items-center gap-1.5">
+                    <i class="fas fa-clock text-black text-xs"></i>
+                    <span class="text-[10px] font-black text-amber-950 uppercase tracking-[0.22em]">Group Game</span>
+                </div>
+            </a>
+
                 <a href="identity-lab.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] mr-1">
                     <div class="absolute inset-0 bg-gradient-to-r from-violet-900/50 to-fuchsia-900/50 border border-violet-500/40 group-hover:border-fuchsia-400/70 rounded-full transition-colors"></div>
                     <div class="relative flex items-center gap-1.5">
