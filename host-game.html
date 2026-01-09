@@ -13,7 +13,6 @@
     
     <script type="module">
         import { doc, setDoc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        // Attach to window so we can access them safely
         window.fs = { doc, setDoc, onSnapshot, updateDoc, getDoc };
     </script>
 
@@ -51,7 +50,7 @@
     <div id="loading-overlay" class="fixed inset-0 bg-background z-50 flex items-center justify-center">
         <div class="text-center animate-pulse">
             <h2 class="text-2xl font-bold text-white mb-2">Starting System...</h2>
-            <p class="text-slate-400 text-sm font-mono" id="loading-text">Connecting Database</p>
+            <p class="text-slate-400 text-sm font-mono">Connecting Database</p>
         </div>
     </div>
 
@@ -63,11 +62,9 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
                 <div class="lg:col-span-4 glass rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-brand">
                     <div class="text-xs font-bold text-brand uppercase tracking-widest mb-4 bg-brand/10 px-3 py-1 rounded-full border border-brand/20">Scan to Join</div>
-                    
                     <div class="bg-white p-2 rounded-2xl shadow-2xl mb-6">
                         <img id="qr-img" src="" alt="Scan QR" class="w-40 h-40 object-contain" />
                     </div>
-                    
                     <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Room Code</div>
                     <div id="display-code" class="text-7xl font-black text-white tracking-widest leading-none my-2">----</div>
                     <div class="text-xs text-blue-400 underline cursor-pointer mt-2" onclick="openPlayerLink()">Open Player Link</div>
@@ -120,7 +117,17 @@
             </div>
 
             <div id="score-list" class="w-full space-y-3 mb-10"></div>
-            <button onclick="nextRound()" class="px-10 py-4 bg-brand text-white font-bold rounded-xl shadow-lg hover:scale-105 transition">Next Question</button>
+            
+            <div class="w-full mt-6 flex flex-col items-center">
+                <p class="text-xs text-slate-400 mb-2">Next round in 5s...</p>
+                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                    <div id="auto-next-bar" class="h-full bg-brand w-full"></div>
+                </div>
+            </div>
+
+            <button onclick="nextRound()" class="mt-6 px-10 py-4 bg-brand text-white font-bold rounded-xl shadow-lg hover:scale-105 transition">
+                Next Question Now <i class="fas fa-forward ml-2"></i>
+            </button>
         </div>
 
     </main>
@@ -140,15 +147,14 @@
         }
 
         // --- GLOBAL STATE ---
-        let gameState = { players: {}, questions: [], index: 0, timer: null, currentShuffledOptions: [], currentCorrectIndex: 0 };
+        let gameState = { players: {}, questions: [], index: 0, timer: null, nextTimer: null, currentShuffledOptions: [], currentCorrectIndex: 0 };
         const TIMER_DURATION = 20;
         let ROOM_REF; 
 
         // --- 2. BOOTSTRAP ---
         async function boot() {
-            // WAIT FOR FIREBASE (Safety Loop)
             if (!window.db || !window.fs) {
-                console.log("Waiting for DB connection...");
+                console.log("Waiting for Firebase...");
                 setTimeout(boot, 100);
                 return;
             }
@@ -158,7 +164,6 @@
                 document.getElementById('display-code').innerText = settings.roomCode;
                 document.getElementById('cat-badge').innerText = settings.categoryKey;
 
-                // QR CODE SETUP
                 const joinUrl = `${window.location.origin}/play.html?code=${settings.roomCode}`;
                 const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}`;
                 document.getElementById('qr-img').src = qrApi;
@@ -177,13 +182,11 @@
                     createdAt: Date.now()
                 });
 
-                // UNLOCK UI
                 document.getElementById('net-status').innerText = "● ONLINE";
                 document.getElementById('loading-overlay').classList.add('hidden');
                 document.getElementById('view-lobby').classList.remove('hidden');
                 document.getElementById('view-lobby').classList.add('flex');
 
-                // LISTENER
                 window.fs.onSnapshot(ROOM_REF, (snap) => {
                     const data = snap.data();
                     if(!data) return;
@@ -233,7 +236,6 @@
             }
         }
 
-        // --- GAME LOGIC ---
         window.startGame = function() {
             if (typeof QUESTION_BANKS === 'undefined' || !QUESTION_BANKS[settings.categoryKey]) { 
                 alert("Data Error: Question Bank not found"); 
@@ -255,12 +257,15 @@
         }
 
         async function startRound() {
+            // Cancel auto-next timer if it exists (from manual click)
+            if(gameState.nextTimer) clearTimeout(gameState.nextTimer);
+
             const q = gameState.questions[gameState.index];
             document.getElementById('q-idx').innerText = gameState.index + 1;
             document.getElementById('q-text').innerText = q.question;
             document.getElementById('ans-count').innerText = `0 / ${Object.keys(gameState.players).length}`;
 
-            // --- SHUFFLE LOGIC ---
+            // SHUFFLE
             let opts = q.options.map((opt, i) => ({ text: opt, isCorrect: i === q.correctIndex }));
             opts.sort(() => Math.random() - 0.5);
             gameState.currentCorrectIndex = opts.findIndex(o => o.isCorrect);
@@ -282,8 +287,8 @@
                 status: 'GAME',
                 currentQuestion: {
                     text: q.question, 
-                    options: gameState.currentShuffledOptions, // Send Shuffled options to phone
-                    mobileMode: true, // Force Show
+                    options: gameState.currentShuffledOptions,
+                    mobileMode: true,
                     startTime: Date.now()
                 },
                 answers: {}
@@ -353,9 +358,26 @@
                     <div class="text-2xl font-mono font-bold text-brand">${data.score} pts</div>
                 </div>
             `).join('');
+
+            // --- AUTO NEXT LOGIC ---
+            const nextBar = document.getElementById('auto-next-bar');
+            nextBar.style.transition = 'none';
+            nextBar.style.width = '100%';
+            
+            setTimeout(() => {
+                nextBar.style.transition = 'width 5s linear';
+                nextBar.style.width = '0%';
+            }, 50);
+
+            // Set timeout for 5 seconds to auto-advance
+            if(gameState.nextTimer) clearTimeout(gameState.nextTimer);
+            gameState.nextTimer = setTimeout(nextRound, 5000);
         }
 
         window.nextRound = function() {
+            // Cancel auto-advance if manually clicked
+            if(gameState.nextTimer) clearTimeout(gameState.nextTimer);
+
             gameState.index++;
             if(gameState.index >= gameState.questions.length) {
                 alert("Game Over!");
