@@ -9,13 +9,10 @@
     <meta name="theme-color" content="#0f172a">
 
     <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="game-engine.js"></script>
-    <script src="components.js" defer></script>
-    <script type="module" src="assets/ux-core.js"></script>
     <script src="data.js"></script>
     
-    <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
-
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,7 +24,7 @@
                     fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
                     colors: { brand: '#6366f1', surface: '#1e293b', background: '#0f172a' },
                     animation: { 'pop': 'pop 0.3s ease-out' },
-                    keyframes: { pop: { '0%': { transform: 'scale(0.8)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } } }
+                    keyframes: { pop: { '0%': { transform: 'scale(0.9)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } } }
                 }
             }
         }
@@ -37,6 +34,8 @@
         body { background-color: #0f172a; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
         .timer-bar { transition: width 1s linear; }
+        .seo-box h3 { color: white; font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .seo-box p { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; }
     </style>
 </head>
 
@@ -45,13 +44,6 @@
 
     <quiz-header></quiz-header>
 
-    <div id="loading-overlay" class="fixed inset-0 bg-background z-50 flex items-center justify-center">
-        <div class="text-center animate-pulse">
-            <h2 class="text-2xl font-bold text-white">Initializing Host...</h2>
-            <p class="text-slate-400 text-sm mt-2">Connecting to Firebase</p>
-        </div>
-    </div>
-
     <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-8 relative z-10 flex flex-col justify-center min-h-[600px]">
         
         <div id="error-banner" class="hidden w-full bg-red-500/10 border border-red-500/50 text-red-200 p-4 rounded-xl text-center mb-6"></div>
@@ -59,24 +51,38 @@
         <div id="view-lobby" class="hidden w-full flex-col gap-8 animate-pop">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
                 <div class="lg:col-span-4 glass rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-brand">
-                    <div class="bg-white p-4 rounded-xl mb-6 shadow-xl"><div id="qrcode"></div></div>
+                    <div class="text-xs font-bold text-brand uppercase tracking-widest mb-4 bg-brand/10 px-3 py-1 rounded-full border border-brand/20">Scan to Join</div>
+                    
+                    <div class="bg-white p-2 rounded-2xl shadow-2xl mb-6">
+                        <img id="qr-img" src="" alt="Scan QR" class="w-40 h-40 object-contain" />
+                    </div>
+                    
                     <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Room Code</div>
                     <div id="display-code" class="text-7xl font-black text-white tracking-widest leading-none my-2">----</div>
-                    <div id="manual-link" class="text-xs text-blue-400 underline cursor-pointer mt-2">Open Player Link</div>
+                    <div class="text-xs text-blue-400 underline cursor-pointer mt-2" onclick="openPlayerLink()">Open Player Link</div>
                 </div>
 
                 <div class="lg:col-span-8 flex flex-col gap-6">
-                    <div class="glass rounded-2xl p-6 border-l-4 border-green-500">
-                        <h3 class="text-xl font-bold text-white mb-2"><i class="fas fa-gamepad mr-2"></i>Game Ready</h3>
-                        <p id="game-desc" class="text-slate-400">Waiting for players to join via QR code...</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="glass rounded-2xl p-6 border-l-4 border-blue-500">
+                            <h3 class="font-bold text-white mb-1"><i class="fas fa-info-circle text-blue-400 mr-2"></i>Game Info</h3>
+                            <p id="game-desc" class="text-sm text-slate-400">Loading details...</p>
+                        </div>
+                        <div class="glass rounded-2xl p-6 border-l-4 border-green-500">
+                            <h3 class="font-bold text-white mb-1"><i class="fas fa-check-circle text-green-400 mr-2"></i>Rules</h3>
+                            <ul class="text-sm text-slate-400 list-disc list-inside">
+                                <li>Don't let screen sleep</li>
+                                <li>Faster = More Points</li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="glass rounded-3xl p-6 flex-grow flex flex-col min-h-[300px]">
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-2xl font-bold text-white">Lobby <span id="p-count" class="text-brand ml-2">0</span></h2>
-                            <div class="text-xs text-green-400 font-mono animate-pulse">● LIVE</div>
+                            <div class="text-xs text-green-400 font-mono animate-pulse" id="net-status">CONNECTING...</div>
                         </div>
-                        <div id="p-grid" class="grid grid-cols-3 md:grid-cols-4 gap-4 content-start"></div>
+                        <div id="p-grid" class="grid grid-cols-3 md:grid-cols-4 gap-4 content-start max-h-[300px] overflow-y-auto"></div>
                         <button id="start-btn" onclick="startGame()" disabled class="mt-auto w-full py-4 bg-slate-700 text-slate-400 font-bold rounded-xl transition-all cursor-not-allowed">
                             Start Game
                         </button>
@@ -90,7 +96,10 @@
                 <div id="timer-bar" class="h-full bg-gradient-to-r from-brand to-purple-500 w-full"></div>
             </div>
             <div class="glass w-full p-10 rounded-3xl text-center mb-8 border-t-4 border-brand">
-                <div class="flex justify-between mb-8"><span class="px-3 py-1 rounded bg-slate-800 text-xs text-slate-300 font-mono">Q <span id="q-idx">1</span></span></div>
+                <div class="flex justify-between mb-8">
+                    <span class="px-3 py-1 rounded bg-slate-800 text-xs text-slate-300 font-mono">Q <span id="q-idx">1</span></span>
+                    <span id="cat-badge" class="px-3 py-1 rounded bg-brand/20 text-brand text-xs font-bold uppercase">CAT</span>
+                </div>
                 <h1 id="q-text" class="text-4xl md:text-5xl font-extrabold text-white mb-10 leading-tight">Loading...</h1>
                 <div id="opt-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left"></div>
             </div>
@@ -108,62 +117,58 @@
 
     </main>
 
+    <section class="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/5 mt-auto">
+        <div class="seo-box">
+            <h3>Instant Multiplayer Gaming</h3>
+            <p>QuizRealm transforms any gathering into a live game show. Using advanced WebSocket technology via Firebase, up to 16 players can connect instantly using just their smartphones. No app downloads required—simply scan and play.</p>
+        </div>
+        <div class="seo-box">
+            <h3>Competitive Real-Time Scoring</h3>
+            <p>Our engine calculates scores based on precision and reaction time. The faster you answer correctly, the higher you climb on the live leaderboard. Perfect for classrooms, team building, or game nights.</p>
+        </div>
+    </section>
+
     <quiz-footer></quiz-footer>
 
     <script type="module">
-        import { doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // --- 1. CRITICAL IMPORTS (Force Load) ---
+        import { db } from './firebase-config.js';
+        import { doc, setDoc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- INIT ---
+        // --- 2. CONFIG ---
         let settings = {};
         try { settings = JSON.parse(localStorage.getItem('qr_host_settings')); } catch(e){}
 
         if (!settings || !settings.roomCode) {
+            console.warn("No settings. Redirecting.");
             document.getElementById('error-banner').innerHTML = "Session missing. <a href='group-hub.html' class='underline'>Return to Hub</a>";
             document.getElementById('error-banner').classList.remove('hidden');
-            document.getElementById('loading-overlay').classList.add('hidden');
             throw new Error("No Session");
         }
 
-        // --- GLOBAL STATE ---
+        const ROOM_REF = doc(db, "group_rooms", settings.roomCode);
         let gameState = { players: {}, questions: [], index: 0, timer: null };
-        let ROOM_REF;
         const TIMER_DURATION = 20;
 
-        // --- BOOTSTRAP ---
+        // --- 3. INIT ---
         async function boot() {
-            // Wait for firebase-config to load window.db
-            if (!window.db) {
-                console.log("Waiting for Firebase...");
-                setTimeout(boot, 100);
-                return;
-            }
-
             try {
-                // UI SETUP
+                // UI
                 document.getElementById('display-code').innerText = settings.roomCode;
+                document.getElementById('cat-badge').innerText = settings.categoryKey;
+                
                 if (typeof CATEGORY_CONFIG !== 'undefined' && CATEGORY_CONFIG[settings.categoryKey]) {
-                    document.getElementById('game-desc').textContent = CATEGORY_CONFIG[settings.categoryKey].desc;
+                    document.getElementById('game-desc').innerText = CATEGORY_CONFIG[settings.categoryKey].desc;
                 }
 
-                // QR CODE
+                // QR CODE FIX (Use Image API instead of JS Library)
                 const joinUrl = `${window.location.origin}/play.html?code=${settings.roomCode}`;
-                const qrBox = document.getElementById("qrcode");
-                qrBox.innerHTML = "";
+                const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}`;
+                document.getElementById('qr-img').src = qrApi;
                 
-                // Fallback Link
-                const linkBox = document.getElementById('manual-link');
-                linkBox.onclick = () => window.open(joinUrl, '_blank');
+                window.openPlayerLink = () => window.open(joinUrl, '_blank');
 
-                try {
-                    new QRCode(qrBox, { text: joinUrl, width: 160, height: 160, colorDark : "#0f172a", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.L });
-                } catch(e) {
-                    console.error("QR Error", e);
-                    qrBox.innerHTML = "<div class='text-red-500 text-xs p-2'>QR Failed.<br>Use Code.</div>";
-                }
-
-                // FIREBASE INIT
-                ROOM_REF = doc(window.db, "group_rooms", settings.roomCode);
-                
+                // DATABASE
                 await setDoc(ROOM_REF, {
                     status: 'LOBBY',
                     hostId: 'HOST_' + Date.now(),
@@ -174,7 +179,7 @@
                     createdAt: Date.now()
                 });
 
-                document.getElementById('loading-overlay').classList.add('hidden');
+                document.getElementById('net-status').innerText = "● ONLINE";
                 document.getElementById('view-lobby').classList.remove('hidden');
                 document.getElementById('view-lobby').classList.add('flex');
 
@@ -183,51 +188,53 @@
                     const data = snap.data();
                     if(!data) return;
 
-                    if(data.status === 'LOBBY') {
+                    if (data.status === 'LOBBY') {
                         gameState.players = data.players || {};
-                        updateLobby();
+                        renderLobby();
                     }
-                    if(data.status === 'GAME') {
+
+                    if (data.status === 'GAME') {
                         const count = Object.keys(data.answers || {}).length;
                         const total = Object.keys(gameState.players).length;
                         document.getElementById('ans-count').innerText = `${count} / ${total}`;
-                        if(total > 0 && count >= total) endQuestion();
+                        
+                        if (total > 0 && count >= total) endQuestion();
                     }
                 });
 
-            } catch(e) {
-                console.error(e);
-                alert("Critical Init Error: " + e.message);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('error-banner').innerText = "System Error: " + err.message;
+                document.getElementById('error-banner').classList.remove('hidden');
             }
         }
 
-        function updateLobby() {
+        function renderLobby() {
+            const grid = document.getElementById('p-grid');
             const names = Object.keys(gameState.players);
             document.getElementById('p-count').innerText = names.length;
-            const grid = document.getElementById('p-grid');
             const btn = document.getElementById('start-btn');
 
-            if(names.length > 0) {
+            if (names.length > 0) {
                 btn.disabled = false;
-                btn.classList.remove('bg-slate-700', 'cursor-not-allowed');
-                btn.classList.add('bg-brand', 'hover:bg-indigo-500', 'cursor-pointer');
+                btn.className = "mt-auto w-full py-4 bg-brand hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg transition transform hover:scale-105 cursor-pointer";
                 
                 grid.innerHTML = names.map(n => `
-                    <div class="bg-white/10 rounded-xl p-3 flex flex-col items-center animate-pop">
-                        <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white mb-2">${n.charAt(0)}</div>
-                        <span class="text-xs font-bold text-white truncate w-full text-center">${n}</span>
+                    <div class="bg-white/10 rounded-xl p-3 flex flex-col items-center animate-pop border border-white/5 shadow-inner">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white mb-2 shadow-lg border border-white/20">${n.charAt(0).toUpperCase()}</div>
+                        <span class="text-xs font-bold text-slate-200 truncate w-full text-center">${n}</span>
                     </div>
                 `).join('');
             } else {
                 btn.disabled = true;
-                btn.classList.add('bg-slate-700', 'cursor-not-allowed');
-                grid.innerHTML = "";
+                btn.className = "mt-auto w-full py-4 bg-slate-700 text-slate-400 font-bold rounded-xl transition-all cursor-not-allowed opacity-50";
+                grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center h-40 text-slate-500"><i class="fas fa-spinner fa-spin text-2xl mb-2 opacity-50"></i><p class="text-sm font-mono">Waiting for players...</p></div>`;
             }
         }
 
         // --- GAME LOGIC ---
         window.startGame = function() {
-            if (!QUESTION_BANKS[settings.categoryKey]) { alert("Data Missing"); return; }
+            if (!QUESTION_BANKS[settings.categoryKey]) { alert("Data Error"); return; }
             
             const bank = QUESTION_BANKS[settings.categoryKey];
             let pool = [...(bank.easy||[]), ...(bank.medium||[])];
@@ -250,9 +257,13 @@
             document.getElementById('ans-count').innerText = `0 / ${Object.keys(gameState.players).length}`;
 
             const colors = ['bg-red-500', 'bg-blue-500', 'bg-yellow-500', 'bg-green-500'];
+            const icons = ['square', 'circle', 'play', 'diamond'];
+
             document.getElementById('opt-grid').innerHTML = q.options.map((opt, i) => `
-                <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-surface/60">
-                    <div class="w-12 h-12 rounded-xl ${colors[i]} flex items-center justify-center text-white text-xl font-bold">${['A','B','C','D'][i]}</div>
+                <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-surface/60 backdrop-blur-sm">
+                    <div class="w-12 h-12 rounded-xl ${colors[i]} flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                        <i class="fas fa-${icons[i]} ${i===2?'rotate-[-90deg]':''}"></i>
+                    </div>
                     <span class="text-xl font-bold text-white">${opt}</span>
                 </div>
             `).join('');
@@ -260,14 +271,13 @@
             await updateDoc(ROOM_REF, {
                 status: 'GAME',
                 currentQuestion: {
-                    text: settings.tvMode ? "See Host Screen" : q.question,
+                    text: settings.tvMode ? "Look at Host Screen" : q.question,
                     mobileMode: !settings.tvMode,
                     startTime: Date.now()
                 },
                 answers: {}
             });
 
-            // Timer
             const bar = document.getElementById('timer-bar');
             bar.style.transition = 'none';
             bar.style.width = '100%';
@@ -282,7 +292,6 @@
 
         async function endQuestion() {
             if(gameState.timer) clearTimeout(gameState.timer);
-            
             const snap = await getDoc(ROOM_REF);
             const data = snap.data();
             const answers = data.answers || {};
@@ -295,7 +304,8 @@
                 if(answers[nick] && answers[nick].val === q.correctIndex) {
                     const timeTaken = (answers[nick].time - startTime) / 1000;
                     const speedBonus = Math.max(0, Math.floor((1 - (timeTaken / TIMER_DURATION)) * 500));
-                    gameState.players[nick].score = (pData.score || 0) + 1000 + speedBonus;
+                    const points = 1000 + speedBonus;
+                    gameState.players[nick].score = (pData.score || 0) + points;
                 }
                 updates[`players.${nick}.score`] = gameState.players[nick].score;
             });
@@ -314,12 +324,12 @@
             const sorted = Object.entries(gameState.players).sort(([,a], [,b]) => b.score - a.score).slice(0, 5);
 
             list.innerHTML = sorted.map(([name, data], i) => `
-                <div class="flex items-center justify-between p-5 bg-surface rounded-2xl border border-white/5 shadow-lg">
+                <div class="flex items-center justify-between p-5 bg-surface rounded-2xl border border-white/5 shadow-lg transform transition hover:scale-[1.02]">
                     <div class="flex items-center gap-6">
-                        <div class="text-3xl font-black ${i===0 ? 'text-yellow-400' : 'text-slate-600'}">#${i+1}</div>
+                        <div class="text-3xl font-black ${i===0 ? 'text-yellow-400 drop-shadow-md' : 'text-slate-600'}">#${i+1}</div>
                         <div class="text-xl font-bold text-white">${name}</div>
                     </div>
-                    <div class="text-2xl font-mono font-bold text-brand">${data.score}</div>
+                    <div class="text-2xl font-mono font-bold text-brand">${data.score} pts</div>
                 </div>
             `).join('');
         }
@@ -338,7 +348,6 @@
             startRound();
         }
 
-        // Start Boot
         boot();
     </script>
 </body>
