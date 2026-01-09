@@ -1,285 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Host Console | QuizRealm Multiplayer</title>
-    <meta name="description" content="The premium host dashboard for live QuizRealm games. Manage players, control the game flow, and view real-time leaderboards on any screen.">
+    <title>Host Console | QuizRealm</title>
     <meta name="theme-color" content="#0f172a">
 
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="game-engine.js"></script>
     <script src="components.js" defer></script>
     <script type="module" src="assets/ux-core.js"></script>
-    
     <script src="data.js"></script>
     
     <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: '#6366f1', 
-                        surface: '#1e293b',
-                        background: '#0f172a',
-                    },
-                    animation: {
-                        'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                    },
-                    keyframes: {
-                        pop: { '0%': { transform: 'scale(0.5)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } }
-                    }
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { brand: '#6366f1', surface: '#1e293b', background: '#0f172a' },
+                    animation: { 'pop': 'pop 0.3s ease-out' },
+                    keyframes: { pop: { '0%': { transform: 'scale(0.8)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } } }
                 }
             }
         }
     </script>
 
     <style>
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 60%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .player-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            animation: pop 0.4s ease-out;
-            transition: all 0.2s;
-        }
-        .player-card:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.5); }
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
         .timer-bar { transition: width 1s linear; }
-        
-        /* SEO Content */
-        .seo-content h3 { color: #fff; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .seo-content p { color: #94a3b8; line-height: 1.6; margin-bottom: 1.5rem; font-size: 0.95rem; }
     </style>
 </head>
 
-<body class="antialiased">
+<body>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <quiz-header></quiz-header>
 
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-8 relative z-10 flex flex-col items-center justify-center min-h-[700px]">
+    <div id="loading-overlay" class="fixed inset-0 bg-background z-50 flex items-center justify-center">
+        <div class="text-center animate-pulse">
+            <h2 class="text-2xl font-bold text-white">Initializing Host...</h2>
+            <p class="text-slate-400 text-sm mt-2">Connecting to Firebase</p>
+        </div>
+    </div>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-8 relative z-10 flex flex-col justify-center min-h-[600px]">
         
-        <div id="error-banner" class="hidden w-full max-w-2xl bg-red-500/10 border border-red-500/50 text-red-200 p-4 rounded-xl text-center mb-6"></div>
+        <div id="error-banner" class="hidden w-full bg-red-500/10 border border-red-500/50 text-red-200 p-4 rounded-xl text-center mb-6"></div>
 
-        <div id="view-lobby" class="w-full flex flex-col gap-8 animate-pop">
+        <div id="view-lobby" class="hidden w-full flex-col gap-8 animate-pop">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
-                
-                <div class="lg:col-span-4 glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-brand relative overflow-hidden">
-                    <div class="text-xs font-bold text-brand uppercase tracking-widest mb-4 bg-brand/10 px-3 py-1 rounded-full border border-brand/20">
-                        Scan to Join
-                    </div>
-                    
-                    <div class="bg-white p-4 rounded-2xl shadow-2xl mb-6 w-full max-w-[200px] aspect-square flex items-center justify-center" id="qrcode-container">
-                        <div id="qrcode"></div>
-                    </div>
-                    
-                    <div class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Room Code</div>
-                    <div id="display-code" class="font-mono text-7xl font-black text-white tracking-widest leading-none drop-shadow-lg">----</div>
-                    
-                    <div id="manual-link" class="mt-4 text-[10px] text-slate-500 hidden">
-                        <a href="#" target="_blank" class="underline hover:text-white">Click here if QR fails</a>
-                    </div>
+                <div class="lg:col-span-4 glass rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-brand">
+                    <div class="bg-white p-4 rounded-xl mb-6 shadow-xl"><div id="qrcode"></div></div>
+                    <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Room Code</div>
+                    <div id="display-code" class="text-7xl font-black text-white tracking-widest leading-none my-2">----</div>
+                    <div id="manual-link" class="text-xs text-blue-400 underline cursor-pointer mt-2">Open Player Link</div>
                 </div>
 
-                <div class="lg:col-span-4 flex flex-col gap-4">
-                    <div class="glass-card rounded-2xl p-6 flex-1 flex flex-col justify-center border-l-4 border-blue-500">
-                        <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                            <i class="fas fa-info-circle text-blue-400"></i> Game Mode
-                        </h3>
-                        <p id="game-desc" class="text-slate-400 text-sm leading-relaxed">
-                            Loading game details...
-                        </p>
-                    </div>
-                    <div class="glass-card rounded-2xl p-6 flex-1 flex flex-col justify-center border-l-4 border-green-500">
-                        <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                            <i class="fas fa-clipboard-check text-green-400"></i> Rules
-                        </h3>
-                        <ul class="text-slate-400 text-sm space-y-1.5 list-disc list-inside">
-                            <li>Keep phones active.</li>
-                            <li>Speed = Bonus Points.</li>
-                            <li>Don't refresh!</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-4 glass-card rounded-3xl p-6 flex flex-col h-full min-h-[400px]">
-                    <div class="flex justify-between items-center mb-4 border-b border-white/5 pb-4">
-                        <div>
-                            <h2 class="font-display font-bold text-2xl text-white">Lobby</h2>
-                            <div class="text-xs text-slate-400 animate-pulse" id="connection-status">Connecting...</div>
-                        </div>
-                        <div class="px-3 py-1 bg-surface rounded-lg border border-white/10 text-white font-mono font-bold">
-                            <i class="fas fa-users text-brand mr-2"></i><span id="player-count">0</span>
-                        </div>
-                    </div>
-                    
-                    <div id="player-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 flex-grow content-start overflow-y-auto custom-scroll max-h-[300px]">
-                        <div class="col-span-full flex flex-col items-center justify-center h-40 text-slate-600">
-                            <i class="fas fa-spinner fa-spin text-3xl mb-2 opacity-50"></i>
-                            <p class="text-sm">Initializing...</p>
-                        </div>
+                <div class="lg:col-span-8 flex flex-col gap-6">
+                    <div class="glass rounded-2xl p-6 border-l-4 border-green-500">
+                        <h3 class="text-xl font-bold text-white mb-2"><i class="fas fa-gamepad mr-2"></i>Game Ready</h3>
+                        <p id="game-desc" class="text-slate-400">Waiting for players to join via QR code...</p>
                     </div>
 
-                    <div class="pt-4 mt-auto">
-                        <button id="start-btn" onclick="startGame()" disabled
-                            class="w-full py-4 bg-slate-700 text-slate-400 font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
-                            <span>Start Game</span> <i class="fas fa-play"></i>
+                    <div class="glass rounded-3xl p-6 flex-grow flex flex-col min-h-[300px]">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-white">Lobby <span id="p-count" class="text-brand ml-2">0</span></h2>
+                            <div class="text-xs text-green-400 font-mono animate-pulse">● LIVE</div>
+                        </div>
+                        <div id="p-grid" class="grid grid-cols-3 md:grid-cols-4 gap-4 content-start"></div>
+                        <button id="start-btn" onclick="startGame()" disabled class="mt-auto w-full py-4 bg-slate-700 text-slate-400 font-bold rounded-xl transition-all cursor-not-allowed">
+                            Start Game
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="view-game" class="hidden w-full max-w-5xl flex-col items-center animate-slide-up">
-            <div class="w-full h-4 bg-surface rounded-full mb-8 overflow-hidden border border-white/10 shadow-inner relative">
-                <div id="timer-bar" class="h-full bg-gradient-to-r from-brand to-purple-500 w-full relative">
-                    <div class="absolute right-0 top-0 h-full w-2 bg-white/50 animate-pulse"></div>
-                </div>
+        <div id="view-game" class="hidden w-full max-w-5xl mx-auto flex-col items-center animate-pop">
+            <div class="w-full h-4 bg-surface rounded-full mb-8 overflow-hidden border border-white/10">
+                <div id="timer-bar" class="h-full bg-gradient-to-r from-brand to-purple-500 w-full"></div>
             </div>
-
-            <div class="glass-card w-full p-10 rounded-3xl text-center mb-8 border-t-4 border-brand relative overflow-hidden">
-                <div class="flex justify-between items-center mb-8 relative z-10">
-                    <span class="px-4 py-1.5 rounded-full bg-slate-800 text-xs font-mono text-slate-300 border border-white/10">
-                        QUESTION <span id="q-current">1</span>
-                    </span>
-                    <span class="px-4 py-1.5 rounded-full bg-brand/10 text-brand text-xs font-mono font-bold border border-brand/20 shadow-sm" id="category-badge">
-                        CATEGORY
-                    </span>
-                </div>
-
-                <h1 id="question-text" class="text-3xl md:text-5xl font-display font-extrabold text-white leading-tight mb-12 relative z-10 drop-shadow-xl min-h-[120px] flex items-center justify-center">
-                    Loading...
-                </h1>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full text-left relative z-10" id="options-grid"></div>
+            <div class="glass w-full p-10 rounded-3xl text-center mb-8 border-t-4 border-brand">
+                <div class="flex justify-between mb-8"><span class="px-3 py-1 rounded bg-slate-800 text-xs text-slate-300 font-mono">Q <span id="q-idx">1</span></span></div>
+                <h1 id="q-text" class="text-4xl md:text-5xl font-extrabold text-white mb-10 leading-tight">Loading...</h1>
+                <div id="opt-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left"></div>
             </div>
-
-            <div class="flex justify-center">
-                <div class="glass-card px-8 py-3 rounded-full flex items-center gap-4 border border-white/10 shadow-lg">
-                    <span class="text-slate-300 font-bold text-sm tracking-wide uppercase">Answers Received</span>
-                    <span id="answer-count" class="text-white font-mono font-bold text-2xl border-l border-white/10 pl-4">0</span>
-                </div>
+            <div class="glass px-8 py-3 rounded-full flex gap-4 border border-white/10">
+                <span class="text-slate-300 font-bold text-sm uppercase">Answers:</span>
+                <span id="ans-count" class="text-white font-mono font-bold text-2xl pl-2 border-l border-white/10">0</span>
             </div>
         </div>
 
-        <div id="view-leaderboard" class="hidden w-full max-w-3xl flex-col items-center animate-slide-up">
-            <h1 class="text-5xl font-display font-extrabold text-white mb-8 tracking-tight">Round Results</h1>
-            <div id="leaderboard-list" class="w-full space-y-4 mb-10"></div>
-            <button onclick="nextRound()" class="px-12 py-4 bg-brand hover:bg-brandHover text-white font-bold rounded-2xl text-xl shadow-xl transition-transform hover:scale-105 active:scale-95 flex items-center gap-3">
-                Next Question <i class="fas fa-arrow-right"></i>
-            </button>
+        <div id="view-scores" class="hidden w-full max-w-3xl mx-auto flex-col items-center animate-pop">
+            <h1 class="text-5xl font-black text-white mb-8">Results</h1>
+            <div id="score-list" class="w-full space-y-3 mb-10"></div>
+            <button onclick="nextRound()" class="px-10 py-4 bg-brand text-white font-bold rounded-xl shadow-lg hover:scale-105 transition">Next Question</button>
         </div>
 
     </main>
 
-    <section class="w-full bg-surface/30 border-t border-white/5 py-16 mt-20">
-        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div class="seo-content">
-                <h3>The Future of Social Gaming</h3>
-                <p>Welcome to the <strong>QuizRealm Group Hub</strong>. This platform eliminates the need for app downloads, turning any browser into a game console. Using a low-latency "Host-Controller" architecture, your phone becomes the remote, and this screen becomes the stage.</p>
-                <p>Designed for parties, classrooms, and team events, the system supports up to 16 concurrent players with millisecond-precision synchronization via Firebase Firestore.</p>
-            </div>
-            <div class="seo-content">
-                <h3>Real-Time Sync Technology</h3>
-                <p>Our proprietary scoring engine rewards speed and accuracy. The faster you answer, the higher your score multiplier. With live leaderboards updating after every question, the competitive tension remains high until the very last second.</p>
-                <p>Security and stability are paramount. Sessions are protected by unique 4-letter access codes, ensuring only your group can join the lobby.</p>
-            </div>
-        </div>
-    </section>
-
     <quiz-footer></quiz-footer>
 
     <script type="module">
-        // --- 1. CRITICAL IMPORTS ---
-        // We import the tools that are MISSING from your config file
-        import { onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- 2. CONFIG LOADING ---
+        // --- INIT ---
         let settings = {};
         try { settings = JSON.parse(localStorage.getItem('qr_host_settings')); } catch(e){}
 
         if (!settings || !settings.roomCode) {
             document.getElementById('error-banner').innerHTML = "Session missing. <a href='group-hub.html' class='underline'>Return to Hub</a>";
             document.getElementById('error-banner').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('hidden');
             throw new Error("No Session");
         }
 
-        // Global State
+        // --- GLOBAL STATE ---
         let gameState = { players: {}, questions: [], index: 0, timer: null };
+        let ROOM_REF;
         const TIMER_DURATION = 20;
-        let ROOM_REF; // Will define after db is ready
 
-        // --- 3. INIT LOGIC (Wait for window.db) ---
-        async function init() {
-            // Wait for firebase-config.js to attach 'window.db'
+        // --- BOOTSTRAP ---
+        async function boot() {
+            // Wait for firebase-config to load window.db
             if (!window.db) {
                 console.log("Waiting for Firebase...");
-                setTimeout(init, 100);
+                setTimeout(boot, 100);
                 return;
             }
 
             try {
-                // Now we can use the window tools provided by your config
-                ROOM_REF = window.doc(window.db, "group_rooms", settings.roomCode);
-
-                // UI Setup
-                document.getElementById('display-code').textContent = settings.roomCode;
-                document.getElementById('category-badge').textContent = settings.categoryKey;
-                
+                // UI SETUP
+                document.getElementById('display-code').innerText = settings.roomCode;
                 if (typeof CATEGORY_CONFIG !== 'undefined' && CATEGORY_CONFIG[settings.categoryKey]) {
                     document.getElementById('game-desc').textContent = CATEGORY_CONFIG[settings.categoryKey].desc;
                 }
 
-                // QR Generation
-                try {
-                    const currentUrl = window.location.href;
-                    const basePath = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-                    const joinUrl = `${basePath}/play.html?code=${settings.roomCode}`;
-                    
-                    const qrBox = document.getElementById("qrcode");
-                    qrBox.innerHTML = "";
-                    new QRCode(qrBox, { text: joinUrl, width: 150, height: 150, colorDark : "#0f172a", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.L });
-                    
-                    // Fallback link
-                    const linkBox = document.getElementById('manual-link');
-                    linkBox.classList.remove('hidden');
-                    linkBox.querySelector('a').href = joinUrl;
-                } catch(e) { console.error("QR Error", e); }
+                // QR CODE
+                const joinUrl = `${window.location.origin}/play.html?code=${settings.roomCode}`;
+                const qrBox = document.getElementById("qrcode");
+                qrBox.innerHTML = "";
+                
+                // Fallback Link
+                const linkBox = document.getElementById('manual-link');
+                linkBox.onclick = () => window.open(joinUrl, '_blank');
 
-                // Firebase Init
-                await window.setDoc(ROOM_REF, {
+                try {
+                    new QRCode(qrBox, { text: joinUrl, width: 160, height: 160, colorDark : "#0f172a", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.L });
+                } catch(e) {
+                    console.error("QR Error", e);
+                    qrBox.innerHTML = "<div class='text-red-500 text-xs p-2'>QR Failed.<br>Use Code.</div>";
+                }
+
+                // FIREBASE INIT
+                ROOM_REF = doc(window.db, "group_rooms", settings.roomCode);
+                
+                await setDoc(ROOM_REF, {
                     status: 'LOBBY',
                     hostId: 'HOST_' + Date.now(),
                     category: settings.categoryKey,
@@ -289,75 +174,69 @@
                     createdAt: Date.now()
                 });
 
-                document.getElementById('connection-status').textContent = "Online • Ready";
-                document.getElementById('connection-status').className = "text-xs text-green-400 font-bold uppercase tracking-wider";
+                document.getElementById('loading-overlay').classList.add('hidden');
+                document.getElementById('view-lobby').classList.remove('hidden');
+                document.getElementById('view-lobby').classList.add('flex');
 
-                // Listener (Using the imported onSnapshot because it wasn't on window)
+                // LISTENER
                 onSnapshot(ROOM_REF, (snap) => {
-                    if(!snap.exists()) return;
                     const data = snap.data();
+                    if(!data) return;
 
                     if(data.status === 'LOBBY') {
                         gameState.players = data.players || {};
-                        renderLobby();
+                        updateLobby();
                     }
-
                     if(data.status === 'GAME') {
                         const count = Object.keys(data.answers || {}).length;
                         const total = Object.keys(gameState.players).length;
-                        document.getElementById('answer-count').textContent = `${count} / ${total}`;
-                        
+                        document.getElementById('ans-count').innerText = `${count} / ${total}`;
                         if(total > 0 && count >= total) endQuestion();
                     }
                 });
 
-            } catch (err) {
-                console.error("Critical Init Error:", err);
-                document.getElementById('error-banner').textContent = "Error: " + err.message;
-                document.getElementById('error-banner').classList.remove('hidden');
+            } catch(e) {
+                console.error(e);
+                alert("Critical Init Error: " + e.message);
             }
         }
 
-        function renderLobby() {
-            const grid = document.getElementById('player-grid');
+        function updateLobby() {
             const names = Object.keys(gameState.players);
-            document.getElementById('player-count').textContent = names.length;
+            document.getElementById('p-count').innerText = names.length;
+            const grid = document.getElementById('p-grid');
             const btn = document.getElementById('start-btn');
 
             if(names.length > 0) {
                 btn.disabled = false;
-                btn.className = "w-full py-4 bg-brand hover:bg-brandHover text-white font-bold rounded-xl shadow-lg transition transform hover:scale-105";
+                btn.classList.remove('bg-slate-700', 'cursor-not-allowed');
+                btn.classList.add('bg-brand', 'hover:bg-indigo-500', 'cursor-pointer');
+                
                 grid.innerHTML = names.map(n => `
-                    <div class="player-card">
-                        <div class="w-10 h-10 mx-auto bg-indigo-500 rounded-full mb-2 flex items-center justify-center text-white font-bold">${n.charAt(0)}</div>
-                        <div class="text-xs font-bold text-white truncate">${n}</div>
+                    <div class="bg-white/10 rounded-xl p-3 flex flex-col items-center animate-pop">
+                        <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white mb-2">${n.charAt(0)}</div>
+                        <span class="text-xs font-bold text-white truncate w-full text-center">${n}</span>
                     </div>
                 `).join('');
             } else {
                 btn.disabled = true;
-                btn.className = "w-full py-4 bg-slate-700 text-slate-400 font-bold rounded-xl transition-all opacity-50 cursor-not-allowed";
-                grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center h-40 text-slate-500"><i class="fas fa-spinner fa-spin text-2xl mb-2 opacity-50"></i><p class="text-sm">Waiting for players...</p></div>`;
+                btn.classList.add('bg-slate-700', 'cursor-not-allowed');
+                grid.innerHTML = "";
             }
         }
 
-        // --- GAME CONTROL ---
+        // --- GAME LOGIC ---
         window.startGame = function() {
-            if (typeof QUESTION_BANKS === 'undefined' || !QUESTION_BANKS[settings.categoryKey]) {
-                alert("Question bank missing for this category.");
-                return;
-            }
+            if (!QUESTION_BANKS[settings.categoryKey]) { alert("Data Missing"); return; }
             
             const bank = QUESTION_BANKS[settings.categoryKey];
             let pool = [...(bank.easy||[]), ...(bank.medium||[])];
-            // Shuffle
-            for (let i = pool.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [pool[i], pool[j]] = [pool[j], pool[i]];
-            }
+            pool.sort(() => Math.random() - 0.5);
             gameState.questions = pool.slice(0, 10);
             gameState.index = 0;
 
             document.getElementById('view-lobby').classList.add('hidden');
+            document.getElementById('view-lobby').classList.remove('flex');
             document.getElementById('view-game').classList.remove('hidden');
             document.getElementById('view-game').classList.add('flex');
             
@@ -366,29 +245,29 @@
 
         async function startRound() {
             const q = gameState.questions[gameState.index];
-            document.getElementById('q-current').textContent = gameState.index + 1;
-            document.getElementById('question-text').textContent = q.question;
-            document.getElementById('answer-count').textContent = `0 / ${Object.keys(gameState.players).length}`;
+            document.getElementById('q-idx').innerText = gameState.index + 1;
+            document.getElementById('q-text').innerText = q.question;
+            document.getElementById('ans-count').innerText = `0 / ${Object.keys(gameState.players).length}`;
 
             const colors = ['bg-red-500', 'bg-blue-500', 'bg-yellow-500', 'bg-green-500'];
-            document.getElementById('options-grid').innerHTML = q.options.map((opt, i) => `
-                <div class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl border border-white/5">
-                    <div class="w-10 h-10 rounded-lg ${colors[i]} flex items-center justify-center text-white font-bold">${['A','B','C','D'][i]}</div>
-                    <span class="text-white font-bold text-lg">${opt}</span>
+            document.getElementById('opt-grid').innerHTML = q.options.map((opt, i) => `
+                <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-surface/60">
+                    <div class="w-12 h-12 rounded-xl ${colors[i]} flex items-center justify-center text-white text-xl font-bold">${['A','B','C','D'][i]}</div>
+                    <span class="text-xl font-bold text-white">${opt}</span>
                 </div>
             `).join('');
 
-            // Using imported updateDoc
             await updateDoc(ROOM_REF, {
                 status: 'GAME',
                 currentQuestion: {
-                    text: settings.tvMode ? "Look at Host Screen" : q.question,
+                    text: settings.tvMode ? "See Host Screen" : q.question,
                     mobileMode: !settings.tvMode,
                     startTime: Date.now()
                 },
                 answers: {}
             });
 
+            // Timer
             const bar = document.getElementById('timer-bar');
             bar.style.transition = 'none';
             bar.style.width = '100%';
@@ -404,7 +283,7 @@
         async function endQuestion() {
             if(gameState.timer) clearTimeout(gameState.timer);
             
-            const snap = await window.getDoc(ROOM_REF);
+            const snap = await getDoc(ROOM_REF);
             const data = snap.data();
             const answers = data.answers || {};
             const q = gameState.questions[gameState.index];
@@ -422,25 +301,25 @@
             });
 
             await updateDoc(ROOM_REF, updates);
-            setTimeout(showLeaderboard, 4000);
+            setTimeout(showScores, 4000);
         }
 
-        function showLeaderboard() {
+        function showScores() {
             document.getElementById('view-game').classList.add('hidden');
             document.getElementById('view-game').classList.remove('flex');
-            document.getElementById('view-leaderboard').classList.remove('hidden');
-            document.getElementById('view-leaderboard').classList.add('flex');
+            document.getElementById('view-scores').classList.remove('hidden');
+            document.getElementById('view-scores').classList.add('flex');
 
-            const list = document.getElementById('leaderboard-list');
+            const list = document.getElementById('score-list');
             const sorted = Object.entries(gameState.players).sort(([,a], [,b]) => b.score - a.score).slice(0, 5);
 
             list.innerHTML = sorted.map(([name, data], i) => `
-                <div class="flex items-center justify-between p-4 bg-slate-800/80 rounded-xl border border-white/5">
-                    <div class="flex items-center gap-4">
-                        <div class="text-2xl font-black text-slate-500">#${i+1}</div>
-                        <div class="text-lg font-bold text-white">${name}</div>
+                <div class="flex items-center justify-between p-5 bg-surface rounded-2xl border border-white/5 shadow-lg">
+                    <div class="flex items-center gap-6">
+                        <div class="text-3xl font-black ${i===0 ? 'text-yellow-400' : 'text-slate-600'}">#${i+1}</div>
+                        <div class="text-xl font-bold text-white">${name}</div>
                     </div>
-                    <div class="text-xl font-mono font-bold text-indigo-400">${data.score}</div>
+                    <div class="text-2xl font-mono font-bold text-brand">${data.score}</div>
                 </div>
             `).join('');
         }
@@ -452,14 +331,15 @@
                 window.location.href = 'group-hub.html';
                 return;
             }
-            document.getElementById('view-leaderboard').classList.add('hidden');
-            document.getElementById('view-leaderboard').classList.remove('flex');
+            document.getElementById('view-scores').classList.add('hidden');
+            document.getElementById('view-scores').classList.remove('flex');
             document.getElementById('view-game').classList.remove('hidden');
             document.getElementById('view-game').classList.add('flex');
             startRound();
         }
 
-        init();
+        // Start Boot
+        boot();
     </script>
 </body>
 </html>
