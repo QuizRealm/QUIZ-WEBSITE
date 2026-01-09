@@ -14,35 +14,23 @@ const firebaseConfig = {
   measurementId: "G-4JL3CD1WQT"
 };
 
-// 3. Initialize App
+// 3. Initialize
 const app = initializeApp(firebaseConfig);
 
-// 4. Initialize Services (Create instances first)
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-// ==========================================
-// COMPATIBILITY LAYER (For your existing site)
-// ==========================================
-// This ensures your old engine.js still finds these tools on the window
-window.db = db;
-window.auth = auth;
+// 4. ATTACH TO WINDOW (Crucial Step!)
+// This makes these tools available to engine.js
+window.db = getFirestore(app);
+window.auth = getAuth(app);
 window.doc = doc;
 window.setDoc = setDoc;
 window.getDoc = getDoc;
-window.updateDoc = updateDoc; // Added this just in case
-window.arrayUnion = arrayUnion; // Added this just in case
 
-// ==========================================
-// MODERN EXPORT (For the new Multiplayer Game)
-// ==========================================
-// This allows host-game.html to use "import { db } from..."
-export { app, db, auth };
-
-// 5. SMART LOGIN
+// 5. SMART LOGIN (The Fix)
+// Wait to see if Firebase remembers a user. If not, THEN sign in anonymously.
 onAuthStateChanged(auth, (user) => {
     if (user) {
         console.log("Existing user found:", user.uid);
+        // Do nothing, let the profile page handle it
     } else {
         console.log("No user found. Creating Guest Session...");
         signInAnonymously(auth).catch((error) => {
