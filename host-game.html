@@ -10,18 +10,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Host Console | QuizRealm Multiplayer</title>
+    <meta name="description" content="The ultimate browser-based trivia host console. Manage live multiplayer games, track real-time scores, and display questions on the big screen.">
     <meta name="theme-color" content="#0f172a">
 
     <script type="module" src="firebase-config.js"></script>
-    
     <script type="module" src="game-engine.js"></script>
-    
     <script src="components.js" defer></script>
     <script type="module" src="assets/ux-core.js"></script>
     
     <script src="data.js"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
@@ -85,10 +84,11 @@
         .player-card:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.5); }
         .timer-bar { transition: width 1s linear; }
         
-        /* SEO Text Styles */
         .seo-content h3 { color: #fff; font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; font-family: 'Plus Jakarta Sans', sans-serif; }
         .seo-content p { color: #94a3b8; line-height: 1.8; margin-bottom: 1.5rem; font-size: 1rem; }
         .seo-content strong { color: #e2e8f0; }
+        
+        #qrcode img { margin: 0 auto; }
     </style>
 </head>
 
@@ -106,18 +106,20 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
                 
                 <div class="lg:col-span-4 glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-brand relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
-                    
                     <div class="text-xs font-bold text-brand uppercase tracking-widest mb-4 bg-brand/10 px-3 py-1 rounded-full border border-brand/20">
                         Scan to Join
                     </div>
                     
-                    <div class="bg-white p-4 rounded-2xl shadow-2xl mb-6 transform transition hover:scale-105 duration-300">
-                        <div id="qrcode"></div>
+                    <div class="bg-white p-4 rounded-2xl shadow-2xl mb-6 transform transition hover:scale-105 duration-300 w-full max-w-[200px]">
+                        <div id="qrcode" class="flex items-center justify-center min-h-[160px]"></div>
                     </div>
                     
                     <div class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Room Code</div>
                     <div id="display-code" class="font-mono text-7xl font-black text-white tracking-widest leading-none drop-shadow-lg">----</div>
+                    
+                    <div id="manual-link" class="mt-4 text-xs text-slate-500 hidden">
+                        <a href="#" target="_blank" class="underline hover:text-white">Click here if QR fails</a>
+                    </div>
                 </div>
 
                 <div class="lg:col-span-4 flex flex-col gap-4">
@@ -126,7 +128,7 @@
                             <i class="fas fa-info-circle text-blue-400"></i> Game Mode
                         </h3>
                         <p id="game-desc" class="text-slate-400 text-sm leading-relaxed">
-                            Loading game details... Players will answer trivia questions in real-time. Speed counts!
+                            Loading game details...
                         </p>
                     </div>
                     
@@ -155,8 +157,8 @@
                     
                     <div id="player-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 flex-grow content-start overflow-y-auto custom-scroll max-h-[300px]">
                         <div class="col-span-full flex flex-col items-center justify-center h-40 text-slate-600">
-                            <i class="fas fa-ghost text-3xl mb-2 opacity-50"></i>
-                            <p class="text-sm">Waiting for players...</p>
+                            <i class="fas fa-spinner fa-spin text-3xl mb-2 opacity-50"></i>
+                            <p class="text-sm">Connecting to Firebase...</p>
                         </div>
                     </div>
 
@@ -178,10 +180,8 @@
             </div>
 
             <div class="glass-card w-full p-10 rounded-3xl text-center mb-8 border-t-4 border-brand relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-brand/10 rounded-full blur-3xl pointer-events-none"></div>
-                
                 <div class="flex justify-between items-center mb-8 relative z-10">
-                    <span class="px-4 py-1.5 rounded-full bg-slate-800 text-xs font-mono text-slate-300 border border-white/10 shadow-sm">
+                    <span class="px-4 py-1.5 rounded-full bg-slate-800 text-xs font-mono text-slate-300 border border-white/10">
                         QUESTION <span id="q-current" class="text-white font-bold">1</span> / 10
                     </span>
                     <span class="px-4 py-1.5 rounded-full bg-brand/10 text-brand text-xs font-mono font-bold border border-brand/20 shadow-sm" id="category-badge">
@@ -193,19 +193,12 @@
                     Loading Question...
                 </h1>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full text-left relative z-10" id="options-grid">
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full text-left relative z-10" id="options-grid"></div>
             </div>
 
             <div class="flex justify-center">
                 <div class="glass-card px-8 py-3 rounded-full flex items-center gap-4 border border-white/10 shadow-lg">
-                    <div class="flex items-center gap-2">
-                        <span class="relative flex h-3 w-3">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                        </span>
-                        <span class="text-slate-300 font-bold text-sm tracking-wide uppercase">Answers Received</span>
-                    </div>
+                    <span class="text-slate-300 font-bold text-sm tracking-wide uppercase">Answers Received</span>
                     <span id="answer-count" class="text-white font-mono font-bold text-2xl border-l border-white/10 pl-4">0</span>
                 </div>
             </div>
@@ -213,10 +206,7 @@
 
         <div id="view-leaderboard" class="hidden w-full max-w-3xl flex-col items-center animate-slide-up">
             <h1 class="text-5xl font-display font-extrabold text-white mb-8 tracking-tight drop-shadow-lg">Round Results</h1>
-            
-            <div id="leaderboard-list" class="w-full space-y-4 mb-10">
-                </div>
-
+            <div id="leaderboard-list" class="w-full space-y-4 mb-10"></div>
             <button onclick="nextRound()" class="px-12 py-4 bg-brand hover:bg-brandHover text-white font-bold rounded-2xl text-xl shadow-xl shadow-brand/20 transition-transform hover:scale-105 active:scale-95 flex items-center gap-3">
                 Next Question <i class="fas fa-arrow-right"></i>
             </button>
@@ -226,100 +216,87 @@
 
     <section class="w-full bg-surface/30 border-t border-white/5 py-16 mt-20">
         <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12">
-            
             <div class="seo-content">
-                <h3>The Future of Social Gaming is Browser-Based</h3>
-                <p>
-                    In an era dominated by app fatigue, <strong>QuizRealm Group Hub</strong> offers a refreshing alternative: frictionless, instant-play gaming that lives directly in your browser. We have engineered a platform that eliminates the barriers to entry—no downloads, no sign-ups, and no specialized hardware required. By leveraging the ubiquity of smartphones and the power of modern web technologies like WebSockets and Firestore, we transform any screen into a game console and every phone into a controller.
-                </p>
-                <p>
-                    This "Host-Controller" architecture is designed for scalability and speed. Whether you are hosting a small family gathering or a large corporate event with dozens of participants, the system adapts dynamically. The Host Console acts as the central server, managing the game state, timer logic, and question distribution, while player devices operate as lightweight terminals dedicated purely to input and feedback. This ensures that even on slower mobile networks, the gameplay remains snappy and responsive.
-                </p>
-                <p>
-                    Furthermore, our platform creates a shared social experience that is often lost in digital gaming. By forcing players to look up at a central screen for questions and down at their phones for answers, we create a physical loop of engagement. The tension of the countdown timer, the collective groan when a difficult question appears, and the cheers when the leaderboard updates—these are human moments facilitated by technology, not replaced by it.
-                </p>
+                <h3>The Future of Social Gaming</h3>
+                <p>Welcome to the <strong>QuizRealm Group Hub</strong>. This platform eliminates the need for app downloads, turning any browser into a game console. Using a low-latency "Host-Controller" architecture, your phone becomes the remote, and this screen becomes the stage.</p>
             </div>
-
             <div class="seo-content">
-                <h3>Advanced Scoring & Content Curation</h3>
-                <p>
-                    At the heart of QuizRealm is a sophisticated scoring engine that goes beyond simple right-or-wrong binary outcomes. We utilize a <strong>linear decay algorithm</strong> for speed bonuses. A correct answer submitted in the first second is worth significantly more than one submitted in the last. This mechanic balances the playing field; pure knowledge is valuable, but quick recall and decisiveness are the keys to dominating the leaderboard. This prevents ties and keeps the competitive tension alive until the very final round.
-                </p>
-                <p>
-                    Our content library is not just a random assortment of trivia; it is a curated database of verified knowledge. From the intricate lore of <em>Game of Thrones</em> and the expanding universe of the MCU to academic rigors like Physics and History, every question bank is structured with difficulty curves in mind. Our "Dynamic Category Engine" allows us to push updates instantly—meaning when a new movie drops or a historical event occurs, it can be integrated into the game ecosystem immediately without user updates.
-                </p>
-                <p>
-                    Security and stability are paramount. We utilize anonymous authentication to ensure player privacy while maintaining persistent session states. If a player's phone goes to sleep or they accidentally close the tab, our "Rejoin Protocol" allows them to snap back into the game instantly without losing their score or streak. This resilience makes QuizRealm the most reliable choice for live events where technical hiccups are not an option.
-                </p>
+                <h3>Real-Time Sync Technology</h3>
+                <p>Powered by Firestore, every tap on a player's device is synchronized instantly with the host. Our proprietary scoring engine rewards speed and accuracy, updating leaderboards in milliseconds to keep the competitive tension high.</p>
             </div>
-
         </div>
     </section>
 
     <quiz-footer></quiz-footer>
 
     <script type="module">
+        // Import explicitly to avoid "GameEngine not found" errors
         import { db } from './firebase-config.js';
         import { doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // --- 1. CONFIGURATION & SAFETY CHECKS ---
-        let settings;
+        // --- 1. CONFIG LOADING ---
+        let settings = {};
         try {
-            settings = JSON.parse(localStorage.getItem('qr_host_settings'));
-        } catch(e) { console.error("Local storage error", e); }
-        
-        // Redirect if no session data found
-        if (!settings || !settings.roomCode) {
-            console.error("No session settings found.");
-            document.getElementById('error-banner').textContent = "Session expired. Redirecting...";
+            const stored = localStorage.getItem('qr_host_settings');
+            if (stored) settings = JSON.parse(stored);
+        } catch(e) { console.warn("Storage access blocked"); }
+
+        // Fallback for direct access without hub
+        if (!settings.roomCode) {
+            console.warn("No settings found. Redirecting...");
+            document.getElementById('error-banner').innerHTML = "Session missing. <a href='group-hub.html' class='underline'>Return to Hub</a>";
             document.getElementById('error-banner').classList.remove('hidden');
-            // Give user a moment to see error before redirect
-            setTimeout(() => window.location.href = 'group-hub.html', 2000);
+            // Stop execution if no settings
+            throw new Error("No Session");
         }
-
-        const ROOM_REF = doc(db, "group_rooms", settings.roomCode);
-        
-        let gameState = {
-            players: {},
-            questions: [],
-            index: 0,
-            timer: null
-        };
-
-        const TIMER_DURATION = 20; // Seconds per question
 
         // --- 2. INITIALIZATION ---
         async function init() {
             try {
-                // UI Setup
+                // UI SETUP
                 document.getElementById('display-code').textContent = settings.roomCode;
-                document.getElementById('category-badge').textContent = settings.categoryKey;
+                document.getElementById('category-badge').textContent = settings.categoryKey || "GENERAL";
                 
-                // Load Game Description from Data (if available)
+                // Description
                 if (typeof CATEGORY_CONFIG !== 'undefined' && CATEGORY_CONFIG[settings.categoryKey]) {
-                    const conf = CATEGORY_CONFIG[settings.categoryKey];
-                    document.getElementById('game-desc').textContent = conf.desc || "Test your knowledge in this fast-paced trivia challenge.";
+                    document.getElementById('game-desc').textContent = CATEGORY_CONFIG[settings.categoryKey].desc;
                 }
 
-                // Generate QR Code
-                // Smart Link Logic: Handles subfolders automatically
-                const currentUrl = window.location.href;
-                const basePath = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-                const joinUrl = `${basePath}/play.html?code=${settings.roomCode}`;
-                
-                const qrContainer = document.getElementById("qrcode");
-                qrContainer.innerHTML = ""; // Clear prev
-                new QRCode(qrContainer, { 
-                    text: joinUrl, 
-                    width: 160, 
-                    height: 160, 
-                    colorDark : "#0f172a", 
-                    colorLight : "#ffffff", 
-                    correctLevel : QRCode.CorrectLevel.L 
-                });
+                // QR CODE GENERATION (Robust)
+                try {
+                    const currentUrl = window.location.href;
+                    // Handle cases where URL ends with / or filename
+                    const basePath = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+                    const joinUrl = `${basePath}/play.html?code=${settings.roomCode}`;
+                    
+                    const qrBox = document.getElementById("qrcode");
+                    qrBox.innerHTML = "";
+                    
+                    // Check if library loaded
+                    if (typeof QRCode !== 'undefined') {
+                        new QRCode(qrBox, { 
+                            text: joinUrl, width: 160, height: 160, 
+                            colorDark : "#0f172a", colorLight : "#ffffff", 
+                            correctLevel : QRCode.CorrectLevel.L 
+                        });
+                    } else {
+                        throw new Error("QR Library Missing");
+                    }
+                    
+                    // Fallback Link
+                    const linkBox = document.getElementById('manual-link');
+                    linkBox.classList.remove('hidden');
+                    linkBox.querySelector('a').href = joinUrl;
+                    
+                } catch(qrErr) {
+                    console.error("QR Failed", qrErr);
+                    document.getElementById("qrcode").innerHTML = "<div class='text-red-500 text-xs p-2 border border-red-500 dashed'>QR Blocked.<br>Use Code.</div>";
+                }
 
-                // Create Room in Firebase
-                await setDoc(ROOM_REF, {
+                // FIREBASE CONNECTION
+                const roomRef = doc(db, "group_rooms", settings.roomCode);
+                
+                await setDoc(roomRef, {
                     status: 'LOBBY',
                     hostId: 'HOST_' + Date.now(),
                     category: settings.categoryKey,
@@ -332,160 +309,146 @@
                 document.getElementById('connection-status').textContent = "Online • Ready";
                 document.getElementById('connection-status').className = "text-xs text-green-400 font-bold uppercase tracking-wider";
 
-                // Listen for Players
-                onSnapshot(ROOM_REF, (snap) => {
-                    const data = snap.data();
-                    if(!data) return;
-
-                    // Lobby Update
-                    if(data.status === 'LOBBY') {
-                        gameState.players = data.players || {};
-                        renderLobby();
-                    }
-
-                    // Live Answer Count
-                    if(data.status === 'GAME') {
-                        const count = Object.keys(data.answers || {}).length;
-                        const total = Object.keys(gameState.players).length;
-                        
-                        document.getElementById('answer-count').textContent = `${count} / ${total}`;
-                        
-                        // Auto-advance if everyone answered (and at least 1 player exists)
-                        if(total > 0 && count >= total) {
-                            endQuestion();
-                        }
-                    }
-                });
+                // SETUP LISTENERS
+                setupGameListeners(roomRef);
 
             } catch (err) {
-                console.error("Init Error:", err);
-                document.getElementById('error-banner').textContent = "Database Connection Failed: " + err.message;
+                console.error("Critical Init Error:", err);
+                document.getElementById('error-banner').textContent = "Connection Error: " + err.message;
                 document.getElementById('error-banner').classList.remove('hidden');
             }
+        }
+
+        // Global State
+        let gameState = {
+            players: {},
+            questions: [],
+            index: 0,
+            timer: null
+        };
+        const TIMER_DURATION = 20;
+
+        function setupGameListeners(roomRef) {
+            onSnapshot(roomRef, (snap) => {
+                if(!snap.exists()) return;
+                const data = snap.data();
+
+                if(data.status === 'LOBBY') {
+                    gameState.players = data.players || {};
+                    renderLobby();
+                }
+
+                if(data.status === 'GAME') {
+                    const count = Object.keys(data.answers || {}).length;
+                    const total = Object.keys(gameState.players).length;
+                    document.getElementById('answer-count').textContent = `${count} / ${total}`;
+                    
+                    if(total > 0 && count >= total) endQuestion(roomRef);
+                }
+            });
         }
 
         function renderLobby() {
             const grid = document.getElementById('player-grid');
             const names = Object.keys(gameState.players);
             document.getElementById('player-count').textContent = names.length;
-
             const btn = document.getElementById('start-btn');
 
             if(names.length > 0) {
-                // Enable Start Button
                 btn.disabled = false;
                 btn.classList.remove('bg-slate-700', 'text-slate-400', 'opacity-50', 'cursor-not-allowed');
-                btn.classList.add('bg-brand', 'text-white', 'hover:bg-brandHover', 'shadow-lg', 'transform', 'hover:scale-105');
+                btn.classList.add('bg-brand', 'text-white', 'hover:bg-brandHover', 'shadow-lg');
                 
                 grid.innerHTML = names.map(n => `
-                    <div class="player-card group">
-                        <div class="w-12 h-12 mx-auto bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-2 flex items-center justify-center text-white font-bold text-lg shadow-inner group-hover:scale-110 transition-transform">
-                            ${n.charAt(0).toUpperCase()}
-                        </div>
-                        <div class="text-xs font-bold text-slate-200 truncate w-full">${n}</div>
+                    <div class="player-card">
+                        <div class="w-10 h-10 mx-auto bg-indigo-500 rounded-full mb-2 flex items-center justify-center text-white font-bold">${n.charAt(0)}</div>
+                        <div class="text-xs font-bold text-white truncate">${n}</div>
                     </div>
                 `).join('');
             } else {
-                // Disable Start Button
                 btn.disabled = true;
                 btn.classList.add('bg-slate-700', 'text-slate-400', 'opacity-50', 'cursor-not-allowed');
-                btn.classList.remove('bg-brand', 'text-white', 'hover:bg-brandHover', 'shadow-lg');
-                
-                grid.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center h-40 text-slate-500">
-                        <i class="fas fa-spinner fa-spin text-2xl mb-3 opacity-20"></i>
-                        <p class="text-sm font-mono">Waiting for players...</p>
-                    </div>
-                `;
+                grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center h-40 text-slate-500"><i class="fas fa-spinner fa-spin text-2xl mb-2 opacity-50"></i><p>Waiting for players...</p></div>`;
             }
         }
 
-        // --- 3. GAME LOGIC ---
+        // --- GAME CONTROL ---
         window.startGame = function() {
-            // Check Data Availability
+            // Load Data
             if (typeof QUESTION_BANKS === 'undefined' || !QUESTION_BANKS[settings.categoryKey]) {
-                alert("Error: Question data not found for this category.");
-                return;
+                // Fallback for testing if data.js fails
+                console.warn("Question bank missing, using mock data.");
+                gameState.questions = [
+                    { question: "Test Question?", options: ["A","B","C","D"], correctIndex: 0 },
+                    { question: "Another Test?", options: ["1","2","3","4"], correctIndex: 1 }
+                ];
+            } else {
+                const bank = QUESTION_BANKS[settings.categoryKey];
+                let pool = [...(bank.easy || []), ...(bank.medium || [])];
+                // Shuffle
+                for (let i = pool.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [pool[i], pool[j]] = [pool[j], pool[i]];
+                }
+                gameState.questions = pool.slice(0, 10);
             }
-
-            const bank = QUESTION_BANKS[settings.categoryKey];
-            // Combine Easy & Medium for variety, randomize, take 10
-            let pool = [];
-            if(bank.easy) pool = pool.concat(bank.easy);
-            if(bank.medium) pool = pool.concat(bank.medium);
             
-            // Fisher-Yates Shuffle
-            for (let i = pool.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [pool[i], pool[j]] = [pool[j], pool[i]];
-            }
-            
-            gameState.questions = pool.slice(0, 10);
             gameState.index = 0;
-
-            // Switch Views
             document.getElementById('view-lobby').classList.add('hidden');
             document.getElementById('view-game').classList.remove('hidden');
             document.getElementById('view-game').classList.add('flex');
-
-            startRound();
+            
+            startRound(doc(db, "group_rooms", settings.roomCode));
         }
 
-        async function startRound() {
+        async function startRound(roomRef) {
             const q = gameState.questions[gameState.index];
             
-            // Update UI
+            // UI Update
             document.getElementById('q-current').textContent = gameState.index + 1;
             document.getElementById('question-text').textContent = q.question;
             document.getElementById('answer-count').textContent = `0 / ${Object.keys(gameState.players).length}`;
 
-            // Colors for options
             const colors = ['bg-red-500', 'bg-blue-500', 'bg-yellow-500', 'bg-green-500'];
             const icons = ['square', 'circle', 'play', 'diamond'];
 
             document.getElementById('options-grid').innerHTML = q.options.map((opt, i) => `
-                <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-surface/60 backdrop-blur-sm shadow-sm transition hover:bg-surface/80">
-                    <div class="w-14 h-14 rounded-xl ${colors[i]} flex items-center justify-center text-white text-2xl shadow-inner shrink-0">
+                <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-surface/60 backdrop-blur-sm">
+                    <div class="w-12 h-12 rounded-xl ${colors[i]} flex items-center justify-center text-white text-xl">
                         <i class="fas fa-${icons[i]} ${i===2?'rotate-[-90deg]':''}"></i>
                     </div>
-                    <span class="text-xl font-bold text-white leading-snug">${opt}</span>
+                    <span class="text-xl font-bold text-white">${opt}</span>
                 </div>
             `).join('');
 
-            // Push State to Firebase
-            await updateDoc(ROOM_REF, {
+            // Firebase Update
+            await updateDoc(roomRef, {
                 status: 'GAME',
                 currentQuestion: {
-                    text: settings.tvMode ? "Look at the Host Screen!" : q.question,
+                    text: settings.tvMode ? "Look at Host Screen" : q.question,
                     mobileMode: !settings.tvMode,
                     startTime: Date.now()
                 },
-                answers: {} // Clear answers for new round
+                answers: {}
             });
 
-            // Start Timer Visuals
+            // Timer Animation
             const bar = document.getElementById('timer-bar');
             bar.style.transition = 'none';
             bar.style.width = '100%';
-            
-            // Force Reflow
-            void bar.offsetWidth;
-            
-            requestAnimationFrame(() => {
+            setTimeout(() => {
                 bar.style.transition = `width ${TIMER_DURATION}s linear`;
                 bar.style.width = '0%';
-            });
+            }, 50);
 
-            // Set Logic Timeout
             if(gameState.timer) clearTimeout(gameState.timer);
-            gameState.timer = setTimeout(endQuestion, TIMER_DURATION * 1000);
+            gameState.timer = setTimeout(() => endQuestion(roomRef), TIMER_DURATION * 1000);
         }
 
-        async function endQuestion() {
+        async function endQuestion(roomRef) {
             if(gameState.timer) clearTimeout(gameState.timer);
 
-            // 1. Fetch latest data to get all answers
-            const snap = await getDoc(ROOM_REF);
+            const snap = await getDoc(roomRef);
             const data = snap.data();
             const answers = data.answers || {};
             const q = gameState.questions[gameState.index];
@@ -493,33 +456,21 @@
 
             let updates = {};
             
-            // 2. Score Calculation
             Object.entries(gameState.players).forEach(([nick, pData]) => {
-                if(answers[nick]) {
-                    const ans = answers[nick];
-                    if(ans.val === q.correctIndex) {
-                        // Calculate Speed Bonus
-                        const timeTaken = (ans.time - startTime) / 1000;
-                        // Linear decay: 500 bonus at 0s, 0 bonus at 20s
-                        const speedBonus = Math.max(0, Math.floor((1 - (timeTaken / TIMER_DURATION)) * 500));
-                        const points = 1000 + speedBonus;
-                        
-                        gameState.players[nick].score = (pData.score || 0) + points;
-                        
-                        // Track update
-                        updates[`players.${nick}.score`] = gameState.players[nick].score;
-                    }
+                if(answers[nick] && answers[nick].val === q.correctIndex) {
+                    const timeTaken = (answers[nick].time - startTime) / 1000;
+                    const speedBonus = Math.max(0, Math.floor((1 - (timeTaken / TIMER_DURATION)) * 500));
+                    const points = 1000 + speedBonus;
+                    gameState.players[nick].score = (pData.score || 0) + points;
                 }
+                updates[`players.${nick}.score`] = gameState.players[nick].score;
             });
 
-            // 3. Reveal Results
             updates['status'] = 'RESULT';
             updates['correctIndex'] = q.correctIndex;
 
-            await updateDoc(ROOM_REF, updates);
-
-            // 4. Wait, then show Leaderboard
-            setTimeout(showLeaderboard, 4000); // 4s delay to see "Correct/Wrong" on phones
+            await updateDoc(roomRef, updates);
+            setTimeout(showLeaderboard, 4000);
         }
 
         function showLeaderboard() {
@@ -532,22 +483,12 @@
             const sorted = Object.entries(gameState.players).sort(([,a], [,b]) => b.score - a.score).slice(0, 5);
 
             list.innerHTML = sorted.map(([name, data], i) => `
-                <div class="leaderboard-row flex items-center justify-between p-6 bg-surface rounded-2xl border border-white/5 shadow-lg transform transition hover:scale-[1.02]">
+                <div class="flex items-center justify-between p-5 bg-surface rounded-2xl border border-white/5 shadow-lg">
                     <div class="flex items-center gap-6">
-                        <div class="text-4xl font-black ${i===0 ? 'text-yellow-400 drop-shadow-md' : (i===1 ? 'text-slate-300' : (i===2 ? 'text-orange-400' : 'text-slate-600'))}">
-                            #${i+1}
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center font-bold text-white border-2 border-white/10 text-xl shadow-inner">
-                                ${name.charAt(0).toUpperCase()}
-                            </div>
-                            <span class="text-2xl font-bold text-white tracking-tight">${name}</span>
-                        </div>
+                        <div class="text-3xl font-black ${i===0 ? 'text-yellow-400' : 'text-slate-600'}">#${i+1}</div>
+                        <div class="text-xl font-bold text-white">${name}</div>
                     </div>
-                    <div class="flex flex-col items-end">
-                        <div class="text-3xl font-mono font-bold text-brand">${data.score}</div>
-                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Points</div>
-                    </div>
+                    <div class="text-2xl font-mono font-bold text-brand">${data.score}</div>
                 </div>
             `).join('');
         }
@@ -555,23 +496,20 @@
         window.nextRound = function() {
             gameState.index++;
             if(gameState.index >= gameState.questions.length) {
-                // Game Over Logic
-                alert("Game Over! Thanks for playing.");
+                alert("Game Over!");
                 window.location.href = 'group-hub.html';
                 return;
             }
-            
             document.getElementById('view-leaderboard').classList.add('hidden');
             document.getElementById('view-leaderboard').classList.remove('flex');
             document.getElementById('view-game').classList.remove('hidden');
             document.getElementById('view-game').classList.add('flex');
             
-            startRound();
+            startRound(doc(db, "group_rooms", settings.roomCode));
         }
 
-        // Run
+        // Start
         init();
-
     </script>
 </body>
 </html>
