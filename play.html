@@ -21,6 +21,7 @@
         body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; touch-action: manipulation; }
         .game-btn { border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: all 0.1s; text-align: center; padding: 10px; }
         .game-btn:active { transform: translateY(4px); box-shadow: none; filter: brightness(0.9); }
+        .timer-progress { transition: width 1s linear; }
     </style>
 </head>
 
@@ -54,28 +55,37 @@
         </div>
 
         <div id="view-game" class="hidden flex-col h-full">
+            <div class="w-full h-2 bg-slate-800 rounded-full mb-4 overflow-hidden">
+                <div id="timer-bar" class="h-full bg-brand w-full"></div>
+            </div>
+
             <div id="q-card" class="mb-4 p-4 bg-surface rounded-2xl border border-white/10 shadow-lg min-h-[100px] flex items-center justify-center text-center">
                 <p id="q-text" class="text-lg font-bold text-white leading-tight">Loading...</p>
             </div>
             
-            <div class="grid grid-cols-1 gap-3 flex-grow content-start pb-safe" id="btn-grid">
-                </div>
+            <div class="grid grid-cols-1 gap-3 flex-grow content-start pb-safe" id="btn-grid"></div>
         </div>
 
         <div id="view-feedback" class="hidden flex-col items-center justify-center h-full text-center">
             <div class="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mb-4">
-                <i class="fas fa-lock text-3xl text-white"></i>
+                <i class="fas fa-check text-3xl text-white"></i>
             </div>
-            <h2 class="text-2xl font-bold text-white">Answer Locked</h2>
-            <p class="text-slate-400 animate-pulse">Waiting for others...</p>
+            <h2 class="text-2xl font-bold text-white">Answer Sent</h2>
+            <div class="mt-4 bg-surface/50 px-6 py-2 rounded-full border border-white/5">
+                <p class="text-slate-400 text-sm">Players Remaining: <span id="wait-count" class="text-white font-bold">...</span></p>
+            </div>
         </div>
 
-        <div id="view-result" class="hidden flex-col items-center justify-center h-full text-center">
+        <div id="view-result" class="hidden flex-col items-center justify-center h-full text-center px-4">
             <div id="res-icon-bg" class="w-28 h-28 rounded-full flex items-center justify-center mb-6 shadow-2xl">
                 <i id="res-icon" class="fas fa-star text-5xl text-white"></i>
             </div>
             <h1 id="res-title" class="text-4xl font-black text-white mb-2">Correct!</h1>
-            <div id="res-pts" class="text-5xl font-mono font-bold text-brand mb-8">+0</div>
+            
+            <div class="bg-surface/50 p-4 rounded-xl border border-white/10 w-full max-w-xs mt-4">
+                <div class="text-xs text-slate-500 uppercase font-bold mb-1">Correct Answer</div>
+                <div id="res-text" class="text-white font-bold text-lg">...</div>
+            </div>
         </div>
     </main>
 
@@ -84,6 +94,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const urlCode = urlParams.get('code');
         let ROOM_REF, myAnswer = null;
+        let totalPlayers = 0;
 
         function initController() {
             try { info = JSON.parse(localStorage.getItem('qr_player_info')); } catch(e){}
@@ -137,20 +148,36 @@
         }
 
         function handleState(data) {
-            if(data.players && data.players[info.nickname]) {
-                document.getElementById('score-disp').innerText = data.players[info.nickname].score;
+            // Update Stats
+            if (data.players) {
+                if(data.players[info.nickname]) {
+                    document.getElementById('score-disp').innerText = data.players[info.nickname].score;
+                }
+                totalPlayers = Object.keys(data.players).length;
             }
 
+            // Update Wait Count
+            if (data.answers) {
+                const ansCount = Object.keys(data.answers).length;
+                document.getElementById('wait-count').innerText = `${totalPlayers - ansCount}`;
+            }
+
+            // --- VIEW ROUTING ---
             if(data.status === 'LOBBY') showView('view-lobby');
             
             if(data.status === 'GAME') {
-                // If we haven't answered yet, show game. If answered, stay on feedback.
                 if (myAnswer === null) {
                     showView('view-game');
+                    
                     if(data.currentQuestion) {
                         document.getElementById('q-text').innerText = data.currentQuestion.text;
                         
-                        // Render Buttons with Text
+                        // Timer Animation
+                        const bar = document.getElementById('timer-bar');
+                        bar.style.transition = 'none'; bar.style.width = '100%';
+                        setTimeout(() => { bar.style.transition = 'width 20s linear'; bar.style.width = '0%'; }, 50);
+
+                        // Buttons
                         const opts = data.currentQuestion.options || ["A", "B", "C", "D"];
                         const colors = ['bg-opt0', 'bg-opt1', 'bg-opt2', 'bg-opt3'];
                         const icons = ['square', 'circle', 'play', 'diamond'];
@@ -166,35 +193,31 @@
             }
 
             if(data.status === 'RESULT') {
-                // Convert both to Numbers for safety
                 const correctIdx = Number(data.correctIndex);
                 const myAnsIdx = Number(myAnswer);
-                
                 const isCorrect = (myAnsIdx === correctIdx);
                 
                 const title = document.getElementById('res-title');
                 const bg = document.getElementById('res-icon-bg');
                 const icon = document.getElementById('res-icon');
-                const pts = document.getElementById('res-pts');
                 
+                document.getElementById('res-text').innerText = data.correctText || "Unknown";
+
                 if(isCorrect) {
                     title.innerText = "Correct!";
                     title.className = "text-4xl font-black text-green-500 mb-2";
                     bg.className = "w-28 h-28 rounded-full bg-green-500 flex items-center justify-center mb-6 shadow-2xl";
                     icon.className = "fas fa-check text-5xl text-white";
-                    pts.innerText = "Good Job!";
                     if(navigator.vibrate) navigator.vibrate([50,50,50]);
                 } else {
                     title.innerText = "Wrong!";
                     title.className = "text-4xl font-black text-red-500 mb-2";
                     bg.className = "w-28 h-28 rounded-full bg-surface border-2 border-red-500 flex items-center justify-center mb-6 shadow-xl";
                     icon.className = "fas fa-times text-5xl text-red-500";
-                    pts.innerText = "+0";
                     if(navigator.vibrate) navigator.vibrate(300);
                 }
                 
-                // Reset for next round
-                myAnswer = null; 
+                myAnswer = null; // Reset for next
                 showView('view-result');
             }
         }
@@ -207,7 +230,6 @@
             ansData[`answers.${info.nickname}`] = { val: idx, time: Date.now() };
             window.fs.updateDoc(ROOM_REF, ansData);
             
-            // HIDE GAME -> SHOW WAITING
             showView('view-feedback');
         }
 
