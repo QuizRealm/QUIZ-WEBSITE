@@ -9,15 +9,15 @@
     <meta name="theme-color" content="#0f172a">
 
     <script type="module" src="firebase-config.js"></script>
+    
     <script src="data.js"></script>
     
     <script type="module">
-        import { doc, setDoc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        window.fs = { doc, setDoc, onSnapshot, updateDoc, getDoc };
+        import { doc, setDoc, onSnapshot, updateDoc, getDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        window.fs = { doc, setDoc, onSnapshot, updateDoc, getDoc, deleteField };
     </script>
 
     <script src="components.js" defer></script>
-    <script type="module" src="assets/ux-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,7 +28,10 @@
                 extend: {
                     fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
                     colors: { brand: '#6366f1', surface: '#1e293b', background: '#0f172a' },
-                    animation: { 'pop': 'pop 0.3s ease-out' },
+                    animation: { 
+                        'pop': 'pop 0.3s ease-out',
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    },
                     keyframes: { pop: { '0%': { transform: 'scale(0.9)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } } }
                 }
             }
@@ -37,23 +40,30 @@
 
     <style>
         body { background-color: #0f172a; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
-        .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
         .timer-bar { transition: width 1s linear; }
-        .podium-1 { background: linear-gradient(to bottom, #fbbf24, #d97706); border: 2px solid #fcd34d; }
-        .podium-2 { background: linear-gradient(to bottom, #94a3b8, #64748b); border: 2px solid #cbd5e1; }
-        .podium-3 { background: linear-gradient(to bottom, #d97706, #92400e); border: 2px solid #fbbf24; }
+        
+        /* Background Shapes */
+        .bg-shape { position: absolute; opacity: 0.1; z-index: 0; animation: float 20s infinite linear; }
+        @keyframes float { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(-100vh) rotate(360deg); } }
     </style>
 </head>
 
 <body>
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="bg-shape text-brand text-9xl" style="left: 10%; bottom: -100px;"><i class="fas fa-square"></i></div>
+        <div class="bg-shape text-purple-500 text-8xl" style="left: 80%; bottom: -150px; animation-delay: 5s;"><i class="fas fa-circle"></i></div>
+        <div class="bg-shape text-green-500 text-7xl" style="left: 40%; bottom: -200px; animation-delay: 10s;"><i class="fas fa-play"></i></div>
+    </div>
+
     <quiz-header></quiz-header>
 
     <div id="loading-overlay" class="fixed inset-0 bg-background z-50 flex items-center justify-center">
         <div class="text-center animate-pulse">
-            <h2 class="text-2xl font-bold text-white mb-2">Starting System...</h2>
-            <p class="text-slate-400 text-sm font-mono">Connecting Database</p>
+            <h2 class="text-2xl font-bold text-white mb-2">Initializing System...</h2>
+            <p class="text-slate-400 text-sm font-mono" id="loading-text">Connecting to Room</p>
         </div>
     </div>
 
@@ -65,62 +75,87 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
                 <div class="lg:col-span-4 glass rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-brand">
                     <div class="text-xs font-bold text-brand uppercase tracking-widest mb-4 bg-brand/10 px-3 py-1 rounded-full border border-brand/20">Scan to Join</div>
-                    <div class="bg-white p-2 rounded-2xl shadow-2xl mb-6">
+                    <div class="bg-white p-2 rounded-2xl shadow-2xl mb-6 transform hover:scale-105 transition duration-300">
                         <img id="qr-img" src="" alt="Scan QR" class="w-40 h-40 object-contain" />
                     </div>
                     <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Room Code</div>
-                    <div id="display-code" class="text-7xl font-black text-white tracking-widest leading-none my-2">----</div>
-                    <div class="text-xs text-blue-400 underline cursor-pointer mt-2" onclick="openPlayerLink()">Open Player Link</div>
+                    <div id="display-code" class="text-7xl font-black text-white tracking-widest leading-none my-2 drop-shadow-lg">----</div>
+                    <div class="flex gap-4 mt-4">
+                        <button onclick="toggleSound()" id="sound-btn" class="text-slate-400 hover:text-white"><i class="fas fa-volume-up"></i></button>
+                    </div>
                 </div>
 
                 <div class="lg:col-span-8 flex flex-col gap-6">
-                    <div class="glass rounded-2xl p-6 border-l-4 border-green-500">
-                        <h3 class="font-bold text-white mb-1"><i class="fas fa-users mr-2"></i>Lobby</h3>
-                        <p class="text-sm text-slate-400">Wait for everyone to join before starting.</p>
+                    <div class="glass rounded-2xl p-6 border-l-4 border-green-500 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-white mb-1"><i class="fas fa-users mr-2"></i>Lobby</h3>
+                            <p class="text-sm text-slate-400">Wait for players. Click a player to <span class="text-red-400 font-bold">kick</span> them.</p>
+                        </div>
+                        <div class="text-right">
+                             <div class="text-xs text-slate-500 uppercase font-bold">Category</div>
+                             <div id="cat-badge-lobby" class="text-brand font-bold">LOADING...</div>
+                        </div>
                     </div>
 
                     <div class="glass rounded-3xl p-6 flex-grow flex flex-col min-h-[300px]">
                         <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-2xl font-bold text-white">Players <span id="p-count" class="text-brand ml-2">0</span></h2>
+                            <h2 class="text-2xl font-bold text-white">Players <span id="p-count" class="text-brand ml-2 bg-brand/10 px-2 rounded-lg">0</span></h2>
                             <div class="text-xs text-green-400 font-mono animate-pulse" id="net-status">CONNECTING...</div>
                         </div>
-                        <div id="p-grid" class="grid grid-cols-3 md:grid-cols-4 gap-4 content-start max-h-[300px] overflow-y-auto"></div>
-                        <button id="start-btn" onclick="startGame()" disabled class="mt-auto w-full py-4 bg-slate-700 text-slate-400 font-bold rounded-xl transition-all cursor-not-allowed">
-                            Start Game
-                        </button>
+                        <div id="p-grid" class="grid grid-cols-3 md:grid-cols-4 gap-4 content-start max-h-[300px] overflow-y-auto pr-2"></div>
+                        
+                        <div class="mt-auto pt-6">
+                            <button id="start-btn" onclick="startGame()" disabled class="w-full py-4 bg-slate-700 text-slate-400 font-bold rounded-xl transition-all cursor-not-allowed">
+                                Start Game
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div id="view-get-ready" class="hidden w-full flex-col items-center justify-center animate-pop min-h-[500px]">
+            <h2 class="text-slate-400 uppercase tracking-widest font-bold mb-4">Question <span id="ready-q-idx">1</span></h2>
+            <div class="text-6xl md:text-8xl font-black text-white mb-8" id="countdown-text">3</div>
+            <p class="text-xl text-brand font-bold animate-bounce">Look at your phone!</p>
         </div>
 
         <div id="view-game" class="hidden w-full max-w-5xl mx-auto flex-col items-center animate-pop">
             <div class="w-full h-4 bg-surface rounded-full mb-8 overflow-hidden border border-white/10">
                 <div id="timer-bar" class="h-full bg-gradient-to-r from-brand to-purple-500 w-full"></div>
             </div>
-            <div class="glass w-full p-10 rounded-3xl text-center mb-8 border-t-4 border-brand">
+            <div class="glass w-full p-10 rounded-3xl text-center mb-8 border-t-4 border-brand shadow-2xl">
                 <div class="flex justify-between mb-8">
                     <span class="px-3 py-1 rounded bg-slate-800 text-xs text-slate-300 font-mono">Q <span id="q-idx">1</span></span>
                     <span id="cat-badge" class="px-3 py-1 rounded bg-brand/20 text-brand text-xs font-bold uppercase">CAT</span>
                 </div>
-                <h1 id="q-text" class="text-4xl md:text-5xl font-extrabold text-white mb-10 leading-tight">Loading...</h1>
+                <h1 id="q-text" class="text-4xl md:text-5xl font-extrabold text-white mb-10 leading-tight">...</h1>
                 <div id="opt-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left"></div>
             </div>
-            <div class="glass px-8 py-3 rounded-full flex gap-4 border border-white/10">
-                <span class="text-slate-300 font-bold text-sm uppercase">Answers:</span>
-                <span id="ans-count" class="text-white font-mono font-bold text-2xl pl-2 border-l border-white/10">0</span>
+            <div class="glass px-8 py-4 rounded-full flex gap-6 border border-white/10 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+                    <span class="text-slate-300 font-bold text-sm uppercase">Answers:</span>
+                </div>
+                <span id="ans-count" class="text-white font-mono font-bold text-3xl">0</span>
             </div>
         </div>
 
         <div id="view-scores" class="hidden w-full max-w-3xl mx-auto flex-col items-center animate-pop">
             <h1 class="text-5xl font-black text-white mb-8">Results</h1>
+            
             <div class="glass w-full p-6 rounded-2xl mb-8 border-l-4 border-green-500 bg-surface/80">
                 <div class="text-xs text-slate-400 uppercase font-bold mb-2">Correct Answer</div>
                 <h2 id="correct-answer-text" class="text-2xl font-bold text-white">...</h2>
             </div>
+
             <div id="score-list" class="w-full space-y-3 mb-10"></div>
             
             <div class="w-full mt-6 flex flex-col items-center">
-                <p class="text-xs text-slate-400 mb-2">Next round in 5s...</p>
+                <div class="flex justify-between w-full text-xs text-slate-400 mb-2 font-mono">
+                    <span>NEXT ROUND</span>
+                    <span id="auto-next-timer">5s</span>
+                </div>
                 <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
                     <div id="auto-next-bar" class="h-full bg-brand w-full"></div>
                 </div>
@@ -131,123 +166,116 @@
             </button>
         </div>
 
-        <div id="view-final" class="hidden w-full max-w-4xl mx-auto flex-col items-center animate-pop">
-            <h1 class="text-6xl font-black text-white mb-2 drop-shadow-lg">GAME OVER</h1>
-            <p class="text-slate-400 font-bold mb-10 uppercase tracking-widest">Final Standings</p>
-
-            <div class="flex items-end justify-center gap-4 mb-12 w-full max-w-xl h-64" id="final-podium">
-                </div>
-
-            <div class="glass w-full max-w-2xl p-6 rounded-2xl mb-8 border border-white/10 bg-red-500/10 text-center">
-                <div class="text-xs font-bold text-red-400 uppercase mb-2"><i class="fas fa-fire mr-2"></i>The Verdict</div>
-                <p id="final-roast" class="text-xl text-white italic">"..."</p>
-            </div>
-
+        <div id="view-final" class="hidden w-full max-w-5xl mx-auto flex-col items-center animate-pop">
+            <h1 class="text-6xl font-black text-white mb-2 drop-shadow-lg tracking-tight">GAME OVER</h1>
+            <div class="flex items-end justify-center gap-4 mb-12 w-full max-w-2xl h-80" id="final-podium"></div>
             <div id="final-list" class="w-full max-w-2xl grid grid-cols-2 gap-4 mb-10"></div>
-
             <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-                <button onclick="playAgain()" class="flex-1 py-4 bg-brand hover:bg-indigo-500 text-white font-bold rounded-xl shadow-xl transition transform hover:scale-105">
-                    <i class="fas fa-redo mr-2"></i> Play Again
-                </button>
-                <button onclick="goToHub()" class="flex-1 py-4 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl shadow-xl transition transform hover:scale-105">
-                    <i class="fas fa-home mr-2"></i> Change Mode
-                </button>
+                <button onclick="playAgain()" class="flex-1 py-4 bg-brand hover:bg-indigo-500 text-white font-bold rounded-xl shadow-xl transition transform hover:scale-105">Play Again</button>
+                <button onclick="goToHub()" class="flex-1 py-4 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl">Group Hub</button>
             </div>
         </div>
 
     </main>
-<section class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10 mt-20">
-    <h3 class="text-xl font-bold text-white mb-6 uppercase tracking-widest">Explore The Archives</h3>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-        
-        <div class="flex flex-col gap-2">
-            <h4 class="text-brand font-bold mb-2">Seasonal Protocols</h4>
-            <a href="/quiz-xmas-history.html" class="text-slate-400 hover:text-white transition">Myths & Legends</a>
-            <a href="/quiz-xmas-visual.html" class="text-slate-400 hover:text-white transition">Visual Challenge</a>
-            <a href="/quiz-xmas-songs.html" class="text-slate-400 hover:text-white transition">Song Tier List</a>
-            <a href="/quiz-xmas-quotes.html" class="text-slate-400 hover:text-white transition">Movie Quotes</a>
-        </div>
 
-        <div class="flex flex-col gap-2">
-            <h4 class="text-brand font-bold mb-2">Deep Lore</h4>
-            <a href="/quiz-webslinger.html" class="text-slate-400 hover:text-white transition">Spider-Man Trivia</a>
-            <a href="/quiz-batman-trivia.html" class="text-slate-400 hover:text-white transition">Batman Impossible</a>
-            <a href="/quiz-superman-legacy.html" class="text-slate-400 hover:text-white transition">Superman Legacy</a>
-            <a href="/encyclopedia/rick-and-morty-visuals.html" class="text-slate-400 hover:text-white transition">R&M Visuals</a>
-        </div>
-
-        <div class="flex flex-col gap-2">
-            <h4 class="text-brand font-bold mb-2">Arcade Labs</h4>
-            <a href="/funnel-arcade-cyber.html" class="text-slate-400 hover:text-white transition">Cyber Terminal</a>
-            <a href="/funnel-arcade-syndicate.html" class="text-slate-400 hover:text-white transition">Social Syndicate</a>
-            <a href="/funnel-arcade-calibration.html" class="text-slate-400 hover:text-white transition">Neural Calibration</a>
-            <a href="/roy-game.html" class="text-slate-400 hover:text-white transition">Roy Simulation</a>
-        </div>
-
-        <div class="flex flex-col gap-2">
-            <h4 class="text-brand font-bold mb-2">Psyche Scanners</h4>
-            <a href="/toxic-analysis.html" class="text-slate-400 hover:text-white transition">Toxic Analysis</a>
-            <a href="/mind-blowers.html" class="text-slate-400 hover:text-white transition">Mind Blowers</a>
-            <a href="/fortune-magnet-test.html" class="text-slate-400 hover:text-white transition">Fortune Magnet</a>
-            <a href="/cronenberg-match.html" class="text-slate-400 hover:text-white transition">Genetic Match</a>
-        </div>
-
-    </div>
-</section>
     <quiz-footer></quiz-footer>
-
     <script type="module">
-        let settings = {};
-        try { settings = JSON.parse(localStorage.getItem('qr_host_settings')); } catch(e){}
+        // --- 1. HARDCODED QUESTION BANKS (FOR FEATURED MODES) ---
+        const STATIC_BANKS = {
+            'general_easy': [
+                { question: "What represents the element Gold on the periodic table?", options: ["Go", "Au", "Ag", "Gl"], correctIndex: 1 },
+                { question: "Which planet is known as the Red Planet?", options: ["Venus", "Jupiter", "Mars", "Saturn"], correctIndex: 2 },
+                { question: "Who painted the Mona Lisa?", options: ["Van Gogh", "Picasso", "Da Vinci", "Michelangelo"], correctIndex: 2 },
+                { question: "What is the largest ocean on Earth?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], correctIndex: 3 },
+                { question: "In which year did the Titanic sink?", options: ["1912", "1905", "1923", "1898"], correctIndex: 0 },
+                { question: "What is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria", "Cytoplasm"], correctIndex: 2 },
+                { question: "How many bones are in the adult human body?", options: ["206", "195", "250", "180"], correctIndex: 0 },
+                { question: "What is the capital of Japan?", options: ["Beijing", "Seoul", "Tokyo", "Bangkok"], correctIndex: 2 },
+                { question: "Which country gifted the Statue of Liberty to the USA?", options: ["France", "England", "Spain", "Germany"], correctIndex: 0 },
+                { question: "How many legs does a spider have?", options: ["6", "8", "10", "12"], correctIndex: 1 }
+            ],
+            'general_hard': [
+                { question: "Which philosopher wrote 'Beyond Good and Evil'?", options: ["Kant", "Nietzsche", "Sartre", "Plato"], correctIndex: 1 },
+                { question: "What is the rarest blood type?", options: ["O Negative", "AB Negative", "B Negative", "A Positive"], correctIndex: 1 },
+                { question: "In what year was the first iPhone released?", options: ["2005", "2007", "2009", "2004"], correctIndex: 1 },
+                { question: "What represents the letter 'K' in the NATO phonetic alphabet?", options: ["Kilo", "King", "Kite", "Knight"], correctIndex: 0 },
+                { question: "Which is the only mammal that can fly?", options: ["Flying Squirrel", "Bat", "Sugar Glider", "Colugo"], correctIndex: 1 },
+                { question: "What is the smallest country in the world?", options: ["Monaco", "Vatican City", "Nauru", "San Marino"], correctIndex: 1 },
+                { question: "How many hearts does an octopus have?", options: ["1", "2", "3", "4"], correctIndex: 2 },
+                { question: "Who was the first woman to win a Nobel Prize?", options: ["Marie Curie", "Rosalind Franklin", "Ada Lovelace", "Jane Goodall"], correctIndex: 0 },
+                { question: "What is the capital of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Perth"], correctIndex: 2 },
+                { question: "Which element has the highest melting point?", options: ["Carbon", "Tungsten", "Titanium", "Iron"], correctIndex: 1 }
+            ],
+            'geography': [
+                { question: "What is the longest river in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], correctIndex: 1 },
+                { question: "Mount Everest is located in which mountain range?", options: ["Andes", "Rockies", "Himalayas", "Alps"], correctIndex: 2 },
+                { question: "Which country has the most islands?", options: ["Sweden", "Indonesia", "Canada", "Philippines"], correctIndex: 0 },
+                { question: "What is the largest desert in the world?", options: ["Sahara", "Arabian", "Antarctic", "Gobi"], correctIndex: 2 },
+                { question: "Which US state has the longest coastline?", options: ["Florida", "California", "Alaska", "Hawaii"], correctIndex: 2 },
+                { question: "Which country lies on both Europe and Asia?", options: ["Turkey", "Greece", "Egypt", "Ukraine"], correctIndex: 0 },
+                { question: "What is the capital of Canada?", options: ["Toronto", "Vancouver", "Montreal", "Ottawa"], correctIndex: 3 },
+                { question: "Which continent is the driest?", options: ["Africa", "Australia", "Antarctica", "South America"], correctIndex: 2 },
+                { question: "Which ocean is the Bermuda Triangle located in?", options: ["Pacific", "Atlantic", "Indian", "Arctic"], correctIndex: 1 },
+                { question: "Machu Picchu is located in which country?", options: ["Chile", "Brazil", "Peru", "Colombia"], correctIndex: 2 }
+            ],
+            'history': [
+                { question: "Who was the first Emperor of Rome?", options: ["Julius Caesar", "Augustus", "Nero", "Caligula"], correctIndex: 1 },
+                { question: "In which year did World War II end?", options: ["1943", "1944", "1945", "1946"], correctIndex: 2 },
+                { question: "The French Revolution began in which year?", options: ["1789", "1776", "1804", "1812"], correctIndex: 0 },
+                { question: "Who invented the printing press?", options: ["Gutenberg", "Edison", "Tesla", "Da Vinci"], correctIndex: 0 },
+                { question: "Which civilization built the pyramids?", options: ["Mayan", "Aztec", "Egyptian", "Roman"], correctIndex: 2 },
+                { question: "Who was the second President of the United States?", options: ["Thomas Jefferson", "John Adams", "James Madison", "Alexander Hamilton"], correctIndex: 1 },
+                { question: "The Berlin Wall fell in which year?", options: ["1987", "1989", "1991", "1993"], correctIndex: 1 },
+                { question: "Which empire was ruled by Genghis Khan?", options: ["Ottoman", "Mongol", "Roman", "Persian"], correctIndex: 1 },
+                { question: "Who discovered Penicillin?", options: ["Pasteur", "Fleming", "Curie", "Darwin"], correctIndex: 1 },
+                { question: "The Magna Carta was signed in which year?", options: ["1066", "1215", "1492", "1776"], correctIndex: 1 }
+            ]
+        };
 
-        if (!settings || !settings.roomCode) {
-            document.getElementById('loading-overlay').classList.add('hidden');
-            document.getElementById('error-banner').innerHTML = "Session missing. <a href='group-hub.html' class='underline'>Return to Hub</a>";
-            document.getElementById('error-banner').classList.remove('hidden');
-            throw new Error("No Session");
-        }
-
-        let gameState = { players: {}, questions: [], index: 0, timer: null, nextTimer: null, currentShuffledOptions: [], currentCorrectIndex: 0 };
+        // --- GLOBAL STATE ---
+        let gameState = { 
+            players: {}, questions: [], index: 0, 
+            timer: null, nextTimer: null, 
+            currentShuffledOptions: [], currentCorrectIndex: 0,
+            soundOn: true
+        };
+        
         const TIMER_DURATION = 20;
-        let ROOM_REF; 
+        let ROOM_REF;
+        let settings = {};
 
-        // ROASTS DATABASE
-        const ROASTS = [
-            "Some of you played... purely for participation points.",
-            "I've seen dial-up internet answer faster than the bottom half of this list.",
-            "Did the bottom players fall asleep, or was the WiFi just that bad?",
-            "If guessing was an Olympic sport, some of you wouldn't even qualify.",
-            "Don't worry, intelligence isn't everything. You have... great personalities.",
-            "A random number generator would have scored higher than the last place player.",
-            "Proof that fast thumbs do not equal a fast brain."
-        ];
+        // --- AUDIO ENGINE ---
+        const AUDIO = {
+            tick: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-game-ball-tap-2073.mp3'),
+            correct: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3'),
+            end: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-game-level-completed-2059.mp3')
+        };
+        window.toggleSound = () => { gameState.soundOn = !gameState.soundOn; };
+        function playSound(type) { if(gameState.soundOn && AUDIO[type]) AUDIO[type].play().catch(()=>{}); }
 
+        // --- BOOT ---
         async function boot() {
-            if (!window.db || !window.fs) {
-                console.log("Waiting for Firebase...");
-                setTimeout(boot, 100);
+            try { settings = JSON.parse(localStorage.getItem('qr_host_settings')); } catch(e){}
+            if (!settings || !settings.roomCode) {
+                document.getElementById('loading-overlay').classList.add('hidden');
+                document.getElementById('error-banner').innerHTML = "Session missing. <a href='group-hub.html' class='underline'>Return to Hub</a>";
+                document.getElementById('error-banner').classList.remove('hidden');
                 return;
             }
 
-            try {
-                document.getElementById('display-code').innerText = settings.roomCode;
-                document.getElementById('cat-badge').innerText = settings.categoryKey;
+            document.getElementById('display-code').innerText = settings.roomCode;
+            document.getElementById('cat-badge-lobby').innerText = settings.categoryKey.replace('_', ' ').toUpperCase();
 
-                const joinUrl = `${window.location.origin}/play.html?code=${settings.roomCode}`;
-                const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}`;
-                document.getElementById('qr-img').src = qrApi;
-                window.openPlayerLink = () => window.open(joinUrl, '_blank');
+            // Generate QR
+            const joinUrl = `${window.location.origin}/play.html?code=${settings.roomCode}`;
+            document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}`;
 
+            // Init Firebase Room
+            if(window.fs && window.db) {
                 ROOM_REF = window.fs.doc(window.db, "group_rooms", settings.roomCode);
-
                 await window.fs.setDoc(ROOM_REF, {
-                    status: 'LOBBY',
-                    hostId: 'HOST_' + Date.now(),
-                    category: settings.categoryKey,
-                    players: {},
-                    answers: {},
-                    currentQuestion: null,
-                    createdAt: Date.now()
+                    status: 'LOBBY', hostId: settings.hostId, category: settings.categoryKey,
+                    players: {}, answers: {}, createdAt: Date.now()
                 });
 
                 document.getElementById('net-status').innerText = "● ONLINE";
@@ -258,12 +286,10 @@
                 window.fs.onSnapshot(ROOM_REF, (snap) => {
                     const data = snap.data();
                     if(!data) return;
-
                     if (data.status === 'LOBBY') {
                         gameState.players = data.players || {};
                         renderLobby();
                     }
-
                     if (data.status === 'GAME') {
                         const count = Object.keys(data.answers || {}).length;
                         const total = Object.keys(gameState.players).length;
@@ -271,12 +297,6 @@
                         if (total > 0 && count >= total) endQuestion();
                     }
                 });
-
-            } catch (err) {
-                console.error(err);
-                document.getElementById('loading-overlay').classList.add('hidden');
-                document.getElementById('error-banner').innerText = "System Error: " + err.message;
-                document.getElementById('error-banner').classList.remove('hidden');
             }
         }
 
@@ -288,42 +308,96 @@
 
             if (names.length > 0) {
                 btn.disabled = false;
-                btn.className = "mt-auto w-full py-4 bg-brand hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg transition transform hover:scale-105 cursor-pointer";
-                
+                btn.className = "w-full py-4 bg-brand hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg cursor-pointer";
                 grid.innerHTML = names.map(n => `
-                    <div class="bg-white/10 rounded-xl p-3 flex flex-col items-center animate-pop border border-white/5 shadow-inner">
-                        <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white mb-2 shadow-lg border border-white/20">${n.charAt(0).toUpperCase()}</div>
-                        <span class="text-xs font-bold text-slate-200 truncate w-full text-center">${n}</span>
+                    <div onclick="kickPlayer('${n}')" class="group bg-white/10 rounded-xl p-3 flex flex-col items-center cursor-pointer hover:bg-red-500/20">
+                        <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white mb-2">${n.charAt(0)}</div>
+                        <span class="text-xs font-bold text-slate-200">${n}</span>
                     </div>
                 `).join('');
             } else {
                 btn.disabled = true;
-                btn.className = "mt-auto w-full py-4 bg-slate-700 text-slate-400 font-bold rounded-xl transition-all cursor-not-allowed opacity-50";
-                grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center h-40 text-slate-500"><i class="fas fa-spinner fa-spin text-2xl mb-2 opacity-50"></i><p class="text-sm font-mono">Waiting for players...</p></div>`;
+                btn.className = "w-full py-4 bg-slate-700 text-slate-400 font-bold rounded-xl cursor-not-allowed opacity-50";
+                grid.innerHTML = `<div class="col-span-full text-slate-500 text-sm">Waiting for players...</div>`;
             }
         }
 
+        window.kickPlayer = async function(nick) {
+            if(confirm(`Kick ${nick}?`)) {
+                await window.fs.updateDoc(ROOM_REF, { [`players.${nick}`]: window.fs.deleteField() });
+            }
+        }
+
+        // --- START GAME LOGIC ---
         window.startGame = function() {
-            if (typeof QUESTION_BANKS === 'undefined' || !QUESTION_BANKS[settings.categoryKey]) { alert("Data Error"); return; }
+            let pool = [];
+            const key = settings.categoryKey;
+
+            // 1. Check HARDCODED STATIC BANKS first
+            if (STATIC_BANKS[key]) {
+                pool = [...STATIC_BANKS[key]];
+                document.getElementById('cat-badge').innerText = key.replace('_', ' ').toUpperCase();
+            } 
+            // 2. Check DATA.JS (EXTERNAL BANK)
+            else if (typeof QUESTION_BANKS !== 'undefined' && QUESTION_BANKS[key]) {
+                const bank = QUESTION_BANKS[key];
+                // Combine Easy + Medium for a good mix
+                pool = [...(bank.easy||[]), ...(bank.medium||[])];
+                document.getElementById('cat-badge').innerText = (CATEGORY_CONFIG[key]?.label || key).toUpperCase();
+            }
+            // 3. FALLBACK (If everything fails)
+            else {
+                pool = [...STATIC_BANKS['general_easy']]; // Default to General Easy
+                document.getElementById('cat-badge').innerText = "GENERAL (FALLBACK)";
+            }
             
-            const bank = QUESTION_BANKS[settings.categoryKey];
-            let pool = [...(bank.easy||[]), ...(bank.medium||[])];
+            // Shuffle & Slice
             pool.sort(() => Math.random() - 0.5);
             gameState.questions = pool.slice(0, 10);
             gameState.index = 0;
 
-            showView('view-game');
-            startRound();
+            document.getElementById('view-lobby').classList.add('hidden');
+            document.getElementById('view-lobby').classList.remove('flex');
+            prepareRound();
         }
 
-        async function startRound() {
-            if(gameState.nextTimer) clearTimeout(gameState.nextTimer);
+        // --- ROUND MANAGEMENT ---
+        function prepareRound() {
+            document.getElementById('view-scores').classList.add('hidden');
+            document.getElementById('view-scores').classList.remove('flex');
+            
+            document.getElementById('view-get-ready').classList.remove('hidden');
+            document.getElementById('view-get-ready').classList.add('flex');
+            document.getElementById('ready-q-idx').innerText = gameState.index + 1;
 
+            let count = 3;
+            const el = document.getElementById('countdown-text');
+            el.innerText = count;
+            playSound('tick');
+
+            const int = setInterval(() => {
+                count--;
+                el.innerText = count;
+                if (count > 0) playSound('tick');
+                
+                if (count <= 0) {
+                    clearInterval(int);
+                    document.getElementById('view-get-ready').classList.add('hidden');
+                    document.getElementById('view-get-ready').classList.remove('flex');
+                    document.getElementById('view-game').classList.remove('hidden');
+                    document.getElementById('view-game').classList.add('flex');
+                    startRoundLogic();
+                }
+            }, 1000);
+        }
+
+        async function startRoundLogic() {
             const q = gameState.questions[gameState.index];
             document.getElementById('q-idx').innerText = gameState.index + 1;
             document.getElementById('q-text').innerText = q.question;
             document.getElementById('ans-count').innerText = `0 / ${Object.keys(gameState.players).length}`;
 
+            // Shuffle Options
             let opts = q.options.map((opt, i) => ({ text: opt, isCorrect: i === q.correctIndex }));
             opts.sort(() => Math.random() - 0.5);
             gameState.currentCorrectIndex = opts.findIndex(o => o.isCorrect);
@@ -333,7 +407,7 @@
             const icons = ['square', 'circle', 'play', 'diamond'];
 
             document.getElementById('opt-grid').innerHTML = gameState.currentShuffledOptions.map((opt, i) => `
-                <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-surface/60 backdrop-blur-sm">
+                <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 bg-surface/60 backdrop-blur-sm animate-pop" style="animation-delay: ${i * 0.1}s">
                     <div class="w-12 h-12 rounded-xl ${colors[i]} flex items-center justify-center text-white text-xl font-bold shadow-lg">
                         <i class="fas fa-${icons[i]} ${i===2?'rotate-[-90deg]':''}"></i>
                     </div>
@@ -346,17 +420,15 @@
                 currentQuestion: {
                     text: q.question, 
                     options: gameState.currentShuffledOptions,
-                    mobileMode: true,
                     startTime: Date.now()
                 },
                 answers: {}
             });
 
+            // Timer Bar
             const bar = document.getElementById('timer-bar');
             bar.style.transition = 'none'; bar.style.width = '100%';
             setTimeout(() => { bar.style.transition = `width ${TIMER_DURATION}s linear`; bar.style.width = '0%'; }, 50);
-
-            if(gameState.timer) clearTimeout(gameState.timer);
             gameState.timer = setTimeout(endQuestion, TIMER_DURATION * 1000);
         }
 
@@ -370,8 +442,9 @@
             const correctIdx = gameState.currentCorrectIndex;
             const correctText = gameState.currentShuffledOptions[correctIdx];
 
-            let updates = { status: 'RESULT', correctIndex: correctIdx, correctText: correctText };
+            let updates = { status: 'RESULT', correctIndex: correctIdx };
             
+            // Scoring Logic
             Object.entries(gameState.players).forEach(([nick, pData]) => {
                 if(answers[nick]) {
                     const ans = answers[nick];
@@ -387,123 +460,91 @@
 
             await window.fs.updateDoc(ROOM_REF, updates);
             document.getElementById('correct-answer-text').innerText = correctText;
-            setTimeout(showScores, 4000);
+            playSound('correct');
+            setTimeout(showScores, 3000);
         }
 
         function showScores() {
-            showView('view-scores');
+            document.getElementById('view-game').classList.add('hidden');
+            document.getElementById('view-game').classList.remove('flex');
+            document.getElementById('view-scores').classList.remove('hidden');
+            document.getElementById('view-scores').classList.add('flex');
 
             const list = document.getElementById('score-list');
             const sorted = Object.entries(gameState.players).sort(([,a], [,b]) => b.score - a.score).slice(0, 5);
 
             list.innerHTML = sorted.map(([name, data], i) => `
-                <div class="flex items-center justify-between p-5 bg-surface rounded-2xl border border-white/5 shadow-lg transform transition hover:scale-[1.02]">
+                <div class="flex items-center justify-between p-5 bg-surface rounded-2xl border border-white/5 shadow-lg">
                     <div class="flex items-center gap-6">
-                        <div class="text-3xl font-black ${i===0 ? 'text-yellow-400 drop-shadow-md' : 'text-slate-600'}">#${i+1}</div>
+                        <div class="text-3xl font-black ${i===0 ? 'text-yellow-400' : 'text-slate-600'}">#${i+1}</div>
                         <div class="text-xl font-bold text-white">${name}</div>
                     </div>
                     <div class="text-2xl font-mono font-bold text-brand">${data.score} pts</div>
                 </div>
             `).join('');
 
+            // Auto Next Bar
             const nextBar = document.getElementById('auto-next-bar');
             nextBar.style.transition = 'none'; nextBar.style.width = '100%';
             setTimeout(() => { nextBar.style.transition = 'width 5s linear'; nextBar.style.width = '0%'; }, 50);
-
-            if(gameState.nextTimer) clearTimeout(gameState.nextTimer);
             gameState.nextTimer = setTimeout(nextRound, 5000);
         }
 
         window.nextRound = function() {
             if(gameState.nextTimer) clearTimeout(gameState.nextTimer);
-
             gameState.index++;
             if(gameState.index >= gameState.questions.length) {
                 showFinalResults();
                 return;
             }
-            showView('view-game');
-            startRound();
+            prepareRound();
         }
 
-        // --- NEW: FINAL RESULTS LOGIC ---
         async function showFinalResults() {
+            if(gameState.nextTimer) clearTimeout(gameState.nextTimer);
             await window.fs.updateDoc(ROOM_REF, { status: 'GAMEOVER' });
-            showView('view-final');
+            playSound('end');
+
+            document.getElementById('view-scores').classList.add('hidden');
+            document.getElementById('view-scores').classList.remove('flex');
+            document.getElementById('view-final').classList.remove('hidden');
+            document.getElementById('view-final').classList.add('flex');
 
             const sorted = Object.entries(gameState.players).sort(([,a], [,b]) => b.score - a.score);
             const top3 = sorted.slice(0, 3);
             const others = sorted.slice(3);
 
-            // Render Podium
             const podium = document.getElementById('final-podium');
             podium.innerHTML = '';
             
-            // Silver (2nd)
-            if(top3[1]) podium.innerHTML += createPodiumBar(top3[1], 2, 'h-40 podium-2');
-            // Gold (1st)
-            if(top3[0]) podium.innerHTML += createPodiumBar(top3[0], 1, 'h-60 podium-1');
-            // Bronze (3rd)
-            if(top3[2]) podium.innerHTML += createPodiumBar(top3[2], 3, 'h-32 podium-3');
+            if(top3[1]) podium.innerHTML += createPodiumBar(top3[1], 2, 'h-40 bg-slate-400', 'Silver');
+            if(top3[0]) podium.innerHTML += createPodiumBar(top3[0], 1, 'h-56 bg-yellow-400', 'Gold');
+            if(top3[2]) podium.innerHTML += createPodiumBar(top3[2], 3, 'h-32 bg-amber-700', 'Bronze');
 
-            // Render List
             document.getElementById('final-list').innerHTML = others.map(([name, data], i) => `
                 <div class="flex justify-between items-center p-3 bg-surface rounded-lg border border-white/5">
-                    <span class="text-slate-400 font-bold">#${i+4}</span>
+                    <span class="text-slate-400 font-bold text-sm">#${i+4}</span>
                     <span class="text-white font-bold">${name}</span>
-                    <span class="text-brand font-mono">${data.score}</span>
+                    <span class="text-brand font-mono font-bold">${data.score}</span>
                 </div>
             `).join('');
-
-            // Generate Roast
-            const randomRoast = ROASTS[Math.floor(Math.random() * ROASTS.length)];
-            document.getElementById('final-roast').innerText = `"${randomRoast}"`;
         }
 
-        function createPodiumBar([name, data], rank, classes) {
+        function createPodiumBar([name, data], rank, className, label) {
             return `
                 <div class="flex flex-col items-center justify-end w-1/3 h-full animate-pop">
-                    <div class="text-xl font-bold text-white mb-2 shadow-black drop-shadow-md">${name}</div>
-                    <div class="w-full ${classes} rounded-t-xl flex flex-col justify-center items-center shadow-2xl relative">
-                        <div class="text-4xl font-black text-white/90 drop-shadow-sm">${rank}</div>
-                        <div class="text-sm font-mono font-bold text-white/80 mt-1">${data.score}</div>
+                    <div class="text-xl font-bold text-white mb-2 text-center">${name}</div>
+                    <div class="w-full ${className} rounded-t-xl flex flex-col justify-center items-center shadow-2xl relative">
+                        <div class="text-4xl font-black text-white/50">${rank}</div>
                     </div>
                 </div>
             `;
         }
 
-        window.playAgain = function() {
-            // Generate NEW 4-letter code
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            let newCode = "";
-            for (let i = 0; i < 4; i++) newCode += chars.charAt(Math.floor(Math.random() * chars.length));
-            
-            // Update storage
-            settings.roomCode = newCode;
-            localStorage.setItem('qr_host_settings', JSON.stringify(settings));
-            
-            // Reload page to re-init with new code
-            window.location.reload();
-        }
+        window.playAgain = function() { window.location.reload(); }
+        window.goToHub = function() { window.location.href = 'group-hub.html'; }
 
-        window.goToHub = function() {
-            window.location.href = 'group-hub.html';
-        }
-
-        function showView(id) {
-            ['view-lobby','view-game','view-scores','view-final'].forEach(v => {
-                document.getElementById(v).classList.add('hidden');
-                document.getElementById(v).classList.remove('flex');
-            });
-            const el = document.getElementById(id);
-            el.classList.remove('hidden');
-            el.classList.add('flex');
-        }
-
-        boot();
+        setTimeout(boot, 500);
     </script>
 </body>
-
-
-
 </html>

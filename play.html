@@ -2,241 +2,320 @@
 <html lang="en">
 <head>
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Controller | QuizRealm</title>
+    <title>Play | QuizRealm Controller</title>
     <meta name="theme-color" content="#0f172a">
+
     <script type="module" src="firebase-config.js"></script>
+    
     <script type="module">
-        import { doc, updateDoc, onSnapshot, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        window.fs = { doc, updateDoc, onSnapshot, getDoc, setDoc };
+        import { doc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        window.fs = { doc, getDoc, updateDoc, onSnapshot };
     </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { brand: '#6366f1', surface: '#1e293b', background: '#0f172a', opt0: '#ef4444', opt1: '#3b82f6', opt2: '#eab308', opt3: '#22c55e' } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { brand: '#6366f1', surface: '#1e293b', background: '#0f172a' },
+                    animation: { 'pop': 'pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)' },
+                    keyframes: { pop: { '0%': { transform: 'scale(0.5)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } } }
+                }
+            }
+        }
     </script>
+
     <style>
-        body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; touch-action: manipulation; }
-        .game-btn { border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: all 0.1s; text-align: center; padding: 10px; height: 100%; width: 100%; }
-        .game-btn:active { transform: translateY(4px); box-shadow: none; filter: brightness(0.9); }
-        .timer-progress { transition: width 1s linear; }
+        body { background-color: #0f172a; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; touch-action: manipulation; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        
+        /* The Big Buttons */
+        .btn-opt { transition: transform 0.1s; position: relative; overflow: hidden; }
+        .btn-opt:active { transform: scale(0.95); }
+        .btn-opt::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.1); opacity: 0; transition: opacity 0.2s; }
+        .btn-opt:active::after { opacity: 1; }
+
+        /* Colors matching Host */
+        .opt-0 { background-color: #ef4444; } /* Red */
+        .opt-1 { background-color: #3b82f6; } /* Blue */
+        .opt-2 { background-color: #eab308; } /* Yellow */
+        .opt-3 { background-color: #22c55e; } /* Green */
     </style>
 </head>
 
-<body class="flex flex-col h-[100dvh]">
+<body class="h-[100dvh] flex flex-col">
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-    <div id="join-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-background hidden">
-        <div class="w-full max-w-sm p-8 rounded-3xl border border-white/10 text-center shadow-2xl bg-surface/90 backdrop-blur">
-            <h2 class="text-2xl font-black text-white mb-2">Join Game</h2>
-            <input type="text" id="join-nick" placeholder="NICKNAME" maxlength="12" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-4 text-center font-bold text-white mb-4 uppercase">
-            <button onclick="confirmJoin()" class="w-full py-4 bg-brand rounded-xl font-bold text-white">ENTER LOBBY</button>
+    <header class="h-14 bg-surface flex items-center justify-between px-4 border-b border-white/5 z-20">
+        <div class="font-black text-brand tracking-widest">QUIZREALM</div>
+        <div id="score-badge" class="bg-white/10 px-3 py-1 rounded-full text-xs font-bold font-mono hidden">0 PTS</div>
+    </header>
+
+    <div id="overlay" class="fixed inset-0 bg-background z-50 flex items-center justify-center p-6 text-center">
+        <div id="loader" class="animate-pulse">
+            <h1 class="text-2xl font-bold mb-2">Connecting...</h1>
+        </div>
+        <div id="error-msg" class="hidden">
+            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+            <h2 class="text-xl font-bold mb-2">Connection Lost</h2>
+            <p id="err-txt" class="text-slate-400 text-sm mb-6">Room not found.</p>
+            <a href="group-hub.html" class="px-6 py-3 bg-white text-black font-bold rounded-lg">Exit</a>
         </div>
     </div>
 
-    <nav class="bg-surface/90 backdrop-blur border-b border-white/10 px-4 py-3 flex justify-between items-center fixed top-0 w-full z-50">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-white text-xs" id="avatar-disp">?</div>
-            <span class="font-bold text-sm text-white truncate max-w-[120px]" id="nick-disp">...</span>
-        </div>
-        <div class="bg-brand/20 px-3 py-1 rounded-full text-brand font-mono font-bold text-sm" id="score-disp">0</div>
-    </nav>
-
-    <main class="flex-grow pt-20 px-4 pb-6 relative z-10 w-full max-w-md mx-auto h-full overflow-hidden">
-        
-        <div id="view-lobby" class="hidden flex-col items-center justify-center h-full text-center">
-            <div class="w-24 h-24 bg-surface rounded-full flex items-center justify-center mb-6 shadow-xl border border-white/10">
-                <i class="fas fa-gamepad text-4xl text-brand animate-pulse"></i>
-            </div>
-            <h1 class="text-3xl font-extrabold text-white mb-2">You're In!</h1>
-            <p class="text-slate-400 text-sm">Wait for host.</p>
-        </div>
-
-        <div id="view-game" class="hidden flex-col h-full">
-            <div class="w-full h-2 bg-slate-800 rounded-full mb-4 overflow-hidden">
-                <div id="timer-bar" class="h-full bg-brand w-full"></div>
-            </div>
-
-            <div id="q-card" class="mb-4 p-4 bg-surface rounded-2xl border border-white/10 shadow-lg min-h-[100px] flex items-center justify-center text-center">
-                <p id="q-text" class="text-lg font-bold text-white leading-tight">Loading...</p>
-            </div>
+    <main id="view-login" class="flex-grow flex flex-col justify-center p-6 hidden">
+        <div class="glass p-8 rounded-3xl w-full max-w-sm mx-auto">
+            <h2 class="text-2xl font-bold text-center mb-6">Join Game</h2>
             
-            <div class="grid grid-cols-1 gap-3 flex-grow content-start pb-safe" id="btn-grid">
-                </div>
-        </div>
-
-        <div id="view-feedback" class="hidden flex-col items-center justify-center h-full text-center">
-            <div class="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mb-4">
-                <i class="fas fa-check text-3xl text-white"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-white">Answer Sent</h2>
-            <div class="mt-4 bg-surface/50 px-6 py-2 rounded-full border border-white/5">
-                <p class="text-slate-400 text-sm">Players Remaining: <span id="wait-count" class="text-white font-bold">...</span></p>
-            </div>
-        </div>
-
-        <div id="view-result" class="hidden flex-col items-center justify-center h-full text-center px-4">
-            <div id="res-icon-bg" class="w-28 h-28 rounded-full flex items-center justify-center mb-6 shadow-2xl">
-                <i id="res-icon" class="fas fa-star text-5xl text-white"></i>
-            </div>
-            <h1 id="res-title" class="text-4xl font-black text-white mb-2">Correct!</h1>
+            <label class="text-xs font-bold text-slate-400 uppercase ml-1">Room Code</label>
+            <input type="text" id="inp-code" maxlength="4" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-4 text-center text-2xl font-mono tracking-[0.5em] mb-4 uppercase placeholder-white/10 outline-none focus:border-brand transition" placeholder="ABCD">
             
-            <div class="bg-surface/50 p-4 rounded-xl border border-white/10 w-full max-w-xs mt-4">
-                <div class="text-xs text-slate-500 uppercase font-bold mb-1">Correct Answer</div>
-                <div id="res-text" class="text-white font-bold text-lg">...</div>
-            </div>
+            <label class="text-xs font-bold text-slate-400 uppercase ml-1">Nickname</label>
+            <input type="text" id="inp-name" maxlength="12" class="w-full bg-black/30 border border-white/20 rounded-xl px-4 py-4 text-center text-xl font-bold mb-6 outline-none focus:border-brand transition" placeholder="Enter Name">
+            
+            <button onclick="joinGame()" id="join-btn" class="w-full bg-brand py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-indigo-500 transition active:scale-95">
+                Enter Lobby
+            </button>
         </div>
     </main>
 
+    <main id="view-lobby" class="flex-grow flex flex-col items-center justify-center p-6 hidden text-center">
+        <div class="w-24 h-24 bg-brand/20 rounded-full flex items-center justify-center mb-6 animate-pop">
+            <i class="fas fa-user-check text-4xl text-brand"></i>
+        </div>
+        <h1 class="text-3xl font-black mb-2">You're In!</h1>
+        <p class="text-slate-400 mb-8">See your name on screen?</p>
+        <div class="bg-surface px-6 py-3 rounded-full font-mono font-bold text-xl border border-white/10">
+            <span id="lobby-name" class="text-brand">Player</span>
+        </div>
+        <p class="text-xs text-slate-500 mt-8 animate-pulse">Waiting for host to start...</p>
+    </main>
+
+    <main id="view-game" class="flex-grow flex flex-col p-4 hidden">
+        <div class="bg-surface/50 p-4 rounded-xl mb-4 border-l-4 border-brand">
+            <p id="q-text-mini" class="text-sm font-bold text-slate-300 leading-tight">Loading question...</p>
+        </div>
+
+        <div id="btn-grid" class="grid grid-cols-2 gap-4 flex-grow content-center">
+            </div>
+    </main>
+
+    <main id="view-wait" class="flex-grow flex flex-col items-center justify-center p-6 hidden text-center bg-surface">
+        <div id="feedback-icon" class="text-6xl mb-4"></div>
+        <h2 id="feedback-title" class="text-3xl font-black mb-2">Answer Sent</h2>
+        <p id="feedback-sub" class="text-slate-400">Look at the main screen!</p>
+        <div id="points-earned" class="mt-6 text-brand font-mono font-bold text-2xl hidden">+0 pts</div>
+    </main>
+
     <script type="module">
-        let info = {};
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlCode = urlParams.get('code');
-        let ROOM_REF, myAnswer = null;
-        let totalPlayers = 0;
+        // --- STATE ---
+        let state = { 
+            roomCode: new URLSearchParams(window.location.search).get('code') || '',
+            nick: '',
+            score: 0,
+            hasAnswered: false
+        };
+        let ROOM_REF;
 
-        function initController() {
-            try { info = JSON.parse(localStorage.getItem('qr_player_info')); } catch(e){}
+        // --- ICONS ---
+        const ICONS = ['square', 'circle', 'play', 'diamond']; // Matches Host
 
-            if ((!info || !info.nickname) && urlCode) {
-                document.getElementById('join-modal').classList.remove('hidden');
+        // --- BOOT ---
+        window.onload = () => {
+            if(state.roomCode) {
+                document.getElementById('inp-code').value = state.roomCode;
+                document.getElementById('inp-name').focus();
+            }
+            document.getElementById('overlay').classList.add('hidden');
+            showView('view-login');
+        };
+
+        // --- JOIN LOGIC ---
+        window.joinGame = async function() {
+            const code = document.getElementById('inp-code').value.toUpperCase().trim();
+            const name = document.getElementById('inp-name').value.trim().substring(0, 12);
+
+            if(code.length !== 4 || name.length < 2) {
+                alert("Please enter a valid Room Code and Name.");
                 return;
             }
-            if (info && urlCode && info.roomCode !== urlCode) {
-                info.roomCode = urlCode;
-                localStorage.setItem('qr_player_info', JSON.stringify(info));
-            }
-            if ((!info || !info.roomCode) && !urlCode) {
-                window.location.href = 'group-hub.html';
-                return;
-            }
-            if (info && info.nickname && info.roomCode) boot();
-        }
 
-        window.confirmJoin = function() {
-            const nick = document.getElementById('join-nick').value.trim().toUpperCase();
-            if (nick.length < 2) return alert("Enter nickname!");
-            
-            const newInfo = { nickname: nick, roomCode: urlCode, role: 'player', timestamp: Date.now() };
-            localStorage.setItem('qr_player_info', JSON.stringify(newInfo));
-            info = newInfo;
-            document.getElementById('join-modal').classList.add('hidden');
-            boot();
-        }
-
-        async function boot() {
-            if (!window.db || !window.fs) { setTimeout(boot, 100); return; }
+            document.getElementById('join-btn').disabled = true;
+            document.getElementById('join-btn').innerText = "Connecting...";
 
             try {
-                document.getElementById('nick-disp').innerText = info.nickname;
-                document.getElementById('avatar-disp').innerText = info.nickname.charAt(0);
-                ROOM_REF = window.fs.doc(window.db, "group_rooms", info.roomCode);
+                if (!window.db) throw new Error("Database not ready");
+                ROOM_REF = window.fs.doc(window.db, "group_rooms", code);
+                const snap = await window.fs.getDoc(ROOM_REF);
 
-                const playerKey = `players.${info.nickname}`;
-                let joinData = {}; joinData[playerKey] = { score: 0, avatar: 'A', joinedAt: Date.now() };
+                if(!snap.exists()) {
+                    alert("Room not found!");
+                    resetJoinBtn();
+                    return;
+                }
+
+                if(snap.data().status !== 'LOBBY') {
+                    alert("Game already in progress!");
+                    resetJoinBtn();
+                    return;
+                }
+
+                const players = snap.data().players || {};
+                if(players[name]) {
+                    alert("Name taken! Choose another.");
+                    resetJoinBtn();
+                    return;
+                }
+
+                // Add player
+                await window.fs.updateDoc(ROOM_REF, {
+                    [`players.${name}`]: { score: 0, avatar: Math.floor(Math.random()*5) }
+                });
+
+                state.roomCode = code;
+                state.nick = name;
+                document.getElementById('lobby-name').innerText = name;
                 
-                await window.fs.updateDoc(ROOM_REF, joinData).catch(async () => {
-                    await window.fs.setDoc(ROOM_REF, joinData, { merge: true });
-                });
+                initListener();
 
-                window.fs.onSnapshot(ROOM_REF, (snap) => {
-                    if(!snap.exists()) { alert("Room closed"); window.location.href='group-hub.html'; return; }
-                    handleState(snap.data());
-                });
-            } catch (err) { alert("Connection Error"); }
+            } catch(e) {
+                console.error(e);
+                alert("Connection Error. Try again.");
+                resetJoinBtn();
+            }
+        };
+
+        function resetJoinBtn() {
+            document.getElementById('join-btn').disabled = false;
+            document.getElementById('join-btn').innerText = "Enter Lobby";
         }
 
-        function handleState(data) {
-            // Update Stats
-            if (data.players) {
-                if(data.players[info.nickname]) {
-                    document.getElementById('score-disp').innerText = data.players[info.nickname].score;
+        // --- GAME LOOP ---
+        function initListener() {
+            window.fs.onSnapshot(ROOM_REF, (snap) => {
+                const data = snap.data();
+                
+                // 1. Check if Kicked
+                if(!data || !data.players || !data.players[state.nick]) {
+                    alert("You were disconnected from the lobby.");
+                    window.location.reload();
+                    return;
                 }
-                totalPlayers = Object.keys(data.players).length;
-            }
 
-            // Update Wait Count
-            if (data.answers) {
-                const ansCount = Object.keys(data.answers).length;
-                document.getElementById('wait-count').innerText = `${Math.max(0, totalPlayers - ansCount)}`;
-            }
+                // 2. Update Score
+                state.score = data.players[state.nick].score || 0;
+                document.getElementById('score-badge').innerText = `${state.score} PTS`;
+                document.getElementById('score-badge').classList.remove('hidden');
 
-            // --- VIEW ROUTING ---
-            if(data.status === 'LOBBY') showView('view-lobby');
-            
-            if(data.status === 'GAME') {
-                if (myAnswer === null) {
-                    showView('view-game');
-                    
-                    if(data.currentQuestion) {
-                        document.getElementById('q-text').innerText = data.currentQuestion.text;
+                // 3. State Machine
+                if(data.status === 'LOBBY') {
+                    showView('view-lobby');
+                } 
+                else if (data.status === 'GAME') {
+                    // Only show controls if we haven't answered this specific question yet
+                    // Note: We use a local flag 'hasAnswered' which we reset when the question text changes
+                    const qText = data.currentQuestion.text;
+                    if (state.lastQ !== qText) {
+                        state.lastQ = qText;
+                        state.hasAnswered = false;
+                        renderButtons(data.currentQuestion.options);
+                        document.getElementById('q-text-mini').innerText = qText;
+                        showView('view-game');
                         
-                        // Timer Animation
-                        const bar = document.getElementById('timer-bar');
-                        bar.style.transition = 'none'; bar.style.width = '100%';
-                        setTimeout(() => { bar.style.transition = 'width 20s linear'; bar.style.width = '0%'; }, 50);
-
-                        // Buttons
-                        const opts = data.currentQuestion.options || ["A", "B", "C", "D"];
-                        const colors = ['bg-opt0', 'bg-opt1', 'bg-opt2', 'bg-opt3'];
-                        const icons = ['square', 'circle', 'play', 'diamond'];
-                        
-                        document.getElementById('btn-grid').innerHTML = opts.map((opt, i) => `
-                            <button onclick="submit(${i})" class="game-btn ${colors[i]} h-20 text-white w-full">
-                                <i class="fas fa-${icons[i]} ${i===2?'rotate-[-90deg]':''} text-xl"></i>
-                                <span class="text-lg font-bold leading-tight">${opt}</span>
-                            </button>
-                        `).join('');
+                        // Haptic feedback for new round
+                        if(navigator.vibrate) navigator.vibrate(200);
                     }
+                } 
+                else if (data.status === 'RESULT') {
+                    showResult(data);
+                } 
+                else if (data.status === 'GAMEOVER') {
+                    showGameOver(data);
                 }
-            }
-
-            if(data.status === 'RESULT') {
-                // Strict Type Conversion
-                const correctIdx = Number(data.correctIndex);
-                const myAnsIdx = Number(myAnswer);
-                const isCorrect = (myAnsIdx === correctIdx);
-                
-                const title = document.getElementById('res-title');
-                const bg = document.getElementById('res-icon-bg');
-                const icon = document.getElementById('res-icon');
-                
-                document.getElementById('res-text').innerText = data.correctText || "Unknown";
-
-                if(isCorrect) {
-                    title.innerText = "Correct!";
-                    title.className = "text-4xl font-black text-green-500 mb-2";
-                    bg.className = "w-28 h-28 rounded-full bg-green-500 flex items-center justify-center mb-6 shadow-2xl";
-                    icon.className = "fas fa-check text-5xl text-white";
-                    if(navigator.vibrate) navigator.vibrate([50,50,50]);
-                } else {
-                    title.innerText = "Wrong!";
-                    title.className = "text-4xl font-black text-red-500 mb-2";
-                    bg.className = "w-28 h-28 rounded-full bg-surface border-2 border-red-500 flex items-center justify-center mb-6 shadow-xl";
-                    icon.className = "fas fa-times text-5xl text-red-500";
-                    if(navigator.vibrate) navigator.vibrate(300);
-                }
-                
-                myAnswer = null; // Reset for next
-                showView('view-result');
-            }
+            });
         }
 
-        window.submit = function(idx) {
-            myAnswer = idx;
+        function renderButtons(options) {
+            const grid = document.getElementById('btn-grid');
+            grid.innerHTML = '';
+            
+            options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-opt opt-${i} h-full w-full rounded-2xl flex flex-col items-center justify-center p-4 shadow-lg active:shadow-none animate-pop`;
+                btn.style.animationDelay = `${i * 0.05}s`;
+                
+                // Icon + Text layout
+                btn.innerHTML = `
+                    <i class="fas fa-${ICONS[i]} ${i===2?'rotate-[-90deg]':''} text-4xl mb-2 text-white/90 drop-shadow-md"></i>
+                    <span class="font-bold text-white text-sm leading-tight line-clamp-2">${opt}</span>
+                `;
+                
+                btn.onclick = () => submitAnswer(i);
+                grid.appendChild(btn);
+            });
+        }
+
+        async function submitAnswer(index) {
+            if(state.hasAnswered) return;
+            state.hasAnswered = true;
+            
+            // Haptic Feedback
             if(navigator.vibrate) navigator.vibrate(50);
+
+            // Show waiting screen immediately
+            showView('view-wait');
+            document.getElementById('feedback-icon').innerHTML = '<i class="fas fa-spinner fa-spin text-white"></i>';
+            document.getElementById('feedback-title').innerText = "Answer Sent";
+            document.getElementById('feedback-sub').innerText = "Waiting for others...";
+            document.getElementById('points-earned').classList.add('hidden');
+
+            // Send to DB
+            await window.fs.updateDoc(ROOM_REF, {
+                [`answers.${state.nick}`]: { val: index, time: Date.now() }
+            });
+        }
+
+        function showResult(data) {
+            showView('view-wait');
+            const myAns = data.answers && data.answers[state.nick];
+            const isCorrect = myAns && (myAns.val === data.correctIndex);
             
-            let ansData = {};
-            ansData[`answers.${info.nickname}`] = { val: idx, time: Date.now() };
-            window.fs.updateDoc(ROOM_REF, ansData);
+            const earned = data.players[state.nick].score - (state.prevScore || 0); // Calculate delta if needed, or just show total
             
-            showView('view-feedback');
+            if (isCorrect) {
+                document.body.style.backgroundColor = "#22c55e"; // Flash Green
+                document.getElementById('feedback-icon').innerHTML = '<i class="fas fa-check-circle text-white drop-shadow-md"></i>';
+                document.getElementById('feedback-title').innerText = "Correct!";
+                document.getElementById('feedback-sub').innerText = "Look at the screen for points.";
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            } else {
+                document.body.style.backgroundColor = "#ef4444"; // Flash Red
+                document.getElementById('feedback-icon').innerHTML = '<i class="fas fa-times-circle text-white drop-shadow-md"></i>';
+                document.getElementById('feedback-title').innerText = "Wrong!";
+                document.getElementById('feedback-sub').innerText = "Better luck next round.";
+                if(navigator.vibrate) navigator.vibrate(400);
+            }
+
+            // Reset background after 2s
+            setTimeout(() => { document.body.style.backgroundColor = "#0f172a"; }, 2000);
+        }
+
+        function showGameOver(data) {
+            showView('view-wait');
+            document.getElementById('feedback-icon').innerHTML = '<i class="fas fa-trophy text-brand"></i>';
+            document.getElementById('feedback-title').innerText = "Game Over";
+            document.getElementById('feedback-sub').innerText = `Final Score: ${state.score}`;
         }
 
         function showView(id) {
-            ['view-lobby','view-game','view-feedback','view-result'].forEach(v => {
+            ['view-login','view-lobby','view-game','view-wait'].forEach(v => {
                 document.getElementById(v).classList.add('hidden');
                 document.getElementById(v).classList.remove('flex');
             });
@@ -244,8 +323,6 @@
             el.classList.remove('hidden');
             el.classList.add('flex');
         }
-
-        initController();
     </script>
 </body>
 </html>
