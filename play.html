@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Controller V2 | QuizRealm</title>
+    <title>Controller V2.1 | QuizRealm</title>
     <meta name="theme-color" content="#0f172a">
 
     <script type="module" src="firebase-config.js"></script>
@@ -29,12 +29,14 @@
                     animation: { 
                         'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                         'float': 'float 3s ease-in-out infinite',
-                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both'
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'shine': 'shine 2s linear infinite'
                     },
                     keyframes: { 
                         pop: { '0%': { transform: 'scale(0.5)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } },
                         float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
-                        shake: { '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' }, '20%, 80%': { transform: 'translate3d(2px, 0, 0)' }, '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' }, '40%, 60%': { transform: 'translate3d(4px, 0, 0)' } }
+                        shake: { '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' }, '20%, 80%': { transform: 'translate3d(2px, 0, 0)' }, '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' }, '40%, 60%': { transform: 'translate3d(4px, 0, 0)' } },
+                        shine: { '0%': { backgroundPosition: '200% center' }, '100%': { backgroundPosition: '-200% center' } }
                     }
                 }
             }
@@ -45,24 +47,19 @@
         body { background-color: #0f172a; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
         
-        /* 3D Button Press Effect */
         .btn-opt { transition: all 0.1s; position: relative; overflow: hidden; transform-style: preserve-3d; }
         .btn-opt:active { transform: scale(0.96) translateY(2px); filter: brightness(0.9); }
-        
-        /* Colors matching Host */
         .opt-0 { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 0 #991b1b; } 
         .opt-1 { background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 0 #1e40af; } 
         .opt-2 { background: linear-gradient(135deg, #eab308, #ca8a04); box-shadow: 0 4px 0 #854d0e; } 
         .opt-3 { background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 4px 0 #14532d; }
-
         .btn-opt:active { box-shadow: 0 0 0 transparent; }
 
-        /* Floating Emotes */
         .emote-float { position: absolute; animation: floatUp 2s ease-out forwards; pointer-events: none; z-index: 100; font-size: 2rem; }
         @keyframes floatUp { 0% { transform: translateY(0) scale(0.5); opacity: 1; } 100% { transform: translateY(-200px) scale(1.5); opacity: 0; } }
-
-        /* Streak Flame */
         .streak-fire { text-shadow: 0 0 10px #f59e0b, 0 0 20px #dc2626; }
+        
+        .shimmer-btn { background: linear-gradient(90deg, #6366f1 25%, #818cf8 50%, #6366f1 75%); background-size: 200% auto; animation: shine 3s linear infinite; }
     </style>
 </head>
 
@@ -89,66 +86,40 @@
 
     <main id="view-login" class="flex-grow flex flex-col justify-center p-6 hidden">
         <div class="glass p-8 rounded-[2rem] w-full max-w-sm mx-auto shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-            
             <h2 class="text-3xl font-black text-center mb-8 tracking-tight">QUIZ<span class="text-brand">REALM</span></h2>
-            
             <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Room Code</label>
-                    <input type="text" id="inp-code" maxlength="4" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-5 text-center text-3xl font-black tracking-[0.5em] uppercase text-white placeholder-white/5 outline-none focus:border-brand focus:bg-black/60 transition shadow-inner" placeholder="----">
-                </div>
-                
-                <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nickname</label>
-                    <input type="text" id="inp-name" maxlength="12" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-4 text-center text-xl font-bold text-white outline-none focus:border-brand focus:bg-black/60 transition shadow-inner" placeholder="Your Name">
-                </div>
+                <input type="text" id="inp-code" maxlength="4" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-5 text-center text-3xl font-black tracking-[0.5em] uppercase text-white outline-none focus:border-brand transition shadow-inner" placeholder="----">
+                <input type="text" id="inp-name" maxlength="12" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-4 text-center text-xl font-bold text-white outline-none focus:border-brand transition shadow-inner" placeholder="Your Name">
             </div>
-            
-            <button onclick="joinGame()" id="join-btn" class="mt-8 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 py-4 rounded-xl font-bold text-lg shadow-lg transform transition active:scale-[0.98] border border-white/10">
-                JOIN LOBBY <i class="fas fa-arrow-right ml-2"></i>
-            </button>
+            <button onclick="joinGame()" id="join-btn" class="mt-8 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 py-4 rounded-xl font-bold text-lg shadow-lg transform transition active:scale-[0.98] border border-white/10">JOIN LOBBY</button>
         </div>
     </main>
 
     <main id="view-lobby" class="flex-grow flex flex-col items-center justify-center p-6 hidden text-center relative">
         <div class="w-32 h-32 rounded-full border-4 border-surface shadow-2xl mb-6 animate-float bg-white/5 relative z-10">
             <img id="my-avatar" src="" class="w-full h-full rounded-full object-cover p-1">
-            <div class="absolute bottom-0 right-0 bg-green-500 w-8 h-8 rounded-full border-4 border-surface flex items-center justify-center">
-                <i class="fas fa-check text-[10px]"></i>
-            </div>
+            <div class="absolute bottom-0 right-0 bg-green-500 w-8 h-8 rounded-full border-4 border-surface flex items-center justify-center"><i class="fas fa-check text-[10px]"></i></div>
         </div>
-        
         <h1 class="text-4xl font-black mb-2 tracking-tight">You're In!</h1>
-        <div class="bg-surface px-8 py-3 rounded-2xl font-bold text-xl border border-white/10 shadow-lg mb-8">
-            <span id="lobby-name" class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-purple-400">Player</span>
-        </div>
-        
-        <div class="flex items-center gap-3 text-xs text-slate-500 bg-black/20 px-4 py-2 rounded-full">
-            <div class="w-2 h-2 bg-brand rounded-full animate-pulse"></div>
-            Waiting for host to start...
-        </div>
+        <div class="bg-surface px-8 py-3 rounded-2xl font-bold text-xl border border-white/10 shadow-lg mb-8"><span id="lobby-name" class="text-brand">Player</span></div>
+        <div class="flex items-center gap-3 text-xs text-slate-500 bg-black/20 px-4 py-2 rounded-full"><div class="w-2 h-2 bg-brand rounded-full animate-pulse"></div>Waiting for host...</div>
     </main>
 
     <main id="view-game" class="flex-grow flex flex-col p-4 hidden">
         <div class="bg-surface/80 backdrop-blur p-4 rounded-2xl mb-4 border border-white/5 shadow-lg flex items-start gap-3">
             <div class="mt-1 w-2 h-2 rounded-full bg-brand animate-pulse"></div>
-            <p id="q-text-mini" class="text-sm font-medium text-slate-200 leading-snug">Loading question context...</p>
+            <p id="q-text-mini" class="text-sm font-medium text-slate-200 leading-snug">Loading...</p>
         </div>
-
-        <div id="btn-grid" class="grid grid-cols-2 gap-4 flex-grow content-center pb-safe">
-            </div>
+        <div id="btn-grid" class="grid grid-cols-2 gap-4 flex-grow content-center pb-safe"></div>
     </main>
 
     <main id="view-wait" class="flex-grow flex flex-col items-center justify-center p-6 hidden text-center bg-surface/90 backdrop-blur relative overflow-hidden">
-        
         <div id="feedback-container" class="z-10 flex flex-col items-center">
             <div id="feedback-icon" class="text-7xl mb-6 filter drop-shadow-2xl transition-transform duration-300"></div>
             <h2 id="feedback-title" class="text-4xl font-black mb-2 tracking-tight">Sent</h2>
             <p id="feedback-sub" class="text-slate-400 font-medium">Keep your eyes on the big screen</p>
             <div id="points-earned" class="mt-8 bg-brand/10 border border-brand/20 px-6 py-2 rounded-full text-brand font-mono font-black text-2xl hidden animate-pop">+0 PTS</div>
         </div>
-
         <div id="hype-deck" class="absolute bottom-10 left-0 w-full px-6 z-20">
             <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-3">React</p>
             <div class="flex justify-center gap-4">
@@ -160,19 +131,37 @@
         </div>
     </main>
 
+    <main id="view-final" class="flex-grow flex flex-col items-center justify-center p-6 hidden text-center bg-surface relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-brand/20 to-surface z-0"></div>
+        
+        <div class="z-10 w-full max-w-md flex flex-col items-center animate-pop">
+            
+            <div id="final-icon-container" class="mb-8 relative">
+                <div class="absolute inset-0 bg-brand/30 blur-3xl rounded-full"></div>
+                <i id="final-icon" class="fas fa-trophy text-8xl text-yellow-400 drop-shadow-2xl relative z-10 animate-float"></i>
+            </div>
+
+            <h1 id="final-title" class="text-5xl font-black text-white mb-2 tracking-tighter drop-shadow-lg">CHAMPION</h1>
+            
+            <div class="bg-white/10 border border-white/20 px-6 py-3 rounded-xl mb-12 backdrop-blur-sm">
+                <p id="final-subtitle" class="text-lg font-bold text-slate-200">You placed #1</p>
+                <p class="text-brand font-mono font-black text-2xl mt-1" id="final-score">0 PTS</p>
+            </div>
+
+            <button onclick="exitToHub()" class="w-full py-5 rounded-2xl font-black text-xl shadow-2xl transform transition active:scale-95 shimmer-btn text-white border border-white/20 flex items-center justify-center gap-3">
+                <i class="fas fa-gamepad"></i> NEW GAME
+            </button>
+            <p class="text-xs text-slate-500 mt-4 uppercase font-bold tracking-widest">Return to Hub to enter new code</p>
+        </div>
+    </main>
+
     <script type="module">
         // --- STATE ---
         let state = { 
             roomCode: new URLSearchParams(window.location.search).get('code') || '',
-            nick: '',
-            score: 0,
-            streak: 0,
-            rank: '-',
-            hasAnswered: false,
-            lastQ: ''
+            nick: '', score: 0, streak: 0, rank: '-', hasAnswered: false, lastQ: ''
         };
         let ROOM_REF;
-
         const ICONS = ['square', 'circle', 'play', 'diamond']; 
 
         // --- BOOT ---
@@ -189,7 +178,6 @@
         window.joinGame = async function() {
             const code = document.getElementById('inp-code').value.toUpperCase().trim();
             const name = document.getElementById('inp-name').value.trim().substring(0, 12);
-
             if(code.length !== 4 || name.length < 2) return alert("Invalid Code or Name");
 
             const btn = document.getElementById('join-btn');
@@ -199,62 +187,37 @@
                 if (!window.db) throw new Error("DB Error");
                 ROOM_REF = window.fs.doc(window.db, "group_rooms", code);
                 const snap = await window.fs.getDoc(ROOM_REF);
-
-                if(!snap.exists() || snap.data().status !== 'LOBBY') {
-                    alert("Room unavailable."); btn.disabled = false; btn.innerText = "JOIN LOBBY"; return;
-                }
-                
+                if(!snap.exists() || snap.data().status !== 'LOBBY') { alert("Room unavailable."); btn.disabled = false; btn.innerText = "JOIN LOBBY"; return; }
                 const players = snap.data().players || {};
                 if(players[name]) { alert("Name taken."); btn.disabled = false; btn.innerText = "JOIN LOBBY"; return; }
 
-                await window.fs.updateDoc(ROOM_REF, {
-                    [`players.${name}`]: { score: 0, avatarSeed: Date.now() }
-                });
-
-                state.roomCode = code;
-                state.nick = name;
+                await window.fs.updateDoc(ROOM_REF, { [`players.${name}`]: { score: 0, avatarSeed: Date.now() } });
+                state.roomCode = code; state.nick = name;
                 
-                // Set Avatar
-                const avatarUrl = `https://api.dicebear.com/9.x/notionists/svg?seed=${name}&backgroundColor=transparent`;
-                document.getElementById('my-avatar').src = avatarUrl;
+                document.getElementById('my-avatar').src = `https://api.dicebear.com/9.x/notionists/svg?seed=${name}&backgroundColor=transparent`;
                 document.getElementById('lobby-name').innerText = name;
                 document.getElementById('header-nick').innerText = name;
-
                 initListener();
-
-            } catch(e) {
-                console.error(e);
-                alert("Connection failed.");
-                btn.disabled = false; btn.innerText = "JOIN LOBBY";
-            }
+            } catch(e) { console.error(e); alert("Connection failed."); btn.disabled = false; btn.innerText = "JOIN LOBBY"; }
         };
 
         // --- GAME LOOP ---
         function initListener() {
             window.fs.onSnapshot(ROOM_REF, (snap) => {
                 const data = snap.data();
-                if(!data || !data.players || !data.players[state.nick]) {
-                    alert("Disconnected."); window.location.reload(); return;
-                }
+                if(!data || !data.players || !data.players[state.nick]) { alert("Disconnected."); window.location.href='group-hub.html'; return; }
 
-                // 1. Calc Rank
+                // Rank
                 const allPlayers = Object.entries(data.players).sort(([,a], [,b]) => b.score - a.score);
                 const myRankIdx = allPlayers.findIndex(([n]) => n === state.nick);
-                const rankStr = getOrdinal(myRankIdx + 1);
-                document.getElementById('rank-badge').innerText = rankStr;
-                
-                // Colorize Rank
-                const rBadge = document.getElementById('rank-badge');
-                if(myRankIdx === 0) rBadge.className = "bg-yellow-500 text-black w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm shadow-lg shadow-yellow-500/50";
-                else if(myRankIdx === 1) rBadge.className = "bg-slate-300 text-black w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm";
-                else if(myRankIdx === 2) rBadge.className = "bg-orange-700 text-white w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm";
-                else rBadge.className = "bg-white/10 text-slate-300 w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm";
+                state.rank = myRankIdx + 1;
+                document.getElementById('rank-badge').innerText = getOrdinal(state.rank);
 
-                // 2. Score
+                // Score
                 state.score = data.players[state.nick].score || 0;
                 document.getElementById('score-badge').innerText = state.score;
 
-                // 3. Routing
+                // Routing
                 if(data.status === 'LOBBY') showView('view-lobby');
                 else if (data.status === 'GAME') {
                     if (state.lastQ !== data.currentQuestion.text) {
@@ -267,7 +230,7 @@
                     }
                 } 
                 else if (data.status === 'RESULT') showResult(data);
-                else if (data.status === 'GAMEOVER') showGameOver(data);
+                else if (data.status === 'GAMEOVER') showFinalScreen();
             });
         }
 
@@ -278,10 +241,7 @@
                 const btn = document.createElement('button');
                 btn.className = `btn-opt opt-${i} h-full w-full rounded-2xl flex flex-col items-center justify-center p-4 shadow-lg animate-pop`;
                 btn.style.animationDelay = `${i * 0.05}s`;
-                btn.innerHTML = `
-                    <i class="fas fa-${ICONS[i]} ${i===2?'rotate-[-90deg]':''} text-4xl mb-2 text-white/90 drop-shadow-md"></i>
-                    <span class="font-bold text-white text-sm leading-tight line-clamp-2 drop-shadow-md">${opt}</span>
-                `;
+                btn.innerHTML = `<i class="fas fa-${ICONS[i]} ${i===2?'rotate-[-90deg]':''} text-4xl mb-2 text-white/90 drop-shadow-md"></i><span class="font-bold text-white text-sm leading-tight line-clamp-2 drop-shadow-md">${opt}</span>`;
                 btn.onclick = () => submitAnswer(i);
                 grid.appendChild(btn);
             });
@@ -291,12 +251,10 @@
             if(state.hasAnswered) return;
             state.hasAnswered = true;
             if(navigator.vibrate) navigator.vibrate(50);
-
             showView('view-wait');
             
-            // Waiting State UI
             const container = document.getElementById('feedback-container');
-            container.className = "z-10 flex flex-col items-center opacity-50"; // Dim slightly
+            container.className = "z-10 flex flex-col items-center opacity-50"; 
             document.getElementById('feedback-icon').innerHTML = '<div class="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>';
             document.getElementById('feedback-title').innerText = "Sent";
             document.getElementById('feedback-sub').innerText = "Fingers crossed...";
@@ -308,85 +266,91 @@
 
         function showResult(data) {
             showView('view-wait');
-            document.getElementById('hype-deck').classList.add('hidden'); // Hide emotes during result
-            
+            document.getElementById('hype-deck').classList.add('hidden');
             const myAns = data.answers && data.answers[state.nick];
             const isCorrect = myAns && (myAns.val === data.correctIndex);
             const container = document.getElementById('feedback-container');
-            container.className = "z-10 flex flex-col items-center opacity-100"; // Full bright
+            container.className = "z-10 flex flex-col items-center opacity-100";
 
             if (isCorrect) {
-                // Correct Logic
                 state.streak++;
                 document.body.style.backgroundColor = "#16a34a";
                 document.getElementById('feedback-icon').innerHTML = '<i class="fas fa-check-circle text-white drop-shadow-2xl text-8xl animate-pop"></i>';
-                document.getElementById('feedback-title').innerText = "NAILED IT!";
-                document.getElementById('feedback-sub').innerText = state.streak > 2 ? `🔥 ${state.streak} in a row!` : "Great job!";
+                document.getElementById('feedback-title').innerText = "YES!";
+                document.getElementById('feedback-sub').innerText = state.streak > 2 ? `🔥 ${state.streak} IN A ROW` : "Great job!";
                 
-                // Confetti
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ffffff', '#6366f1'] });
-                if(navigator.vibrate) navigator.vibrate([50,50,50]);
+                // Strong Haptic: Triple Pulse
+                if(navigator.vibrate) navigator.vibrate([80, 50, 80, 50, 150]); 
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
 
             } else {
-                // Wrong Logic
                 state.streak = 0;
                 document.body.style.backgroundColor = "#dc2626";
                 container.classList.add('animate-shake');
                 document.getElementById('feedback-icon').innerHTML = '<i class="fas fa-times-circle text-white drop-shadow-2xl text-8xl animate-pop"></i>';
-                document.getElementById('feedback-title').innerText = "MISSED IT";
-                document.getElementById('feedback-sub').innerText = "Keep playing!";
-                if(navigator.vibrate) navigator.vibrate(300);
+                document.getElementById('feedback-title').innerText = "NOPE";
+                document.getElementById('feedback-sub').innerText = "You'll get the next one.";
+                
+                // Sad Haptic: Long Thud
+                if(navigator.vibrate) navigator.vibrate([400]); 
             }
 
-            // Update Streak UI in Header
             const streakEl = document.getElementById('streak-indicator');
             document.getElementById('streak-count').innerText = state.streak;
-            if(state.streak >= 3) {
-                streakEl.classList.remove('hidden', 'opacity-0');
-                streakEl.classList.add('streak-fire', 'animate-pulse');
-            } else {
-                streakEl.classList.add('hidden', 'opacity-0');
-            }
+            if(state.streak >= 3) { streakEl.classList.remove('hidden', 'opacity-0'); streakEl.classList.add('streak-fire', 'animate-pulse'); }
+            else { streakEl.classList.add('hidden', 'opacity-0'); }
 
-            // Reset BG
             setTimeout(() => { 
                 document.body.style.backgroundColor = "#0f172a"; 
                 container.classList.remove('animate-shake');
             }, 2500);
         }
 
-        function showGameOver(data) {
-            showView('view-wait');
-            document.getElementById('hype-deck').classList.add('hidden');
-            document.getElementById('feedback-icon').innerHTML = '<i class="fas fa-trophy text-yellow-400 drop-shadow-2xl animate-float"></i>';
-            document.getElementById('feedback-title').innerText = "FINISHED";
-            document.getElementById('feedback-sub').innerText = `You placed ${document.getElementById('rank-badge').innerText}`;
+        function showFinalScreen() {
+            showView('view-final');
+            document.getElementById('final-score').innerText = `${state.score} PTS`;
+            
+            const title = document.getElementById('final-title');
+            const sub = document.getElementById('final-subtitle');
+            const icon = document.getElementById('final-icon');
+
+            if(state.rank === 1) {
+                title.innerText = "CHAMPION";
+                title.className = "text-6xl font-black text-yellow-400 mb-2 tracking-tighter drop-shadow-lg";
+                sub.innerText = "🥇 You took 1st Place!";
+                icon.className = "fas fa-crown text-8xl text-yellow-400 drop-shadow-2xl relative z-10 animate-float";
+                confetti({ particleCount: 300, spread: 180, startVelocity: 60 });
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 500]);
+            } 
+            else if(state.rank <= 3) {
+                title.innerText = "PODIUM!";
+                title.className = "text-5xl font-black text-slate-200 mb-2 tracking-tighter drop-shadow-lg";
+                sub.innerText = `🥈 You placed #${state.rank}`;
+                icon.className = "fas fa-medal text-8xl text-slate-300 drop-shadow-2xl relative z-10 animate-float";
+                confetti({ particleCount: 100, spread: 100 });
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            } 
+            else {
+                title.innerText = "WELL PLAYED";
+                title.className = "text-5xl font-black text-white mb-2 tracking-tighter drop-shadow-lg";
+                sub.innerText = `You finished #${state.rank}`;
+                icon.className = "fas fa-thumbs-up text-8xl text-brand drop-shadow-2xl relative z-10 animate-float";
+            }
         }
 
         // --- UTILS ---
+        window.exitToHub = function() { window.location.href = 'group-hub.html'; }
+        
         window.sendEmote = function(emoji) {
-            const el = document.createElement('div');
-            el.innerText = emoji;
-            el.className = "emote-float left-[50%]";
-            el.style.left = (Math.random() * 80 + 10) + "%"; // Random horizontal pos
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 2000);
+            const el = document.createElement('div'); el.innerText = emoji; el.className = "emote-float left-[50%]";
+            el.style.left = (Math.random() * 80 + 10) + "%"; document.body.appendChild(el); setTimeout(() => el.remove(), 2000);
         }
-
-        function getOrdinal(n) {
-            const s = ["th", "st", "nd", "rd"];
-            const v = n % 100;
-            return n + (s[(v - 20) % 10] || s[v] || s[0]);
-        }
-
+        function getOrdinal(n) { const s = ["th", "st", "nd", "rd"]; const v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
         function showView(id) {
-            ['view-login','view-lobby','view-game','view-wait'].forEach(v => {
-                document.getElementById(v).classList.add('hidden');
-                document.getElementById(v).classList.remove('flex');
+            ['view-login','view-lobby','view-game','view-wait','view-final'].forEach(v => {
+                document.getElementById(v).classList.add('hidden'); document.getElementById(v).classList.remove('flex');
             });
-            const el = document.getElementById(id);
-            el.classList.remove('hidden');
-            el.classList.add('flex');
+            const el = document.getElementById(id); el.classList.remove('hidden'); el.classList.add('flex');
         }
     </script>
 </body>
