@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Nexus Grid • Lateral Logic | QuizRealm</title>
+    <meta name="description" content="Find the hidden threads. Group 4 items that share a common link.">
+    <meta name="theme-color" content="#09090b">
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="game-engine.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    colors: {
+                        bgDark: '#09090b',
+                        panel: '#18181b',
+                        accent: '#facc15',
+                        accentDim: 'rgba(250, 204, 21, 0.15)',
+                        error: '#ef4444'
+                    },
+                    animation: {
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop': 'pop 0.28s cubic-bezier(.16,1,.3,1) both',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'toast-in': 'toastIn 0.22s ease-out both',
+                        'toast-out': 'toastOut 0.18s ease-in both',
+                        'moment-in': 'momentIn 0.22s cubic-bezier(.16,1,.3,1) both',
+                        'moment-out': 'momentOut 0.18s ease-in both'
+                    },
+                    keyframes: {
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        pop: { '0%': { transform: 'scale(0.96)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+                        toastIn: { '0%': { opacity: '0', transform: 'translateY(-10px) scale(.985)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } },
+                        toastOut: { '0%': { opacity: '1', transform: 'translateY(0) scale(1)' }, '100%': { opacity: '0', transform: 'translateY(-8px) scale(.99)' } },
+                        momentIn: { '0%': { opacity: '0', transform: 'translateY(14px) scale(.98)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } },
+                        momentOut: { '0%': { opacity: '1', transform: 'translateY(0) scale(1)' }, '100%': { opacity: '0', transform: 'translateY(10px) scale(.99)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #09090b; color: #e4e4e7; overflow-x: hidden; touch-action: manipulation; }
+
+        .nexus-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .word-card {
+            aspect-ratio: 16/9;
+            background: #27272a;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.12s ease, background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 6px;
+            line-height: 1.15;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.25);
+        }
+
+        @media (min-width: 640px) {
+            .word-card { font-size: 1rem; padding: 10px; border-radius: 12px; }
+        }
+
+        .word-card:hover { transform: translateY(-2px); background: #3f3f46; filter: brightness(1.02); }
+        .word-card:active { transform: translateY(0px) scale(0.99); }
+
+        .word-card.selected {
+            background: rgba(250, 204, 21, 0.12);
+            color: #fff;
+            border-color: rgba(250, 204, 21, 0.55);
+            box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.14), 0 18px 38px rgba(0,0,0,0.35);
+        }
+
+        .word-card.locked {
+            cursor: default;
+            opacity: 0.0;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+
+        .solved-row {
+            grid-column: span 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 14px;
+            border-radius: 14px;
+            text-align: center;
+            animation: pop 0.28s cubic-bezier(.16,1,.3,1) both;
+            margin-bottom: 6px;
+            font-weight: 900;
+            text-transform: uppercase;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.34);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .solved-row h3 { font-size: 1.05rem; letter-spacing: 0.06em; margin-bottom: 4px; }
+        .solved-row p { font-size: 0.76rem; font-weight: 600; opacity: 0.92; font-family: 'Inter', sans-serif; text-transform: none; }
+
+        .lvl-1 { background: #facc15; color: #000; }
+        .lvl-2 { background: #10b981; color: #06120b; }
+        .lvl-3 { background: #3b82f6; color: #fff; }
+        .lvl-4 { background: #a855f7; color: #fff; }
+
+        .life-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.14);
+            transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+            opacity: 0.55;
+        }
+        .life-dot.active { background: #ef4444; box-shadow: 0 0 12px rgba(239,68,68,0.55); opacity: 1; }
+
+        .toast-popup {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(24,24,27,0.92);
+            border: 1px solid rgba(255,255,255,0.10);
+            padding: 10px 14px;
+            font-weight: 900;
+            font-size: 0.88rem;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            border-radius: 999px;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+            backdrop-filter: blur(10px);
+            min-width: 240px;
+            text-align: center;
+        }
+        .toast-popup.visible { opacity: 1; animation: toastIn 0.22s ease-out both; }
+        .toast-popup.hiding { opacity: 0; animation: toastOut 0.18s ease-in both; }
+
+        .moment {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 110;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(10px);
+            padding: 18px;
+        }
+        .moment.show { display: flex; }
+        .moment-card {
+            width: min(520px, 100%);
+            background: rgba(24,24,27,0.92);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 22px;
+            box-shadow: 0 26px 80px rgba(0,0,0,0.65);
+            padding: 18px 18px;
+            text-align: center;
+        }
+        .moment-card .tag {
+            display: inline-flex;
+            gap: 10px;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(250,204,21,0.25);
+            background: rgba(250,204,21,0.10);
+            color: #facc15;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+        .moment-card h2 {
+            margin-top: 12px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            font-size: 1.6rem;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .moment-card p {
+            margin-top: 8px;
+            color: rgba(228,228,231,0.78);
+            font-size: 0.95rem;
+            line-height: 1.35;
+        }
+        .moment-card .meta {
+            margin-top: 14px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .moment-pill {
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.04);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .soft-btn {
+            transition: background-color 0.16s ease, transform 0.06s ease, opacity 0.16s ease, filter 0.16s ease;
+        }
+        .soft-btn:active { transform: translateY(1px); }
+
+        @media (prefers-reduced-motion: reduce){
+            * { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <div id="toast" class="toast-popup text-white">One Away!</div>
+
+    <div id="moment" class="moment">
+        <div id="moment-card" class="moment-card animate-moment-in">
+            <div class="tag"><i class="fa-solid fa-link"></i> CONNECTED</div>
+            <h2 id="moment-title">CATEGORY</h2>
+            <p id="moment-desc">Items</p>
+            <div class="meta">
+                <div class="moment-pill" id="moment-points">+0 XP</div>
+                <div class="moment-pill" id="moment-remaining">3 groups left</div>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-6 flex flex-col items-center">
+
+        <header class="w-full flex justify-between items-end mb-6 max-w-xl border-b border-white/10 pb-4">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_12px_rgba(250,204,21,0.9)]"></span>
+                    <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest" id="puzzle-label">Puzzle #—</span>
+                </div>
+                <h1 class="text-3xl font-black text-white tracking-tight italic">NEXUS <span class="text-accent">GRID</span></h1>
+                <div class="mt-2 flex items-center gap-2">
+                    <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Time</span>
+                    <span class="text-[12px] font-mono text-white tabular-nums" id="timer">00:00</span>
+                    <span class="text-[10px] font-mono text-zinc-600 uppercase tracking-widest" id="mode-label">Daily</span>
+                </div>
+            </div>
+
+            <div class="text-right flex flex-col items-end gap-1">
+                <div class="text-[10px] font-mono text-zinc-500 uppercase">Mistakes Remaining</div>
+                <div class="flex gap-2" id="lives-container" aria-label="Mistakes remaining">
+                    <div class="life-dot active"></div>
+                    <div class="life-dot active"></div>
+                    <div class="life-dot active"></div>
+                    <div class="life-dot active"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="w-full max-w-xl relative">
+            <div id="game-board" class="nexus-grid mb-8 transition-all duration-300"></div>
+
+            <div class="flex justify-center gap-4 mb-10 flex-wrap">
+                <button id="shuffle-btn" class="soft-btn px-6 py-3 rounded-full border border-white/10 text-white font-bold text-sm hover:bg-white/5 transition uppercase tracking-wider">
+                    Shuffle
+                </button>
+                <button id="deselect-btn" class="soft-btn px-6 py-3 rounded-full border border-white/10 text-white font-bold text-sm hover:bg-white/5 transition uppercase tracking-wider">
+                    Deselect
+                </button>
+                <button id="submit-btn" class="soft-btn px-8 py-3 rounded-full bg-white text-black font-black text-sm hover:bg-gray-200 transition uppercase tracking-wider opacity-50 cursor-not-allowed" disabled>
+                    Submit
+                </button>
+            </div>
+        </div>
+
+        <section class="max-w-xl w-full border-t border-white/10 pt-8 mt-4 animate-slide-up">
+            <h3 class="text-white font-bold text-lg mb-2"><i class="fas fa-info-circle text-accent mr-2"></i>Mission Brief</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed mb-4">
+                Find <strong class="text-white">4 groups of 4 items</strong> that share a hidden connection.
+            </p>
+            <ul class="text-xs text-zinc-500 space-y-2 font-mono">
+                <li>• Select 4 items and tap Submit.</li>
+                <li>• “One Away” means 3 of your 4 belong to the same group.</li>
+                <li>• Yellow is easiest. Purple is trickiest.</li>
+                <li>• Tip: If you’re stuck, shuffle to break mental patterns.</li>
+            </ul>
+        </section>
+
+    </main>
+
+    
+
+<div class="qr-seo-wrapper">
+    <style>
+        .qr-seo-wrapper { display: flex; flex-direction: column; gap: 3rem; width: 100%; max-width: 1200px; margin: 4rem auto; padding: 0 1rem; font-family: system-ui, -apple-system, sans-serif; color: #94a3b8; line-height: 1.6; }
+        .qr-hub-card { position: relative; background: linear-gradient(145deg, #060b18, #0f172a); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5); padding: 2.5rem; display: flex; flex-direction: column; }
+        
+        /* THEMES */
+        .theme-green { border-left: 4px solid #10b981; } .theme-green h2 span { color: #34d399; } .theme-green .qr-badge { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; } .theme-green a { color: #34d399; }
+        .theme-purple { border-left: 4px solid #a855f7; } .theme-purple h2 span { color: #c084fc; } .theme-purple .qr-badge { background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); color: #d8b4fe; } .theme-purple a { color: #c084fc; }
+        .theme-cyan { border-left: 4px solid #06b6d4; } .theme-cyan h2 span { color: #22d3ee; } .theme-cyan .qr-badge { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9; } .theme-cyan a { color: #22d3ee; }
+        .theme-amber { border-left: 4px solid #f59e0b; } .theme-amber h2 span { color: #fbbf24; } .theme-amber .qr-badge { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; } .theme-amber a { color: #fbbf24; }
+
+        /* LAYOUT */
+        .qr-card-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 2rem; height: 100%; }
+        @media (min-width: 900px) { .qr-card-content { flex-direction: row; align-items: flex-start; } }
+        .qr-main-col { flex: 1; }
+        .qr-side-col { width: 100%; max-width: 320px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(10px); flex-shrink: 0; }
+        
+        /* ELEMENTS */
+        .qr-badge { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 1rem; font-weight: 700; }
+        .qr-hub-card h2 { color: #fff; font-size: 1.8rem; margin: 0 0 1rem 0; line-height: 1.2; letter-spacing: -0.02em; }
+        .qr-hub-card p { margin-bottom: 1.5rem; font-size: 0.95rem; text-align: justify; }
+        .qr-hub-card strong { color: #fff; }
+        .qr-hub-card a { font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
+        .qr-hub-card a:hover { border-bottom-color: currentColor; }
+        
+        /* SIDEBAR */
+        .qr-sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px; margin-bottom: 8px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; text-decoration: none !important; }
+        .qr-sidebar-link:hover { background: rgba(255, 255, 255, 0.08); }
+        .qr-link-text { display: flex; flex-direction: column; }
+        .qr-link-head { color: #e2e8f0; font-size: 0.85rem; font-weight: 700; }
+        .qr-link-sub { color: #64748b; font-size: 0.7rem; }
+        .qr-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px; }
+
+        /* GRIDS */
+        .qr-game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .qr-mini-link { padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 0.75rem; color: #cbd5e1 !important; }
+        .qr-mini-link:hover { background: rgba(255,255,255,0.1); }
+        .qr-link-matrix { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+        .qr-matrix-item { font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; background: rgba(251, 191, 36, 0.1); color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.2); }
+        .qr-matrix-item:hover { background: rgba(251, 191, 36, 0.2); }
+
+        @media (max-width: 600px) { .qr-hub-card { padding: 1.5rem; } .qr-side-col { max-width: 100%; } }
+    </style>
+
+    <div class="qr-hub-card theme-green">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-microchip"></i> Digital Playground</div>
+                <h2>Arcade Suite: <span>Mental Reflex Engines</span></h2>
+                <p>
+                    Step into the <strong>Quiz Realm Arcade</strong>, a curated collection of micro-games designed to test specific facets of human intelligence. Unlike traditional trivia that relies solely on memory, our arcade challenges your <strong>processing speed</strong> and <strong>pattern recognition</strong>. Games like <a href="fusion-core.html">Logic Core</a> act as a stress-test for your deductive reasoning, while <a href="rapid.html">Rapid Fire</a> measures your raw reaction time down to the millisecond.
+                </p>
+                <p>
+                    We believe in "frictionless play." All modules, from the linguistic puzzles of <strong>Cryptex</strong> to the visual sorting of <strong>Odd One Out</strong>, are browser-native. This means instant access to high-quality brain training without app store downloads. Perfect for keeping your mind sharp during short breaks.
+                </p>
+                
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1rem; color: #fff;">System Modules</div>
+                <div class="qr-game-grid">
+                    <a href="/word-ladder.html" class="qr-mini-link">Word Ladder</a>
+                    <a href="/tango-logic.html" class="qr-mini-link">Tango Logic</a>
+                    <a href="/spelling.html" class="qr-mini-link">Spelling Bee</a>
+                    <a href="/hangman.html" class="qr-mini-link">Hangman</a>
+                    <a href="/two-truths-trap.html" class="qr-mini-link">Truth Trap</a>
+                    <a href="/mini-crossword.html" class="qr-mini-link">Crossword</a>
+                </div>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Start Session</div>
+                <a href="/arcade.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-play text-green-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Play Now</span><span class="qr-link-sub">Instant Access</span></div>
+                </a>
+                <a href="/daily.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-clock text-green-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Daily Run</span><span class="qr-link-sub">24h Refresh</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-purple">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-globe"></i> Fandom Encyclopedia</div>
+                <h2>The Vaults: <span>Mastering The Canon</span></h2>
+                <p>
+                    True fans know that the devil is in the details. The <strong>Quiz Realm Vaults</strong> are specialized data hubs dedicated to the most expansive fictional universes in media history. Rather than asking generic questions, we dive into the <strong>Canon</strong>. Do you know the exact chemical composition of Kryptonite? Can you trace the lineage of the Targaryens or the Skywalkers without a wiki?
+                </p>
+                <p>
+                    Our "Hub" system organizes trivia by franchise, allowing for a focused experience. When you enter the <a href="marvel.html">Marvel Hub</a> or the <a href="dc.html">DC Archive</a>, you are entering a space where accuracy matters. Prove your status as a "Lore Master" by completing our hardest difficulty tiers, designed to stump even the most dedicated subreddit moderators.
+                </p>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Choose Franchise</div>
+                <a href="/encyclopedia/marvel.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-bolt text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">MCU & Comics</span><span class="qr-link-sub">Heroes & Villains</span></div>
+                </a>
+                <a href="/rickandmortyhub.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-atom text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Sci-Fi Comedy</span><span class="qr-link-sub">Rick & Morty</span></div>
+                </a>
+                <a href="/christmas-hub.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-snowflake text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Holiday Havoc</span><span class="qr-link-sub">Seasonal Quiz</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-cyan">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-chart-line"></i> Gamified Learning</div>
+                <h2>Progression: <span>Level Up Your Mind</span></h2>
+                <p>
+                    At Quiz Realm, we believe that learning should feel like an RPG. That is why every interaction on our site feeds into your <strong>Global Player Profile</strong>. Correct answers award <strong>Coins</strong> and <strong>XP</strong>, fueling a persistent leveling system that tracks your growth over time. Watch your rank evolve from a novice "Drifter" to a legendary "Cosmic Entity" as you master new topics.
+                </p>
+                <p>
+                    Beyond the stats, explore your own psychology with our <strong>Archetype Engine</strong>. Our "Personality Match" quizzes don't just assign you a character; they analyze your decision-making style—Chaotic Good vs. Lawful Neutral—to generate a comprehensive report on your fictional identity.
+                </p>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Player Stats</div>
+                <a href="/profile.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-id-card text-cyan-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Dashboard</span><span class="qr-link-sub">View Progress</span></div>
+                </a>
+                <a href="/achievements.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-medal text-cyan-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Badges</span><span class="qr-link-sub">Unlockables</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-amber">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-search"></i> Topic Explorer</div>
+                <h2>Curated Collections: <span>The Knowledge Matrix</span></h2>
+                <p>
+                    The world is too big to study all at once. The <strong>Quiz Realm Topic Explorer</strong> allows you to filter our massive database into manageable chunks. Whether you are prepping for a pub trivia night or studying for a geography exam, our tagging system helps you find the exact dataset you need.
+                </p>
+                <p>
+                    From the "Hard Sciences" of Physics and Chemistry to the "Liberal Arts" of Literature and Music Theory, our categories are updated weekly. Use the matrix below to bypass the homepage and launch directly into a focused learning session.
+                </p>
+
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem; color: #fff;">Quick Launch</div>
+                <div class="qr-link-matrix">
+                    <a href="/categories.html" class="qr-matrix-item">STEM</a>
+                    <a href="/categories.html" class="qr-matrix-item">Modern History</a>
+                    <a href="/categories.html" class="qr-matrix-item">Ancient Civs</a>
+                    <a href="/categories.html" class="qr-matrix-item">Pop Culture</a>
+                    <a href="/categories.html" class="qr-matrix-item">Global Capitals</a>
+                    <a href="/categories.html" class="qr-matrix-item">Flags of the World</a>
+                    <a href="/categories.html" class="qr-matrix-item">Classic Rock</a>
+                    <a href="/categories.html" class="qr-matrix-item">Biology</a>
+                    <a href="/categories.html" class="qr-matrix-item">Art & Design</a>
+                    <a href="/categories.html" class="qr-matrix-item">NBA & NFL</a>
+                    <a href="/categories.html" class="qr-matrix-item">Space Exploration</a>
+                    <a href="/categories.html" class="qr-matrix-item">Language Arts</a>
+                </div>
+            </div>
+            
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Support</div>
+                <a href="/FAQ.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-question text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Help Center</span><span class="qr-link-sub">FAQs</span></div>
+                </a>
+                <a href="/contact.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-bug text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Report Issue</span><span class="qr-link-sub">Feedback</span></div>
+                </a>
+                <a href="/Terms.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-file-contract text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Terms</span><span class="qr-link-sub">Usage Policy</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+  <quiz-footer></quiz-footer>
+
+   <div id="win-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
+    <div class="bg-panel border border-white/10 p-8 rounded-3xl max-w-sm w-full text-center relative animate-pop shadow-2xl">
+        <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-bgDark rounded-full border-4 border-accent flex items-center justify-center shadow-[0_0_30px_rgba(250,204,21,0.4)]">
+            <i class="fas fa-link text-3xl text-accent"></i>
+        </div>
+
+        <div class="mt-8">
+            <h2 class="font-sans font-black text-3xl text-white italic mb-1">CONNECTED</h2>
+            <p class="text-[10px] text-zinc-500 font-mono uppercase tracking-widest mb-6">Lateral Thinking Verified</p>
+
+            <div class="bg-white/5 rounded-xl p-4 mb-6">
+                <div class="text-center text-sm text-zinc-400 mb-2">Completion Time</div>
+                <div class="text-4xl font-mono font-bold text-white tabular-nums" id="final-time">00:00</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="text-center">
+                    <div class="text-[10px] text-zinc-500 uppercase font-bold">XP Earned</div>
+                    <div class="text-xl text-accent font-bold" id="final-xp">+0</div>
+                </div>
+                <div class="text-center border-l border-white/10">
+                    <div class="text-[10px] text-zinc-500 uppercase font-bold">Mistakes</div>
+                    <div class="text-xl text-white font-bold" id="final-mistakes">0</div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button id="next-grid-btn" class="w-full py-3 bg-white text-black font-bold rounded-xl uppercase tracking-widest hover:bg-gray-200 transition">
+                    Next Grid
+                </button>
+
+                <button id="replay-btn" class="w-full py-3 border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 transition">
+                    Replay This Grid
+                </button>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="to-arcade-btn" class="w-full py-3 border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 transition text-xs">
+                        Go to Arcade
+                    </button>
+                    <button id="to-home-btn" class="w-full py-3 border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 transition text-xs">
+                        Home
+                    </button>
+                </div>
+
+                <button id="close-win-btn" class="w-full py-3 text-xs text-zinc-500 hover:text-zinc-300 mt-1">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div id="loss-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
+    <div class="bg-panel border border-white/10 p-8 rounded-3xl max-w-sm w-full text-center relative animate-pop">
+        <h2 class="font-sans font-black text-3xl text-error italic mb-2">SIGNAL LOST</h2>
+        <p class="text-sm text-zinc-400 mb-6">You ran out of attempts.</p>
+
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <button id="reveal-btn" class="w-full py-3 bg-white text-black font-bold rounded-xl uppercase tracking-widest hover:bg-gray-200 transition">
+                Reveal
+            </button>
+            <button id="retry-btn" class="w-full py-3 border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 transition">
+                Try Again
+            </button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 text-xs">
+            <button id="loss-next-grid-btn" class="w-full py-2 border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 transition">
+                New Grid
+            </button>
+            <button id="loss-arcade-btn" class="w-full py-2 border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 transition">
+                Arcade
+            </button>
+            <button id="loss-home-btn" class="w-full py-2 border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 transition">
+                Home
+            </button>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        const NEXUS_PACK_PATHS = [
+            "assets/nexus/puzzles.json"
+        ];
+
+        const PUZZLE_DATA_FALLBACK = [
+    {
+        id: 802,
+        groups: [
+            { category: "FIRE ____", items: ["WORKS", "FLY", "ARM", "PLACE"], level: 0 },
+            { category: "PLANETS", items: ["MARS", "VENUS", "EARTH", "SATURN"], level: 1 },
+            { category: "CURRENCIES", items: ["DOLLAR", "EURO", "YEN", "POUND"], level: 2 },
+            { category: "THINGS WITH TEETH", items: ["COMB", "GEAR", "ZIPPER", "SAW"], level: 3 }
+        ]
+    },
+    {
+        id: 803,
+        groups: [
+            { category: "FOOTWEAR", items: ["BOOT", "SLIPPER", "SNEAKER", "LOAFER"], level: 0 },
+            { category: "UNITS OF LENGTH", items: ["INCH", "MILE", "YARD", "FOOT"], level: 1 },
+            { category: "SNAKES", items: ["VIPER", "PYTHON", "COBRA", "BOA"], level: 2 },
+            { category: "ANAGRAMS OF 'CATS'", items: ["CAST", "ACTS", "SCAT", "TACS"], level: 3 }
+        ]
+    },
+    {
+        id: 804,
+        groups: [
+            { category: "SEASONS", items: ["SPRING", "SUMMER", "AUTUMN", "WINTER"], level: 0 },
+            { category: "CARDINAL DIRECTIONS", items: ["NORTH", "SOUTH", "EAST", "WEST"], level: 1 },
+            { category: "BIG CATS", items: ["LION", "TIGER", "LEOPARD", "JAGUAR"], level: 2 },
+            { category: "MUSICAL TEMPOS", items: ["ALLEGRO", "ADAGIO", "ANDANTE", "PRESTO"], level: 3 }
+        ]
+    },
+    {
+        id: 805,
+        groups: [
+            { category: "BREAKFAST FOODS", items: ["TOAST", "CEREAL", "OMELET", "PANCAKE"], level: 0 },
+            { category: "SOCIAL PLATFORMS", items: ["REDDIT", "TIKTOK", "TWITTER", "INSTAGRAM"], level: 1 },
+            { category: "METALS", items: ["IRON", "GOLD", "SILVER", "COPPER"], level: 2 },
+            { category: "CAN FOLLOW 'SMART'", items: ["PHONE", "WATCH", "HOME", "TV"], level: 3 }
+        ]
+    },
+    {
+        id: 806,
+        groups: [
+            { category: "SHAPES", items: ["CIRCLE", "SQUARE", "TRIANGLE", "RECTANGLE"], level: 0 },
+            { category: "PROGRAMMING LANGUAGES", items: ["PYTHON", "JAVA", "RUST", "KOTLIN"], level: 1 },
+            { category: "WOODWINDS", items: ["FLUTE", "CLARINET", "OBOE", "BASSOON"], level: 2 },
+            { category: "THINGS YOU CAN 'CHARGE'", items: ["PHONE", "CARD", "BATTERY", "RENT"], level: 3 }
+        ]
+    },
+    {
+        id: 807,
+        groups: [
+            { category: "HOT DRINKS", items: ["TEA", "COFFEE", "COCOA", "ESPRESSO"], level: 0 },
+            { category: "EUROPEAN CAPITALS", items: ["PARIS", "ROME", "MADRID", "BERLIN"], level: 1 },
+            { category: "BROWSERS", items: ["CHROME", "EDGE", "SAFARI", "FIREFOX"], level: 2 },
+            { category: "WORDS BEFORE 'LIGHT'", items: ["SPOT", "DAY", "HEAD", "STAR"], level: 3 }
+        ]
+    },
+    {
+        id: 808,
+        groups: [
+            { category: "TEAM SPORTS", items: ["SOCCER", "RUGBY", "HOCKEY", "HANDBALL"], level: 0 },
+            { category: "PARTS OF A BOOK", items: ["TITLE", "INDEX", "CHAPTER", "PREFACE"], level: 1 },
+            { category: "SEA CREATURES", items: ["SHRIMP", "OCTOPUS", "LOBSTER", "CRAB"], level: 2 },
+            { category: "CAN FOLLOW 'BLACK'", items: ["HOLE", "MAIL", "JACK", "FRIDAY"], level: 3 }
+        ]
+    },
+    {
+        id: 809,
+        groups: [
+            { category: "MEANS OF TRANSPORT", items: ["TRAIN", "PLANE", "BOAT", "CAR"], level: 0 },
+            { category: "CLOUD PROVIDERS", items: ["AZURE", "AWS", "HEROKU", "DIGITALOCEAN"], level: 1 },
+            { category: "BERRIES", items: ["STRAWBERRY", "BLUEBERRY", "RASPBERRY", "BLACKBERRY"], level: 2 },
+            { category: "WORDS AFTER 'TIME'", items: ["ZONE", "TRAVEL", "OUT", "BOMB"], level: 3 }
+        ]
+    },
+    {
+        id: 810,
+        groups: [
+            { category: "KINSHIP TERMS", items: ["MOTHER", "FATHER", "SISTER", "BROTHER"], level: 0 },
+            { category: "OPERATING SYSTEMS", items: ["WINDOWS", "ANDROID", "LINUX", "IOS"], level: 1 },
+            { category: "CHEMICAL STATES", items: ["SOLID", "LIQUID", "GAS", "PLASMA"], level: 2 },
+            { category: "CAN PRECEDE 'GAME'", items: ["VIDEO", "BOARD", "END", "BLAME"], level: 3 }
+        ]
+    }
+];
+
+
+        const MAX_MISTAKES = 4;
+        const SAVE_KEY_PREFIX = "qr_nexus_v2:";
+        const OVERRIDE_KEY = "qr_nexus_override_v2";
+
+        let PUZZLE_PACK = [];
+        let packLabel = "fallback";
+
+        let currentPuzzle = null;
+        let currentPuzzleIndex = 0;
+
+        let items = [];
+        let selected = new Set();
+        let solvedGroups = [];
+        let mistakes = 0;
+
+        let startTime = 0;
+        let timerInt = null;
+
+        let isGameOver = false;
+        let toastTimer = null;
+
+        function byId(id){ return document.getElementById(id); }
+
+        function todayKey(){
+            const d = new Date();
+            const y = d.getFullYear();
+            const m = String(d.getMonth()+1).padStart(2,"0");
+            const day = String(d.getDate()).padStart(2,"0");
+            return `${y}-${m}-${day}`;
+        }
+
+        function computeDailyIndex(){
+            const base = new Date(2025, 0, 1);
+            const now = new Date();
+            const day = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const diffDays = Math.floor((day - base) / 86400000);
+            return diffDays;
+        }
+
+        function normIdx(idx){
+            const n = Math.max(1, PUZZLE_PACK.length);
+            return ((idx % n) + n) % n;
+        }
+
+        function loadOverride(){
+            try{
+                const raw = localStorage.getItem(OVERRIDE_KEY);
+                if (!raw) return null;
+                const obj = JSON.parse(raw);
+                if (obj && obj.date === todayKey() && Number.isFinite(obj.idx)) return normIdx(obj.idx);
+            }catch(e){}
+            return null;
+        }
+
+        function saveOverride(idx){
+            try{
+                localStorage.setItem(OVERRIDE_KEY, JSON.stringify({ date: todayKey(), idx: normIdx(idx), ts: Date.now() }));
+            }catch(e){}
+        }
+
+        function saveKey(){
+            const pid = currentPuzzle?.id ?? "unknown";
+            return `${SAVE_KEY_PREFIX}${pid}`;
+        }
+
+        function saveProgress(){
+            if (!currentPuzzle) return;
+            try{
+                const payload = {
+                    puzzle_id: currentPuzzle.id,
+                    idx: currentPuzzleIndex,
+                    t: Date.now(),
+                    mistakes,
+                    solvedGroups,
+                    selected: Array.from(selected),
+                    items,
+                    startTime
+                };
+                localStorage.setItem(saveKey(), JSON.stringify(payload));
+            }catch(e){}
+        }
+
+        function loadProgressForPuzzle(puzzle){
+            try{
+                const raw = localStorage.getItem(`${SAVE_KEY_PREFIX}${puzzle.id}`);
+                if (!raw) return null;
+                const obj = JSON.parse(raw);
+                if (!obj || obj.puzzle_id !== puzzle.id) return null;
+                return obj;
+            }catch(e){
+                return null;
+            }
+        }
+
+        function clearProgress(){
+            try{
+                localStorage.removeItem(saveKey());
+            }catch(e){}
+        }
+
+        async function loadPack(){
+            for (const path of NEXUS_PACK_PATHS){
+                try{
+                    const res = await fetch(path, { cache: "no-store" });
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    const arr = Array.isArray(data) ? data : (Array.isArray(data.puzzles) ? data.puzzles : []);
+                    const cleaned = arr.filter(p => p && p.id && Array.isArray(p.groups) && p.groups.length === 4);
+                    if (cleaned.length >= 10){
+                        PUZZLE_PACK = cleaned;
+                        packLabel = path;
+                        return;
+                    }
+                }catch(e){}
+            }
+            PUZZLE_PACK = PUZZLE_DATA_FALLBACK.slice();
+            packLabel = "fallback";
+        }
+
+        function formatTime(sec){
+            const m = Math.floor(sec / 60).toString().padStart(2,'0');
+            const s = (sec % 60).toString().padStart(2,'0');
+            return `${m}:${s}`;
+        }
+
+        function startTimer(){
+            stopTimer();
+            timerInt = setInterval(() => {
+                const elapsed = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
+                byId("timer").textContent = formatTime(elapsed);
+            }, 400);
+        }
+
+        function stopTimer(){
+            if (timerInt) clearInterval(timerInt);
+            timerInt = null;
+        }
+
+        function showToast(msg, tone){
+            const t = byId('toast');
+            t.classList.remove('hiding');
+            t.textContent = msg;
+
+            if (tone === "good"){
+                t.style.borderColor = "rgba(250, 204, 21, 0.22)";
+                t.style.boxShadow = "0 18px 50px rgba(0,0,0,0.55)";
+            } else if (tone === "bad"){
+                t.style.borderColor = "rgba(239,68,68,0.35)";
+                t.style.boxShadow = "0 18px 50px rgba(0,0,0,0.55)";
+            } else {
+                t.style.borderColor = "rgba(255,255,255,0.10)";
+                t.style.boxShadow = "0 18px 50px rgba(0,0,0,0.55)";
+            }
+
+            t.classList.add('visible');
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                t.classList.add("hiding");
+                setTimeout(() => {
+                    t.classList.remove('visible');
+                    t.classList.remove('hiding');
+                }, 180);
+            }, 1600);
+        }
+
+        function showMoment({ title, desc, pointsText, remainingText }){
+            const wrap = byId("moment");
+            const card = byId("moment-card");
+
+            byId("moment-title").textContent = title;
+            byId("moment-desc").textContent = desc;
+            byId("moment-points").textContent = pointsText;
+            byId("moment-remaining").textContent = remainingText;
+
+            wrap.classList.add("show");
+            card.classList.remove("animate-moment-out");
+            card.classList.add("animate-moment-in");
+
+            setTimeout(() => {
+                card.classList.remove("animate-moment-in");
+                card.classList.add("animate-moment-out");
+                setTimeout(() => wrap.classList.remove("show"), 180);
+            }, 1050);
+        }
+
+        function updateLivesUI(){
+            const dots = Array.from(document.querySelectorAll('.life-dot'));
+            dots.forEach((d, i) => {
+                const remaining = MAX_MISTAKES - mistakes;
+                const active = i < remaining;
+                d.classList.toggle("active", active);
+            });
+        }
+
+        function buildItemsFromPuzzle(puzzle){
+            const built = [];
+            puzzle.groups.forEach((group, gIdx) => {
+                group.items.forEach((word, k) => {
+                    const clean = String(word).trim().toUpperCase();
+                    built.push({
+                        word: clean,
+                        groupId: gIdx,
+                        level: group.level,
+                        category: group.category,
+                        id: `${puzzle.id}:${gIdx}:${clean}:${k}`
+                    });
+                });
+            });
+            for (let i = built.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [built[i], built[j]] = [built[j], built[i]];
+            }
+            return built;
+        }
+
+        function renderBoard(){
+            const board = byId('game-board');
+            board.innerHTML = '';
+
+            solvedGroups.forEach(gId => {
+                const group = currentPuzzle.groups[gId];
+                const row = document.createElement('div');
+                row.className = `solved-row lvl-${(group.level + 1)}`;
+                row.innerHTML = `
+                    <h3>${escapeHtml(group.category)}</h3>
+                    <p>${escapeHtml(group.items.join(', '))}</p>
+                `;
+                board.appendChild(row);
+            });
+
+            const remaining = items.filter(it => !solvedGroups.includes(it.groupId));
+            remaining.forEach(it => {
+                const card = document.createElement('div');
+                card.className = `word-card`;
+                card.dataset.id = it.id;
+                card.textContent = it.word;
+
+                if (selected.has(it.id)) card.classList.add("selected");
+
+                card.addEventListener("click", () => toggleSelect(it.id));
+                card.style.animation = 'pop 0.28s cubic-bezier(.16,1,.3,1) both';
+                board.appendChild(card);
+            });
+
+            updateSubmitState();
+        }
+
+        function escapeHtml(s){
+            return String(s || "")
+                .replaceAll("&","&amp;")
+                .replaceAll("<","&lt;")
+                .replaceAll(">","&gt;")
+                .replaceAll('"',"&quot;")
+                .replaceAll("'","&#039;");
+        }
+
+        function toggleSelect(id){
+            if (isGameOver) return;
+
+            if (selected.has(id)) selected.delete(id);
+            else {
+                if (selected.size >= 4) {
+                    showToast("Max 4 selected", "muted");
+                    return;
+                }
+                selected.add(id);
+            }
+
+            const el = document.querySelector(`.word-card[data-id="${CSS.escape(id)}"]`);
+            if (el) el.classList.toggle("selected", selected.has(id));
+
+            updateSubmitState();
+
+            if (window.dataLayer){
+                window.dataLayer.push({
+                    event: "nexus_select",
+                    game_name: "Nexus Grid",
+                    puzzle_id: String(currentPuzzle?.id ?? ""),
+                    selected_count: selected.size
+                });
+            }
+
+            saveProgress();
+        }
+
+        function deselectAll(){
+            selected.clear();
+            document.querySelectorAll(".word-card.selected").forEach(el => el.classList.remove("selected"));
+            updateSubmitState();
+            saveProgress();
+
+            if (window.dataLayer) window.dataLayer.push({ event: "nexus_deselect_all", game_name: "Nexus Grid", puzzle_id: String(currentPuzzle?.id ?? "") });
+        }
+
+        function shuffleGrid(){
+            if (isGameOver) return;
+
+            const remaining = items.filter(it => !solvedGroups.includes(it.groupId));
+            for (let i = remaining.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+            }
+
+            const solved = items.filter(it => solvedGroups.includes(it.groupId));
+            items = solved.concat(remaining);
+
+            renderBoard();
+            showToast("Shuffled", "muted");
+            saveProgress();
+
+            if (window.dataLayer) window.dataLayer.push({ event: "nexus_shuffle", game_name: "Nexus Grid", puzzle_id: String(currentPuzzle?.id ?? "") });
+        }
+
+        function updateSubmitState(){
+            const btn = byId('submit-btn');
+            const ok = selected.size === 4 && !isGameOver;
+
+            btn.disabled = !ok;
+            btn.classList.toggle('opacity-50', !ok);
+            btn.classList.toggle('cursor-not-allowed', !ok);
+        }
+
+        function submitGuess(){
+            if (isGameOver) return;
+            if (selected.size !== 4) return;
+
+            const selectedIds = Array.from(selected);
+            const selectedItems = items.filter(i => selectedIds.includes(i.id));
+
+            const groupId = selectedItems[0]?.groupId;
+            const allMatch = selectedItems.length === 4 && selectedItems.every(i => i.groupId === groupId);
+
+            if (window.dataLayer){
+                window.dataLayer.push({
+                    event: "nexus_submit",
+                    game_name: "Nexus Grid",
+                    puzzle_id: String(currentPuzzle?.id ?? ""),
+                    selected_count: 4
+                });
+            }
+
+            if (allMatch) handleSuccess(groupId, selectedItems);
+            else handleFailure(selectedItems);
+        }
+
+        function handleSuccess(groupId, selectedItems){
+            if (solvedGroups.includes(groupId)) {
+                deselectAll();
+                showToast("Already solved", "muted");
+                return;
+            }
+
+            solvedGroups.push(groupId);
+            selected.clear();
+
+            const group = currentPuzzle.groups[groupId];
+            const remainingGroups = 4 - solvedGroups.length;
+
+            const groupXP = 50 + (group.level * 20);
+            showToast("Connected", "good");
+
+            showMoment({
+                title: group.category,
+                desc: selectedItems.map(x => x.word).join(" • "),
+                pointsText: `+${groupXP} XP`,
+                remainingText: `${remainingGroups} group${remainingGroups === 1 ? "" : "s"} left`
+            });
+
+            renderBoard();
+            saveProgress();
+
+            if (navigator.vibrate) { try { navigator.vibrate([18, 25, 18]); } catch(e){} }
+
+            if (window.dataLayer){
+                window.dataLayer.push({
+                    event: "nexus_group_solved",
+                    game_name: "Nexus Grid",
+                    puzzle_id: String(currentPuzzle?.id ?? ""),
+                    group_level: group.level + 1,
+                    solved_count: solvedGroups.length
+                });
+            }
+
+            if (solvedGroups.length === 4) gameWin();
+        }
+
+        function handleFailure(selectedItems){
+            const board = byId('game-board');
+            board.classList.add('animate-shake');
+            setTimeout(() => board.classList.remove('animate-shake'), 520);
+
+            const counts = {};
+            selectedItems.forEach(i => { counts[i.groupId] = (counts[i.groupId] || 0) + 1; });
+            const oneAway = Object.values(counts).includes(3);
+
+            mistakes++;
+            updateLivesUI();
+
+            if (navigator.vibrate) { try { navigator.vibrate(30); } catch(e){} }
+
+            if (oneAway) showToast("One Away!", "bad");
+            else showToast("Incorrect", "bad");
+
+            if (window.dataLayer){
+                window.dataLayer.push({
+                    event: "nexus_mistake",
+                    game_name: "Nexus Grid",
+                    puzzle_id: String(currentPuzzle?.id ?? ""),
+                    mistakes: mistakes,
+                    one_away: oneAway ? 1 : 0
+                });
+            }
+
+            selected.clear();
+            renderBoard();
+
+            if (mistakes >= MAX_MISTAKES) gameOver();
+            else saveProgress();
+        }
+
+        function calcXP(durationSec){
+            const base = 300;
+            const speedBonus = Math.max(0, 120 - Math.floor(durationSec / 5));
+            const mistakePenalty = mistakes * 40;
+            return Math.max(50, base + speedBonus - mistakePenalty);
+        }
+
+        function gameWin(){
+            isGameOver = true;
+            stopTimer();
+
+            const duration = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
+            const xp = calcXP(duration);
+
+            byId('final-time').textContent = formatTime(duration);
+            byId('final-mistakes').textContent = String(mistakes);
+            byId('final-xp').textContent = `+${xp}`;
+
+            setTimeout(() => byId('win-modal').classList.remove('hidden'), 650);
+
+            if (window.GameEngine) {
+                if (typeof window.GameEngine.addXP === "function") window.GameEngine.addXP(xp);
+                if (typeof window.GameEngine.saveGameResult === "function") {
+                    window.GameEngine.saveGameResult("Nexus Grid", xp, 4, {
+                        puzzle_id: currentPuzzle?.id ?? "",
+                        puzzle_index: currentPuzzleIndex + 1,
+                        mistakes: mistakes,
+                        time_s: duration,
+                        pack: packLabel,
+                        mode: byId("mode-label").textContent
+                    });
+                }
+                if (typeof window.GameEngine.trackEvent === "function") {
+                    window.GameEngine.trackEvent("game_complete", { game: "Nexus Grid", puzzle_id: currentPuzzle?.id ?? "", xp, mistakes, duration });
+                }
+            }
+
+            if (window.dataLayer){
+                window.dataLayer.push({
+                    event: "game_complete",
+                    game_name: "Nexus Grid",
+                    game_result: "complete",
+                    puzzle_id: String(currentPuzzle?.id ?? ""),
+                    puzzle_index: currentPuzzleIndex + 1,
+                    mistakes: mistakes,
+                    elapsed_s: duration,
+                    xp: xp
+                });
+            }
+
+            clearProgress();
+        }
+
+        function gameOver(){
+            isGameOver = true;
+            stopTimer();
+
+            setTimeout(() => byId('loss-modal').classList.remove('hidden'), 650);
+
+            if (window.dataLayer){
+                window.dataLayer.push({
+                    event: "game_complete",
+                    game_name: "Nexus Grid",
+                    game_result: "loss",
+                    puzzle_id: String(currentPuzzle?.id ?? ""),
+                    puzzle_index: currentPuzzleIndex + 1,
+                    mistakes: mistakes
+                });
+            }
+
+            saveProgress();
+        }
+
+        function revealAll(){
+            if (!currentPuzzle) return;
+            solvedGroups = [0,1,2,3];
+            selected.clear();
+            renderBoard();
+            saveProgress();
+            showToast("Revealed", "muted");
+        }
+
+
+
+
+
+        function restartCurrentPuzzle(){
+                if (!currentPuzzle) return;
+                try { clearProgress(); } catch(e){}
+                isGameOver = false;
+                // Preserve mode label (Daily vs Override)
+                const isOverride = byId("mode-label").textContent === "Override";
+                loadPuzzleAtIndex(currentPuzzleIndex, isOverride);
+                byId("win-modal").classList.add("hidden");
+                byId("loss-modal").classList.add("hidden");
+            }
+
+
+
+        function pickNewPuzzle(){
+            if (!PUZZLE_PACK.length) return;
+
+            let next = currentPuzzleIndex;
+            if (PUZZLE_PACK.length > 1){
+                do { next = Math.floor(Math.random() * PUZZLE_PACK.length); }
+                while (next === currentPuzzleIndex);
+            }
+
+            saveOverride(next);
+            byId("win-modal").classList.add("hidden");
+            byId("loss-modal").classList.add("hidden");
+            loadPuzzleAtIndex(next, true);
+        }
+
+
+        function loadPuzzleAtIndex(idx, isOverride){
+            currentPuzzleIndex = normIdx(idx);
+            currentPuzzle = PUZZLE_PACK[currentPuzzleIndex];
+
+            isGameOver = false;
+            mistakes = 0;
+            solvedGroups = [];
+            selected = new Set();
+
+            byId("puzzle-label").textContent = `Puzzle #${currentPuzzle.id}`;
+            byId("mode-label").textContent = isOverride ? "Override" : "Daily";
+
+            items = buildItemsFromPuzzle(currentPuzzle);
+
+            const saved = loadProgressForPuzzle(currentPuzzle);
+            if (saved && saved.items && Array.isArray(saved.items) && saved.items.length === 16){
+                items = saved.items;
+                mistakes = Number(saved.mistakes || 0);
+                solvedGroups = Array.isArray(saved.solvedGroups) ? saved.solvedGroups : [];
+                selected = new Set(Array.isArray(saved.selected) ? saved.selected : []);
+                startTime = Number(saved.startTime || Date.now());
+                showToast("Resumed", "muted");
+            } else {
+                startTime = Date.now();
+            }
+
+            updateLivesUI();
+            renderBoard();
+            startTimer();
+
+            if (window.dataLayer){
+                window.dataLayer.push({
+                    event: "nexus_puzzle_load",
+                    game_name: "Nexus Grid",
+                    puzzle_id: String(currentPuzzle?.id ?? ""),
+                    puzzle_index: currentPuzzleIndex + 1,
+                    pack: packLabel,
+                    mode: isOverride ? "override" : "daily"
+                });
+            }
+        }
+
+        function bindUI(){
+            byId("shuffle-btn").addEventListener("click", shuffleGrid);
+            byId("deselect-btn").addEventListener("click", deselectAll);
+            byId("submit-btn").addEventListener("click", submitGuess);
+
+            byId("next-grid-btn").addEventListener("click", () => {
+                byId("win-modal").classList.add("hidden");
+                pickNewPuzzle();
+            });
+
+            byId("close-win-btn").addEventListener("click", () => {
+                byId("win-modal").classList.add("hidden");
+            });
+
+            byId("retry-btn").addEventListener("click", () => location.reload());
+            byId("reveal-btn").addEventListener("click", () => {
+                revealAll();
+                byId("loss-modal").classList.add("hidden");
+            });
+
+            byId("moment").addEventListener("click", (e) => {
+                if (e.target && e.target.id === "moment") byId("moment").classList.remove("show");
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (isGameOver) return;
+
+                if (e.key === "Escape") {
+                    e.preventDefault();
+                    deselectAll();
+                    return;
+                }
+                if (e.key === "Enter") {
+                    if (selected.size === 4) {
+                        e.preventDefault();
+                        submitGuess();
+                    }
+                    return;
+                }
+                if (e.key.toLowerCase() === "s") {
+                    e.preventDefault();
+                    shuffleGrid();
+                    return;
+                }
+            });
+        }
+
+        async function init(){
+            bindUI();
+            await loadPack();
+
+            const override = loadOverride();
+            if (override !== null){
+                loadPuzzleAtIndex(override, true);
+            } else {
+                const daily = normIdx(computeDailyIndex());
+                loadPuzzleAtIndex(daily, false);
+            }
+
+            if (window.GameEngine && typeof window.GameEngine.trackEvent === "function") {
+                window.GameEngine.trackEvent('game_start', { game: 'Nexus Grid', puzzle_id: currentPuzzle?.id ?? "", pack: packLabel });
+            }
+            if (window.dataLayer) window.dataLayer.push({ event: "game_start", game_name: "Nexus Grid" });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
