@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- CookieYes (PASTE YOUR EXACT SCRIPT HERE)
+  <script id="cookieyes" type="text/javascript" src="YOUR_COOKIEYES_SCRIPT_URL"></script>
+  End CookieYes -->
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+
+  <title>Friends Explained: Characters, Episodes, Quotes & Trivia | QuizRealm</title>
+  <meta name="description" content="Explore Friends: main characters, iconic episodes, famous quotes, running jokes, and behind-the-scenes trivia. Then test yourself with QuizRealm quizzes and games.">
+
+  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+  <meta name="msapplication-TileColor" content="#020617">
+  <meta name="theme-color" content="#020617">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arcade: ['Bungee', 'cursive'],
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace']
+          },
+          colors: {
+            bgDarker: '#050810',
+            accentBlue: '#3b82f6',
+            accentCyan: '#06b6d4',
+            accentGreen: '#10b981',
+            accentOrange: '#f97316',
+            accentGold: '#fbbf24',
+            accentPink: '#ec4899',
+            accentPurple: '#a855f7'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body{
+      background-color:#050810;
+      background-image: radial-gradient(circle at 50% 0%, #2a0f3a, #050810 78%);
+      color:#e2e8f0;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    .grid-bg{
+      background-size:60px 60px;
+      background-image:
+        linear-gradient(to right, rgba(236,72,153,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59,130,246,0.03) 1px, transparent 1px);
+      mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
+    }
+    .glass{
+      background: rgba(30,41,59,0.60);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 60px -40px rgba(0,0,0,0.9);
+    }
+
+    /* 9:16 box without Tailwind aspect plugin */
+    .ratio-9-16{ position:relative; width:100%; padding-top:177.7778%; }
+    .ratio-9-16 > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+
+    /* Promo card structure (Friends-themed) */
+    .qr-card-container{ width:100%; }
+    .qr-promo-card{
+      position:relative;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(2,6,23,0.55);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 24px 70px -50px rgba(0,0,0,0.95);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .qr-promo-card:hover{
+      transform: translateY(-4px);
+      border-color: rgba(236,72,153,0.55);
+      background: rgba(2,6,23,0.62);
+    }
+    .qr-badge{
+      position:absolute;
+      top:14px; left:14px;
+      z-index:5;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      padding:7px 10px;
+      border-radius:999px;
+      color:#0b1220;
+      background: linear-gradient(90deg, rgba(236,72,153,1), rgba(59,130,246,1));
+      border:1px solid rgba(255,255,255,0.18);
+    }
+    .qr-card-image{
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      background: radial-gradient(circle at top, rgba(236,72,153,0.18), rgba(2,6,23,0.9));
+    }
+    .qr-img-fill{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .qr-card-content{ padding:18px 18px 20px; }
+    .qr-card-title{
+      font-family:'Bungee', cursive;
+      font-size:18px;
+      line-height:1.1;
+      color:#fff;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+    .qr-card-desc{
+      font-size:13px;
+      color: rgba(226,232,240,0.85);
+      line-height:1.5;
+      margin-bottom:14px;
+    }
+    .qr-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      font-size:12px;
+      color:#11051a;
+      background: linear-gradient(90deg, rgba(236,72,153,1), rgba(59,130,246,1));
+      border:1px solid rgba(255,255,255,0.14);
+      transition: transform .18s ease, filter .18s ease;
+      text-decoration:none;
+    }
+    .qr-btn:hover{ transform: translateY(-2px); filter: brightness(1.06); }
+
+    .pill-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(226,232,240,0.92);
+      transition: background .15s ease, border-color .15s ease, transform .15s ease;
+      text-decoration:none;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .pill-link:hover{
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(236,72,153,0.55);
+      transform: translateY(-1px);
+      color:#fff;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-10 md:py-14 space-y-10">
+
+    <!-- Top quick nav -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <a class="pill-link" href="/index.html"><i class="fas fa-house"></i> Home</a>
+        <a class="pill-link" href="/categories.html"><i class="fas fa-layer-group"></i> Categories</a>
+        <a class="pill-link" href="/mode.html?category=friends"><i class="fas fa-play"></i> Play Friends</a>
+      </div>
+      <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+        Encyclopedia • Friends
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <section class="glass rounded-2xl p-6 md:p-8 overflow-hidden">
+      <div class="flex flex-col lg:flex-row gap-8 lg:items-center">
+
+        <!-- Text -->
+        <div class="flex-1 space-y-4">
+          <div class="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-accentCyan">
+            <i class="fas fa-mug-hot"></i>
+            TV Sitcom Encyclopedia • Comedy • New York
+          </div>
+
+          <h1 class="font-arcade text-3xl md:text-5xl text-white leading-tight">
+            Friends
+          </h1>
+
+          <p class="text-slate-300 leading-relaxed max-w-2xl">
+            <strong class="text-white">Friends</strong> is one of the most iconic sitcoms in television history — a New York comedy built on
+            unforgettable <strong class="text-white">characters, relationships, running jokes, and quotable moments</strong>.
+            Use this encyclopedia guide to refresh the cast, episode highlights, famous quotes, and fan-favorite storylines —
+            then jump straight into QuizRealm’s interactive trivia, Pictionary, and timeline challenges.
+          </p>
+
+          <p class="text-slate-400 text-sm leading-relaxed max-w-2xl">
+            Whether you remember “We were on a break,” the apartment swap, the Thanksgiving episodes, or Central Perk chaos,
+            this page is designed to boost recall fast and convert that nostalgia into high scores.
+          </p>
+
+          <!-- Primary actions -->
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="/mode.html?category=friends"
+               class="px-6 py-3 rounded-xl bg-accentBlue text-white font-bold hover:scale-105 transition inline-flex items-center gap-2">
+              <i class="fas fa-play"></i>
+              Start Friends Quiz
+            </a>
+
+            <!-- Label is Pictionary (link remains minigames) -->
+            <a href="/minigames.html?category=friends"
+               class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition inline-flex items-center gap-2">
+              <i class="fas fa-pen-nib"></i>
+              Pictionary
+            </a>
+
+            <a href="/timeline-history.html?category=friends"
+               class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition inline-flex items-center gap-2">
+              <i class="fas fa-stream"></i>
+              Timeline Game
+            </a>
+          </div>
+
+          <!-- Secondary nav -->
+          <div class="flex flex-wrap gap-3 pt-1">
+            <a href="/index.html"
+               class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition inline-flex items-center gap-2">
+              <i class="fas fa-house"></i> Home
+            </a>
+            <a href="/categories.html"
+               class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition inline-flex items-center gap-2">
+              <i class="fas fa-layer-group"></i> All Categories
+            </a>
+            <a href="/encyclopedia.html"
+               class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition inline-flex items-center gap-2">
+              <i class="fas fa-book-open"></i> Encyclopedia Hub
+            </a>
+          </div>
+        </div>
+
+        <!-- 9:16 spotlight image -->
+        <div class="w-full lg:w-[340px] lg:flex-shrink-0 mx-auto lg:mx-0">
+          <div class="rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(236,72,153,0.12)]">
+            <div class="ratio-9-16">
+              <img src="/assets/friends.webp" alt="Friends category cover art">
+            </div>
+          </div>
+          <div class="mt-3 text-xs text-slate-500 italic text-center lg:text-left">
+            Category cover (9:16).
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2-column content -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- Main content -->
+      <div class="lg:col-span-8 space-y-8">
+
+        <!-- Quick facts -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">10</div>
+            <div class="text-xs text-slate-400 uppercase">Seasons</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">236</div>
+            <div class="text-xs text-slate-400 uppercase">Episodes</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">1994–2004</div>
+            <div class="text-xs text-slate-400 uppercase">Airing</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">NYC</div>
+            <div class="text-xs text-slate-400 uppercase">Setting</div>
+          </div>
+        </section>
+
+        <!-- What it is -->
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">What is Friends?</h2>
+          <p class="text-slate-300 leading-relaxed">
+            <strong class="text-white">Friends</strong> follows six friends navigating life, love, careers, and chaos in New York City.
+            The show’s format is built for trivia: recurring jokes, relationship arcs, iconic props, and “only true fans notice this” details.
+          </p>
+          <p class="text-slate-300 leading-relaxed">
+            The comedy isn’t just situational — it’s character-driven. That means the best quiz questions often test what each character
+            would do, say, or fail at (spectacularly) in a specific episode.
+          </p>
+        </section>
+
+        <!-- Characters -->
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">Main characters</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Rachel Green</div>
+              <div class="text-sm text-slate-300">Fashion, growth arcs, unforgettable entrances, and relationship drama.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Ross Geller</div>
+              <div class="text-sm text-slate-300">Dinosaurs, “on a break” chaos, and emotional over-analysis.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Monica Geller</div>
+              <div class="text-sm text-slate-300">Competitive energy, hosting, cleanliness, and iconic Thanksgiving moments.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Chandler Bing</div>
+              <div class="text-sm text-slate-300">Sarcasm as a lifestyle, awkward charm, and elite one-liners.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Joey Tribbiani</div>
+              <div class="text-sm text-slate-300">Food, acting, loyalty, and “How you doin’?” energy.</div>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div class="font-bold text-white">Phoebe Buffay</div>
+              <div class="text-sm text-slate-300">Unpredictable stories, weird wisdom, and legendary songs.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Trivia angles -->
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">What Friends quiz questions usually test</h2>
+          <ul class="space-y-3 text-slate-300">
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Quotes:</span> punchlines, catchphrases, and who said what.</div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Episodes:</span> plot specifics, guest stars, and what happened next.</div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Running jokes:</span> recurring bits that only real fans remember.</div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i class="fas fa-check-circle text-accentGreen mt-1.5"></i>
+              <div><span class="text-white font-bold">Props & places:</span> apartment details, Central Perk, and iconic objects.</div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- CTA row -->
+        <section class="glass rounded-2xl p-6">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-white">Ready to test yourself?</h2>
+              <p class="text-slate-400 text-sm">Pick difficulty and start instantly.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <a href="/mode.html?category=friends" class="px-6 py-3 rounded-xl bg-accentBlue text-white font-bold hover:scale-105 transition">
+                Play Friends Quiz
+              </a>
+              <a href="/categories.html" class="px-6 py-3 rounded-xl border border-white/15 text-slate-200 hover:text-white hover:bg-white/5 transition">
+                Browse Categories
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="glass rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">Frequently asked questions</h2>
+
+          <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div class="font-bold text-white">How many seasons does Friends have?</div>
+            <div class="text-sm text-slate-300 mt-1">
+              Friends ran for 10 seasons and is packed with recurring jokes and character arcs that make trivia especially satisfying.
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div class="font-bold text-white">What’s the best way to play Friends quizzes on QuizRealm?</div>
+            <div class="text-sm text-slate-300 mt-1">
+              Start with Easy for broad episode recall, then move to Medium/Hard for deeper quote questions and specific plot details.
+              Pictionary is great for scene recognition.
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-24 h-fit">
+
+        <!-- Persona card (Friends-related, using your structure) -->
+        <div class="qr-card-container">
+          <div class="qr-promo-card">
+            <div class="qr-badge">Persona Test</div>
+
+            <div class="qr-card-image">
+              <div class="ratio-16-9">
+                <img src="/assets/friends1.webp" alt="Friends Persona Quiz cover" class="qr-img-fill">
+              </div>
+            </div>
+
+            <div class="qr-card-content">
+              <h3 class="qr-card-title">WHICH FRIEND ARE YOU?</h3>
+              <p class="qr-card-desc">
+                Are you Monica-level organized, Phoebe-level chaotic good, or Chandler-level sarcasm? Take the persona test and get your match.
+              </p>
+              <a href="/friendsperson.html" class="qr-btn">
+                Find Your Persona <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pictionary promo (Friends-themed) -->
+        <div class="glass rounded-2xl p-6 border-l-4 border-l-accentPink">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="fas fa-pen-nib" style="color: rgba(236,72,153,1)"></i>
+            <div class="text-sm font-bold text-white uppercase tracking-widest">Pictionary</div>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Quick scene recognition and visual hints — perfect for Friends fans who remember moments even when quotes fail.
+          </p>
+          <a href="/minigames.html?category=friends"
+             class="mt-4 inline-flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl border border-white/15 text-white hover:bg-white/5 transition font-bold">
+            Play Pictionary <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Site navigation -->
+        <div class="glass rounded-2xl p-6">
+          <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-3">Quick navigation</div>
+          <div class="grid grid-cols-1 gap-3">
+            <a class="pill-link w-full justify-center" href="/index.html"><i class="fas fa-house"></i> Home</a>
+            <a class="pill-link w-full justify-center" href="/categories.html"><i class="fas fa-layer-group"></i> Categories</a>
+            <a class="pill-link w-full justify-center" href="/mode.html?category=friends"><i class="fas fa-play"></i> Play Friends</a>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+  </main>
+
+  
+
+
+
+
+
+
+<div class="qr-seo-wrapper">
+    <style>
+        .qr-seo-wrapper { display: flex; flex-direction: column; gap: 3rem; width: 100%; max-width: 1200px; margin: 4rem auto; padding: 0 1rem; font-family: system-ui, -apple-system, sans-serif; color: #94a3b8; line-height: 1.6; }
+        .qr-hub-card { position: relative; background: linear-gradient(145deg, #060b18, #0f172a); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5); padding: 2.5rem; display: flex; flex-direction: column; }
+        
+        /* THEMES */
+        .theme-green { border-left: 4px solid #10b981; } .theme-green h2 span { color: #34d399; } .theme-green .qr-badge { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; } .theme-green a { color: #34d399; }
+        .theme-purple { border-left: 4px solid #a855f7; } .theme-purple h2 span { color: #c084fc; } .theme-purple .qr-badge { background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); color: #d8b4fe; } .theme-purple a { color: #c084fc; }
+        .theme-cyan { border-left: 4px solid #06b6d4; } .theme-cyan h2 span { color: #22d3ee; } .theme-cyan .qr-badge { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9; } .theme-cyan a { color: #22d3ee; }
+        .theme-amber { border-left: 4px solid #f59e0b; } .theme-amber h2 span { color: #fbbf24; } .theme-amber .qr-badge { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; } .theme-amber a { color: #fbbf24; }
+
+        /* LAYOUT */
+        .qr-card-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 2rem; height: 100%; }
+        @media (min-width: 900px) { .qr-card-content { flex-direction: row; align-items: flex-start; } }
+        .qr-main-col { flex: 1; }
+        .qr-side-col { width: 100%; max-width: 320px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(10px); flex-shrink: 0; }
+        
+        /* ELEMENTS */
+        .qr-badge { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 1rem; font-weight: 700; }
+        .qr-hub-card h2 { color: #fff; font-size: 1.8rem; margin: 0 0 1rem 0; line-height: 1.2; letter-spacing: -0.02em; }
+        .qr-hub-card p { margin-bottom: 1.5rem; font-size: 0.95rem; text-align: justify; }
+        .qr-hub-card strong { color: #fff; }
+        .qr-hub-card a { font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
+        .qr-hub-card a:hover { border-bottom-color: currentColor; }
+        
+        /* SIDEBAR */
+        .qr-sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px; margin-bottom: 8px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; text-decoration: none !important; }
+        .qr-sidebar-link:hover { background: rgba(255, 255, 255, 0.08); }
+        .qr-link-text { display: flex; flex-direction: column; }
+        .qr-link-head { color: #e2e8f0; font-size: 0.85rem; font-weight: 700; }
+        .qr-link-sub { color: #64748b; font-size: 0.7rem; }
+        .qr-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px; }
+
+        /* GRIDS */
+        .qr-game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .qr-mini-link { padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 0.75rem; color: #cbd5e1 !important; }
+        .qr-mini-link:hover { background: rgba(255,255,255,0.1); }
+        .qr-link-matrix { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+        .qr-matrix-item { font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; background: rgba(251, 191, 36, 0.1); color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.2); }
+        .qr-matrix-item:hover { background: rgba(251, 191, 36, 0.2); }
+
+        @media (max-width: 600px) { .qr-hub-card { padding: 1.5rem; } .qr-side-col { max-width: 100%; } }
+    </style>
+
+    <div class="qr-hub-card theme-green">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-stopwatch"></i> Time Attack Mode</div>
+                <h2>Beat The Clock: <span>High-Stakes Puzzles</span></h2>
+                <p>
+                    In the <strong>Quiz Realm Arcade</strong>, intelligence is nothing without speed. Our game modes are built to simulate high-pressure environments where hesitation leads to failure. Challenges like <a href="rapid.html">Rapid Fire</a> force you to make split-second decisions, training your brain to retrieve information instantly rather than just memorizing it.
+                </p>
+                <p>
+                    We track your "Time-to-Answer" metrics across all modes, from the deductive grids of <a href="fusion-core.html">Logic League</a> to the fast-paced pattern matching of <a href="nexus.html">Connections</a>. Are you faster than 90% of the global player base? Only the leaderboard tells the truth. Jump into a session now and set a new personal best.
+                </p>
+                
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1rem; color: #fff;">Speed Modules</div>
+                <div class="qr-game-grid">
+                    <a href="/rapid.html" class="qr-mini-link">Rapid Fire</a>
+                    <a href="/mini-crossword.html" class="qr-mini-link">Speed Cross</a>
+                    <a href="/odd-one-out.html" class="qr-mini-link">Odd One Out</a>
+                    <a href="/cryptex.html" class="qr-mini-link">Cryptex</a>
+                    <a href="/word-ladder.html" class="qr-mini-link">Ladder Run</a>
+                    <a href="/timeline-history.html" class="qr-mini-link">Timeline</a>
+                </div>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Compete</div>
+                <a href="/daily.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-trophy text-green-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Daily Rank</span><span class="qr-link-sub">Today's Leaderboard</span></div>
+                </a>
+                <a href="/arcade.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-list-ol text-green-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">All Games</span><span class="qr-link-sub">Browse Collection</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-purple">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-dungeon"></i> Hardcore Mode</div>
+                <h2>The Deep End: <span>Impossible Trivia</span></h2>
+                <p>
+                    Casual fans need not apply. The <strong>Knowledge Nexus</strong> is home to our "Deep Dive" hubs, where we house questions that go far beyond the movie posters. We test your knowledge of specific issue numbers, alien dialects, and background Easter eggs found in the <a href="marvel.html">Marvel</a> and <a href="dc.html">DC Universes</a>.
+                </p>
+                <p>
+                    Our algorithm adjusts to your skill level. If you consistently answer easy questions correctly, the system will begin serving "Omega-Level" threats—questions designed to stump even professional archivists. From <a href="rick-and-morty.html">Rick and Morty's</a> multidimensional coordinates to the exact dates of historical battles, this is the ultimate test of your fandom retention.
+                </p>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Select Challenge</div>
+                <a href="/encyclopedia/marvel.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-hand-rock text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Infinity War</span><span class="qr-link-sub">Marvel Hard Mode</span></div>
+                </a>
+                <a href="/encyclopedia/superman.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-city text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Gotham City</span><span class="qr-link-sub">DC Hard Mode</span></div>
+                </a>
+                <a href="/christmas-hub.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-gift text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Holiday Lore</span><span class="qr-link-sub">Seasonal Facts</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-cyan">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-crown"></i> Prestige System</div>
+                <h2>Global Status: <span>Earn Your Rank</span></h2>
+                <p>
+                    In the Quiz Realm, knowledge is currency. Our <strong>Prestige System</strong> rewards dedicated players with exclusive profile borders, titles, and badges. Completing a "Perfect Run" in the Daily Challenge or achieving a 7-day streak grants you XP multipliers that accelerate your rise through the ranks.
+                </p>
+                <p>
+                    Don't just play anonymously. Sign in to track your <strong>Lifetime Stats</strong>. See which categories are your strongest (e.g., "Science Geek") and where you need improvement. Compare your "Brain Age" and reaction times against friends to see who truly has the sharpest mind in your circle.
+                </p>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Your Legacy</div>
+                <a href="/achievements.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-award text-cyan-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Hall of Fame</span><span class="qr-link-sub">View Trophies</span></div>
+                </a>
+                <a href="/profile.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-sliders-h text-cyan-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Customize</span><span class="qr-link-sub">Edit Avatar</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-amber">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-graduation-cap"></i> Study Guide</div>
+                <h2>The Library: <span>Prep for Trivia Night</span></h2>
+                <p>
+                    Are you the weak link in your pub trivia team? The <strong>Quiz Realm Library</strong> is your training ground. We have categorized thousands of questions into study-friendly blocks. Spend 10 minutes a day in our "Geography" or "Classic Literature" sections, and you will see immediate improvements in your general knowledge retention.
+                </p>
+                <p>
+                    Our database covers everything from <strong>Ancient Civilizations</strong> to <strong>Modern Tech</strong>. Use the quick links below to target your weak spots. Whether you need to memorize capital cities or understand basic quantum mechanics, we have a quiz module ready for you.
+                </p>
+
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem; color: #fff;">Study Topics</div>
+                <div class="qr-link-matrix">
+                    <a href="/categories.html" class="qr-matrix-item">Periodic Table</a>
+                    <a href="/categories.html" class="qr-matrix-item">World Wars</a>
+                    <a href="/categories.html" class="qr-matrix-item">Film Directors</a>
+                    <a href="/categories.html" class="qr-matrix-item">Human Anatomy</a>
+                    <a href="/categories.html" class="qr-matrix-item">Solar System</a>
+                    <a href="/categories.html" class="qr-matrix-item">Capitals</a>
+                    <a href="/categories.html" class="qr-matrix-item">Grammar</a>
+                    <a href="/categories.html" class="qr-matrix-item">Coding</a>
+                    <a href="/categories.html" class="qr-matrix-item">Fine Art</a>
+                    <a href="/categories.html" class="qr-matrix-item">Olympics</a>
+                    <a href="/categories.html" class="qr-matrix-item">Oscar Winners</a>
+                    <a href="/categories.html" class="qr-matrix-item">Philosophy</a>
+                </div>
+            </div>
+            
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Resources</div>
+                <a href="about.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-users text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Our Team</span><span class="qr-link-sub">Who we are</span></div>
+                </a>
+                <a href="FAQ.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-life-ring text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Support</span><span class="qr-link-sub">Get Help</span></div>
+                </a>
+                <a href="privacy.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-shield-alt text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Security</span><span class="qr-link-sub">Your Data</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>
