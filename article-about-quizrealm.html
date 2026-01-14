@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script type="module" src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+
+  <!-- SEO -->
+  <title>About QuizRealm: The Arcade-Grade Trivia Platform Built for Solo Play and Group Nights</title>
+  <meta name="description" content="QuizRealm is a premium trivia arcade with fast mini-games, deep fandom quizzes, and group-night hosting tools. Learn how it works, what to play first, and how to level up with challenges and achievements." />
+  <link rel="canonical" href="/article-about-quizrealm.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="About QuizRealm: The Arcade-Grade Trivia Platform Built for Solo Play and Group Nights" />
+  <meta property="og:description" content="A human-first walkthrough of QuizRealm: what to play, how the hubs connect, and how to get the best experience solo or with friends." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/article-about-quizrealm.html" />
+  <meta property="og:image" content="/assets/hero-hub.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="About QuizRealm: The Arcade-Grade Trivia Platform Built for Solo Play and Group Nights" />
+  <meta name="twitter:description" content="Play fast mini-games, explore fandom lore, or host a trivia night. A complete guide to the QuizRealm ecosystem." />
+  <meta name="twitter:image" content="/assets/hero-hub.png" />
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Article",
+    "headline":"About QuizRealm: The Arcade-Grade Trivia Platform Built for Solo Play and Group Nights",
+    "description":"A human-first walkthrough of QuizRealm: what to play, how the hubs connect, and how to get the best experience solo or with friends.",
+    "image":["/assets/hero-hub.png"],
+    "author":{"@type":"Organization","name":"QuizRealm Editorial"},
+    "publisher":{"@type":"Organization","name":"QuizRealm","logo":{"@type":"ImageObject","url":"/assets/favicon-192.png"}},
+    "mainEntityOfPage":{"@type":"WebPage","@id":"/article-about-quizrealm.html"}
+  }
+  </script>
+
+  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+  <meta name="msapplication-TileColor" content="#020617">
+  <meta name="theme-color" content="#020617">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arcade: ['Bungee', 'cursive'],
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace']
+          },
+          colors: {
+            bgDarker: '#050810',
+            accentBlue: '#3b82f6',
+            accentCyan: '#06b6d4',
+            accentGreen: '#10b981',
+            accentOrange: '#f97316',
+            accentGold: '#fbbf24'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body{
+      background-color:#050810;
+      background-image: radial-gradient(circle at 50% 0%, rgba(59,130,246,0.16), #050810 72%);
+      color:#e2e8f0;
+      min-height:100vh;
+      overflow-x:hidden;
+      font-family: 'Outfit', sans-serif;
+    }
+    .grid-bg{
+      background-size:60px 60px;
+      background-image:
+        linear-gradient(to right, rgba(59,130,246,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59,130,246,0.03) 1px, transparent 1px);
+      mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
+    }
+    .glass{
+      background: rgba(30,41,59,0.56);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 60px -40px rgba(0,0,0,0.9);
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(226,232,240,0.92); transition: all .15s ease;
+      text-decoration:none; font-size:12px; font-weight:900; letter-spacing:.12em; text-transform:uppercase;
+    }
+    .pill:hover{ background: rgba(255,255,255,0.07); border-color: rgba(59,130,246,0.55); transform: translateY(-1px); color:#fff; }
+    .soft-table{ width:100%; border-collapse: collapse; overflow:hidden; border-radius: 14px; }
+    .soft-table th, .soft-table td{ padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
+    .soft-table thead th{
+      font-size: 11px; color:#94a3b8; text-transform:uppercase; letter-spacing:.14em;
+      background: rgba(0,0,0,0.18);
+    }
+    .soft-table tbody tr:hover{ background: rgba(255,255,255,0.03); transition: .2s ease; }
+    .bar{
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      overflow:hidden;
+    }
+    .bar > span{
+      display:block;
+      height:100%;
+      border-radius:999px;
+      background: linear-gradient(90deg, rgba(59,130,246,0.38), rgba(6,182,212,0.32));
+      border-right: 1px solid rgba(255,255,255,0.18);
+    }
+    .callout{
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .kbd{
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      color:#e2e8f0;
+      white-space:nowrap;
+    }
+    .prose p{ line-height: 1.9; color: rgba(226,232,240,0.92); }
+    .prose h2{ margin-top: 42px; }
+    .prose h3{ margin-top: 26px; }
+    .prose a{ color:#93c5fd; font-weight:800; border-bottom:1px solid transparent; }
+    .prose a:hover{ color:#fff; border-bottom-color: rgba(147,197,253,0.35); }
+  </style>
+</head>
+
+<body class="flex flex-col antialiased selection:bg-accentBlue selection:text-white">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <div class="fixed inset-0 grid-bg pointer-events-none z-[-1]"></div>
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-10 md:py-14 space-y-12">
+
+    <!-- Nav -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <a class="pill" href="/index.html"><i class="fas fa-house"></i> Home</a>
+        <a class="pill" href="/categories.html"><i class="fas fa-layer-group"></i> Categories</a>
+        <a class="pill" href="/arcade.html"><i class="fas fa-gamepad"></i> Arcade</a>
+        <a class="pill" href="/group-hub.html"><i class="fas fa-users"></i> Group Hub</a>
+        <a class="pill" href="/about.html"><i class="fas fa-circle-info"></i> About</a>
+      </div>
+      <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+        Editorial • Platform Guide • How QuizRealm Works
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <section class="glass rounded-2xl p-6 md:p-10 overflow-hidden relative">
+      <div class="absolute -top-12 -right-10 w-80 h-80 bg-accentBlue/20 blur-[110px] rounded-full pointer-events-none"></div>
+      <div class="absolute -bottom-16 -left-16 w-80 h-80 bg-accentCyan/14 blur-[110px] rounded-full pointer-events-none"></div>
+
+      <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-8 space-y-5">
+          <div class="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-accentBlue border border-accentBlue/30 px-3 py-1 rounded-full bg-accentBlue/10">
+            <i class="fas fa-compass"></i> About the Platform
+          </div>
+
+          <h1 class="font-arcade text-3xl md:text-5xl text-white leading-tight drop-shadow-lg">
+            About QuizRealm
+          </h1>
+
+          <p class="text-slate-200 text-lg leading-relaxed">
+            QuizRealm is built for a specific kind of moment: when you want something smart, fast, and satisfying—without a long setup.
+            It’s a trivia arcade, a mini-game lab, and a group-night toolkit in one place.
+          </p>
+
+          <p class="text-slate-300 text-sm leading-relaxed border-l-2 border-accentBlue pl-4">
+            If you arrived from a broken link, you may want the recovery guide first:
+            <a href="/article-404.html">How a Great 404 Page Improves SEO, UX, and Quiz Engagement</a>.
+            It explains how QuizRealm routes you back into the best experiences (Arcade, Categories, Group Hub) without wasting your time.
+          </p>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a class="pill" href="/arcade.html"><i class="fas fa-gamepad"></i> Start in Arcade</a>
+            <a class="pill" href="/categories.html"><i class="fas fa-layer-group"></i> Browse Categories</a>
+            <a class="pill" href="/group-hub.html"><i class="fas fa-users"></i> Play With Friends</a>
+            <a class="pill" href="/identity-lab.html"><i class="fas fa-fingerprint"></i> Identity Lab</a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 space-y-4">
+          <div class="callout">
+            <div class="text-xs uppercase tracking-widest text-slate-400 font-bold mb-2">What this guide does</div>
+            <p class="text-sm text-slate-200 leading-relaxed">
+              This isn’t a generic “about us” page. It’s an orientation: what to play first, how the hubs connect,
+              and how to get the most value whether you’re solo, competitive, or hosting a group.
+            </p>
+          </div>
+
+          <div class="callout">
+            <div class="text-xs uppercase tracking-widest text-slate-400 font-bold mb-2">Fast paths</div>
+            <div class="space-y-2 text-sm">
+              <div><span class="kbd">Fast</span> <a href="/rapid.html">Rapid Fire</a> • <a href="/odd-one-out.html">Odd One Out</a></div>
+              <div><span class="kbd">Puzzle</span> <a href="/mini-crossword.html">Mini Crossword</a> • <a href="/nexus.html">Connections (Nexus)</a></div>
+              <div><span class="kbd">Group</span> <a href="/group-hub-host-trivia-night.html">Host Trivia Night</a></div>
+              <div><span class="kbd">Lore</span> <a href="/marvel.html">Marvel</a> • <a href="/dc.html">DC</a> • <a href="/friends.html">Friends</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Body -->
+    <section class="glass rounded-2xl p-6 md:p-10 prose">
+      <p class="text-slate-300 text-sm">
+        QuizRealm is deliberately structured like a good arcade: multiple doors, clear signage, and a reward loop that makes sense.
+        If you’re the type who clicks a random game and wants it to “just work,” you’re in the right place.
+        If you’re the type who wants to explore a content universe and get better over time, you’re also in the right place.
+      </p>
+
+      <h2 class="text-white text-3xl font-black">What is QuizRealm, in plain language?</h2>
+      <p>
+        It’s a library of interactive knowledge experiences—some are classic quizzes, some are puzzle formats, and some are social game modes.
+        The most important idea is that you should be able to choose your intensity.
+        On some days you want a quick dopamine win. On other days you want deep lore, hard mode questions, and progress.
+      </p>
+      <p>
+        This is why the site is built around hubs:
+        <a href="/arcade.html">Arcade</a> for instant play,
+        <a href="/categories.html">Categories</a> for browsing,
+        <a href="/group-hub.html">Group Hub</a> for social play,
+        and <a href="/identity-lab.html">Identity Lab</a> for personality-style experiences.
+      </p>
+
+      <h2 class="text-white text-3xl font-black">The hub system: how the site is designed to be navigated</h2>
+      <p>
+        Many quiz sites fail because they treat every page like a dead-end landing page.
+        QuizRealm’s approach is closer to a game menu: every major section has logical “neighbors” so you can continue without searching.
+        That also means fewer orphan pages, better internal linking, and a more coherent experience for both humans and search engines.
+      </p>
+
+      <div class="overflow-x-auto mt-6">
+        <table class="soft-table">
+          <thead>
+            <tr>
+              <th>Hub</th>
+              <th>Best for</th>
+              <th>What to click first</th>
+              <th>Related pages</th>
+            </tr>
+          </thead>
+          <tbody class="text-sm text-slate-300">
+            <tr>
+              <td class="text-white font-bold"><a href="/arcade.html">Arcade</a></td>
+              <td>Instant play, short sessions</td>
+              <td><a href="/rapid.html">Rapid Fire</a></td>
+              <td><a href="/minigames.html">Mini Games</a>, <a href="/daily.html">Daily</a></td>
+            </tr>
+            <tr>
+              <td class="text-white font-bold"><a href="/categories.html">Categories</a></td>
+              <td>Browsing topics and fandoms</td>
+              <td><a href="/marvel.html">Marvel</a> or <a href="/dc.html">DC</a></td>
+              <td><a href="/encyclopedia.html">Encyclopedia</a>, <a href="/quiz-dc-vs-marvel.html">DC vs Marvel</a></td>
+            </tr>
+            <tr>
+              <td class="text-white font-bold"><a href="/group-hub.html">Group Hub</a></td>
+              <td>Friends, parties, trivia nights</td>
+              <td><a href="/group-hub-host-trivia-night.html">Host Trivia Night</a></td>
+              <td><a href="/host-game.html">Host Game</a>, <a href="/duel.html">Duel</a></td>
+            </tr>
+            <tr>
+              <td class="text-white font-bold"><a href="/identity-lab.html">Identity Lab</a></td>
+              <td>Personality tests & self-insight</td>
+              <td><a href="/vibe-check-test.html">Vibe Check</a></td>
+              <td><a href="/burnout-test.html">Burnout</a>, <a href="/delusion-test.html">Delusion Test</a></td>
+            </tr>
+            <tr>
+              <td class="text-white font-bold"><a href="/achievements.html">Achievements</a></td>
+              <td>Progress and motivation</td>
+              <td>Pick a badge goal</td>
+              <td><a href="/profile.html">Profile</a>, <a href="/daily.html">Daily</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="text-white text-3xl font-black">Choosing what to play first (based on how you feel)</h2>
+      <p>
+        People don’t choose games like they choose software features. They choose based on mood.
+        That’s why your starting recommendation should be emotional, not technical.
+        Here’s a practical map that matches how humans actually behave:
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div class="callout">
+          <h3 class="text-white font-bold text-lg mb-2"><i class="fas fa-bolt text-accentGold mr-2"></i> “I want something fast.”</h3>
+          <p class="text-sm text-slate-200 leading-relaxed">
+            Start in <a href="/rapid.html">Rapid Fire</a>. If you prefer pattern puzzles over recall, try <a href="/odd-one-out.html">Odd One Out</a>.
+            For a slightly richer challenge that still stays quick, <a href="/mini-crossword.html">Mini Crossword</a> is a clean option.
+          </p>
+        </div>
+        <div class="callout">
+          <h3 class="text-white font-bold text-lg mb-2"><i class="fas fa-users text-accentGreen mr-2"></i> “We’re a group.”</h3>
+          <p class="text-sm text-slate-200 leading-relaxed">
+            Go directly to <a href="/group-hub.html">Group Hub</a>. If you’re hosting, the practical starting point is
+            <a href="/group-hub-host-trivia-night.html">Host Trivia Night</a>—it reduces friction and gets you to “question one” faster.
+          </p>
+        </div>
+      </div>
+
+      <h2 class="text-white text-3xl font-black">Why the “About” page matters for SEO and trust</h2>
+      <p>
+        A good About page is not a biography. It’s a credibility page.
+        Humans use it to decide whether they should invest attention. Search engines use it to infer whether a site has a coherent purpose.
+        For QuizRealm, the purpose is unusually clear: a multi-mode quiz ecosystem with repeat-play loops.
+      </p>
+      <p>
+        One of the most overlooked trust details is what happens when things go wrong—broken links, old bookmarks, or renamed pages.
+        That is why this About article links to your 404 strategy guide:
+        <a href="/article-404.html">How a Great 404 Page Improves SEO, UX, and Quiz Engagement</a>.
+        It turns a “technical failure” topic into a product-quality topic, which is exactly how high-quality brands behave.
+      </p>
+
+      <h2 class="text-white text-3xl font-black">A simple performance model (illustrative) for what drives repeat play</h2>
+      <p>
+        Repeat play is not magic; it comes from three levers: low friction, variety, and progression.
+        The chart below is illustrative, but it mirrors what you see in almost every successful game-like platform.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div class="callout">
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <h3 class="text-white font-bold text-lg">Retention Drivers</h3>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400">Illustrative</span>
+          </div>
+          <div class="space-y-3 text-sm">
+            <div>
+              <div class="flex items-center justify-between"><span class="text-slate-200">Low friction start</span><span class="text-slate-400">45</span></div>
+              <div class="bar"><span style="width:45%"></span></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between"><span class="text-slate-200">Variety of modes</span><span class="text-slate-400">35</span></div>
+              <div class="bar"><span style="width:35%"></span></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between"><span class="text-slate-200">Progression (achievements)</span><span class="text-slate-400">20</span></div>
+              <div class="bar"><span style="width:20%"></span></div>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mt-4">
+            QuizRealm already has the right structure for these levers:
+            fast entry via <a href="/arcade.html">Arcade</a>,
+            variety via <a href="/minigames.html">Mini Games</a>,
+            and progression via <a href="/achievements.html">Achievements</a>.
+          </p>
+        </div>
+
+        <div class="callout">
+          <h3 class="text-white font-bold text-lg mb-2">If you only have 3 minutes</h3>
+          <p class="text-slate-200 text-sm leading-relaxed">
+            Do this sequence:
+            <a href="/arcade.html">Arcade</a> → <a href="/rapid.html">Rapid Fire</a> → <a href="/categories.html">Categories</a>.
+            It gives you a quick win, then a browse step that encourages your next click.
+            If you’re with people, replace Categories with <a href="/group-hub.html">Group Hub</a>.
+          </p>
+        </div>
+      </div>
+
+      <h2 class="text-white text-3xl font-black">Where to go next (without feeling overwhelmed)</h2>
+      <p>
+        If you’ve ever opened a large quiz site and felt like you were staring at a wall of options, that’s not a “you problem.”
+        That is a navigation problem. QuizRealm fixes this with clear hubs and consistent UI components (header/footer + UX-core patterns).
+      </p>
+      <p>
+        For a structured next step, pick one lane:
+      </p>
+      <ul class="list-disc list-inside">
+        <li><strong class="text-white">Play lane:</strong> <a href="/arcade.html">Arcade</a> and <a href="/daily.html">Daily</a></li>
+        <li><strong class="text-white">Browse lane:</strong> <a href="/categories.html">Categories</a> and <a href="/encyclopedia.html">Encyclopedia</a></li>
+        <li><strong class="text-white">Social lane:</strong> <a href="/group-hub.html">Group Hub</a> and <a href="/host-game.html">Host Game</a></li>
+        <li><strong class="text-white">Identity lane:</strong> <a href="/identity-lab.html">Identity Lab</a> and <a href="/vibe-check-test.html">Vibe Check</a></li>
+      </ul>
+
+      <div class="callout mt-8">
+        <div class="text-xs uppercase tracking-widest text-slate-400 font-bold mb-2">Site trust links</div>
+        <p class="text-sm text-slate-200 leading-relaxed">
+          Learn more: <a href="/about.html">About</a> •
+          Browse: <a href="/categories.html">Categories</a> •
+          Play: <a href="/arcade.html">Arcade</a> •
+          Social: <a href="/group-hub.html">Group Hub</a> •
+          Legal: <a href="/privacy.html">Privacy</a> and <a href="/Terms.html">Terms</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Bottom CTA -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div class="glass rounded-2xl p-6 border border-white/10">
+        <h3 class="text-white font-bold text-lg mb-2">Start Playing</h3>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+          The simplest next click if you want immediate fun.
+        </p>
+        <a class="pill w-full justify-center" href="/arcade.html"><i class="fas fa-gamepad"></i> Arcade</a>
+      </div>
+
+      <div class="glass rounded-2xl p-6 border border-white/10">
+        <h3 class="text-white font-bold text-lg mb-2">Browse Topics</h3>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+          Explore fandoms, science, history, and more.
+        </p>
+        <a class="pill w-full justify-center" href="/categories.html"><i class="fas fa-layer-group"></i> Categories</a>
+      </div>
+
+      <div class="glass rounded-2xl p-6 border border-white/10">
+        <h3 class="text-white font-bold text-lg mb-2">Make it Social</h3>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+          Turn your session into a group night.
+        </p>
+        <a class="pill w-full justify-center" href="/group-hub.html"><i class="fas fa-users"></i> Group Hub</a>
+      </div>
+    </section>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+</body>
+</html>
