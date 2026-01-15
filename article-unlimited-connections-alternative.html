@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script type="module" src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;" />
+
+  <title>NYT Connections Alternative: The Unlimited Version You Can Binge Play | QuizRealm</title>
+  <meta name="description"
+        content="Finished today's NYT Connections in 2 minutes? Play 'Nexus' on QuizRealm for unlimited puzzles, archived games, and multiplayer modes. The best free alternative for word logic addicts." />
+  <meta name="keywords"
+        content="nyt connections archive, unlimited connections game, word association game, nexus puzzle, logic games for adults, daily word game alternative" />
+  <link rel="canonical" href="/article-unlimited-connections-alternative.html" />
+
+  <meta property="og:title" content="Unlimited Connections: The NYT Alternative" />
+  <meta property="og:description" content="Don't wait 24 hours for the next puzzle. Play infinite mode here." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/article-unlimited-connections-alternative.html" />
+  <meta property="og:image" content="/assets/nexus-card.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Unlimited Connections: The NYT Alternative" />
+  <meta name="twitter:description" content="The cure for 'One Puzzle a Day' syndrome." />
+  <meta name="twitter:image" content="/assets/nexus-card.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Game",
+    "name":"Nexus: Unlimited Connections",
+    "description":"A word association logic puzzle where players group words into categories of four. Features unlimited play and archive modes.",
+    "url":"https://thequizrealm.com/nexus.html",
+    "author":{"@type":"Organization","name":"QuizRealm Arcade"},
+    "publisher":{"@type":"Organization","name":"QuizRealm","logo":{"@type":"ImageObject","url":"/assets/favicon-192.png"}},
+    "genre":["Puzzle","Word Game","Logic"],
+    "audience":{"@type":"PeopleAudience","suggestedMinAge":"12"}
+  }
+  </script>
+
+  <link rel="manifest" href="/assets/site.webmanifest" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
+  <link rel="shortcut icon" href="/assets/favicon.ico" />
+  <meta name="msapplication-TileColor" content="#020617" />
+  <meta name="theme-color" content="#020617" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
+          },
+          colors: {
+            void: '#0f0f13', 
+            tileBg: '#1e1e24',
+            tileBorder: '#2d2d36',
+            highlight: '#fbbf24', // Yellow difficulty
+            medium: '#3ba55c',    // Green difficulty
+            hard: '#22d3ee',      // Blue difficulty
+            expert: '#a855f7'     // Purple difficulty
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body{
+      background:#0f0f13;
+      color:#e5e7eb;
+      min-height:100vh;
+      overflow-x:hidden;
+      font-family:'Outfit',sans-serif;
+      /* Geometric Pattern Background */
+      background-image:
+        radial-gradient(circle at 10% 10%, rgba(251,191,36,0.05), transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(168,85,247,0.05), transparent 40%);
+    }
+    
+    .glass{
+      background: rgba(30,30,36,0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px -20px rgba(0,0,0,0.8);
+    }
+    
+    h1, h2, h3, h4, h5, h6 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.03em; }
+
+    /* The Game Tile Visualization */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .game-tile {
+      aspect-ratio: 3/2;
+      background: #2d2d36;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      transition: all 0.2s;
+      cursor: default;
+    }
+    .game-tile.active { background: #5a5a66; color: white; transform: scale(0.95); }
+    .game-tile.yellow { background: #fbbf24; color: #451a03; border:none; }
+    .game-tile.green { background: #3ba55c; color: #052e16; border:none; }
+    .game-tile.blue { background: #22d3ee; color: #083344; border:none; }
+    .game-tile.purple { background: #a855f7; color: #2e1065; border:none; }
+
+    .cta{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-weight: 800;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      font-size: 14px;
+      text-decoration:none;
+      transition: .2s ease;
+      background: white;
+      color: black;
+      border: 2px solid white;
+    }
+    .cta:hover{
+      background: transparent;
+      color: white;
+      transform: translateY(-2px);
+    }
+    .cta.secondary {
+      background: transparent;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .cta.secondary:hover {
+      border-color: white;
+    }
+
+    /* Ad Slot Styled as "Blocked Tile" */
+    .ad-slot-container {
+      width: 100%;
+      min-height: 250px;
+      background: #18181b;
+      border: 2px dashed #2d2d36;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 40px 0;
+      position: relative;
+    }
+    .ad-label {
+      font-size: 10px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 8px;
+    }
+
+    .prose p { line-height: 1.7; color: #d1d5db; font-size: 1.15rem; margin-bottom: 2rem; }
+    .prose h3 { font-size: 1.75rem; margin-top: 3rem; margin-bottom: 1.5rem; color: #fff; }
+    .prose h4 { font-size: 1.4rem; margin-top: 2rem; margin-bottom: 1rem; color: #a855f7; }
+    .prose ul { margin-bottom: 2rem; list-style: none; padding-left: 0; }
+    .prose li { position: relative; padding-left: 2rem; margin-bottom: 1rem; color: #d1d5db; }
+    .prose li::before { content: '→'; position: absolute; left: 0; color: #fbbf24; font-weight: bold; }
+    
+    .stat-box { background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); margin: 2rem 0; }
+    .internal-link { color: #22d3ee; text-decoration: underline; text-underline-offset: 4px; decoration-thickness: 2px; transition: color 0.2s; }
+    .internal-link:hover { color: #fff; }
+  </style>
+
+</head>
+
+<body class="flex flex-col antialiased">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-12 md:py-20 space-y-16">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="space-y-6">
+        <div class="inline-block px-3 py-1 rounded-md bg-white/10 text-white text-[10px] font-bold uppercase tracking-widest border border-white/10">
+          Daily Games • Logic • Word Puzzles
+        </div>
+        
+        <h1 class="text-5xl md:text-7xl font-black text-white leading-tight">
+          Unlimited <span class="text-transparent bg-clip-text bg-gradient-to-r from-highlight to-expert">Connections</span>
+        </h1>
+        
+        <p class="text-lg text-slate-400 leading-relaxed">
+          You finished today's NYT puzzle in 2 minutes. Now you have to wait 24 hours for the next one.
+          <br><br>
+          <strong class="text-white">Or you can just play Nexus.</strong>
+          Unlimited puzzles. Archive mode. No paywall.
+        </p>
+
+        <div class="flex flex-wrap gap-4 pt-4">
+          <a class="cta" href="/nexus.html">
+            <i class="fas fa-play"></i> Play Nexus Now
+          </a>
+          <a class="cta secondary" href="/arcade.html">
+            <i class="fas fa-gamepad"></i> Arcade Hub
+          </a>
+        </div>
+      </div>
+
+      <div class="relative">
+        <div class="absolute -inset-4 bg-gradient-to-r from-highlight/20 to-expert/20 blur-xl rounded-full opacity-50 pointer-events-none"></div>
+        <div class="glass p-6 rounded-2xl relative z-10 border border-white/10">
+          <div class="flex justify-between items-center mb-4">
+            <div class="text-xs font-bold text-slate-500 uppercase">Mistakes Remaining: • • • •</div>
+            <div class="text-xs font-bold text-white uppercase">Nexus Daily #402</div>
+          </div>
+          
+          <div class="game-grid">
+            <div class="game-tile active">Bass</div>
+            <div class="game-tile">Trout</div>
+            <div class="game-tile">Flounder</div>
+            <div class="game-tile">Salmon</div>
+            <div class="game-tile">Guitar</div>
+            <div class="game-tile">Piano</div>
+            <div class="game-tile">Drum</div>
+            <div class="game-tile">Flute</div>
+            <div class="game-tile">Scale</div>
+            <div class="game-tile">Fin</div>
+            <div class="game-tile">Gill</div>
+            <div class="game-tile">Hook</div>
+            <div class="game-tile">Key</div>
+            <div class="game-tile">Note</div>
+            <div class="game-tile">Chord</div>
+            <div class="game-tile">Fish</div>
+          </div>
+          
+          <div class="flex justify-center gap-3">
+             <div class="h-10 px-6 rounded-full border border-white/20 flex items-center justify-center text-xs font-bold uppercase text-slate-400">Shuffle</div>
+             <div class="h-10 px-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold uppercase">Submit</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass p-8 rounded-2xl border-t-4 border-highlight">
+        <h3 class="text-xl font-bold text-white mb-3">The Problem</h3>
+        <p class="text-sm text-slate-400 mb-4">
+          The New York Times Games are brilliant, but they are "One-and-Done." Once you solve it, the dopamine is gone until tomorrow.
+        </p>
+        <div class="text-xs text-highlight font-mono uppercase">Wait Time: 24 Hours</div>
+      </div>
+
+      <div class="glass p-8 rounded-2xl border-t-4 border-medium">
+        <h3 class="text-xl font-bold text-white mb-3">The Archive</h3>
+        <p class="text-sm text-slate-400 mb-4">
+          QuizRealm's <strong>Nexus</strong> mode lets you access the "Infinite Archive." You can binge-play 50 puzzles in a row if you want.
+        </p>
+        <div class="text-xs text-medium font-mono uppercase">Wait Time: 0 Seconds</div>
+      </div>
+
+      <div class="glass p-8 rounded-2xl border-t-4 border-expert">
+        <h3 class="text-xl font-bold text-white mb-3">Multiplayer</h3>
+        <p class="text-sm text-slate-400 mb-4">
+          Want to prove you are smarter than your friends? You can race to solve the same grid in <a href="/group-hub.html" class="text-white underline">Group Hub</a>.
+        </p>
+        <div class="text-xs text-expert font-mono uppercase">Mode: Competitive</div>
+      </div>
+    </section>
+
+    <section class="max-w-3xl mx-auto pt-10 prose">
+      <h2 class="text-3xl text-white font-bold text-center mb-8">How to Win (Strategy Guide)</h2>
+      
+      <div class="space-y-6">
+        <div class="flex gap-6 items-start">
+          <div class="w-12 h-12 rounded-xl bg-highlight flex items-center justify-center text-black font-bold text-xl flex-shrink-0">1</div>
+          <div>
+            <h3 class="text-xl text-white font-bold m-0 p-0">Beware the "Fifth Wheel"</h3>
+            <p class="m-0 mt-2">
+              The game is designed to trick you. There will often be <strong>5 words</strong> that fit a category (e.g., Apple, Banana, Pear, Grape, ... and "Date"). 
+              You have to figure out which one belongs to a <em>different</em>, trickier group (like "Words that start with D").
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-6 items-start">
+          <div class="w-12 h-12 rounded-xl bg-hard flex items-center justify-center text-black font-bold text-xl flex-shrink-0">2</div>
+          <div>
+            <h3 class="text-xl text-white font-bold m-0 p-0">Solve the "Purple" First</h3>
+            <p class="m-0 mt-2">
+              The Purple category is usually the abstract one (Fill in the Blank, Wordplay, Palindromes). 
+              If you see words that don't fit any literal definition, they belong here. Solving the hardest one first clears the board for the easy ones.
+            </p>
+          </div>
+        </div>
+        
+        <div class="flex gap-6 items-start">
+          <div class="w-12 h-12 rounded-xl bg-medium flex items-center justify-center text-black font-bold text-xl flex-shrink-0">3</div>
+          <div>
+            <h3 class="text-xl text-white font-bold m-0 p-0">Don't guess. Shuffle.</h3>
+            <p class="m-0 mt-2">
+              Our brains are wired to see patterns based on proximity. If you are stuck, hit the <strong>Shuffle</strong> button. 
+              Seeing "Bass" next to "Guitar" makes you think 'Instruments'. Seeing "Bass" next to "Trout" makes you think 'Fish'.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <article class="prose max-w-none pt-20 border-t border-white/10 mt-20">
+      
+      <div class="max-w-4xl mx-auto">
+        <div class="mb-12">
+          <h2 class="text-5xl font-black text-white tracking-tighter mb-6">The Master Class: Lateral Thinking</h2>
+          <p>
+            Welcome to the deep end. You aren't just here because you like matching shapes; you're here because you crave the specific cognitive itch that only lateral thinking can scratch. While <a href="/word-ladder.html" class="internal-link">Word Ladder</a> tests your vocabulary and <a href="/sudoku.html" class="internal-link">Sudoku</a> tests your logic, Nexus (our Unlimited Connections engine) tests your ability to draw invisible lines between disparate concepts.
+          </p>
+          <p>
+            This guide explores the mechanics of "Category Creation" and why this game format has taken over the world, moving beyond simple puzzles into the realm of competitive psychology.
+          </p>
+        </div>
+
+        <h3>The Psychology of the "One Away"</h3>
+        <p>
+          There is no pain quite like seeing the message: <em>"One Away."</em> It is a masterclass in psychological reinforcement. It tells you that you are brilliant, but slightly flawed. It encourages you to burn another guess immediately, often leading to a cascade of failure.
+        </p>
+        <p>
+          In <strong>Nexus</strong>, we allow you to toggle "Infinite Guesses" in the settings, but for the purists, we maintain the 4-Mistake Limit. Why? Because stakes create dopamine. Without the risk of failure, the "Ah-ha!" moment of spotting the Purple Category (e.g., "Words that sound like letters: Bee, Eye, Oh, You") loses its potency.
+        </p>
+
+        <div class="stat-box">
+          <h4 class="text-white mt-0">The 4 Types of Thinking</h4>
+          <p>Successful players utilize four distinct cognitive modes to solve a Nexus grid:</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div>
+              <strong class="text-highlight block mb-2">1. The Semantic Mode (Yellow)</strong>
+              <span class="text-sm text-slate-400">Grouping by definition. "Apple" is a "Fruit." This is the easiest mode and often where the traps lie.</span>
+            </div>
+            <div>
+              <strong class="text-medium block mb-2">2. The Lexical Mode (Green)</strong>
+              <span class="text-sm text-slate-400">Grouping by structure. Palindromes, compound words, or prefixes/suffixes.</span>
+            </div>
+            <div>
+              <strong class="text-hard block mb-2">3. The Cultural Mode (Blue)</strong>
+              <span class="text-sm text-slate-400">Grouping by association. "Characters from The Office" or "Types of Pasta." This requires general knowledge (see our <a href="/encyclopedia.html" class="internal-link">Encyclopedia</a>).</span>
+            </div>
+            <div>
+              <strong class="text-expert block mb-2">4. The Abstract Mode (Purple)</strong>
+              <span class="text-sm text-slate-400">Grouping by lateral leaps. "Words that are also planets" or "Things that have keys." This is pure lateral thinking.</span>
+            </div>
+          </div>
+        </div>
+
+        <h3>Why "Binge-Playing" Connections is Good for You</h3>
+        <p>
+          Critics might call it a distraction, but cognitive science calls it <strong>Associative Fluency</strong>. The ability to rapidly cycle through potential categories for a single data point is a hallmark of high creativity.
+        </p>
+        <p>
+          When you play <a href="/nexus.html" class="internal-link">Nexus</a>, you are training your brain to reject the "First Right Answer." In life, the first right answer is often a cliché. The second or third answer—the hidden connection—is where innovation happens. 
+        </p>
+        <p>
+          Furthermore, switching between verbal tasks (like Nexus) and visual tasks (like our <a href="/quiz-superhero-visual.html" class="internal-link">Visual Recognition Puzzles</a>) promotes whole-brain connectivity. You are forcing the left hemisphere (language/logic) to communicate with the right hemisphere (pattern/image).
+        </p>
+
+        <h3>The Social Element: Racing Your Friends</h3>
+        <p>
+          The original NYT game is a solitary experience. You solve it, you share your grid of colored squares on Twitter, and you move on. We believed this format was missing a crucial element: <strong>The Race.</strong>
+        </p>
+        <p>
+          In our <a href="/group-hub.html" class="internal-link">Group Hub</a>, you can generate a specific Nexus Seed. This ensures that you and your friends (or coworkers) are looking at the <em>exact same grid</em>. 
+        </p>
+        <h4>How to Host a Nexus Tournament:</h4>
+        <ul>
+          <li><strong>Step 1:</strong> Navigate to the <a href="/host-game.html" class="internal-link">Host Game</a> section.</li>
+          <li><strong>Step 2:</strong> Select "Nexus" as your game type.</li>
+          <li><strong>Step 3:</strong> Choose "Speed Mode" (first to solve wins) or "Accuracy Mode" (fewest mistakes wins).</li>
+          <li><strong>Step 4:</strong> Share the code. This is an excellent ice-breaker for remote teams (see our guide on <a href="/article-games-for-work.html" class="internal-link">Games for Work</a>).</li>
+        </ul>
+
+        <h3>Common Traps and "Red Herrings"</h3>
+        <p>
+          A "Red Herring" is a clue intended to be misleading or distracting. In Nexus, this usually manifests as two overlapping categories. 
+        </p>
+        <p>
+          <strong>Example:</strong>
+          <br>
+          <em>Board:</em> IRON, TIN, GOLD, LEAD, GUIDE, DIRECT, STEER, PILOT.
+          <br>
+          <em>The Trap:</em> You see "Iron, Tin, Gold, Lead" and think "Metals."
+          <br>
+          <em>The Reality:</em> "Lead" actually belongs to the group "To Command" (Lead, Guide, Direct, Steer). The metals group might actually be "Iron, Tin, Gold... and MERCURY" (which you haven't spotted yet).
+        </p>
+        <p>
+          To train your brain to spot these, we recommend cross-training with our <a href="/odd-one-out.html" class="internal-link">Odd One Out</a> game, which specifically isolates this mechanic.
+        </p>
+
+        <h3>When to Walk Away</h3>
+        <p>
+          Sometimes, the grid wins. You have shuffled fifty times. You have stared at the word "DATE" until it no longer looks like a real word (a phenomenon called <em>semantic satiation</em>). 
+        </p>
+        <p>
+          If you feel your frustration rising, check your <a href="/social-battery.html" class="internal-link">Social Battery</a> or take a quick <a href="/burnout-test.html" class="internal-link">Burnout Test</a>. Puzzles are meant to be eustress (good stress), not distress. If you are stuck, switch modes. Go play a round of <a href="/rick-and-morty-visuals.html" class="internal-link">Visual Trivia</a> to reset your verbal processing centers.
+        </p>
+
+        <div class="mt-12 p-8 bg-gradient-to-r from-void to-tileBg rounded-2xl border border-white/10 text-center">
+          <h3 class="text-white mb-4 mt-0">Ready to test your lateral thinking?</h3>
+          <p class="mb-8">Access the full archive of over 500+ puzzles.</p>
+          <a class="cta" href="/nexus.html">Start Unlimited Mode</a>
+        </div>
+
+      </div>
+    </article>
+    <section class="py-10">
+      <div class="flex justify-between items-end mb-8">
+        <h2 class="text-3xl text-white font-bold">More Word Games</h2>
+        <a href="/arcade.html" class="text-xs text-slate-400 uppercase tracking-widest hover:text-white">View All ></a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a href="/word-ladder.html" class="group glass p-6 rounded-xl border border-white/5 hover:border-white/20 transition-all">
+          <div class="text-highlight text-3xl mb-4 group-hover:scale-110 transition-transform inline-block"><i class="fas fa-stairs"></i></div>
+          <div class="text-lg font-bold text-white">Word Ladder</div>
+          <div class="text-sm text-slate-400 mt-2">Change one letter at a time to reach the target.</div>
+        </a>
+
+        <a href="/crossword.html" class="group glass p-6 rounded-xl border border-white/5 hover:border-white/20 transition-all">
+          <div class="text-medium text-3xl mb-4 group-hover:scale-110 transition-transform inline-block"><i class="fas fa-border-all"></i></div>
+          <div class="text-lg font-bold text-white">Mini Crossword</div>
+          <div class="text-sm text-slate-400 mt-2">Fast, 5x5 clues for a quick brain break.</div>
+        </a>
+
+        <a href="/spelling.html" class="group glass p-6 rounded-xl border border-white/5 hover:border-white/20 transition-all">
+          <div class="text-hard text-3xl mb-4 group-hover:scale-110 transition-transform inline-block"><i class="fas fa-spell-check"></i></div>
+          <div class="text-lg font-bold text-white">Spelling Bee</div>
+          <div class="text-sm text-slate-400 mt-2">How many words can you make from 7 letters?</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="text-center bg-white/5 rounded-3xl p-10 md:p-16 border border-white/10">
+      <h2 class="text-4xl font-black text-white mb-6">Ready to Connect?</h2>
+      <p class="text-slate-300 max-w-lg mx-auto mb-10 text-lg">
+        The tiles are shuffled. The clock is resetting. Dive into the archive.
+      </p>
+      <a class="cta" style="min-width: 200px;" href="/nexus.html">
+        Play Nexus
+      </a>
+    </section>
+
+    <div class="text-center text-xs text-slate-600 pt-12 pb-4">
+      <p>QuizRealm Arcade • Logic & Word Games • <a href="/privacy.html" class="hover:text-slate-400">Privacy</a></p>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>

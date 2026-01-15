@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script type="module" src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;" />
+
+  <title>The Optimal Brain Schedule: A 7-Day Cognitive Routine | QuizRealm</title>
+  <meta name="description"
+        content="Stop playing random games. Optimize your cognitive performance with this science-backed 7-day schedule. Monday for Logic, Wednesday for Speed, Friday for Social." />
+  <meta name="keywords"
+        content="brain training schedule, cognitive workout plan, daily puzzle routine, logic games benefit, speed reading games, quizrealm arcade" />
+  <link rel="canonical" href="/article-brain-schedule.html" />
+
+  <meta property="og:title" content="The Optimal Brain Schedule" />
+  <meta property="og:description" content="Treat your brain like a muscle. Here is your weekly workout." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/article-brain-schedule.html" />
+  <meta property="og:image" content="/assets/schedule-card.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Optimal Brain Schedule" />
+  <meta name="twitter:description" content="Treat your brain like a muscle. Here is your weekly workout." />
+  <meta name="twitter:image" content="/assets/schedule-card.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"HowTo",
+    "name":"How to Optimize Cognitive Function via Gaming",
+    "step":[
+      {"@type":"HowToStep","name":"Monday","text":"Focus on Linguistic Processing with Word Ladder."},
+      {"@type":"HowToStep","name":"Wednesday","text":"Train Reaction Time with Rapid Fire."},
+      {"@type":"HowToStep","name":"Friday","text":"Engage Social Intelligence with Group Hub."}
+    ]
+  }
+  </script>
+
+  <link rel="manifest" href="/assets/site.webmanifest" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
+  <link rel="shortcut icon" href="/assets/favicon.ico" />
+  <meta name="msapplication-TileColor" content="#000000" />
+  <meta name="theme-color" content="#000000" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          colors: {
+            appBg: '#000000',
+            cardBg: '#111111',
+            ringRed: '#ff2d55',
+            ringGreen: '#30d158',
+            ringBlue: '#0a84ff',
+            ringOrange: '#ff9f0a',
+            ringPurple: '#bf5af2',
+            textGray: '#8e8e93'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body{
+      background:#000000;
+      color:#ffffff;
+      min-height:100vh;
+      overflow-x:hidden;
+      font-family:'Inter',sans-serif;
+    }
+    
+    /* Activity Ring Animation */
+    .ring-container {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    .ring-svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+    .ring-circle-bg {
+      fill: none;
+      stroke: #333;
+      stroke-width: 8;
+    }
+    .ring-circle {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 220;
+      stroke-dashoffset: 220;
+      animation: fillRing 1.5s ease-out forwards;
+    }
+    @keyframes fillRing {
+      to { stroke-dashoffset: var(--target-offset); }
+    }
+
+    /* Day Card */
+    .day-card {
+      background: #111111;
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid #222;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .day-card:hover {
+      background: #161616;
+      transform: scale(1.02);
+      border-color: #333;
+    }
+    .day-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
+
+    /* Gradient Text */
+    .gradient-text {
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* Connecting Lines for Schedule */
+    .timeline-line {
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #333;
+      z-index: 0;
+    }
+
+    /* Button */
+    .btn-fitness {
+      background: #333;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-fitness:hover {
+      background: #fff;
+      color: #000;
+    }
+    .btn-fitness.primary {
+      background: #30d158;
+      color: #000;
+    }
+    .btn-fitness.primary:hover {
+      background: #20a040;
+      color: white;
+    }
+
+    /* Stat Pills */
+    .stat-pill {
+      background: rgba(255,255,255,0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ccc;
+    }
+
+    .prose p { color: #9ca3af; line-height: 1.7; font-size: 1.1rem; margin-bottom: 1.5rem; }
+    
+    /* Section Headers */
+    h2 { font-weight: 800; letter-spacing: -0.02em; }
+    
+    /* Science Box */
+    .science-box {
+      background: rgba(48, 209, 88, 0.05);
+      border-left: 3px solid #30d158;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 4px;
+    }
+    .science-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #30d158;
+      margin-bottom: 5px;
+      letter-spacing: 0.05em;
+    }
+    .science-text {
+      font-size: 13px;
+      color: #ccc;
+      line-height: 1.5;
+    }
+  </style>
+
+</head>
+
+<body class="antialiased">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <main class="w-full max-w-6xl mx-auto px-6 py-20 relative z-10">
+
+    <header class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
+      <div>
+        <div class="inline-flex items-center gap-2 mb-6 bg-white/10 px-4 py-1 rounded-full border border-white/10">
+          <div class="w-2 h-2 rounded-full bg-ringGreen animate-pulse"></div>
+          <span class="text-xs font-bold uppercase tracking-widest">System Status: Optimal</span>
+        </div>
+        
+        <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight">
+          The 7-Day <br>
+          <span class="gradient-text bg-gradient-to-r from-ringBlue to-ringPurple">Neural Routine.</span>
+        </h1>
+        
+        <p class="text-xl text-gray-400 leading-relaxed mb-8">
+          You go to the gym for your body. This is the gym for your brain.
+          <br>
+          A scientifically structured schedule to target Logic, Speed, Memory, and Spatial Reasoning across the week.
+        </p>
+
+        <div class="flex gap-4">
+          <a class="btn-fitness primary" href="#schedule">
+            View Schedule
+          </a>
+          <a class="btn-fitness" href="/identity-lab.html">
+            <i class="fas fa-fingerprint"></i> Identity Audit
+          </a>
+        </div>
+      </div>
+
+      <div class="relative flex justify-center items-center">
+        <div class="absolute w-64 h-64 bg-ringBlue/20 rounded-full blur-3xl"></div>
+        
+        <div class="grid grid-cols-2 gap-8">
+          <div class="text-center">
+            <div class="ring-container mx-auto mb-2">
+              <svg class="ring-svg">
+                <circle cx="40" cy="40" r="36" class="ring-circle-bg"></circle>
+                <circle cx="40" cy="40" r="36" class="ring-circle" style="stroke: #ff2d55; --target-offset: 40;"></circle>
+              </svg>
+            </div>
+            <div class="text-xs font-mono text-gray-500">LOGIC</div>
+          </div>
+          
+          <div class="text-center">
+            <div class="ring-container mx-auto mb-2">
+              <svg class="ring-svg">
+                <circle cx="40" cy="40" r="36" class="ring-circle-bg"></circle>
+                <circle cx="40" cy="40" r="36" class="ring-circle" style="stroke: #30d158; --target-offset: 80;"></circle>
+              </svg>
+            </div>
+            <div class="text-xs font-mono text-gray-500">SPEED</div>
+          </div>
+
+          <div class="text-center">
+            <div class="ring-container mx-auto mb-2">
+              <svg class="ring-svg">
+                <circle cx="40" cy="40" r="36" class="ring-circle-bg"></circle>
+                <circle cx="40" cy="40" r="36" class="ring-circle" style="stroke: #0a84ff; --target-offset: 100;"></circle>
+              </svg>
+            </div>
+            <div class="text-xs font-mono text-gray-500">MEMORY</div>
+          </div>
+
+          <div class="text-center">
+            <div class="ring-container mx-auto mb-2">
+              <svg class="ring-svg">
+                <circle cx="40" cy="40" r="36" class="ring-circle-bg"></circle>
+                <circle cx="40" cy="40" r="36" class="ring-circle" style="stroke: #bf5af2; --target-offset: 60;"></circle>
+              </svg>
+            </div>
+            <div class="text-xs font-mono text-gray-500">SPATIAL</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="mb-32 max-w-4xl mx-auto">
+      <h2 class="text-3xl text-white mb-10 text-center">Why Scheduling Matters</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 bg-cardBg p-10 rounded-3xl border border-white/5">
+        <div class="prose">
+          <p>
+            Most people play games randomly. They play *Wordle* every day for a year, get really good at 5-letter words, but let their spatial reasoning atrophy.
+          </p>
+          <p>
+            <strong>Neuroplasticity requires variety.</strong> 
+            By rotating your cognitive load, you force your brain to constantly adapt. Monday stimulates Broca's area (Language). Tuesday fires up the Parietal Lobe (Logic). Wednesday hits the Motor Cortex (Reaction Speed).
+          </p>
+          <p>
+            This 7-day protocol is designed to prevent "Cognitive Plateau"—where your brain becomes too efficient at one task and stops growing.
+          </p>
+        </div>
+        <div class="flex flex-col justify-center space-y-4">
+          <div class="flex items-center justify-between p-4 bg-black rounded-xl border-l-4 border-ringRed">
+            <span class="text-sm font-bold">Repetition</span>
+            <span class="text-xs text-gray-500">Builds Efficiency (Good)</span>
+          </div>
+          <div class="flex items-center justify-between p-4 bg-black rounded-xl border-l-4 border-ringBlue">
+            <span class="text-sm font-bold">Variety</span>
+            <span class="text-xs text-gray-500">Builds Resilience (Better)</span>
+          </div>
+          <div class="flex items-center justify-between p-4 bg-black rounded-xl border-l-4 border-ringGreen">
+            <span class="text-sm font-bold">Intensity</span>
+            <span class="text-xs text-gray-500">Triggers Growth (Best)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="schedule" class="relative">
+      <div class="absolute left-[32px] md:left-1/2 top-0 bottom-0 w-[2px] bg-white/10 -translate-x-1/2 hidden md:block"></div>
+      
+      <h2 class="text-3xl text-white mb-16 text-center">The Weekly Protocol</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 relative">
+        <div class="md:text-right flex flex-col items-start md:items-end justify-center order-2 md:order-1">
+          <div class="day-label text-ringBlue">Monday • Language</div>
+          <h3 class="text-3xl font-bold mb-4">Linguistic Precision</h3>
+          <p class="text-gray-400 text-sm mb-6 max-w-sm">
+            Start the week by engaging your verbal centers. Wake up your vocabulary after the weekend slump.
+          </p>
+          <div class="flex gap-2">
+            <span class="stat-pill">Logic</span>
+            <span class="stat-pill">Vocab</span>
+          </div>
+          <div class="science-box">
+            <div class="science-title">Cognitive Benefit</div>
+            <div class="science-text">Stimulates Broca's Area, improving verbal fluency and recall speed.</div>
+          </div>
+        </div>
+        <div class="order-1 md:order-2">
+          <a href="/word-ladder.html" class="day-card block group">
+            <div class="flex justify-between items-start mb-6">
+              <div class="w-12 h-12 bg-ringBlue/20 rounded-full flex items-center justify-center text-ringBlue text-xl">
+                <i class="fas fa-font"></i>
+              </div>
+              <div class="text-xs font-bold bg-white/10 px-2 py-1 rounded">5 MINS</div>
+            </div>
+            <h4 class="text-xl font-bold mb-2 group-hover:text-ringBlue transition-colors">Word Ladder</h4>
+            <p class="text-sm text-gray-500">Transform START into END in 5 steps. Pure semantic manipulation.</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 relative">
+        <div class="order-1 flex justify-end">
+          <a href="/nexus.html" class="day-card block group w-full">
+            <div class="flex justify-between items-start mb-6">
+              <div class="w-12 h-12 bg-ringPurple/20 rounded-full flex items-center justify-center text-ringPurple text-xl">
+                <i class="fas fa-project-diagram"></i>
+              </div>
+              <div class="text-xs font-bold bg-white/10 px-2 py-1 rounded">10 MINS</div>
+            </div>
+            <h4 class="text-xl font-bold mb-2 group-hover:text-ringPurple transition-colors">Nexus</h4>
+            <p class="text-sm text-gray-500">Group abstract concepts. Find the pattern in the chaos.</p>
+          </a>
+        </div>
+        <div class="flex flex-col justify-center order-2">
+          <div class="day-label text-ringPurple">Tuesday • Pattern Rec</div>
+          <h3 class="text-3xl font-bold mb-4">Deep Logic</h3>
+          <p class="text-gray-400 text-sm mb-6 max-w-sm">
+            Mid-week requires focus. Train your brain to see connections between seemingly unrelated data points.
+          </p>
+          <div class="flex gap-2">
+            <span class="stat-pill">Association</span>
+            <span class="stat-pill">Category</span>
+          </div>
+          <div class="science-box">
+            <div class="science-title">Cognitive Benefit</div>
+            <div class="science-text">Engages the Prefrontal Cortex for executive function and categorization.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 relative">
+        <div class="md:text-right flex flex-col items-start md:items-end justify-center order-2 md:order-1">
+          <div class="day-label text-ringGreen">Wednesday • Reflexes</div>
+          <h3 class="text-3xl font-bold mb-4">Reaction Velocity</h3>
+          <p class="text-gray-400 text-sm mb-6 max-w-sm">
+            Hump day slump? Shock the system with high-speed decision making.
+          </p>
+          <div class="flex gap-2">
+            <span class="stat-pill">Adrenaline</span>
+            <span class="stat-pill">Speed</span>
+          </div>
+          <div class="science-box">
+            <div class="science-title">Cognitive Benefit</div>
+            <div class="science-text">Trains the Motor Cortex and reduces synaptic delay (reaction time).</div>
+          </div>
+        </div>
+        <div class="order-1 md:order-2">
+          <a href="/rapid.html" class="day-card block group">
+            <div class="flex justify-between items-start mb-6">
+              <div class="w-12 h-12 bg-ringGreen/20 rounded-full flex items-center justify-center text-ringGreen text-xl">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <div class="text-xs font-bold bg-white/10 px-2 py-1 rounded">3 MINS</div>
+            </div>
+            <h4 class="text-xl font-bold mb-2 group-hover:text-ringGreen transition-colors">Rapid Fire</h4>
+            <p class="text-sm text-gray-500">Simple questions. Impossible timer. Don't think, just react.</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 relative">
+        <div class="order-1 flex justify-end">
+          <a href="/geography.html" class="day-card block group w-full">
+            <div class="flex justify-between items-start mb-6">
+              <div class="w-12 h-12 bg-ringOrange/20 rounded-full flex items-center justify-center text-ringOrange text-xl">
+                <i class="fas fa-globe-americas"></i>
+              </div>
+              <div class="text-xs font-bold bg-white/10 px-2 py-1 rounded">8 MINS</div>
+            </div>
+            <h4 class="text-xl font-bold mb-2 group-hover:text-ringOrange transition-colors">Mapless Geo</h4>
+            <p class="text-sm text-gray-500">Visualize the world without a map. Pure spatial recall.</p>
+          </a>
+        </div>
+        <div class="flex flex-col justify-center order-2">
+          <div class="day-label text-ringOrange">Thursday • Spatial</div>
+          <h3 class="text-3xl font-bold mb-4">Mental Mapping</h3>
+          <p class="text-gray-400 text-sm mb-6 max-w-sm">
+            Expand your horizons. Spatial intelligence is often the first to fade with GPS use. Reclaim it.
+          </p>
+          <div class="flex gap-2">
+            <span class="stat-pill">Visual</span>
+            <span class="stat-pill">Memory</span>
+          </div>
+          <div class="science-box">
+            <div class="science-title">Cognitive Benefit</div>
+            <div class="science-text">Activates the Hippocampus, crucial for long-term memory and navigation.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 relative">
+        <div class="md:text-right flex flex-col items-start md:items-end justify-center order-2 md:order-1">
+          <div class="day-label text-ringRed">Friday • Social</div>
+          <h3 class="text-3xl font-bold mb-4">Competition</h3>
+          <p class="text-gray-400 text-sm mb-6 max-w-sm">
+            The brain works differently under social pressure. End the week by testing your wits against real humans.
+          </p>
+          <div class="flex gap-2">
+            <span class="stat-pill">Emotional IQ</span>
+            <span class="stat-pill">Pressure</span>
+          </div>
+          <div class="science-box">
+            <div class="science-title">Cognitive Benefit</div>
+            <div class="science-text">Simulates high-stakes environments, improving performance under stress.</div>
+          </div>
+        </div>
+        <div class="order-1 md:order-2">
+          <a href="/group-hub.html" class="day-card block group">
+            <div class="flex justify-between items-start mb-6">
+              <div class="w-12 h-12 bg-ringRed/20 rounded-full flex items-center justify-center text-ringRed text-xl">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="text-xs font-bold bg-white/10 px-2 py-1 rounded">15 MINS</div>
+            </div>
+            <h4 class="text-xl font-bold mb-2 group-hover:text-ringRed transition-colors">Group Hub</h4>
+            <p class="text-sm text-gray-500">Host a lobby. Invite coworkers. Dominate the leaderboard.</p>
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="bg-cardBg border border-white/5 rounded-3xl p-10 md:p-16 text-center mb-24">
+      <div class="inline-block bg-white/5 px-4 py-2 rounded-full text-xs font-mono uppercase mb-6 text-gray-400">
+        Weekend Protocol
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">Rest & Integration</h2>
+      <p class="text-gray-400 max-w-2xl mx-auto mb-10">
+        The brain consolidates learning during rest. This is when the <strong>Default Mode Network (DMN)</strong> activates, allowing for creative insights and emotional processing.
+        On weekends, switch from "Active Processing" to "Passive Audit."
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <a href="/social-battery-test.html" class="p-6 bg-black rounded-xl border border-white/10 hover:border-white/30 transition-colors text-left">
+          <div class="text-ringBlue mb-3"><i class="fas fa-battery-half"></i></div>
+          <h4 class="font-bold">Social Battery Audit</h4>
+          <p class="text-xs text-gray-500 mt-2">Do you have energy for the week ahead?</p>
+        </a>
+        <a href="/burnout-test.html" class="p-6 bg-black rounded-xl border border-white/10 hover:border-white/30 transition-colors text-left">
+          <div class="text-ringRed mb-3"><i class="fas fa-fire"></i></div>
+          <h4 class="font-bold">Burnout Check</h4>
+          <p class="text-xs text-gray-500 mt-2">Prevent fatigue before it starts.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="text-center py-10">
+      <h2 class="text-3xl text-white mb-8">Start Your Routine Today.</h2>
+      <a class="btn-fitness primary scale-125" href="/word-ladder.html">
+        <i class="fas fa-play"></i> Begin Day 1 (Monday)
+      </a>
+    </section>
+
+    <div class="text-center text-xs text-gray-600 pt-20 pb-6 uppercase tracking-widest font-mono">
+      <p>QuizRealm Quantified Self • <a href="/privacy.html" class="hover:text-white">Privacy</a></p>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>

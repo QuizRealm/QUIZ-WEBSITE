@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script type="module" src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;" />
+
+  <title>Geography for Travelers: The Mapless Challenge (Capitals, Landmarks, Culture) | QuizRealm</title>
+  <meta name="description"
+        content="GPS made us lazy. Take the Mapless Geography Challenge: name capitals without outlines, recognize places from cultural clues, and prove you’re a traveler—not a map-scroller." />
+  <meta name="keywords"
+        content="geography quiz, world capitals quiz, travel trivia, mapless challenge, hard geography questions, capitals without map, cultural landmarks quiz, quizrealm geography" />
+  <link rel="canonical" href="/article-geography-travelers.html" />
+
+  <meta property="og:title" content="Geography for Travelers: The Mapless Challenge" />
+  <meta property="og:description" content="Do you know the world—or just the GPS? Capitals, culture, and landmark recall without the map." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/article-geography-travelers.html" />
+  <meta property="og:image" content="/assets/geo-card.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Geography for Travelers: The Mapless Challenge" />
+  <meta name="twitter:description" content="Capitals, landmarks, culture—without the outline." />
+  <meta name="twitter:image" content="/assets/geo-card.png" />
+
+  <!-- Article schema -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Article",
+    "headline":"Geography for Travelers: Can You Name the Capital Without the Map?",
+    "description":"A challenge to test geographic knowledge without visual aids, focusing on cultural and capital city recall.",
+    "image":["/assets/geo-card.png"],
+    "author":{"@type":"Organization","name":"QuizRealm Adventure"},
+    "publisher":{"@type":"Organization","name":"QuizRealm","logo":{"@type":"ImageObject","url":"/assets/favicon-192.png"}},
+    "mainEntityOfPage":{"@type":"WebPage","@id":"/article-geography-travelers.html"}
+  }
+  </script>
+
+  <!-- FAQ schema for long-tail SEO -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"What is the Mapless Geography Challenge?",
+        "acceptedAnswer":{
+          "@type":"Answer",
+          "text":"It’s a geography test designed for travelers: capitals, landmarks, currencies, and culture—without country outlines or map prompts. You rely on recall, not recognition."
+        }
+      },
+      {
+        "@type":"Question",
+        "name":"Is a world capitals quiz enough to be good at geography?",
+        "acceptedAnswer":{
+          "@type":"Answer",
+          "text":"Capitals are a strong start, but travel-level geography also includes cultural landmarks, regions, language families, and practical knowledge like currency and time zones."
+        }
+      },
+      {
+        "@type":"Question",
+        "name":"How can I improve geography fast for travel?",
+        "acceptedAnswer":{
+          "@type":"Answer",
+          "text":"Use short daily drills: 5 capitals, 3 landmarks, 3 currencies. Then play timed rounds and review mistakes immediately. Speed + repetition builds recall."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="manifest" href="/assets/site.webmanifest" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
+  <link rel="shortcut icon" href="/assets/favicon.ico" />
+  <meta name="msapplication-TileColor" content="#354f52" />
+  <meta name="theme-color" content="#354f52" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@400;700&family=Courier+Prime&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Karla', 'sans-serif'],
+            serif: ['DM Serif Display', 'serif'],
+            mono: ['Courier Prime', 'monospace']
+          },
+          colors: {
+            forest: '#2f3e46',
+            sage: '#52796f',
+            sand: '#cad2c5',
+            parchment: '#f4f3ee',
+            ocean: '#354f52',
+            rust: '#bc4749'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root{
+      --ink:#2f3e46;
+      --sage:#52796f;
+      --sand:#cad2c5;
+      --paper:#f4f3ee;
+      --rust:#bc4749;
+      --ocean:#354f52;
+    }
+
+    body{
+      background: var(--paper);
+      color: var(--ink);
+      min-height:100vh;
+      overflow-x:hidden;
+      font-family:'Karla',sans-serif;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%2352796f' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+    }
+
+    h1,h2,h3{ font-family:'DM Serif Display', serif; letter-spacing:0.02em; }
+
+    .wrap{
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+
+    .paper{
+      background: rgba(244,243,238,0.88);
+      border: 1px solid rgba(82,121,111,0.25);
+      box-shadow: 0 18px 40px rgba(47,62,70,0.08);
+    }
+
+    /* Field Notes Card */
+    .journal-card{
+      background: #fff;
+      border: 2px solid var(--sage);
+      border-radius: 10px;
+      box-shadow: 10px 10px 0 rgba(82,121,111,0.18);
+      padding: 34px;
+      position: relative;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .journal-card:hover{
+      transform: translateY(-4px);
+      box-shadow: 14px 14px 0 rgba(82,121,111,0.18);
+    }
+    .journal-card::before{
+      content:'';
+      position:absolute;
+      top: 12px; left: 12px; right: 12px; bottom: 12px;
+      border: 1px dashed rgba(82,121,111,0.55);
+      border-radius: 6px;
+      pointer-events:none;
+    }
+
+    /* Passport Stamp */
+    .stamp{
+      width: 108px; height: 108px;
+      border: 3px double var(--rust);
+      border-radius: 50%;
+      position: absolute;
+      top: -22px; right: -22px;
+      color: var(--rust);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      font-family:'Courier Prime', monospace;
+      font-weight:700;
+      font-size: 10px;
+      transform: rotate(14deg);
+      background: rgba(255,255,255,0.92);
+      opacity: 0.9;
+      z-index: 10;
+    }
+
+    .coords{
+      font-family:'Courier Prime', monospace;
+      font-size: 11px;
+      color: rgba(82,121,111,0.75);
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+      display:block;
+      text-transform: uppercase;
+    }
+
+    .cta{
+      display:inline-flex; align-items:center; justify-content:center; gap:12px;
+      padding: 16px 34px;
+      border-radius: 6px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: 12px;
+      text-decoration:none;
+      transition: .22s ease;
+      background: var(--ink);
+      color: var(--paper);
+      box-shadow: 0 6px 14px rgba(47,62,70,0.18);
+      border: 1px solid rgba(47,62,70,0.25);
+    }
+    .cta:hover{
+      background: var(--rust);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(188,71,73,0.18);
+      border-color: rgba(188,71,73,0.35);
+    }
+    .cta.secondary{
+      background: transparent;
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      box-shadow:none;
+    }
+    .cta.secondary:hover{
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    /* Map Pin Pulse */
+    .pin-container{ position:relative; display:inline-block; }
+    .pin{
+      width: 14px; height: 14px;
+      background: var(--rust);
+      border-radius: 50%;
+      border: 2px solid var(--paper);
+      position:relative;
+      z-index:2;
+    }
+    .pulse{
+      position:absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%; height: 100%;
+      background: var(--rust);
+      border-radius: 50%;
+      opacity: 0.35;
+      animation: ping 2s cubic-bezier(0,0,0.2,1) infinite;
+    }
+    @keyframes ping{
+      75%,100%{ transform: translate(-50%, -50%) scale(3); opacity:0; }
+    }
+
+    .prose p{
+      line-height: 1.95;
+      color: rgba(82,121,111,0.95);
+      font-size: 1.12rem;
+      margin-bottom: 1.35rem;
+    }
+    .prose strong{ color: var(--ink); }
+
+    .divider{
+      height: 2px;
+      background: rgba(202,210,197,0.9);
+      margin: 70px auto;
+      width: 120px;
+      border-radius: 99px;
+    }
+
+    /* TOC */
+    .toc a{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 1px solid rgba(82,121,111,0.22);
+      background: rgba(244,243,238,0.86);
+      border-radius: 10px;
+      text-decoration:none;
+      color: var(--ink);
+      transition: 0.18s ease;
+    }
+    .toc a:hover{
+      transform: translateY(-1px);
+      border-color: rgba(188,71,73,0.35);
+      box-shadow: 0 12px 26px rgba(47,62,70,0.08);
+    }
+
+    /* Flip cards */
+    .flip{
+      position:relative;
+      height: 320px;
+      border-radius: 12px;
+      perspective: 1000px;
+    }
+    .flip-inner{
+      position:absolute;
+      inset:0;
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform-style: preserve-3d;
+      border-radius: 12px;
+    }
+    .flip:hover .flip-inner{ transform: rotateY(180deg); }
+    .flip-face{
+      position:absolute;
+      inset:0;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      overflow:hidden;
+      border: 2px solid rgba(47,62,70,0.18);
+    }
+    .flip-front{
+      background: var(--ink);
+      color: var(--paper);
+      display:flex;
+      flex-direction: column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      padding: 28px;
+    }
+    .flip-back{
+      transform: rotateY(180deg);
+      background: #fff;
+      color: var(--ink);
+      padding: 26px;
+      display:flex;
+      flex-direction: column;
+      justify-content:center;
+      border-color: rgba(82,121,111,0.35);
+    }
+
+    /* FAQ */
+    .faq details{
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(82,121,111,0.22);
+      border-radius: 12px;
+      padding: 16px 16px;
+    }
+    .faq details + details{ margin-top: 12px; }
+    .faq summary{
+      cursor:pointer;
+      list-style:none;
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 12px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+    .faq summary::-webkit-details-marker{ display:none; }
+    .faq .ans{
+      margin-top: 10px;
+      color: rgba(82,121,111,0.95);
+      line-height: 1.9;
+      font-size: 1.05rem;
+    }
+
+    /* Soft section blocks */
+    .section-card{
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(82,121,111,0.22);
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(47,62,70,0.06);
+    }
+  </style>
+
+</head>
+
+<body class="antialiased">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <main class="wrap px-6 py-20 relative z-10">
+
+    <!-- HERO -->
+    <header class="text-center mb-16 max-w-4xl mx-auto">
+      <div class="mb-8 inline-flex items-center gap-3 px-4 py-2 rounded-full border border-sage/30 bg-white/70">
+        <span class="pin-container">
+          <span class="pin"></span><span class="pulse"></span>
+        </span>
+        <span class="text-sage font-mono text-xs uppercase tracking-widest">Navigation • Geography • Culture</span>
+      </div>
+
+      <h1 class="text-5xl md:text-8xl text-forest mb-8 leading-[1.05]">
+        The Mapless<br><span class="italic text-rust">Challenge.</span>
+      </h1>
+
+      <p class="text-xl md:text-2xl text-sage max-w-3xl mx-auto leading-relaxed font-serif">
+        GPS has ruined our internal compass.
+        True travelers don’t just recognize a shape on a map.
+        They know capitals, landmarks, currencies, and cultural signals—on demand.
+      </p>
+
+      <div class="mt-12 flex flex-col sm:flex-row justify-center gap-4">
+        <a class="cta" href="/geography.html"><i class="fas fa-compass"></i> Start Expedition</a>
+        <a class="cta secondary" href="/group-hub.html"><i class="fas fa-people-group"></i> Race Friends</a>
+      </div>
+
+      <div class="mt-10 text-sage/80 text-sm leading-relaxed max-w-3xl mx-auto">
+        <strong class="text-forest">How this page helps:</strong> if you’re searching “world capitals quiz,” “hard geography questions,” or “travel trivia,” this guide shows the exact formats that build real recall, then links you into the playable rounds.
+      </div>
+    </header>
+
+    <!-- TOC -->
+    <section class="section-card p-8 md:p-10 mb-16">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
+        <div class="md:col-span-5">
+          <h2 class="text-3xl md:text-4xl text-forest mb-4">What You’ll Do</h2>
+          <p class="text-sage text-lg leading-relaxed">
+            You’ll run a “mapless” test in layers: capitals first, then culture, then landmark recall, then practical travel knowledge.
+            It’s designed to feel like field training, not a textbook.
+          </p>
+          <div class="mt-6 grid grid-cols-1 gap-4">
+            <div class="journal-card bg-white rotate-[0.5deg]">
+              <div class="stamp">FIELD CHECK<br>READY</div>
+              <span class="coords">Module: Recall &amp; Reaction</span>
+              <div class="text-forest font-bold text-lg mb-2">The rule</div>
+              <div class="text-sage leading-relaxed">
+                No map outlines. No flag giveaways. If you know it, you can name it.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-7 toc grid grid-cols-1 gap-3">
+          <a href="#shape-bias"><span class="font-bold">Why travelers fail without maps</span><span class="text-sage"><i class="fas fa-arrow-right"></i></span></a>
+          <a href="#capitals"><span class="font-bold">Warm-up: capitals without outlines</span><span class="text-sage"><i class="fas fa-arrow-right"></i></span></a>
+          <a href="#landmarks"><span class="font-bold">The landmark round: culture cues</span><span class="text-sage"><i class="fas fa-arrow-right"></i></span></a>
+          <a href="#locals"><span class="font-bold">Local knowledge: currency, language, time</span><span class="text-sage"><i class="fas fa-arrow-right"></i></span></a>
+          <a href="#tiers"><span class="font-bold">Traveler tiers: Tourist → Navigator</span><span class="text-sage"><i class="fas fa-arrow-right"></i></span></a>
+          <a href="#faq"><span class="font-bold">FAQ</span><span class="text-sage"><i class="fas fa-arrow-right"></i></span></a>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION: Shape Bias -->
+    <section id="shape-bias" class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-20">
+      <div class="journal-card bg-white rotate-1">
+        <div class="stamp">PASSPORT<br>APPROVED</div>
+        <span class="coords">48.8566° N, 2.3522° E</span>
+        <h3 class="text-3xl text-forest mb-4">The “Shape” Bias</h3>
+        <p class="text-sm text-sage leading-relaxed">
+          If I show you a boot, you say “Italy.” That’s recognition.
+          <br><br>
+          The Mapless Challenge forces <strong>recall</strong>.
+          It tests what you can produce from memory: capitals, regions, and cultural clues.
+          That is the difference between a person who scrolls maps and a person who navigates cities.
+        </p>
+        <div class="mt-6 pt-6 border-t border-sage/20">
+          <div class="text-xs font-mono uppercase tracking-widest text-sage">Field note</div>
+          <div class="text-sage leading-relaxed mt-2">
+            Recognition feels like knowledge. Recall is knowledge.
+          </div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <h2 class="text-4xl text-forest mb-6">Lost Without GPS</h2>
+        <p>
+          Maps turned geography into a visual game. You can “recognize” places you cannot describe.
+          The moment the outline disappears, the certainty vanishes.
+        </p>
+        <p>
+          This is why “travel trivia” is more than flags. A traveler knows the <strong>capital</strong>, can place a region,
+          understands <strong>currency</strong>, and can infer <strong>culture</strong> from a clue.
+        </p>
+        <p>
+          The Mapless format is intentionally uncomfortable. That discomfort is your brain building a real internal map.
+        </p>
+
+        <div class="mt-8 section-card p-6">
+          <div class="text-xs font-mono uppercase tracking-widest text-sage mb-3">Quick diagnostic</div>
+          <div class="grid grid-cols-1 gap-3 text-sage">
+            <div class="flex items-start gap-3">
+              <span class="pin-container mt-1"><span class="pin"></span><span class="pulse"></span></span>
+              <span><strong class="text-forest">If you rely on flags:</strong> you’re using visual shortcuts.</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="pin-container mt-1"><span class="pin"></span><span class="pulse"></span></span>
+              <span><strong class="text-forest">If you know capitals:</strong> you can route and orient.</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="pin-container mt-1"><span class="pin"></span><span class="pulse"></span></span>
+              <span><strong class="text-forest">If you know culture cues:</strong> you travel with context.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION: Capitals -->
+    <section id="capitals" class="mb-20">
+      <div class="text-center mb-10 max-w-3xl mx-auto">
+        <h2 class="text-4xl md:text-5xl text-forest">Warm Up: Capitals Without the Map</h2>
+        <p class="text-sage mt-4 text-lg leading-relaxed">
+          Capitals are the backbone of world geography knowledge.
+          These examples are intentionally “tricky” because they reveal whether you’re guessing or actually recalling.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Brazil -->
+        <div class="flip">
+          <div class="flip-inner">
+            <div class="flip-face flip-front">
+              <span class="coords text-sand mb-3">South America</span>
+              <div class="text-4xl font-serif">Brazil</div>
+              <div class="mt-6 text-xs font-mono uppercase tracking-widest text-sand/80">
+                Hover to reveal answer
+              </div>
+            </div>
+            <div class="flip-face flip-back">
+              <div class="text-xs font-mono uppercase tracking-widest text-sage mb-2">Answer</div>
+              <div class="text-3xl text-rust mb-3">Brasília</div>
+              <div class="text-sage leading-relaxed">
+                Planned capital (1960). A classic “tourist trap” question because many guess Rio or São Paulo.
+              </div>
+              <div class="mt-5 pt-5 border-t border-sage/20 text-sm text-sage">
+                <strong class="text-forest">Traveler cue:</strong> planned capitals are often inland by design.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Australia -->
+        <div class="flip">
+          <div class="flip-inner">
+            <div class="flip-face flip-front">
+              <span class="coords text-sand mb-3">Oceania</span>
+              <div class="text-4xl font-serif">Australia</div>
+              <div class="mt-6 text-xs font-mono uppercase tracking-widest text-sand/80">
+                Hover to reveal answer
+              </div>
+            </div>
+            <div class="flip-face flip-back">
+              <div class="text-xs font-mono uppercase tracking-widest text-sage mb-2">Answer</div>
+              <div class="text-3xl text-rust mb-3">Canberra</div>
+              <div class="text-sage leading-relaxed">
+                Chosen as a compromise between Sydney and Melbourne. If you know this, you’re not guessing.
+              </div>
+              <div class="mt-5 pt-5 border-t border-sage/20 text-sm text-sage">
+                <strong class="text-forest">Traveler cue:</strong> “compromise capitals” show up more than you think.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Switzerland -->
+        <div class="flip">
+          <div class="flip-inner">
+            <div class="flip-face flip-front">
+              <span class="coords text-sand mb-3">Europe</span>
+              <div class="text-4xl font-serif">Switzerland</div>
+              <div class="mt-6 text-xs font-mono uppercase tracking-widest text-sand/80">
+                Hover to reveal answer
+              </div>
+            </div>
+            <div class="flip-face flip-back">
+              <div class="text-xs font-mono uppercase tracking-widest text-sage mb-2">Answer</div>
+              <div class="text-3xl text-rust mb-3">Bern</div>
+              <div class="text-sage leading-relaxed">
+                Often treated as the capital (de facto). Switzerland is famously “special” in how it’s described.
+              </div>
+              <div class="mt-5 pt-5 border-t border-sage/20 text-sm text-sage">
+                <strong class="text-forest">Traveler cue:</strong> some “capitals” are practical, not ceremonial.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10 section-card p-8 md:p-10">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+          <div class="md:col-span-7">
+            <div class="text-xs font-mono uppercase tracking-widest text-sage mb-3">Make it competitive</div>
+            <h3 class="text-3xl md:text-4xl text-forest mb-4">Capitals Sprint (60 seconds)</h3>
+            <p class="text-sage text-lg leading-relaxed">
+              Set a timer for 60 seconds. Try to name as many capitals as possible for a region.
+              Then repeat tomorrow. Speed builds recall. Repetition locks it in.
+            </p>
+            <div class="mt-6 flex flex-col sm:flex-row gap-4">
+              <a class="cta" href="/geography.html"><i class="fas fa-play"></i> Play Capitals Mode</a>
+              <a class="cta secondary" href="/group-hub.html"><i class="fas fa-trophy"></i> Race Friends</a>
+            </div>
+          </div>
+          <div class="md:col-span-5">
+            <div class="journal-card bg-white rotate-[-0.5deg]">
+              <span class="coords">Scoring idea</span>
+              <div class="text-forest font-bold text-lg mb-2">Simple scoreboard</div>
+              <div class="text-sage leading-relaxed">
+                +1 per correct capital<br>
+                -1 per repeated country<br>
+                Tie-break: fastest final answer
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION: Landmarks -->
+    <section id="landmarks" class="mb-20">
+      <div class="text-center mb-10 max-w-3xl mx-auto">
+        <h2 class="text-4xl md:text-5xl text-forest">The Landmark Round</h2>
+        <p class="text-sage mt-4 text-lg leading-relaxed">
+          Real travel knowledge is not “country = outline.”
+          It’s: what language family is nearby, what architecture shows up, what a region is known for, what time zone you’re in.
+          Landmarks test contextual recall.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div class="section-card p-8 md:p-10">
+          <div class="text-xs font-mono uppercase tracking-widest text-sage mb-4">Cue-based geography</div>
+          <h3 class="text-3xl text-forest mb-4">Identify the Place From the Clue</h3>
+          <div class="prose">
+            <p><strong>Clue:</strong> “Blue domes, tiled mosaics, a city that defined the Silk Road.”</p>
+            <p><strong>What this tests:</strong> cultural geography—recognizing regions without visuals.</p>
+            <p><strong>Why it matters:</strong> in real travel, you navigate by context, not by borders.</p>
+          </div>
+          <div class="mt-6 pt-6 border-t border-sage/20 flex flex-col sm:flex-row gap-4">
+            <a class="cta" href="/geography.html"><i class="fas fa-map-location-dot"></i> Play Landmark Mode</a>
+            <a class="cta secondary" href="/categories.html"><i class="fas fa-layer-group"></i> Browse Categories</a>
+          </div>
+        </div>
+
+        <div class="journal-card bg-white rotate-[0.5deg]">
+          <div class="stamp">LOCAL<br>CONTEXT</div>
+          <span class="coords">Method: “Three anchors”</span>
+          <h3 class="text-3xl text-forest mb-4">How Travelers Remember</h3>
+          <p class="text-sm text-sage leading-relaxed">
+            Instead of memorizing 200 isolated facts, travelers remember “anchors”:
+            <br><br>
+            <strong>1) Capital</strong> (orientation)<br>
+            <strong>2) Landmark</strong> (visual identity)<br>
+            <strong>3) Cultural cue</strong> (food, language, currency, climate)
+            <br><br>
+            In the quiz, one clue activates the whole bundle. That is real-world recall.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION: Local Knowledge -->
+    <section id="locals" class="section-card p-10 md:p-14 mb-20 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-[0.06]"
+           style="background-image: repeating-linear-gradient(45deg, #2f3e46 0, #2f3e46 1px, transparent 0, transparent 18px);">
+      </div>
+
+      <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+        <div class="md:col-span-7">
+          <h2 class="text-4xl md:text-5xl text-forest mb-6">Local Knowledge (The Real Test)</h2>
+          <p class="text-sage text-lg leading-relaxed mb-8">
+            This is the difference between “I’ve seen it on Instagram” and “I can function there.”
+            We test practical geography: currency, languages, and time logic.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="journal-card bg-white rotate-[-0.5deg]">
+              <span class="coords">Module A</span>
+              <div class="text-forest font-bold text-xl mb-2">Currencies</div>
+              <div class="text-sage leading-relaxed">
+                Recognize what you pay with and where it’s used. Travelers don’t freeze at the checkout counter.
+              </div>
+            </div>
+
+            <div class="journal-card bg-white rotate-[0.5deg]">
+              <span class="coords">Module B</span>
+              <div class="text-forest font-bold text-xl mb-2">Language Families</div>
+              <div class="text-sage leading-relaxed">
+                Spot patterns: Romance vs Slavic vs Germanic. You start predicting instead of guessing.
+              </div>
+            </div>
+
+            <div class="journal-card bg-white rotate-[0.5deg]">
+              <span class="coords">Module C</span>
+              <div class="text-forest font-bold text-xl mb-2">Time Zones</div>
+              <div class="text-sage leading-relaxed">
+                If it’s 18:00 in London, what time is it in Dubai? A traveler feels time globally.
+              </div>
+            </div>
+
+            <div class="journal-card bg-white rotate-[-0.5deg]">
+              <span class="coords">Module D</span>
+              <div class="text-forest font-bold text-xl mb-2">Regional Clues</div>
+              <div class="text-sage leading-relaxed">
+                “Alpine,” “Baltic,” “Sahel,” “Andes.” Regions are how the world is actually organized.
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 flex flex-col sm:flex-row gap-4">
+            <a class="cta" href="/geography.html"><i class="fas fa-route"></i> Play Full Geography Mode</a>
+            <a class="cta secondary" href="/arcade.html"><i class="fas fa-bolt"></i> Enter Arcade</a>
+          </div>
+        </div>
+
+        <div class="md:col-span-5">
+          <div class="journal-card bg-white rotate-1">
+            <div class="stamp">TRAVELER<br>TIPS</div>
+            <span class="coords">Training plan</span>
+            <h3 class="text-3xl text-forest mb-4">7-Day Upgrade</h3>
+            <div class="text-sage leading-relaxed text-sm">
+              <strong class="text-forest">Day 1–2:</strong> 20 capitals (timed). Review mistakes immediately.<br><br>
+              <strong class="text-forest">Day 3–4:</strong> landmarks + regions (focus on context cues).<br><br>
+              <strong class="text-forest">Day 5:</strong> currency + language families (pattern building).<br><br>
+              <strong class="text-forest">Day 6:</strong> mixed mode (simulate travel chaos).<br><br>
+              <strong class="text-forest">Day 7:</strong> race friends (pressure makes it stick).
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SECTION: Tiers -->
+    <section id="tiers" class="mb-20">
+      <div class="text-center mb-12 max-w-3xl mx-auto">
+        <h2 class="text-4xl md:text-5xl text-forest">Traveler Tiers</h2>
+        <p class="text-sage mt-4 text-lg leading-relaxed">
+          These tiers make the challenge feel like progression. They also help people self-identify—great for engagement and shares.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="section-card p-8">
+          <div class="text-xs font-mono uppercase tracking-widest text-sage mb-3">Tier 1</div>
+          <h3 class="text-3xl text-forest mb-3">Tourist</h3>
+          <p class="text-sage leading-relaxed">
+            Recognizes flags and famous silhouettes.
+            Struggles without visuals.
+            Learns best through short, frequent drills.
+          </p>
+          <div class="mt-6 pt-6 border-t border-sage/20 text-sm text-sage">
+            <strong class="text-forest">Goal:</strong> 20 capitals in 3 minutes.
+          </div>
+        </div>
+
+        <div class="section-card p-8">
+          <div class="text-xs font-mono uppercase tracking-widest text-sage mb-3">Tier 2</div>
+          <h3 class="text-3xl text-forest mb-3">Traveler</h3>
+          <p class="text-sage leading-relaxed">
+            Knows capitals, can infer regions, recognizes landmark cues.
+            Starts building an internal map that transfers across countries.
+          </p>
+          <div class="mt-6 pt-6 border-t border-sage/20 text-sm text-sage">
+            <strong class="text-forest">Goal:</strong> mixed round with 80% accuracy.
+          </div>
+        </div>
+
+        <div class="section-card p-8">
+          <div class="text-xs font-mono uppercase tracking-widest text-sage mb-3">Tier 3</div>
+          <h3 class="text-3xl text-forest mb-3">Navigator</h3>
+          <p class="text-sage leading-relaxed">
+            Recall-driven. Can answer without prompts.
+            Understands culture cues, time zones, and regional context fast.
+          </p>
+          <div class="mt-6 pt-6 border-t border-sage/20 text-sm text-sage">
+            <strong class="text-forest">Goal:</strong> beat friends in timed race mode.
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12 text-center">
+        <a class="cta" href="/geography.html"><i class="fas fa-play"></i> Take the Mapless Challenge</a>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq mb-20 max-w-4xl mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="text-4xl md:text-5xl text-forest">FAQ</h2>
+        <p class="text-sage mt-4 text-lg leading-relaxed">
+          Built to match travel-intent searches: capitals, geography quiz, hard questions, and mapless recall.
+        </p>
+      </div>
+
+      <details>
+        <summary>
+          What makes this different from a normal geography quiz?
+          <span class="text-sage"><i class="fas fa-chevron-down"></i></span>
+        </summary>
+        <div class="ans">
+          Most quizzes reward recognition (flags, outlines, multiple choice). This one rewards recall: you answer without a map crutch, using capitals and cultural cues the way you would in real travel situations.
+        </div>
+      </details>
+
+      <details>
+        <summary>
+          Is this good for students or only travelers?
+          <span class="text-sage"><i class="fas fa-chevron-down"></i></span>
+        </summary>
+        <div class="ans">
+          Both. Students benefit because recall is what exams measure. Travelers benefit because recall is what navigation requires. The same skill—retrieval—wins in both worlds.
+        </div>
+      </details>
+
+      <details>
+        <summary>
+          What’s the fastest way to improve?
+          <span class="text-sage"><i class="fas fa-chevron-down"></i></span>
+        </summary>
+        <div class="ans">
+          Short daily sprints. Do 5 capitals, 3 landmarks, 3 currencies per day, timed. Review mistakes immediately. Then do one race session per week with friends to convert knowledge into speed.
+        </div>
+      </details>
+
+      <div class="mt-10 text-center">
+        <a class="cta" href="/group-hub.html"><i class="fas fa-people-group"></i> Host a Geography Night</a>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="text-center section-card p-12 md:p-16">
+      <h2 class="text-5xl md:text-6xl text-forest mb-6">Pack Your Bags.</h2>
+      <p class="text-sage max-w-2xl mx-auto mb-10 text-lg leading-relaxed">
+        The plane is leaving. Are you sitting in First Class (Navigator) or Economy (Tourist)?
+        Run the Mapless Challenge and find out in minutes.
+      </p>
+
+      <div class="flex flex-col md:flex-row justify-center gap-6">
+        <a class="cta" href="/geography.html"><i class="fas fa-compass"></i> Play Geography Quiz</a>
+        <a class="cta secondary" href="/arcade.html"><i class="fas fa-bolt"></i> Browse Arcade</a>
+      </div>
+
+      <div class="mt-10 text-xs text-sage uppercase tracking-widest font-mono">
+        QuizRealm Adventure • <a href="/privacy.html" class="hover:text-forest">Privacy</a> • <a href="/categories.html" class="hover:text-forest">Categories</a>
+      </div>
+    </section>
+
+    <div class="text-center text-xs text-sage pt-16 pb-6 uppercase tracking-widest font-mono">
+      <p>QuizRealm Adventure • Mapless Geography Series</p>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>

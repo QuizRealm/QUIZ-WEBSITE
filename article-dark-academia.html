@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script type="module" src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;" />
+
+  <title>Dark Academia: Are You The Tragic Hero or The Charming Villain? | QuizRealm</title>
+  <meta name="description"
+        content="Do you belong in 'The Secret History' or 'The Picture of Dorian Gray'? Take the Dark Academia personality audit to find your literary archetype." />
+  <meta name="keywords"
+        content="dark academia aesthetic, literary archetype quiz, villain vs hero test, the secret history vibe, dorian gray personality, identity lab" />
+  <link rel="canonical" href="/article-dark-academia.html" />
+
+  <meta property="og:title" content="Dark Academia: The Literary Audit" />
+  <meta property="og:description" content="Find your place in the library." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/article-dark-academia.html" />
+  <meta property="og:image" content="/assets/dark-academia-card.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Dark Academia: The Literary Audit" />
+  <meta name="twitter:description" content="Find your place in the library." />
+  <meta name="twitter:image" content="/assets/dark-academia-card.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Article",
+    "headline":"Dark Academia: Are You The Tragic Hero or The Charming Villain?",
+    "description":"A personality analysis based on the tropes of Dark Academia literature and gothic fiction.",
+    "image":["/assets/dark-academia-card.png"],
+    "author":{"@type":"Organization","name":"QuizRealm Identity Lab"},
+    "publisher":{"@type":"Organization","name":"QuizRealm","logo":{"@type":"ImageObject","url":"/assets/favicon-192.png"}},
+    "mainEntityOfPage":{"@type":"WebPage","@id":"/article-dark-academia.html"}
+  }
+  </script>
+
+  <link rel="manifest" href="/assets/site.webmanifest" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
+  <link rel="shortcut icon" href="/assets/favicon.ico" />
+  <meta name="msapplication-TileColor" content="#1a1412" />
+  <meta name="theme-color" content="#1a1412" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Montserrat:wght@300;600&family=La+Belle+Aurore&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+            serif: ['Cormorant Garamond', 'serif'],
+            hand: ['La Belle Aurore', 'cursive']
+          },
+          colors: {
+            leather: '#1a1412',
+            parchment: '#e3dace',
+            gold: '#cca43b',
+            ink: '#2c2420',
+            blood: '#4a0404',
+            vellum: '#d6cec5'
+          },
+          backgroundImage: {
+            // FIX: Use backticks ` ` for the JS string and double quotes " " for the url()
+            'paper-texture': `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23cca43b' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E")`
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body{
+      background:#1a1412;
+      color:#e3dace;
+      min-height:100vh;
+      overflow-x:hidden;
+      font-family:'Cormorant Garamond', serif;
+    }
+    
+    /* Texture Overlay: Old Paper Grain */
+    .noise-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* Elegant Typography */
+    h1, h2, h3 { font-weight: 600; letter-spacing: -0.01em; }
+    
+    .drop-cap {
+      float: left;
+      font-size: 6rem;
+      line-height: 0.7;
+      padding-top: 10px;
+      padding-right: 16px;
+      padding-left: 4px;
+      color: #cca43b;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .chapter-title {
+      border-bottom: 1px solid rgba(204, 164, 59, 0.3);
+      padding-bottom: 20px;
+      margin-bottom: 40px;
+      text-align: center;
+      position: relative;
+    }
+    .chapter-title::after {
+      content: '❦';
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1412;
+      padding: 0 15px;
+      color: #cca43b;
+      font-size: 24px;
+    }
+
+    /* Book Cards */
+    .book-card {
+      border: 1px solid rgba(227, 218, 206, 0.1);
+      padding: 40px;
+      background: rgba(44, 36, 32, 0.4);
+      transition: all 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .book-card:hover {
+      border-color: rgba(204, 164, 59, 0.4);
+      background: rgba(44, 36, 32, 0.8);
+    }
+    .book-card::before {
+      content: '';
+      position: absolute;
+      top: 4px; left: 4px; right: 4px; bottom: 4px;
+      border: 1px solid rgba(227, 218, 206, 0.05);
+      pointer-events: none;
+    }
+
+    /* Gold Buttons */
+    .cta{
+      display:inline-block;
+      padding: 18px 40px;
+      border: 1px solid #cca43b;
+      background: transparent;
+      color: #cca43b;
+      font-family: 'Montserrat', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration:none;
+      transition: all 0.4s ease;
+    }
+    .cta:hover{
+      background: #cca43b;
+      color: #1a1412;
+      box-shadow: 0 0 20px rgba(204, 164, 59, 0.3);
+    }
+    .cta.filled {
+      background: #cca43b;
+      color: #1a1412;
+    }
+    .cta.filled:hover {
+      background: #e3dace;
+      border-color: #e3dace;
+    }
+
+    /* Serif Paragraphs */
+    .prose-text { 
+      font-size: 1.4rem; 
+      line-height: 1.8; 
+      color: #d6cec5; 
+      margin-bottom: 2rem;
+    }
+    
+    .quote-block {
+      font-style: italic;
+      font-size: 1.8rem;
+      color: #cca43b;
+      text-align: center;
+      margin: 60px 0;
+      line-height: 1.4;
+      border-top: 1px solid rgba(204,164,59,0.2);
+      border-bottom: 1px solid rgba(204,164,59,0.2);
+      padding: 40px 0;
+    }
+
+    /* Vertical text decoration */
+    .vertical-label {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%) rotate(180deg);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(227, 218, 206, 0.3);
+    }
+
+    /* Journal Entry Styling */
+    .journal-entry {
+      background: #e3dace;
+      color: #2c2420;
+      padding: 40px;
+      position: relative;
+      font-family: 'La Belle Aurore', cursive;
+      font-size: 1.5rem;
+      line-height: 1.6;
+      transform: rotate(-1deg);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      margin: 40px 0;
+    }
+    .journal-entry::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; left: 40px;
+      width: 2px;
+      background: rgba(255,0,0,0.1); /* Margin line */
+    }
+
+    /* Syllabus List */
+    .syllabus-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px dashed rgba(227, 218, 206, 0.2);
+      padding: 12px 0;
+      transition: all 0.3s;
+    }
+    .syllabus-item:hover {
+      padding-left: 10px;
+      border-color: #cca43b;
+    }
+    .syllabus-item a { color: #d6cec5; text-decoration: none; font-style: italic; font-size: 1.3rem; }
+    .syllabus-item a:hover { color: #cca43b; }
+
+    /* Interactive Dilemma */
+    .dilemma-btn {
+      width: 100%;
+      text-align: left;
+      padding: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #d6cec5;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .dilemma-btn:hover {
+      background: rgba(74, 4, 4, 0.2);
+      border-color: #4a0404;
+      padding-left: 30px;
+    }
+  </style>
+
+</head>
+
+<body class="antialiased selection:bg-blood selection:text-white">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <div class="noise-overlay"></div>
+
+  <quiz-header></quiz-header>
+
+  <main class="w-full max-w-4xl mx-auto px-8 py-24 relative z-10">
+
+    <header class="text-center mb-32">
+      <div class="mb-8 font-sans text-xs uppercase tracking-[0.4em] text-gold opacity-80">
+        Identity Lab • Vol. XXI
+      </div>
+      
+      <h1 class="text-6xl md:text-9xl text-parchment mb-10 leading-[0.9] italic">
+        Dark <br>
+        <span class="not-italic text-gold">Academia</span>
+      </h1>
+      
+      <div class="w-24 h-[1px] bg-gold mx-auto mb-10"></div>
+      
+      <p class="text-2xl text-parchment/80 font-serif leading-relaxed max-w-2xl mx-auto">
+        We are all the protagonist of our own story. 
+        But in a Gothic novel, the protagonist is rarely innocent.
+        <br><br>
+        Are you the <strong class="text-white font-normal">Tragic Hero</strong> doomed by fate, or the <strong class="text-white font-normal">Charming Villain</strong> doomed by ambition?
+      </p>
+
+      <div class="mt-16 flex flex-col md:flex-row justify-center gap-8">
+        <a class="cta filled" href="/identity-lab.html">
+          Begin Analysis
+        </a>
+      </div>
+    </header>
+
+    <section class="mb-32">
+      <div class="chapter-title">
+        <h2 class="text-4xl text-parchment">Chapter I: The Profiles</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="book-card">
+          <div class="vertical-label">Archetype A</div>
+          <h3 class="text-3xl text-gold mb-4 italic">The Dorian</h3>
+          <p class="text-lg leading-relaxed text-parchment/80 mb-6">
+            You are defined by aesthetics and obsession. You fear boredom more than death. You are charming, magnetic, and potentially destructive to those who get too close. You believe that art is more important than life itself.
+          </p>
+          <div class="font-sans text-xs uppercase tracking-widest text-gold/60 border-t border-white/10 pt-4">
+            Fatal Flaw: Vanity
+          </div>
+        </div>
+
+        <div class="book-card">
+          <div class="vertical-label">Archetype B</div>
+          <h3 class="text-3xl text-gold mb-4 italic">The Richard</h3>
+          <p class="text-lg leading-relaxed text-parchment/80 mb-6">
+            You are the observer. You want to belong to the elite circle so badly that you will overlook their crimes. You are loyal to a fault, often to the wrong people. You rewrite history to make it more beautiful than it was.
+          </p>
+          <div class="font-sans text-xs uppercase tracking-widest text-gold/60 border-t border-white/10 pt-4">
+            Fatal Flaw: Passivity
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-32 max-w-3xl mx-auto">
+      <p class="prose-text">
+        <span class="drop-cap">T</span>rue Dark Academia is not just about tweed jackets and old libraries. It is about the pursuit of knowledge at any cost. It is about the beauty of decay. It is the smell of old paper, the stain of ink on your fingers, and the realization that the ancient Greeks understood human suffering better than we do.
+      </p>
+      <p class="prose-text">
+        It asks a dangerous question: If you could know everything—the secrets of the universe, the dead languages, the lost histories—but you had to sacrifice your morality to get it, would you take the deal?
+      </p>
+      
+      <div class="quote-block">
+        "Beauty is the only thing that time cannot harm. Philosophies fall away like sand, and creeds follow one another like the withered leaves of autumn; but what is beautiful is a joy for all seasons."
+        <div class="text-sm font-sans uppercase tracking-widest text-parchment/50 mt-4 not-italic">— Oscar Wilde</div>
+      </div>
+      
+      <p class="prose-text">
+        Most people think they are the hero. But in this aesthetic, the hero usually dies. The villain lives on, haunted but stylish. The tragedy is not in the death, but in the realization that it was avoidable, yet you walked toward it anyway.
+      </p>
+    </section>
+
+    <section class="mb-32">
+      <div class="chapter-title">
+        <h2 class="text-4xl text-parchment">Chapter III: The Anatomy of Hamartia</h2>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <div class="lg:col-span-4">
+            <div class="p-6 border-l-2 border-blood bg-blood/10">
+                <div class="font-sans text-xs uppercase tracking-[0.2em] text-blood mb-2">Greek Terminology</div>
+                <h3 class="text-2xl text-parchment mb-2">Hamartia</h3>
+                <p class="text-vellum/70 text-lg italic">/ha-mar-ti-a/</p>
+                <p class="mt-4 text-sm leading-relaxed text-vellum">
+                    Often mistranslated as "tragic flaw," it literally means "to miss the mark." It is not a sin; it is an error in judgment committed by a person of otherwise noble status.
+                </p>
+            </div>
+        </div>
+        
+        <div class="lg:col-span-8">
+            <p class="prose-text text-lg">
+                In the halls of Dark Academia, your intelligence is not your savior; it is often your downfall. The characters in these stories are not undone by stupidity. They are undone by their brilliance. They believe they are smart enough to outrun the consequences of their actions.
+            </p>
+            <p class="prose-text text-lg">
+                To understand your place in this narrative, you must identify your own fatal error. It usually manifests in three distinct forms:
+            </p>
+            
+            <div class="space-y-6 mt-8">
+                <div class="book-card p-6">
+                    <h4 class="text-xl text-gold uppercase tracking-widest mb-2">01. Hubris (Pride)</h4>
+                    <p class="text-vellum text-lg">
+                        You believe you are the exception. Rules are for others; you operate on a higher plane of existence. You treat people as chess pieces. 
+                        <br><span class="text-sm italic text-parchment/50">Seen in: Raskolnikov (Crime and Punishment)</span>
+                    </p>
+                </div>
+                
+                <div class="book-card p-6">
+                    <h4 class="text-xl text-gold uppercase tracking-widest mb-2">02. Ate (Ruin)</h4>
+                    <p class="text-vellum text-lg">
+                        You are blind to reality. You live in a romanticized version of the world where aesthetic beauty justifies moral ugliness. You ignore the rot beneath the floorboards.
+                        <br><span class="text-sm italic text-parchment/50">Seen in: Richard Papen (The Secret History)</span>
+                    </p>
+                </div>
+
+                <div class="book-card p-6">
+                    <h4 class="text-xl text-gold uppercase tracking-widest mb-2">03. Nemesis (Retribution)</h4>
+                    <p class="text-vellum text-lg">
+                        You are obsessed with vengeance or balancing the scales. You cannot let go of a slight. You will burn the world down to prove you were right.
+                        <br><span class="text-sm italic text-parchment/50">Seen in: Heathcliff (Wuthering Heights)</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-2xl mx-auto mb-32 relative">
+        <div class="absolute -left-10 top-0 text-6xl text-parchment/10 transform -rotate-12">"</div>
+        <div class="journal-entry">
+            <p>October 24th.</p>
+            <p>
+                The library was cold tonight. Julian asked us a question that I cannot shake. If you could save a priceless manuscript—the only copy of a lost play by Euripides—or save a stranger's life, which would you choose?
+            </p>
+            <p>
+                Henry didn't hesitate. He chose the book. "People die every day," he said, adjusting his glasses. "But art? True art is immortal. To let it perish is the only real murder."
+            </p>
+            <p>
+                I want to say he is a monster. But as I look at the fire dying in the grate... I wonder if I agree.
+            </p>
+        </div>
+        <div class="text-center font-sans text-xs uppercase tracking-widest text-gold opacity-50">
+            From the diary of an unnamed student
+        </div>
+    </section>
+
+    <section class="mb-32">
+        <div class="chapter-title">
+            <h2 class="text-4xl text-parchment">Chapter IV: The Syllabus</h2>
+        </div>
+        
+        <div class="bg-leather border border-white/5 p-8 md:p-12 relative">
+            <div class="absolute top-0 left-0 w-8 h-8 border-t border-l border-gold/30"></div>
+            <div class="absolute top-0 right-0 w-8 h-8 border-t border-r border-gold/30"></div>
+            <div class="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-gold/30"></div>
+            <div class="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-gold/30"></div>
+
+            <p class="text-center text-lg text-vellum mb-10 font-serif italic">
+                To inhabit this aesthetic, one must be well-read. Or at least, appear to be. <br>
+                The following texts are required reading for the aspiring academic villain.
+            </p>
+
+            <div class="space-y-2">
+                <div class="syllabus-item">
+                    <a href="/quiz-classic-books.html">The Secret History</a>
+                    <span class="text-xs font-sans text-gold uppercase">Donna Tartt</span>
+                </div>
+                <div class="syllabus-item">
+                    <a href="/quiz-gothic-lit.html">If We Were Villains</a>
+                    <span class="text-xs font-sans text-gold uppercase">M.L. Rio</span>
+                </div>
+                <div class="syllabus-item">
+                    <a href="/article-aesthetic-history.html">The Picture of Dorian Gray</a>
+                    <span class="text-xs font-sans text-gold uppercase">Oscar Wilde</span>
+                </div>
+                <div class="syllabus-item">
+                    <a href="/article-stranger-things-prep.html">Ninth House</a>
+                    <span class="text-xs font-sans text-gold uppercase">Leigh Bardugo</span>
+                </div>
+                <div class="syllabus-item">
+                    <a href="/quiz-classic-books.html">Brideshead Revisited</a>
+                    <span class="text-xs font-sans text-gold uppercase">Evelyn Waugh</span>
+                </div>
+                <div class="syllabus-item">
+                    <a href="/article-intelligence-audit.html">Frankenstein</a>
+                    <span class="text-xs font-sans text-gold uppercase">Mary Shelley</span>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <a href="/quiz-classic-books.html" class="text-xs font-sans uppercase tracking-[0.2em] text-vellum hover:text-gold border-b border-transparent hover:border-gold transition-all pb-1">
+                    Take the Literature Exam >
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-32">
+        <div class="chapter-title">
+            <h2 class="text-4xl text-parchment">Chapter V: The Aesthetic Manifesto</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div class="prose-text text-lg">
+                <p>
+                    Dark Academia is a rebellion against the digital age. It is a rejection of the sleek, the modern, and the sterile. It embraces the tactile.
+                </p>
+                <p>
+                    <strong>The Palette:</strong> It is the color of dried blood, old stone, forest moss, and espresso. 
+                </p>
+                <p>
+                    <strong>The Uniform:</strong> It is layers. Tweed, wool, linen. Clothing that suggests you have just come from a library or a funeral. Glasses, even if you don't need them.
+                </p>
+                <p>
+                    <strong>The Habits:</strong> Writing by hand. Drinking black coffee at 2 AM. Translating Latin. Obsessing over a single line of poetry for three days.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="aspect-[3/4] bg-ink border border-white/10 flex items-center justify-center p-4 text-center">
+                    <div>
+                        <i class="fas fa-coffee text-4xl text-gold mb-4"></i>
+                        <div class="font-sans text-xs uppercase tracking-widest text-vellum">Consumption</div>
+                        <div class="text-sm italic text-parchment/50 mt-2">Coffee, Red Wine, Earl Grey</div>
+                    </div>
+                </div>
+                <div class="aspect-[3/4] bg-ink border border-white/10 flex items-center justify-center p-4 text-center mt-8">
+                    <div>
+                        <i class="fas fa-hourglass-half text-4xl text-gold mb-4"></i>
+                        <div class="font-sans text-xs uppercase tracking-widest text-vellum">Time</div>
+                        <div class="text-sm italic text-parchment/50 mt-2">Late Nights, Early Mornings</div>
+                    </div>
+                </div>
+                <div class="aspect-[3/4] bg-ink border border-white/10 flex items-center justify-center p-4 text-center">
+                    <div>
+                        <i class="fas fa-pen-nib text-4xl text-gold mb-4"></i>
+                        <div class="font-sans text-xs uppercase tracking-widest text-vellum">Tools</div>
+                        <div class="text-sm italic text-parchment/50 mt-2">Fountain Pens, Typewriters</div>
+                    </div>
+                </div>
+                <div class="aspect-[3/4] bg-ink border border-white/10 flex items-center justify-center p-4 text-center mt-8">
+                    <div>
+                        <i class="fas fa-landmark text-4xl text-gold mb-4"></i>
+                        <div class="font-sans text-xs uppercase tracking-widest text-vellum">Space</div>
+                        <div class="text-sm italic text-parchment/50 mt-2">Museums, Cathedrals</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-32 max-w-2xl mx-auto">
+        <div class="chapter-title">
+            <h2 class="text-4xl text-parchment">Chapter VI: The Moral Dilemma</h2>
+        </div>
+        
+        <p class="text-center text-vellum mb-8 italic text-lg">
+            Choose your path carefully. Your answers define your archetype.
+        </p>
+
+        <div class="space-y-4">
+            <div class="bg-ink/50 p-6 border-l-2 border-gold">
+                <p class="font-serif text-xl text-parchment mb-4">
+                    Your closest friend admits to a terrible crime. They did it to protect you. The police are asking questions. What do you do?
+                </p>
+                <div class="space-y-2">
+                    <button class="dilemma-btn">
+                        <span class="text-gold font-bold mr-2">A.</span> Confess myself to save them. The ultimate sacrifice.
+                    </button>
+                    <button class="dilemma-btn">
+                        <span class="text-gold font-bold mr-2">B.</span> Help them cover it up. We take this secret to the grave.
+                    </button>
+                    <button class="dilemma-btn">
+                        <span class="text-gold font-bold mr-2">C.</span> Turn them in. The truth is more important than loyalty.
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <p class="text-sm text-parchment/40 italic">
+                (This is a sample. The full psychometric analysis is available in the Identity Lab.)
+            </p>
+        </div>
+    </section>
+
+    <section class="mb-24">
+      <div class="chapter-title">
+        <h2 class="text-4xl text-parchment">Chapter VII: The Diagnosis</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <a href="/identity-lab.html" class="group p-10 border border-white/10 hover:border-gold transition-colors cursor-pointer">
+          <i class="fas fa-feather-alt text-3xl text-parchment mb-6 opacity-50 group-hover:opacity-100 group-hover:text-gold transition-all"></i>
+          <h3 class="text-xl mb-2">The Poet</h3>
+          <p class="text-sm text-parchment/60 font-sans leading-relaxed">Sensitive. Melancholic.<br>You feel too much.</p>
+        </a>
+
+        <a href="/identity-lab.html" class="group p-10 border border-white/10 hover:border-gold transition-colors cursor-pointer">
+          <i class="fas fa-chess-king text-3xl text-parchment mb-6 opacity-50 group-hover:opacity-100 group-hover:text-gold transition-all"></i>
+          <h3 class="text-xl mb-2">The Strategist</h3>
+          <p class="text-sm text-parchment/60 font-sans leading-relaxed">Cold. Calculating.<br>You are always three steps ahead.</p>
+        </a>
+
+        <a href="/identity-lab.html" class="group p-10 border border-white/10 hover:border-gold transition-colors cursor-pointer">
+          <i class="fas fa-skull text-3xl text-parchment mb-6 opacity-50 group-hover:opacity-100 group-hover:text-gold transition-all"></i>
+          <h3 class="text-xl mb-2">The Martyr</h3>
+          <p class="text-sm text-parchment/60 font-sans leading-relaxed">Loyal. Self-destructive.<br>You burn so others can see.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="text-center py-20 border-t border-white/5">
+      <h2 class="text-5xl md:text-7xl text-parchment mb-8 italic">
+        Which one are you?
+      </h2>
+      
+      <div class="flex flex-col md:flex-row justify-center gap-8">
+        <a class="cta filled" href="/identity-lab.html">
+          Take the Test
+        </a>
+        <a class="cta" href="/arcade.html">
+          Enter The Arcade
+        </a>
+      </div>
+    </section>
+
+    <div class="text-center text-xs font-sans text-parchment/30 pb-10 uppercase tracking-[0.2em]">
+      <p>QuizRealm Literary Society • <a href="/privacy.html" class="hover:text-gold transition-colors">Privacy</a></p>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>
