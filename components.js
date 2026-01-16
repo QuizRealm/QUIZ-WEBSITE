@@ -131,6 +131,14 @@ function getQuizHeaderMarkup() {
                     </div>
                 </a>
 
+                 <a href="/group-hub.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] mr-1">
+                    <div class="absolute inset-0 bg-gradient-to-r from-violet-900/50 to-fuchsia-900/50 border border-violet-500/40 group-hover:border-fuchsia-400/70 rounded-full transition-colors"></div>
+                    <div class="relative flex items-center gap-1.5">
+                        <i class="fas fa-fingerprint text-[10px] text-fuchsia-300 group-hover:text-white transition-colors"></i>
+                        <span class="text-[10px] font-semibold uppercase tracking-[0.22em] text-fuchsia-100 group-hover:text-white transition-colors">Group Game</span>
+                    </div>
+                </a>
+
                 <div class="relative group h-full">
                     <a href="arcade.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
                         <i class="fas fa-gamepad text-slate-500 group-hover:text-pink-400 transition-colors text-xs"></i> 
