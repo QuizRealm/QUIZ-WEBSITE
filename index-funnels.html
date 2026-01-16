@@ -19,7 +19,7 @@
 
     <style>
         body { background: #020617; color: #f8fafc; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
-        
+
         .glass-nav {
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(20px);
@@ -38,6 +38,76 @@
             border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
         }
         .terminal-link:hover { background: rgba(255,255,255,0.08); transform: translateX(5px); border-color: rgba(255,255,255,0.2); }
+
+        /* === Sitemap Directory Styles (Added) === */
+        .dir-shell{
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 25px 80px -40px rgba(56,189,248,0.25);
+        }
+        .dir-topbar{
+            background: rgba(2,6,23,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(18px);
+        }
+        .dir-input{
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            outline: none;
+        }
+        .dir-input:focus{
+            border-color: rgba(34,211,238,0.55);
+            box-shadow: 0 0 0 4px rgba(34,211,238,0.12);
+        }
+        .dir-pill{
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.04);
+        }
+        .dir-pill[aria-pressed="true"]{
+            border-color: rgba(34,211,238,0.55);
+            background: rgba(34,211,238,0.10);
+        }
+        .dir-group{
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+        }
+        .dir-row{
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(2,6,23,0.25);
+        }
+        .dir-row:hover{
+            border-color: rgba(255,255,255,0.16);
+            background: rgba(255,255,255,0.06);
+            transform: translateY(-1px);
+        }
+        .mono{ font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        .badge{
+            display:inline-flex; align-items:center; gap:8px;
+            padding: 6px 10px; border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.04);
+            color: rgba(226,232,240,0.9);
+            font-size: 12px;
+        }
+        .badge .dot{
+            width:8px; height:8px; border-radius:999px;
+            background: rgba(34,211,238,0.85);
+            box-shadow: 0 0 18px rgba(34,211,238,0.45);
+        }
+        .hint{
+            border-left: 2px solid rgba(34,211,238,0.55);
+            background: rgba(34,211,238,0.06);
+        }
+        .btn-soft{
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.04);
+            transition: .25s ease;
+        }
+        .btn-soft:hover{
+            border-color: rgba(255,255,255,0.20);
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-1px);
+        }
     </style>
     <script src="components.js" defer></script>
 </head>
@@ -46,13 +116,13 @@
     <quiz-header></quiz-header>
 
     <main class="flex-grow max-w-7xl mx-auto px-6 py-20 w-full">
-        
+
         <header class="mb-20 space-y-4">
             <h1 class="text-4xl md:text-7xl font-extrabold tracking-tighter uppercase">
                 The <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">Master Index.</span>
             </h1>
             <p class="text-slate-400 font-light max-w-2xl">
-                Internal link manifest for QuizRealm intelligence funnels. 
+                Internal link manifest for QuizRealm intelligence funnels.
                 <span class="text-white">Authoritative routing for 2025/2026 system assets.</span>
             </p>
         </header>
@@ -156,7 +226,85 @@
             </section>
 
         </div>
-<section class="mt-32 border-t border-white/10 pt-20">
+
+        <!-- ===========================
+             FULL SITEMAP DIRECTORY (ADDED)
+        ============================ -->
+        <section id="sitemap" class="mt-24">
+            <div class="rounded-[28px] p-8 md:p-10 dir-shell">
+                <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span class="badge"><span class="dot"></span> Full Sitemap Directory</span>
+                            <span id="dirCountBadge" class="badge"><i class="fas fa-link text-xs opacity-70"></i> <span class="mono" id="dirCount">0</span> URLs</span>
+                            <span id="dirFilteredBadge" class="badge hidden"><i class="fas fa-filter text-xs opacity-70"></i> <span class="mono" id="dirFiltered">0</span> visible</span>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+                            One page. Every route. The full operational map.
+                        </h2>
+                        <p class="text-slate-300/80 max-w-3xl">
+                            This is a clean, searchable index of every URL in your sitemap. Use filters to isolate
+                            <span class="text-white">articles</span>, <span class="text-white">games</span>, <span class="text-white">quizzes</span>,
+                            <span class="text-white">hubs</span>, and mirrored paths (<span class="mono">/encyclopedia/</span>, <span class="mono">/rick-and-morty/</span>).
+                        </p>
+                    </div>
+
+                    <div class="dir-topbar rounded-2xl p-4 w-full lg:max-w-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1 relative">
+                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                <input id="dirSearch" class="dir-input w-full rounded-xl py-3 pl-10 pr-4 text-sm text-slate-100 placeholder:text-slate-400"
+                                       placeholder="Search (e.g., article-, identity, /encyclopedia/, xmas, rick...)" />
+                            </div>
+                            <button id="dirCopy" class="btn-soft rounded-xl px-4 py-3 text-sm text-slate-200 whitespace-nowrap">
+                                <i class="fas fa-copy mr-2 opacity-80"></i> Copy
+                            </button>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <button class="dir-pill px-3 py-2 rounded-full text-xs text-slate-200" data-filter="all" aria-pressed="true">
+                                All
+                            </button>
+                            <button class="dir-pill px-3 py-2 rounded-full text-xs text-slate-200" data-filter="core" aria-pressed="false">
+                                Core
+                            </button>
+                            <button class="dir-pill px-3 py-2 rounded-full text-xs text-slate-200" data-filter="articles" aria-pressed="false">
+                                Articles
+                            </button>
+                            <button class="dir-pill px-3 py-2 rounded-full text-xs text-slate-200" data-filter="quizzes" aria-pressed="false">
+                                Quizzes
+                            </button>
+                            <button class="dir-pill px-3 py-2 rounded-full text-xs text-slate-200" data-filter="games" aria-pressed="false">
+                                Games
+                            </button>
+                            <button class="dir-pill px-3 py-2 rounded-full text-xs text-slate-200" data-filter="hubs" aria-pressed="false">
+                                Hubs
+                            </button>
+                            <button class="dir-pill px-3 py-2 rounded-full text-xs text-slate-200" data-filter="mirrors" aria-pressed="false">
+                                Mirrors
+                            </button>
+                            <button class="dir-pill px-3 py-2 rounded-full text-xs text-slate-200" data-filter="legal" aria-pressed="false">
+                                Legal
+                            </button>
+                            <button class="dir-pill px-3 py-2 rounded-full text-xs text-slate-200" data-filter="misc" aria-pressed="false">
+                                Misc
+                            </button>
+                        </div>
+
+                        <div class="hint rounded-xl px-4 py-3 mt-3 text-xs text-slate-200/80">
+                            <span class="text-slate-100 font-semibold">Note:</span>
+                            This directory includes mirrored routes and mixed-case filenames exactly as listed in your sitemap.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6" id="dirGroups">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-32 border-t border-white/10 pt-20">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-sm text-slate-400 leading-relaxed">
                 <div>
                     <h4 class="text-white font-bold mb-4 uppercase tracking-widest text-[10px] text-cyan-400">01. Cross-Training</h4>
@@ -216,7 +364,7 @@
     <h2 class="text-3xl font-bold text-white mb-6">The Central Nervous System</h2>
     <div class="prose prose-invert text-slate-300">
         <p>Welcome to the Master Terminal. While our homepage offers a curated experience, this index is the raw directory of the QuizRealm network. From here, you can access every sub-system, diagnostic tool, and arcade cabinet we have ever built. It is designed for power users who want to jump straight to a specific protocol without the fluff.</p>
-        
+
         <h3 class="text-xl font-bold text-white mt-8 mb-4">System Architecture</h3>
         <p>Our content is divided into three primary sectors:</p>
         <ul class="list-disc pl-6 space-y-2 my-4">
@@ -233,7 +381,7 @@
 <section class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10 mt-20">
     <h3 class="text-xl font-bold text-white mb-6 uppercase tracking-widest">Explore The Archives</h3>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-        
+
         <div class="flex flex-col gap-2">
             <h4 class="text-brand font-bold mb-2">Seasonal Protocols</h4>
             <a href="/quiz-xmas-history.html" class="text-slate-400 hover:text-white transition">Myths & Legends</a>
@@ -268,6 +416,514 @@
 
     </div>
 </section>
+
     <quiz-footer></quiz-footer>
+
+    <!-- ===========================
+         Sitemap Directory Script (ADDED)
+         - No dependencies
+         - Uses your provided sitemap URLs
+    ============================ -->
+    <script>
+      // All URLs from the sitemap you provided (domain stripped at render time).
+      const SITEMAP_URLS = [
+        { loc:"https://thequizrealm.com/404.html", lastmod:"2026-01-11", changefreq:"yearly", priority:0.1 },
+        { loc:"https://thequizrealm.com/about.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.5 },
+        { loc:"https://thequizrealm.com/achievements.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/aesthetic-architect.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/aesthetic-curator.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/aesthetic-director.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/aesthetic-hub.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/aesthetic-red.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/apology-test.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/arcade.html", lastmod:"2026-01-11", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/article-404.html", lastmod:"2026-01-10", changefreq:"yearly", priority:0.1 },
+        { loc:"https://thequizrealm.com/article-about-quizrealm.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/article-aesthetic-history.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-airtraffic.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-best-online-trivia-games-for-groups.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-brain-schedule.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-burnout-index.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-cellular.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-competitive-word-games.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-corporate-horoscopes-vs-mbti.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-dark-academia.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-discord-pub-quiz-guide.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-games-for-work.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-gamify-meetings.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-generational-slang.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-geography-travelers.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-glacier.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-hybrid-team-trivia.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-identity-lab-best-personality-tests.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-intelligence-audit.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-internet.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-kahoot-vs-jackbox-vs-quizrealm.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-light.html", lastmod:"2026-01-11", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-mandela-effect.html", lastmod:"2026-01-16", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-mcdonalds.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-no-app-rule.html", lastmod:"2026-01-16", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-office-vs-parks.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-red-flags-vs-beige-flags.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-roommate.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-roommate2.html", lastmod:"2026-01-11", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-science-of-speed.html", lastmod:"2026-01-16", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-seduction-archetypes.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-shipping.html", lastmod:"2026-01-01", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-social-battery-audit.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-social-science.html", lastmod:"2025-12-30", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-stranger-things-prep.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-ultimate-quiz-night-playbook.html", lastmod:"2026-01-14", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-unlimited-connections-alternative.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-visual-vs-text-brain.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/article-void.html", lastmod:"2026-01-01", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/article-volcano.html", lastmod:"2026-01-01", changefreq:"monthly", priority:0.7 },
+
+        { loc:"https://thequizrealm.com/avatar-movies.html", lastmod:"2025-12-20", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/avatar2025.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/AVATAR_TRIBE.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+
+        { loc:"https://thequizrealm.com/burnout-test.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/career-burnout.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/career-imposter.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/career-quiet-quit.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/categories.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/christmas-hub.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/contact.html", lastmod:"2026-01-10", changefreq:"yearly", priority:0.5 },
+        { loc:"https://thequizrealm.com/Cookies.html", lastmod:"2025-12-29", changefreq:"yearly", priority:0.3 },
+        { loc:"https://thequizrealm.com/cronenberg-match.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/crossword.html", lastmod:"2026-01-09", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/cryptex.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/daily.html", lastmod:"2026-01-14", changefreq:"daily", priority:0.9 },
+        { loc:"https://thequizrealm.com/dating-audit-1.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/dating-detective.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/dating-mirror.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/dating-recovery.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/dating-situationship.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/dc.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/delusion-test.html", lastmod:"2026-01-01", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/dev.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.4 },
+        { loc:"https://thequizrealm.com/duel.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia.html", lastmod:"2026-01-15", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/family-origins.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/family-trauma-test.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/FAQ.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.5 },
+        { loc:"https://thequizrealm.com/fortune-magnet-test.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/friends.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/friendsperson.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/funnel-arcade-calibration.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/funnel-arcade-chronos.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/funnel-arcade-cyber.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/funnel-arcade-lexicon.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/funnel-arcade-syndicate.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/funnel-arcade-zen.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/fusion-core.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/geography.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/group-hub-host-trivia-night.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/group-hub.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/hangman.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/hero-hub.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/host-game.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/ick-test.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/identity-lab.html", lastmod:"2026-01-11", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/identity-portal.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/index-funnels.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/index.html", lastmod:"2026-01-10", changefreq:"daily", priority:1.0 },
+        { loc:"https://thequizrealm.com/interdimensional-tv.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/lifestyle-blog.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.7 },
+        { loc:"https://thequizrealm.com/marvel.html", lastmod:"2026-01-11", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/mind-blowers.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/mini-crossword.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/minigames.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/mode.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/nexus.html", lastmod:"2026-01-01", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/odd-one-out.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/orbital-game.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/play.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/premium.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/privacy.html", lastmod:"2025-12-29", changefreq:"yearly", priority:0.3 },
+        { loc:"https://thequizrealm.com/profile.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+
+        { loc:"https://thequizrealm.com/quiz-batman-trivia.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-dc-vs-marvel.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-gotham-villain.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-superhero-visual.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-superman-legacy.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-webslinger.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-xmas-history.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-xmas-persona.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-xmas-quotes.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-xmas-songs.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz-xmas-visual.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/quiz.html", lastmod:"2026-01-11", changefreq:"weekly", priority:0.9 },
+
+        { loc:"https://thequizrealm.com/random.html", lastmod:"2026-01-11", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rapid.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/red-flag-test.html", lastmod:"2026-01-01", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty-visuals.html", lastmod:"2026-01-11", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rickandmorty.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rickandmortyhub.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/roy-game.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/seduction-archetypes.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/seduction-test.html", lastmod:"2026-01-01", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/social-battery-test.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/social-battery.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/social-battery2.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/social-strategy.html", lastmod:"2025-12-30", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/spelling.html", lastmod:"2026-01-09", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/strangerthings.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/STRANGER_PERSONA.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/superman.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/tango-logic.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/tbbt.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/TBBTPERSON.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/tech-encyclopedia.html", lastmod:"2026-01-09", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/Terms.html", lastmod:"2025-12-29", changefreq:"yearly", priority:0.3 },
+        { loc:"https://thequizrealm.com/tester.html", lastmod:"2025-11-29", changefreq:"monthly", priority:0.4 },
+        { loc:"https://thequizrealm.com/theoffice.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/timeline-history.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/tools-import.html", lastmod:"2025-12-21", changefreq:"monthly", priority:0.4 },
+        { loc:"https://thequizrealm.com/top-5-group-trivia-games-2025.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.7 },
+        { loc:"https://thequizrealm.com/toxic-analysis.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/toxic-radar-test.html", lastmod:"2026-01-01", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/two-truths-trap.html", lastmod:"2026-01-09", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/vibe-check-test.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/which-came-first.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/word-ladder.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+
+        // /encyclopedia mirrors
+        { loc:"https://thequizrealm.com/encyclopedia/404.html", lastmod:"2025-12-29", changefreq:"yearly", priority:0.1 },
+        { loc:"https://thequizrealm.com/encyclopedia/about.html", lastmod:"2026-01-11", changefreq:"monthly", priority:0.5 },
+        { loc:"https://thequizrealm.com/encyclopedia/article-404.html", lastmod:"2026-01-10", changefreq:"yearly", priority:0.1 },
+        { loc:"https://thequizrealm.com/encyclopedia/article-about-quizrealm.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.6 },
+        { loc:"https://thequizrealm.com/encyclopedia/article-best-online-trivia-games-for-groups.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/article-identity-lab-best-personality-tests.html", lastmod:"2026-01-10", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/article-ultimate-quiz-night-playbook.html", lastmod:"2026-01-15", changefreq:"monthly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/avatar-movies.html", lastmod:"2026-01-11", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/avatar2025.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/dc.html", lastmod:"2026-01-10", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/FAQ.html", lastmod:"2025-12-29", changefreq:"monthly", priority:0.5 },
+        { loc:"https://thequizrealm.com/encyclopedia/friends.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/fusion-core.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/geography.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/marvel.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/nexus.html", lastmod:"2026-01-01", changefreq:"weekly", priority:0.9 },
+        { loc:"https://thequizrealm.com/encyclopedia/privacy.html", lastmod:"2025-12-29", changefreq:"yearly", priority:0.3 },
+        { loc:"https://thequizrealm.com/encyclopedia/rapid.html", lastmod:"2025-12-29", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/rick-and-morty-visuals.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/rick-and-morty.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/rickandmorty.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/strangerthings.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/STRANGER_PERSONA.html", lastmod:"2025-12-21", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/superman.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/tbbt.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/encyclopedia/Terms.html", lastmod:"2025-12-29", changefreq:"yearly", priority:0.3 },
+        { loc:"https://thequizrealm.com/encyclopedia/theoffice.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+
+        // /rick-and-morty mirrors
+        { loc:"https://thequizrealm.com/rick-and-morty/avatar-movies.html", lastmod:"2026-01-11", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/avatar2025.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/friends.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/geography.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/marvel.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/rick-and-morty-visuals.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/rickandmorty.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/strangerthings.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/STRANGER_PERSONA.html", lastmod:"2025-12-21", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/superman.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/tbbt.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/rick-and-morty/theoffice.html", lastmod:"2025-12-28", changefreq:"weekly", priority:0.8 },
+
+        // vibe-lab
+        { loc:"https://thequizrealm.com/vibe-lab/index.html", lastmod:"2025-12-21", changefreq:"weekly", priority:0.8 },
+        { loc:"https://thequizrealm.com/vibe-lab/index1.html", lastmod:"2025-12-15", changefreq:"weekly", priority:0.8 }
+      ];
+
+      const DOMAIN = "https://thequizrealm.com";
+
+      const prettyName = (path) => {
+        const clean = path.replace(/^\//,'');
+        if (!clean) return "Home";
+        const raw = clean.split('/').pop();
+        return raw
+          .replace(/\.html$/i,'')
+          .replace(/[-_]+/g,' ')
+          .replace(/\b\w/g, c => c.toUpperCase());
+      };
+
+      const toPath = (loc) => {
+        try{
+          const u = new URL(loc);
+          return u.pathname;
+        }catch(e){
+          return loc.replace(DOMAIN,'');
+        }
+      };
+
+      const classify = (path) => {
+        const p = path.toLowerCase();
+
+        // mirrors first
+        if (p.startsWith("/encyclopedia/") || p.startsWith("/rick-and-morty/")) return "mirrors";
+
+        // legal / policy
+        if (["/privacy.html","/terms.html","/cookies.html","/faq.html"].includes(p)) return "legal";
+
+        // articles
+        if (p.startsWith("/article-")) return "articles";
+
+        // quizzes & tests
+        if (p.startsWith("/quiz") || p.endsWith("-test.html") || p.includes("persona") || p.includes("audit") || p.includes("diagnostic") || p.includes("analysis"))
+          return "quizzes";
+
+        // core hubs / nav
+        if (["/index.html","/categories.html","/arcade.html","/encyclopedia.html","/minigames.html","/daily.html","/play.html","/random.html","/group-hub.html","/identity-lab.html"].includes(p) || p.endsWith("-hub.html"))
+          return "hubs";
+
+        // games (arcade)
+        const gameHits = [
+          "/hangman.html","/spelling.html","/crossword.html","/mini-crossword.html",
+          "/word-ladder.html","/tango-logic.html","/odd-one-out.html","/which-came-first.html",
+          "/two-truths-trap.html","/cryptex.html","/orbital-game.html","/roy-game.html","/duel.html","/rapid.html","/cronenberg-match.html"
+        ];
+        if (gameHits.includes(p) || p.includes("game") || p.includes("crossword") || p.includes("hangman") || p.includes("spelling") || p.includes("logic"))
+          return "games";
+
+        // core pages
+        if (["/about.html","/contact.html","/profile.html","/premium.html","/achievements.html","/mode.html","/dev.html","/tester.html","/index-funnels.html","/tools-import.html","/404.html","/article-404.html"].includes(p))
+          return "core";
+
+        return "misc";
+      };
+
+      const groupLabels = {
+        all: "All",
+        core: "Core Pages",
+        articles: "Articles",
+        quizzes: "Quizzes & Tests",
+        games: "Games & Interactive",
+        hubs: "Hubs & Indexes",
+        mirrors: "Mirrored Routes",
+        legal: "Legal & Policies",
+        misc: "Miscellaneous"
+      };
+
+      const groupIcons = {
+        core: "fa-layer-group",
+        articles: "fa-newspaper",
+        quizzes: "fa-fingerprint",
+        games: "fa-gamepad",
+        hubs: "fa-sitemap",
+        mirrors: "fa-clone",
+        legal: "fa-scale-balanced",
+        misc: "fa-ellipsis"
+      };
+
+      const groupAccents = {
+        core: "text-slate-200",
+        articles: "text-cyan-300",
+        quizzes: "text-orange-300",
+        games: "text-yellow-300",
+        hubs: "text-purple-300",
+        mirrors: "text-pink-300",
+        legal: "text-emerald-300",
+        misc: "text-slate-300"
+      };
+
+      const byGroupOrder = ["hubs","quizzes","games","articles","core","legal","mirrors","misc"];
+
+      const state = {
+        filter: "all",
+        query: ""
+      };
+
+      const els = {
+        groups: document.getElementById("dirGroups"),
+        search: document.getElementById("dirSearch"),
+        pills: Array.from(document.querySelectorAll("[data-filter]")),
+        count: document.getElementById("dirCount"),
+        filteredBadge: document.getElementById("dirFilteredBadge"),
+        filtered: document.getElementById("dirFiltered"),
+        copy: document.getElementById("dirCopy")
+      };
+
+      function normalize(s){
+        return String(s || "").toLowerCase().trim();
+      }
+
+      function buildData(){
+        const out = SITEMAP_URLS.map(x => {
+          const path = toPath(x.loc);
+          const group = classify(path);
+          const name = prettyName(path);
+          return {
+            ...x,
+            path,
+            group,
+            name,
+            lastmod: x.lastmod || ""
+          };
+        });
+
+        // de-dup safeguard
+        const seen = new Set();
+        return out.filter(x => {
+          const k = x.path + "::" + x.lastmod;
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        });
+      }
+
+      const ALL = buildData();
+      els.count.textContent = String(ALL.length);
+
+      function matches(item){
+        const q = normalize(state.query);
+        if (q){
+          const hay = normalize(item.path + " " + item.name + " " + item.group);
+          if (!hay.includes(q)) return false;
+        }
+        if (state.filter === "all") return true;
+        return item.group === state.filter;
+      }
+
+      function groupize(items){
+        const map = new Map();
+        for (const g of byGroupOrder){
+          map.set(g, []);
+        }
+        for (const item of items){
+          if (!map.has(item.group)) map.set(item.group, []);
+          map.get(item.group).push(item);
+        }
+        // sort within groups by path
+        for (const [g, arr] of map.entries()){
+          arr.sort((a,b) => a.path.localeCompare(b.path));
+        }
+        return map;
+      }
+
+      function rowTemplate(item){
+        const display = item.path;
+        const last = item.lastmod ? item.lastmod : "—";
+        const pri = (typeof item.priority === "number") ? item.priority.toFixed(1) : "—";
+
+        return `
+          <a class="dir-row rounded-xl p-4 flex items-start justify-between gap-4 transition"
+             href="${item.path}" title="${item.path}">
+            <div class="min-w-0">
+              <div class="text-slate-100 font-semibold truncate">${item.name}</div>
+              <div class="mono text-xs text-slate-400 truncate">${display}</div>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="badge"><i class="fas fa-calendar text-xs opacity-70"></i> <span class="mono">${last}</span></span>
+                <span class="badge"><i class="fas fa-bullseye text-xs opacity-70"></i> <span class="mono">${pri}</span></span>
+                <span class="badge"><i class="fas fa-rotate text-xs opacity-70"></i> <span class="mono">${item.changefreq || "—"}</span></span>
+              </div>
+            </div>
+            <div class="shrink-0 pt-1 text-slate-400">
+              <i class="fas fa-arrow-up-right-from-square text-xs opacity-70"></i>
+            </div>
+          </a>
+        `;
+      }
+
+      function groupTemplate(groupKey, items){
+        const label = groupLabels[groupKey] || groupKey;
+        const icon = groupIcons[groupKey] || "fa-folder";
+        const accent = groupAccents[groupKey] || "text-slate-200";
+        const count = items.length;
+
+        const rows = items.slice(0, 9999).map(rowTemplate).join("");
+
+        return `
+          <div class="dir-group rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <i class="fas ${icon} ${accent}"></i>
+                <h3 class="text-sm md:text-base font-extrabold uppercase tracking-widest">${label}</h3>
+              </div>
+              <span class="badge"><i class="fas fa-hashtag text-xs opacity-70"></i> <span class="mono">${count}</span></span>
+            </div>
+            <div class="grid grid-cols-1 gap-3">
+              ${rows || `<div class="text-sm text-slate-400">No results in this group.</div>`}
+            </div>
+          </div>
+        `;
+      }
+
+      function render(){
+        const visible = ALL.filter(matches);
+        const grouped = groupize(visible);
+
+        // count badge
+        if (visible.length !== ALL.length){
+          els.filteredBadge.classList.remove("hidden");
+          els.filtered.textContent = String(visible.length);
+        } else {
+          els.filteredBadge.classList.add("hidden");
+        }
+
+        const chunks = [];
+        for (const g of byGroupOrder){
+          const arr = grouped.get(g) || [];
+          // In "All" mode, only render groups with data; in filtered mode, render the single group plus any spillover
+          if (state.filter === "all"){
+            if (arr.length) chunks.push(groupTemplate(g, arr));
+          } else {
+            if (arr.length && (g === state.filter)) chunks.push(groupTemplate(g, arr));
+          }
+        }
+
+        // if filtered and nothing matched, still show a minimal state
+        els.groups.innerHTML = chunks.length ? chunks.join("") : `
+          <div class="dir-group rounded-2xl p-8 lg:col-span-2">
+            <div class="text-slate-200 font-bold mb-2">No matches found.</div>
+            <div class="text-slate-400 text-sm">Try a broader keyword (e.g., <span class="mono">article-</span>, <span class="mono">quiz</span>, <span class="mono">/encyclopedia/</span>), or switch filters.</div>
+          </div>
+        `;
+      }
+
+      function setFilter(next){
+        state.filter = next;
+        for (const pill of els.pills){
+          const on = (pill.dataset.filter === next);
+          pill.setAttribute("aria-pressed", on ? "true" : "false");
+        }
+        render();
+      }
+
+      function copyVisible(){
+        const visible = ALL.filter(matches);
+        const lines = visible.map(x => `${DOMAIN}${x.path}`);
+        const payload = lines.join("\n");
+        navigator.clipboard.writeText(payload).then(() => {
+          const prev = els.copy.innerHTML;
+          els.copy.innerHTML = `<i class="fas fa-check mr-2 opacity-80"></i> Copied`;
+          setTimeout(() => els.copy.innerHTML = prev, 1200);
+        }).catch(() => {
+          // fallback
+          const ta = document.createElement("textarea");
+          ta.value = payload;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand("copy"); } catch(e) {}
+          document.body.removeChild(ta);
+        });
+      }
+
+      // events
+      els.search.addEventListener("input", (e) => {
+        state.query = e.target.value || "";
+        render();
+      });
+
+      els.pills.forEach(p => p.addEventListener("click", () => setFilter(p.dataset.filter)));
+      els.copy.addEventListener("click", copyVisible);
+
+      // initial render
+      render();
+    </script>
 </body>
 </html>
