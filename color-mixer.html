@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <script type="importmap">
+    {
+        "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <script type="module" src="/firebase-config.js"></script>
+    <script type="module" src="/game-engine.js"></script>
+    <script src="/components.js" defer></script>
+    <script src="/ux-core.js" defer></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>The Color Mixer: Master RGB Color Theory | QuizRealm Tools</title>
+    <meta name="description" content="A professional color training tool for designers. Test your eye for RGB values, master color theory, and improve your design precision in this interactive studio.">
+    <meta name="keywords" content="color matching game, RGB color test, design eye training, color theory practice, hex code game, designer tools">
+    <meta name="theme-color" content="#0f172a">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#151e2e', 900: '#0f172a' },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'premium-gradient': 'radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%)',
+                    },
+                    keyframes: {
+                        'fade-in-up': {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        /* Premium Glow Effect */
+        .glow-behind {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Studio Panel Styling */
+        .studio-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Custom Range Sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            height: 40px;
+            cursor: pointer;
+        }
+        input[type=range]:focus { outline: none; }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: #1e293b;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #0f172a;
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.1);
+            -webkit-appearance: none;
+            margin-top: -8px;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+        input[type=range]:active::-webkit-slider-thumb { 
+            transform: scale(1.1); 
+            box-shadow: 0 0 0 6px rgba(255,255,255,0.2);
+        }
+
+        /* Specific Colors for Sliders */
+        .slider-red::-webkit-slider-runnable-track { background: linear-gradient(to right, #334155, #f87171); }
+        .slider-green::-webkit-slider-runnable-track { background: linear-gradient(to right, #334155, #4ade80); }
+        .slider-blue::-webkit-slider-runnable-track { background: linear-gradient(to right, #334155, #60a5fa); }
+
+        /* Input Number Styling */
+        .number-input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            font-family: 'Space Grotesk', monospace;
+            text-align: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .number-input:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.05);
+        }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
+        /* --- STICKY HEADER LOGIC --- */
+        #sticky-header {
+            /* Ensure it sits ON TOP of everything */
+            z-index: 9999; 
+            transform: translateY(-120%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        #sticky-header.visible {
+            transform: translateY(0);
+        }
+
+        /* MOBILE ONLY: Hide this header on screens wider than 768px */
+        @media (min-width: 768px) {
+            #sticky-header {
+                display: none !important;
+            }
+        }
+        
+        /* Triangle Clip Paths */
+        .clip-target { clip-path: polygon(0 0, 100% 0, 0 100%); }
+        .clip-player { clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+    </style>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Game",
+      "name": "The Color Mixer",
+      "description": "An interactive RGB color theory training tool for designers and students.",
+      "genre": "Educational",
+      "audience": { "@type": "Audience", "audienceType": "Designers" },
+      "author": { "@type": "Organization", "name": "QuizRealm" }
+    }
+    </script>
+</head>
+
+<body class="flex flex-col min-h-screen bg-premium-gradient overflow-x-hidden">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <div id="sticky-header" class="fixed top-0 left-0 w-full h-16 shadow-2xl border-b border-white/10 flex backdrop-blur-xl bg-slate-900/95">
+        <div id="sticky-target" class="absolute inset-0 w-full h-full bg-black clip-target z-20 transition-colors duration-500">
+            <span class="absolute top-2 left-4 text-[10px] font-bold text-white/90 uppercase tracking-widest bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm border border-white/10">Target</span>
+        </div>
+        <div id="sticky-player" class="absolute inset-0 w-full h-full bg-slate-800 clip-player z-10 transition-colors duration-100">
+            <span class="absolute bottom-2 right-4 text-[10px] font-bold text-white/90 uppercase tracking-widest bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm border border-white/10">You</span>
+        </div>
+    </div>
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full px-4 md:px-6 py-24 md:py-12 relative z-0">
+        <div class="glow-behind"></div>
+        <div class="max-w-6xl mx-auto">
+            
+            <div class="text-center mb-10 md:mb-16 relative">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -z-10"></div>
+                
+                <h1 class="text-4xl md:text-6xl font-bold font-display text-white mb-4 tracking-tight">The Color Mixer</h1>
+                <p class="text-slate-400 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
+                     <br><br>
+                    Train your professional eye. Reconstruct the target signal by mixing pure RGB light values. 
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+                
+                <div id="visual-studio" class="lg:col-span-5 studio-panel rounded-3xl p-6 md:p-8 z-0 relative">
+                    <div class="flex flex-col gap-6 md:gap-8 h-full">
+                        
+                        <div class="flex-1">
+                            <span class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-3 flex justify-between items-center">
+                                <span>Target Signal</span>
+                                <i class="fas fa-lock text-slate-600"></i>
+                            </span>
+                            <div id="target-swatch" class="w-full h-40 md:h-56 rounded-2xl bg-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)] border border-white/5 relative overflow-hidden transition-colors duration-500 group">
+                                <div class="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1">
+                            <span class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-3 flex justify-between items-center">
+                                <span>Your Mix</span>
+                                <span id="current-hex" class="font-mono text-xs px-2 py-1 bg-black/30 rounded text-slate-300">#000000</span>
+                            </span>
+                            <div id="player-swatch" class="w-full h-40 md:h-56 rounded-2xl bg-black shadow-2xl border border-white/10 transition-colors duration-100"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 studio-panel rounded-3xl p-6 md:p-8 relative z-0">
+                    
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-10 border-b border-white/5 pb-6 gap-6">
+                        <div class="flex gap-1 w-full sm:w-auto bg-black/40 p-1.5 rounded-xl border border-white/5">
+                            <button onclick="setDifficulty('student')" id="btn-student" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-slate-900 shadow-lg">
+                                Student
+                            </button>
+                            <button onclick="setDifficulty('designer')" id="btn-designer" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-bold transition-all bg-transparent text-slate-400 hover:bg-white/5">
+                                Pro
+                            </button>
+                            <button onclick="setDifficulty('master')" id="btn-master" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-bold transition-all bg-transparent text-slate-400 hover:bg-white/5">
+                                Master
+                            </button>
+                        </div>
+                        <div class="text-right hidden sm:block">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest block mb-1">Streak</span>
+                            <span id="streak-display" class="font-display text-2xl text-white">0</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-8 mb-12">
+                        <div>
+                            <div class="flex justify-between mb-3 items-end">
+                                <label class="text-xs font-bold text-red-400 uppercase tracking-widest">Red Channel</label>
+                            </div>
+                            <div class="flex items-center gap-5">
+                                <input type="range" id="r-slider" min="0" max="255" value="0" step="1" class="slider-red flex-grow">
+                                <input type="number" id="r-input" min="0" max="255" value="0" class="number-input w-20 h-12 text-lg">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-3 items-end">
+                                <label class="text-xs font-bold text-green-400 uppercase tracking-widest">Green Channel</label>
+                            </div>
+                            <div class="flex items-center gap-5">
+                                <input type="range" id="g-slider" min="0" max="255" value="0" step="1" class="slider-green flex-grow">
+                                <input type="number" id="g-input" min="0" max="255" value="0" class="number-input w-20 h-12 text-lg">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-3 items-end">
+                                <label class="text-xs font-bold text-blue-400 uppercase tracking-widest">Blue Channel</label>
+                            </div>
+                            <div class="flex items-center gap-5">
+                                <input type="range" id="b-slider" min="0" max="255" value="0" step="1" class="slider-blue flex-grow">
+                                <input type="number" id="b-input" min="0" max="255" value="0" class="number-input w-20 h-12 text-lg">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <button id="submit-btn" class="w-full py-5 rounded-xl bg-white text-slate-900 font-bold text-lg hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-[0.99] font-display uppercase tracking-wide">
+                            Compare Colors
+                        </button>
+                        
+                        <div id="result-message" class="hidden mt-6 text-center p-6 rounded-xl bg-slate-900/80 border border-white/10 backdrop-blur-sm animate-fade-in-up">
+                            <span class="block text-3xl font-bold text-white mb-2 font-display" id="match-score">98% Match</span>
+                            <span class="text-sm text-slate-400" id="match-comment">Excellent work.</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 pt-6 border-t border-white/5 text-xs text-slate-500 leading-relaxed grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <strong class="text-slate-300 block mb-1">Student</strong>
+                            Values snap to 15. <br>Forgiving tolerance.
+                        </div>
+                        <div>
+                            <strong class="text-slate-300 block mb-1">Pro</strong>
+                            Values snap to 5. <br>Standard precision.
+                        </div>
+                        <div>
+                            <strong class="text-slate-300 block mb-1">Master</strong>
+                            Exact values (1). <br>Zero tolerance.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mt-40 border-t border-white/10 pt-20">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+                    
+                    <div>
+                        <span class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2 block">The Science</span>
+                        <h2 class="text-3xl font-bold text-white mb-6 font-display">Additive vs. Subtractive</h2>
+                        <div class="prose prose-invert text-slate-400 text-sm leading-7">
+                            <p class="mb-4">
+                                Most of us learned color theory with paint (Red, Yellow, Blue). That is <em>subtractive</em> mixing—mixing them creates mud (black).
+                            </p>
+                            <p class="mb-4">
+                                Screens use <strong>Additive Mixing</strong> (RGB). We start with black (darkness) and add light. 
+                                <br>
+                                • 100% Red + 100% Green = <span class="text-yellow-400 font-bold">Yellow</span> light.
+                                <br>
+                                • 100% Red + 100% Blue = <span class="text-fuchsia-400 font-bold">Magenta</span> light.
+                                <br>
+                                • All three combined = <span class="text-white font-bold">Pure White</span>.
+                            </p>
+                            <p>
+                                Mastering this counter-intuitive math is what separates an average UI designer from a technical artist.
+                            </p>
+                        </div>
+                         <a href="/aesthetic-hub.html" class="inline-flex items-center gap-2 text-white font-bold mt-8 border-b border-blue-500/50 pb-1 hover:text-blue-400 transition-colors">
+                            Deep Dive into Color Psychology <i class="fas fa-arrow-right text-xs"></i>
+                        </a>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="p-8 rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/5 hover:border-white/10 transition-colors">
+                            <div class="flex items-start justify-between mb-4">
+                                <h3 class="text-white font-bold text-lg">Visual Calisthenics</h3>
+                                <i class="fas fa-dumbbell text-slate-600"></i>
+                            </div>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Just like a musician trains their ear for pitch, a designer must train their eye for hue. Regular practice helps you "debug" colors in real life—instantly recognizing if a photo is too warm (too much Red/Green) or too cool (too much Blue).
+                            </p>
+                        </div>
+
+                        <div class="p-8 rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/5 hover:border-white/10 transition-colors">
+                            <div class="flex items-start justify-between mb-4">
+                                <h3 class="text-white font-bold text-lg">Hex Proficiency</h3>
+                                <i class="fas fa-hashtag text-slate-600"></i>
+                            </div>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Hex codes are just RGB values written in base-16. The first two digits are Red, the middle two are Green, the last two are Blue. <code class="bg-black/30 px-1 rounded text-blue-300">#FF0000</code> is max Red. Playing this game builds intuition for reading code.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mt-24 py-12 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-white font-bold mb-4 font-display">Tools</h4>
+                    <ul class="space-y-2 text-xs text-slate-500">
+                        <li><a href="#" class="hover:text-blue-400 transition-colors">Contrast Checker</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition-colors">Gradient Generator</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition-colors">Palette Extractor</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4 font-display">Learn</h4>
+                    <ul class="space-y-2 text-xs text-slate-500">
+                        <li><a href="#" class="hover:text-blue-400 transition-colors">Color Psychology</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition-colors">Accessibility Standards</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition-colors">History of Pigments</a></li>
+                    </ul>
+                </div>
+                <div class="col-span-2 bg-slate-800/30 rounded-xl p-6 border border-white/5 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-white font-bold mb-1">Fatigued?</h4>
+                        <p class="text-xs text-slate-400">Switch to auditory or logic training.</p>
+                    </div>
+                    <a href="/arcade.html" class="px-5 py-2 bg-white/10 hover:bg-white text-white hover:text-slate-900 text-xs font-bold rounded-lg transition-all">
+                        Visit Arcade
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { GameEngine } from '/game-engine.js';
+
+        // State Management
+        const state = {
+            target: { r: 0, g: 0, b: 0 },
+            current: { r: 0, g: 0, b: 0 },
+            difficulty: 'student',
+            streak: 0,
+            settings: {
+                student: { step: 15, tolerance: 1 }, 
+                designer: { step: 5, tolerance: 10 },
+                master: { step: 1, tolerance: 0 } 
+            }
+        };
+
+        // UI Elements
+        const ui = {
+            sliders: { r: document.getElementById('r-slider'), g: document.getElementById('g-slider'), b: document.getElementById('b-slider') },
+            inputs: { r: document.getElementById('r-input'), g: document.getElementById('g-input'), b: document.getElementById('b-input') },
+            swatches: { target: document.getElementById('target-swatch'), player: document.getElementById('player-swatch') },
+            hexDisplay: document.getElementById('current-hex'),
+            streak: document.getElementById('streak-display'),
+            btn: document.getElementById('submit-btn'),
+            result: {
+                container: document.getElementById('result-message'),
+                score: document.getElementById('match-score'),
+                comment: document.getElementById('match-comment')
+            },
+            diffBtns: {
+                student: document.getElementById('btn-student'),
+                designer: document.getElementById('btn-designer'),
+                master: document.getElementById('btn-master')
+            },
+            sticky: {
+                bar: document.getElementById('sticky-header'),
+                target: document.getElementById('sticky-target'),
+                player: document.getElementById('sticky-player'),
+                trigger: document.getElementById('visual-studio')
+            }
+        };
+
+        function init() {
+            generateLevel();
+            attachListeners();
+            setupStickyHeader();
+            // Initial Button State
+            ui.btn.onclick = checkMatch;
+        }
+
+        function setupStickyHeader() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+                        ui.sticky.bar.classList.add('visible');
+                    } else {
+                        ui.sticky.bar.classList.remove('visible');
+                    }
+                });
+            }, { threshold: 0.2 });
+            observer.observe(ui.sticky.trigger);
+        }
+
+        function attachListeners() {
+            // Sliders & Inputs
+            ['r', 'g', 'b'].forEach(channel => {
+                ui.sliders[channel].addEventListener('input', (e) => updateState(channel, e.target.value));
+                ui.inputs[channel].addEventListener('input', (e) => updateState(channel, e.target.value));
+            });
+
+            // Global Diff Setter
+            window.setDifficulty = (level) => {
+                state.difficulty = level;
+                state.streak = 0;
+                ui.streak.innerText = 0;
+                
+                // Update Button Styles
+                Object.keys(ui.diffBtns).forEach(key => {
+                    const btn = ui.diffBtns[key];
+                    if (key === level) {
+                        btn.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-slate-900 shadow-lg scale-105";
+                    } else {
+                        btn.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-bold transition-all bg-transparent text-slate-400 hover:bg-white/5";
+                    }
+                });
+                generateLevel();
+            };
+        }
+
+        function generateLevel() {
+            const step = state.settings[state.difficulty].step;
+            
+            ['r', 'g', 'b'].forEach(c => {
+                ui.sliders[c].step = step;
+                ui.inputs[c].step = step;
+            });
+            
+            const maxStep = Math.floor(255 / step);
+            
+            state.target = {
+                r: Math.min(255, Math.floor(Math.random() * (maxStep + 1)) * step),
+                g: Math.min(255, Math.floor(Math.random() * (maxStep + 1)) * step),
+                b: Math.min(255, Math.floor(Math.random() * (maxStep + 1)) * step)
+            };
+
+            const targetRGB = `rgb(${state.target.r}, ${state.target.g}, ${state.target.b})`;
+            ui.swatches.target.style.backgroundColor = targetRGB;
+            ui.sticky.target.style.backgroundColor = targetRGB;
+            
+            const startVal = Math.floor(127 / step) * step;
+            updateState('r', startVal);
+            updateState('g', startVal);
+            updateState('b', startVal);
+
+            ui.result.container.classList.add('hidden');
+            ui.btn.innerText = "Compare Colors";
+            ui.btn.className = "w-full py-5 rounded-xl bg-white text-slate-900 font-bold text-lg hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-[0.99] font-display uppercase tracking-wide";
+            
+            ui.btn.onclick = checkMatch;
+        }
+
+        function updateState(channel, value) {
+            let val = parseInt(value);
+            if (isNaN(val)) val = 0;
+            if (val > 255) val = 255;
+            if (val < 0) val = 0;
+
+            state.current[channel] = val;
+
+            ui.sliders[channel].value = val;
+            ui.inputs[channel].value = val;
+
+            const rgbString = `rgb(${state.current.r}, ${state.current.g}, ${state.current.b})`;
+            ui.swatches.player.style.backgroundColor = rgbString;
+            ui.sticky.player.style.backgroundColor = rgbString;
+            
+            ui.hexDisplay.innerText = rgbToHex(state.current.r, state.current.g, state.current.b);
+        }
+
+        function checkMatch() {
+            const diffR = state.target.r - state.current.r;
+            const diffG = state.target.g - state.current.g;
+            const diffB = state.target.b - state.current.b;
+            const distance = Math.sqrt(diffR*diffR + diffG*diffG + diffB*diffB);
+
+            const maxDistance = 442; 
+            const accuracy = Math.max(0, 100 - (distance / maxDistance * 100));
+            
+            const tolerance = state.settings[state.difficulty].tolerance;
+            const passThreshold = tolerance * 1.8; 
+
+            if (distance <= passThreshold) {
+                handleWin(accuracy);
+            } else {
+                handleLose(accuracy);
+            }
+        }
+
+        function handleWin(acc) {
+            state.streak++;
+            ui.streak.innerText = state.streak;
+            
+            ui.btn.innerText = "Perfect! Next Color ->";
+            ui.btn.className = "w-full py-5 rounded-xl bg-green-500 text-white font-bold text-lg hover:bg-green-400 transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] active:scale-[0.99] font-display uppercase tracking-wide";
+            
+            ui.result.score.innerText = `${acc.toFixed(1)}% Match`;
+            ui.result.comment.innerText = getComment(acc, true);
+            ui.result.container.classList.remove('hidden');
+
+            ui.btn.onclick = generateLevel;
+        }
+
+        function handleLose(acc) {
+            state.streak = 0;
+            ui.streak.innerText = 0;
+
+            ui.btn.innerText = "Try Again";
+            ui.btn.className = "w-full py-5 rounded-xl bg-red-500 text-white font-bold text-lg hover:bg-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)] active:scale-[0.99] font-display uppercase tracking-wide";
+
+            ui.result.score.innerText = `${acc.toFixed(1)}% Match`;
+            ui.result.comment.innerText = getComment(acc, false);
+            ui.result.container.classList.remove('hidden');
+            
+            ui.btn.onclick = () => {
+                ui.result.container.classList.add('hidden');
+                ui.btn.innerText = "Compare Colors";
+                ui.btn.className = "w-full py-5 rounded-xl bg-white text-slate-900 font-bold text-lg hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-[0.99] font-display uppercase tracking-wide";
+                
+                ui.btn.onclick = checkMatch;
+            };
+        }
+
+        function getComment(acc, win) {
+            if (acc === 100) return "Pixel Perfect. Incredible.";
+            if (win) return "Excellent eye. Close enough.";
+            if (acc > 80) return "Very close. Tweak the hue slightly.";
+            if (acc > 50) return "Right ballpark, wrong seat.";
+            return "Way off. Check brightness.";
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1).toUpperCase();
+        }
+
+        init();
+    </script>
+
+    <quiz-footer></quiz-footer>
+</body>
+</html>

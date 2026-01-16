@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <script type="importmap">
+    {
+        "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <script type="module" src="/firebase-config.js"></script>
+    <script src="/components.js" defer></script>
+    <script src="/ux-core.js" defer></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>The Psychology of Hues: Decoding the RGB of Emotion | QuizRealm</title>
+    <meta name="description" content="Why does Red spike your heart rate? Why does Blue build trust? A data-driven deep dive into color psychology for UI designers and marketers.">
+    <meta name="theme-color" content="#0f172a">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#151e2e', 900: '#0f172a' },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'premium-gradient': 'radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%)',
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(56, 189, 248, 0.15)',
+                    }
+                }
+            },
+            plugins: [
+                function({ addUtilities }) {
+                    addUtilities({
+                        '.glass-panel': {
+                            'background': 'rgba(15, 23, 42, 0.7)',
+                            'backdrop-filter': 'blur(16px)',
+                            'border': '1px solid rgba(255, 255, 255, 0.08)',
+                            'box-shadow': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        },
+                        '.glass-panel-hover': {
+                            'transition': 'all 0.3s ease',
+                        },
+                        '.glass-panel-hover:hover': {
+                            'background': 'rgba(30, 41, 59, 0.8)',
+                            'border-color': 'rgba(255, 255, 255, 0.15)',
+                            'transform': 'translateY(-2px)',
+                        }
+                    })
+                }
+            ]
+        }
+    </script>
+
+    <style>
+        body { background: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+        /* Noise Overlay */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: -1;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(to right, #60a5fa, #c084fc);
+        }
+
+        /* Extra rhythm helpers */
+        .chip {
+            display: inline-flex; align-items: center; gap: .5rem;
+            padding: .35rem .6rem; border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.10);
+            color: rgba(226,232,240,0.95);
+            font-size: 12px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .micro-p { font-size: 0.95rem; line-height: 1.8; color: rgba(148,163,184,1); }
+        .mini { font-size: 12px; line-height: 1.6; color: rgba(148,163,184,1); }
+        .hr-soft { border-color: rgba(255,255,255,0.08); }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen bg-premium-gradient">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <header class="relative pt-14 pb-16 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-mono mb-6 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+                    Neuroscience & Design
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold font-display text-white mb-6 leading-tight">
+                    The Psychology <br> of <span class="gradient-text">Hues</span>
+                </h1>
+                <p class="text-slate-400 text-lg leading-relaxed mb-8 max-w-xl">
+                    Color is not just visual data; it is a biological trigger. Learn how to weaponize RGB values to influence user behavior, increase dwell time, and drive conversions.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="/color-mixer.html" class="px-6 py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-200 transition-all shadow-glow">
+                        Test Your Eye
+                    </a>
+                    <a href="/aesthetic-hub.html" class="px-6 py-3 bg-slate-800 text-white font-bold rounded-xl border border-white/10 hover:bg-slate-700 transition-all">
+                        Explore Palettes
+                    </a>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden">
+                <div class="grid grid-cols-2 gap-4 h-full">
+                    <div class="space-y-4">
+                        <div class="p-6 rounded-2xl bg-red-500/20 border border-red-500/30">
+                            <h3 class="text-red-400 font-bold mb-1">Urgency</h3>
+                            <div class="text-2xl font-mono text-white">High Pulse</div>
+                            <div class="mt-2 text-xs text-slate-400">Used for Errors & CTAs</div>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-blue-500/20 border border-blue-500/30">
+                            <h3 class="text-blue-400 font-bold mb-1">Trust</h3>
+                            <div class="text-2xl font-mono text-white">Cortisol ↓</div>
+                            <div class="mt-2 text-xs text-slate-400">Banks & Healthcare</div>
+                        </div>
+                    </div>
+                    <div class="space-y-4 mt-8">
+                        <div class="p-6 rounded-2xl bg-green-500/20 border border-green-500/30">
+                            <h3 class="text-green-400 font-bold mb-1">Growth</h3>
+                            <div class="text-2xl font-mono text-white">Balance</div>
+                            <div class="mt-2 text-xs text-slate-400">Finance & Eco</div>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-yellow-500/20 border border-yellow-500/30">
+                            <h3 class="text-yellow-400 font-bold mb-1">Optimism</h3>
+                            <div class="text-2xl font-mono text-white">High Attn</div>
+                            <div class="mt-2 text-xs text-slate-400">Warnings & Cheap</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full px-4 md:px-6 pb-24 relative z-10">
+        <div class="max-w-7xl mx-auto">
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                <div class="lg:col-span-8 space-y-12">
+
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">01. The Biological Hardwiring</h2>
+                            <i class="fas fa-dna text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                                <span class="text-xs font-bold text-red-400 uppercase tracking-widest mb-2 block">Long Wavelength (Red)</span>
+                                <p class="text-sm text-slate-300 leading-relaxed">
+                                    Red light waves scatter the least. Evolutionarily, red meant "Blood" (danger) or "Ripe Fruit" (reward). It physically stimulates the adrenal gland.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                                <span class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 block">Short Wavelength (Blue)</span>
+                                <p class="text-sm text-slate-300 leading-relaxed">
+                                    Blue was rare in ancestral environments (mostly sky/water). It signals stability and cold. It has been proven to lower heart rates in controlled studies.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-900 border border-white/5 relative overflow-hidden">
+                            <div class="relative z-10">
+                                <h3 class="text-white font-bold mb-2">Designer's Takeaway</h3>
+                                <p class="text-sm text-slate-400 mb-4">
+                                    Do not use Red for "Save" buttons unless you want the user to feel anxiety about saving. Use Blue or Green for confirmation actions.
+                                </p>
+                                <a href="/logic-puzzles.html" class="text-xs font-bold text-blue-400 hover:text-white transition-colors flex items-center gap-1">
+                                    Test your logic <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 class="text-2xl font-bold font-display text-white mb-6">02. Conversion Rates by Button Color</h2>
+                        <div class="glass-panel p-8 rounded-3xl">
+                            <div class="space-y-6">
+
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-slate-400 mb-2">
+                                        <span>Red (High Urgency)</span>
+                                        <span>21% Conv.</span>
+                                    </div>
+                                    <div class="w-full h-4 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-red-500 w-[21%] relative group">
+                                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-slate-900 text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Impulse Buys</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-slate-400 mb-2">
+                                        <span>Green (Permissive)</span>
+                                        <span>18% Conv.</span>
+                                    </div>
+                                    <div class="w-full h-4 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-green-500 w-[18%]"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-slate-400 mb-2">
+                                        <span>Orange (Cheap/Discount)</span>
+                                        <span>28% Conv.</span>
+                                    </div>
+                                    <div class="w-full h-4 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-orange-500 w-[28%] relative group">
+                                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-slate-900 text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Clearance</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-slate-400 mb-2">
+                                        <span>Ghost Button (Transparent)</span>
+                                        <span>12% Conv.</span>
+                                    </div>
+                                    <div class="w-full h-4 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-slate-600 w-[12%]"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="mt-8 pt-6 border-t border-white/5 text-center">
+                                <p class="text-xs text-slate-500 mb-4">Data aggregated from 50+ E-commerce A/B tests (2024)</p>
+                                <a href="/settings.html" class="inline-block px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded border border-white/10 transition-colors">
+                                    Configure Your Experience
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">03. The Cultural Filter</h2>
+                            <i class="fas fa-globe-asia text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-white text-slate-900 p-6 rounded-xl">
+                                <h3 class="font-bold text-lg mb-2">White</h3>
+                                <ul class="text-xs space-y-2">
+                                    <li class="flex justify-between border-b border-slate-200 pb-1">
+                                        <span class="font-bold">Western:</span> <span>Purity, Wedding</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span class="font-bold">Eastern:</span> <span>Death, Mourning</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="bg-purple-900 text-white p-6 rounded-xl border border-white/10">
+                                <h3 class="font-bold text-lg mb-2">Purple</h3>
+                                <ul class="text-xs space-y-2 text-purple-200">
+                                    <li class="flex justify-between border-b border-purple-800 pb-1">
+                                        <span class="font-bold">History:</span> <span>Royalty (Rare Dye)</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span class="font-bold">Modern:</span> <span>Creativity, Tech</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="bg-yellow-400 text-slate-900 p-6 rounded-xl">
+                                <h3 class="font-bold text-lg mb-2">Yellow</h3>
+                                <ul class="text-xs space-y-2">
+                                    <li class="flex justify-between border-b border-slate-900/10 pb-1">
+                                        <span class="font-bold">US:</span> <span>Caution, Cowardice</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span class="font-bold">Japan:</span> <span>Courage, Nature</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-400 mt-6 leading-relaxed">
+                            When designing for a global audience, RGB values carry semantic weight. A "White Wedding" app interface might look like a funeral notice in parts of Asia. Always check your demographics in your <a href="/profile.html" class="text-blue-400 hover:underline">User Profile Data</a>.
+                        </p>
+                    </section>
+
+                    <!-- ===========================
+                         04. VISUAL ATTENTION ENGINE (ADDED)
+                    ============================ -->
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">04. Color as an Attention Engine</h2>
+                            <i class="fas fa-bullseye text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-2xl bg-slate-900/50 border border-white/5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="chip">Scan</span>
+                                    <span class="text-sm font-bold text-white">The “First 3 Seconds” Rule</span>
+                                </div>
+                                <p class="mini">
+                                    A visitor decides what your page is “about” before reading it.
+                                </p>
+                                <p class="mini">
+                                    Color is the fastest label your UI can use.
+                                </p>
+                                <p class="mini">
+                                    If your accents are chaotic, your meaning becomes chaotic.
+                                </p>
+                                <div class="mt-4 grid grid-cols-3 gap-2">
+                                    <div class="p-3 rounded-xl bg-blue-500/15 border border-blue-500/20">
+                                        <div class="text-[10px] text-blue-300 font-mono uppercase tracking-widest">Info</div>
+                                        <div class="text-sm font-bold text-white mt-1">Blue</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/20">
+                                        <div class="text-[10px] text-emerald-300 font-mono uppercase tracking-widest">Safe</div>
+                                        <div class="text-sm font-bold text-white mt-1">Green</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-red-500/15 border border-red-500/20">
+                                        <div class="text-[10px] text-red-300 font-mono uppercase tracking-widest">Stop</div>
+                                        <div class="text-sm font-bold text-white mt-1">Red</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/50 border border-white/5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="chip">Hierarchy</span>
+                                    <span class="text-sm font-bold text-white">Your Page Needs a “Heat Map”</span>
+                                </div>
+                                <p class="mini">
+                                    Not a literal heat map.
+                                </p>
+                                <p class="mini">
+                                    A planned temperature distribution.
+                                </p>
+                                <p class="mini">
+                                    Warm colors pull. Cool colors support.
+                                </p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Primary CTA</span>
+                                        <span class="text-xs text-slate-400">Warm accent (orange/red)</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Secondary CTA</span>
+                                        <span class="text-xs text-slate-400">Cool accent (blue/purple)</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Navigation</span>
+                                        <span class="text-xs text-slate-400">Neutral slate</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-10 hr-soft">
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="p-6 rounded-2xl bg-gradient-to-br from-slate-900/60 to-slate-800/40 border border-white/10">
+                                <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-2">Pattern</div>
+                                <h3 class="text-white font-bold mb-2">F-Pattern Scanning</h3>
+                                <p class="mini">Users skim left-to-right, top-to-bottom.</p>
+                                <p class="mini">Your warm accent should appear near the “first line.”</p>
+                                <p class="mini">Your action should be visible without scrolling.</p>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-gradient-to-br from-slate-900/60 to-slate-800/40 border border-white/10">
+                                <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-2">Pattern</div>
+                                <h3 class="text-white font-bold mb-2">Z-Pattern Navigation</h3>
+                                <p class="mini">Landing pages often follow a Z flow.</p>
+                                <p class="mini">Use a cool header, then a warm CTA.</p>
+                                <p class="mini">End the diagonal with a decisive color.</p>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-gradient-to-br from-slate-900/60 to-slate-800/40 border border-white/10">
+                                <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-2">Pattern</div>
+                                <h3 class="text-white font-bold mb-2">Spotlight Contrast</h3>
+                                <p class="mini">Contrast is the simplest form of direction.</p>
+                                <p class="mini">One “loud” element per screen is enough.</p>
+                                <p class="mini">Too many accents remove meaning.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 p-6 rounded-2xl bg-slate-900/40 border border-white/10">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                                <div>
+                                    <div class="text-xs font-mono uppercase tracking-widest text-slate-500">Field Drill</div>
+                                    <h3 class="text-white font-bold text-lg mt-1">Build a 3-Color UI Hierarchy</h3>
+                                    <p class="mini mt-2">
+                                        Pick one neutral base.
+                                    </p>
+                                    <p class="mini">
+                                        Pick one cool support color.
+                                    </p>
+                                    <p class="mini">
+                                        Pick one warm action color.
+                                    </p>
+                                </div>
+                                <a href="/color-mixer.html" class="px-5 py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-200 transition-all shadow-glow text-sm">
+                                    Practice With Mixer
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===========================
+                         05. UI STATES + SEMANTIC COLORS (ADDED)
+                    ============================ -->
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">05. UI States: The Color Grammar</h2>
+                            <i class="fas fa-sliders-h text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-white font-bold">Semantic Roles</h3>
+                                    <span class="chip">System</span>
+                                </div>
+                                <p class="mini mt-3">Colors are strongest when they mean the same thing everywhere.</p>
+                                <p class="mini">If red means “error,” do not use it for decoration.</p>
+                                <p class="mini">If green means “success,” keep it reserved for confirmation.</p>
+                                <div class="mt-5 grid grid-cols-2 gap-3">
+                                    <div class="p-4 rounded-xl bg-blue-500/15 border border-blue-500/20">
+                                        <div class="text-[10px] text-blue-300 font-mono uppercase tracking-widest">Info</div>
+                                        <div class="text-sm font-bold text-white mt-1">Guidance</div>
+                                        <div class="text-[11px] text-slate-300/80 mt-1">Hints, tooltips, notices</div>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/20">
+                                        <div class="text-[10px] text-emerald-300 font-mono uppercase tracking-widest">Success</div>
+                                        <div class="text-sm font-bold text-white mt-1">Confirmation</div>
+                                        <div class="text-[11px] text-slate-300/80 mt-1">Saved, paid, completed</div>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-yellow-500/15 border border-yellow-500/20">
+                                        <div class="text-[10px] text-yellow-300 font-mono uppercase tracking-widest">Warning</div>
+                                        <div class="text-sm font-bold text-white mt-1">Risk</div>
+                                        <div class="text-[11px] text-slate-300/80 mt-1">Limited, expiring, caution</div>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-red-500/15 border border-red-500/20">
+                                        <div class="text-[10px] text-red-300 font-mono uppercase tracking-widest">Error</div>
+                                        <div class="text-sm font-bold text-white mt-1">Stop</div>
+                                        <div class="text-[11px] text-slate-300/80 mt-1">Failed, invalid, blocked</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-white font-bold">Interaction States</h3>
+                                    <span class="chip">UX</span>
+                                </div>
+                                <p class="mini mt-3">Users feel state changes before they read labels.</p>
+                                <p class="mini">Your hover should be “a promise.”</p>
+                                <p class="mini">Your disabled state should be “a closed door.”</p>
+
+                                <div class="mt-5 space-y-3">
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-bold text-white">Default</span>
+                                            <span class="text-xs text-slate-400">Readable, calm</span>
+                                        </div>
+                                        <div class="mt-2 grid grid-cols-3 gap-2">
+                                            <div class="h-6 rounded bg-slate-700"></div>
+                                            <div class="h-6 rounded bg-slate-600"></div>
+                                            <div class="h-6 rounded bg-slate-500"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-bold text-white">Hover</span>
+                                            <span class="text-xs text-slate-400">Slight lift</span>
+                                        </div>
+                                        <p class="mini mt-2">Use a +8% brightness shift, not a new color.</p>
+                                    </div>
+
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-bold text-white">Active</span>
+                                            <span class="text-xs text-slate-400">Pressed</span>
+                                        </div>
+                                        <p class="mini mt-2">Use a subtle darkening + inset shadow.</p>
+                                    </div>
+
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-bold text-white">Disabled</span>
+                                            <span class="text-xs text-slate-400">Unavailable</span>
+                                        </div>
+                                        <p class="mini mt-2">Reduce saturation and increase transparency.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 p-6 rounded-2xl bg-slate-900/40 border border-white/10 overflow-hidden">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-white font-bold">Practical UI Copy that Matches Color</h3>
+                                <span class="chip">microcopy</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-emerald-300 mb-2">Success</div>
+                                    <p class="mini">“Saved.”</p>
+                                    <p class="mini">“All set.”</p>
+                                    <p class="mini">“You’re good to go.”</p>
+                                </div>
+                                <div class="p-5 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-yellow-300 mb-2">Warning</div>
+                                    <p class="mini">“Check this detail.”</p>
+                                    <p class="mini">“One more step needed.”</p>
+                                    <p class="mini">“This may affect results.”</p>
+                                </div>
+                                <div class="p-5 rounded-xl bg-red-500/10 border border-red-500/20">
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-red-300 mb-2">Error</div>
+                                    <p class="mini">“Couldn’t save.”</p>
+                                    <p class="mini">“That code is invalid.”</p>
+                                    <p class="mini">“Try again in a moment.”</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===========================
+                         06. ACCESSIBILITY WITHOUT KILLING STYLE (ADDED)
+                    ============================ -->
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">06. Accessibility: Make Color Reliable</h2>
+                            <i class="fas fa-universal-access text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="chip">contrast</span>
+                                    <h3 class="text-white font-bold">Readable ≠ Boring</h3>
+                                </div>
+                                <p class="mini">Accessibility is not a constraint.</p>
+                                <p class="mini">It is a clarity upgrade.</p>
+                                <p class="mini">If people strain, they bounce.</p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Text on dark</span>
+                                        <span class="text-xs text-slate-400">Use softer whites</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Text on color</span>
+                                        <span class="text-xs text-slate-400">Use near-black</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Tiny labels</span>
+                                        <span class="text-xs text-slate-400">Increase contrast</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="chip">cb-safe</span>
+                                    <h3 class="text-white font-bold">Never Communicate With Color Alone</h3>
+                                </div>
+                                <p class="mini">A “green = correct” indicator is fragile by itself.</p>
+                                <p class="mini">Pair it with icons, shape, or text.</p>
+                                <p class="mini">Make your success state feel different, not only look different.</p>
+                                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-check-circle text-emerald-300"></i>
+                                            <span class="text-xs font-bold text-white">Success</span>
+                                        </div>
+                                        <p class="mini mt-2">Add a check icon and a short confirmation label.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-times-circle text-red-300"></i>
+                                            <span class="text-xs font-bold text-white">Error</span>
+                                        </div>
+                                        <p class="mini mt-2">Add an error icon and a clear next step.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 p-6 rounded-2xl bg-gradient-to-r from-slate-800/70 to-slate-900/60 border border-white/10">
+                            <div class="flex items-center justify-between gap-4 flex-wrap">
+                                <div>
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400">fast checklist</div>
+                                    <h3 class="text-white font-bold text-lg mt-1">Accessibility Pass (2 Minutes)</h3>
+                                </div>
+                                <a href="/settings.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg border border-white/10 transition-colors">
+                                    Open Settings
+                                </a>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                                <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <p class="mini">Check text size for mobile.</p>
+                                    <p class="mini">Small text needs higher contrast.</p>
+                                    <p class="mini">Avoid pale gray on dark backgrounds.</p>
+                                </div>
+                                <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <p class="mini">Ensure links are obvious.</p>
+                                    <p class="mini">Add underlines on hover.</p>
+                                    <p class="mini">Do not hide affordances.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===========================
+                         07. BRAND ARCHETYPES BY COLOR (ADDED)
+                    ============================ -->
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">07. Brand Archetypes: Color as Personality</h2>
+                            <i class="fas fa-masks-theater text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-white font-bold">The “Sage” Palette</h3>
+                                    <span class="chip">trust</span>
+                                </div>
+                                <p class="mini mt-3">Sage brands feel smart, calm, and credible.</p>
+                                <p class="mini">They avoid harsh saturation.</p>
+                                <p class="mini">They use blues, slates, and soft neutrals.</p>
+                                <div class="mt-4 grid grid-cols-3 gap-2">
+                                    <div class="p-3 rounded-xl bg-blue-500/20 border border-blue-500/25">
+                                        <div class="text-[10px] text-blue-200 font-mono uppercase tracking-widest">HEX</div>
+                                        <div class="text-xs text-white mt-1">#3B82F6</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-slate-500/20 border border-slate-400/25">
+                                        <div class="text-[10px] text-slate-200 font-mono uppercase tracking-widest">HEX</div>
+                                        <div class="text-xs text-white mt-1">#64748B</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-white/10 border border-white/10">
+                                        <div class="text-[10px] text-slate-200 font-mono uppercase tracking-widest">HEX</div>
+                                        <div class="text-xs text-white mt-1">#E2E8F0</div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <p class="mini">Best for: education, research, long-form tools, dashboards.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-white font-bold">The “Rebel” Palette</h3>
+                                    <span class="chip">energy</span>
+                                </div>
+                                <p class="mini mt-3">Rebel brands feel bold, fast, and anti-boring.</p>
+                                <p class="mini">They use high contrast and sharp accents.</p>
+                                <p class="mini">They make the page feel “alive.”</p>
+                                <div class="mt-4 grid grid-cols-3 gap-2">
+                                    <div class="p-3 rounded-xl bg-red-500/20 border border-red-500/25">
+                                        <div class="text-[10px] text-red-200 font-mono uppercase tracking-widest">HEX</div>
+                                        <div class="text-xs text-white mt-1">#EF4444</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-fuchsia-500/20 border border-fuchsia-500/25">
+                                        <div class="text-[10px] text-fuchsia-200 font-mono uppercase tracking-widest">HEX</div>
+                                        <div class="text-xs text-white mt-1">#D946EF</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-black/30 border border-white/10">
+                                        <div class="text-[10px] text-slate-200 font-mono uppercase tracking-widest">HEX</div>
+                                        <div class="text-xs text-white mt-1">#0B1020</div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <p class="mini">Best for: gaming, nightlife, creative tools, hype drops.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-2">Archetype</div>
+                                <h3 class="text-white font-bold mb-2">The “Hero”</h3>
+                                <p class="mini">Primary: blue.</p>
+                                <p class="mini">Accent: gold.</p>
+                                <p class="mini">Signal: competence and strength.</p>
+                            </div>
+                            <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-2">Archetype</div>
+                                <h3 class="text-white font-bold mb-2">The “Lover”</h3>
+                                <p class="mini">Primary: rose.</p>
+                                <p class="mini">Accent: plum.</p>
+                                <p class="mini">Signal: intimacy and warmth.</p>
+                            </div>
+                            <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-2">Archetype</div>
+                                <h3 class="text-white font-bold mb-2">The “Jester”</h3>
+                                <p class="mini">Primary: yellow.</p>
+                                <p class="mini">Accent: cyan.</p>
+                                <p class="mini">Signal: play and surprise.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 p-6 rounded-2xl bg-slate-900/40 border border-white/10">
+                            <div class="flex items-center justify-between flex-wrap gap-3">
+                                <div>
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">QuizRealm bridge</div>
+                                    <h3 class="text-white font-bold text-lg mt-1">If your palette had a personality, what is it?</h3>
+                                    <p class="mini mt-2">Design is identity with pixels.</p>
+                                </div>
+                                <a href="/identity-lab.html" class="px-5 py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-200 transition-all shadow-glow text-sm">
+                                    Enter Identity Lab
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===========================
+                         08. INDUSTRY PLAYBOOKS (ADDED)
+                    ============================ -->
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">08. Industry Playbooks: What Works Where</h2>
+                            <i class="fas fa-briefcase text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <i class="fas fa-university text-blue-300"></i>
+                                    <h3 class="text-white font-bold">Fintech & Banking</h3>
+                                </div>
+                                <p class="mini">Goal: reduce perceived risk.</p>
+                                <p class="mini">Avoid: playful saturation at the wrong moments.</p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                        <p class="mini">Use blues for legitimacy and stability.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                        <p class="mini">Use green to confirm transactions and balances.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                                        <p class="mini">Use yellow only for warnings and review screens.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <i class="fas fa-heartbeat text-red-300"></i>
+                                    <h3 class="text-white font-bold">Healthcare & Wellness</h3>
+                                </div>
+                                <p class="mini">Goal: reduce anxiety.</p>
+                                <p class="mini">Avoid: harsh red unless absolutely necessary.</p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                        <p class="mini">Use greens for safety and recovery cues.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                        <p class="mini">Use blues for calm guidance and trust.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <p class="mini">Use generous whitespace and low saturation backgrounds.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <i class="fas fa-gamepad text-purple-300"></i>
+                                    <h3 class="text-white font-bold">Gaming & Entertainment</h3>
+                                </div>
+                                <p class="mini">Goal: stimulate engagement.</p>
+                                <p class="mini">Avoid: “flat corporate” neutrals for main actions.</p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="p-4 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20">
+                                        <p class="mini">Use neon accents for progression and rewards.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                                        <p class="mini">Use gold for achievements and loot cues.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <p class="mini">Use animated highlights sparingly to protect readability.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <i class="fas fa-gem text-slate-200"></i>
+                                    <h3 class="text-white font-bold">Luxury & Premium</h3>
+                                </div>
+                                <p class="mini">Goal: signal restraint and rarity.</p>
+                                <p class="mini">Avoid: too many bright accents at once.</p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <p class="mini">Use near-black backgrounds and soft highlights.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                                        <p class="mini">Use gold as a punctuation mark, not a wallpaper.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                        <p class="mini">Use deep navy to avoid looking “cheap black.”</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 p-6 rounded-2xl bg-gradient-to-r from-slate-800/70 to-slate-900/60 border border-white/10">
+                            <div class="flex items-center justify-between flex-wrap gap-4">
+                                <div>
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">Shortcut</div>
+                                    <h3 class="text-white font-bold text-lg mt-1">Pick the emotion first, then pick the color</h3>
+                                    <p class="mini mt-2">Most teams do the opposite and wonder why the UI feels “off.”</p>
+                                </div>
+                                <a href="/aesthetic-hub.html" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-white/10 transition-all text-sm">
+                                    Browse Palettes
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===========================
+                         09. COLOR RECIPES (ADDED)
+                    ============================ -->
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">09. Palette Engineering: Color Recipes</h2>
+                            <i class="fas fa-flask text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-white font-bold">Recipe A: “Trust With Energy”</h3>
+                                    <span class="chip">ui</span>
+                                </div>
+                                <p class="mini mt-3">Use when you need confidence without boredom.</p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Base</span>
+                                        <span class="text-xs text-slate-400">Slate background</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                        <span class="text-xs font-bold text-white">Primary</span>
+                                        <span class="text-xs text-blue-200">Blue CTA</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                        <span class="text-xs font-bold text-white">Confirm</span>
+                                        <span class="text-xs text-emerald-200">Green feedback</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                                        <span class="text-xs font-bold text-white">Highlight</span>
+                                        <span class="text-xs text-yellow-200">Gold badges</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-4 gap-2">
+                                    <div class="h-10 rounded-xl bg-slate-800 border border-white/10"></div>
+                                    <div class="h-10 rounded-xl bg-blue-500/70 border border-blue-400/30"></div>
+                                    <div class="h-10 rounded-xl bg-emerald-500/70 border border-emerald-400/30"></div>
+                                    <div class="h-10 rounded-xl bg-yellow-500/70 border border-yellow-400/30"></div>
+                                </div>
+                                <p class="mini mt-4">Result: structured, modern, high-confidence.</p>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-white font-bold">Recipe B: “Premium Darkness”</h3>
+                                    <span class="chip">lux</span>
+                                </div>
+                                <p class="mini mt-3">Use when you want quiet authority.</p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-black/30 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Base</span>
+                                        <span class="text-xs text-slate-400">Near-black</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Text</span>
+                                        <span class="text-xs text-slate-300">Soft white</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                                        <span class="text-xs font-bold text-white">Accent</span>
+                                        <span class="text-xs text-yellow-200">Muted gold</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                        <span class="text-xs font-bold text-white">Secondary</span>
+                                        <span class="text-xs text-blue-200">Deep navy</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-4 gap-2">
+                                    <div class="h-10 rounded-xl bg-[#0B1020] border border-white/10"></div>
+                                    <div class="h-10 rounded-xl bg-slate-200/70 border border-white/10"></div>
+                                    <div class="h-10 rounded-xl bg-yellow-500/50 border border-yellow-400/20"></div>
+                                    <div class="h-10 rounded-xl bg-blue-900/70 border border-blue-500/15"></div>
+                                </div>
+                                <p class="mini mt-4">Result: minimal, expensive, controlled.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 p-6 rounded-2xl bg-slate-900/40 border border-white/10">
+                            <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+                                <h3 class="text-white font-bold">Micro-Recipe Library (fast swaps)</h3>
+                                <span class="chip">hsl</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-2">Swap</div>
+                                    <p class="mini">If blue feels too corporate, shift hue slightly toward cyan.</p>
+                                    <p class="mini">Keep saturation controlled to avoid “toy” energy.</p>
+                                </div>
+                                <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-2">Swap</div>
+                                    <p class="mini">If green feels too “finance,” shift toward emerald with a darker base.</p>
+                                    <p class="mini">Use it as feedback, not decoration.</p>
+                                </div>
+                                <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-2">Swap</div>
+                                    <p class="mini">If red feels too aggressive, use rose or coral for softer urgency.</p>
+                                    <p class="mini">Reserve pure red for hard errors.</p>
+                                </div>
+                                <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-2">Swap</div>
+                                    <p class="mini">If purple feels too “startup,” use plum with reduced saturation.</p>
+                                    <p class="mini">Pair with slate to keep it mature.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===========================
+                         10. A/B TESTING + MEASUREMENT (ADDED)
+                    ============================ -->
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">10. Testing: Prove Your Palette Works</h2>
+                            <i class="fas fa-chart-line text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-white font-bold">What to Measure</h3>
+                                    <span class="chip">kpi</span>
+                                </div>
+                                <p class="mini mt-3">Color impacts behavior indirectly.</p>
+                                <p class="mini">So you measure behaviors, not opinions.</p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">CTR on primary CTA</span>
+                                        <span class="text-xs text-slate-400">Action clarity</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Scroll depth</span>
+                                        <span class="text-xs text-slate-400">Reading comfort</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Time on page</span>
+                                        <span class="text-xs text-slate-400">Cognitive ease</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <span class="text-xs font-bold text-white">Bounce rate</span>
+                                        <span class="text-xs text-slate-400">First impression</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-white font-bold">How to Test</h3>
+                                    <span class="chip">method</span>
+                                </div>
+                                <p class="mini mt-3">Test one variable at a time.</p>
+                                <p class="mini">Keep typography and spacing constant.</p>
+                                <p class="mini">Change only the CTA color or only the background tone.</p>
+                                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div class="p-5 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                        <div class="text-[10px] font-mono uppercase tracking-widest text-blue-200 mb-2">Variant A</div>
+                                        <p class="mini">Primary CTA: blue.</p>
+                                        <p class="mini">Secondary CTA: slate outline.</p>
+                                    </div>
+                                    <div class="p-5 rounded-xl bg-orange-500/10 border border-orange-500/20">
+                                        <div class="text-[10px] font-mono uppercase tracking-widest text-orange-200 mb-2">Variant B</div>
+                                        <p class="mini">Primary CTA: orange.</p>
+                                        <p class="mini">Secondary CTA: slate outline.</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <p class="mini">Interpretation: if B wins, your audience responds to urgency more than trust.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 p-6 rounded-2xl bg-gradient-to-r from-slate-800/70 to-slate-900/60 border border-white/10">
+                            <div class="flex items-center justify-between flex-wrap gap-4">
+                                <div>
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">Hypothesis bank</div>
+                                    <h3 class="text-white font-bold text-lg mt-1">Copy-paste test ideas</h3>
+                                </div>
+                                <a href="/achievements.html" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-white/10 transition-all text-sm">
+                                    Compete on Leaderboard
+                                </a>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                                <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+                                    <p class="mini"><strong class="text-white">If</strong> we change CTA from blue to orange, <strong class="text-white">then</strong> CTR increases, <strong class="text-white">because</strong> urgency becomes clearer.</p>
+                                </div>
+                                <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+                                    <p class="mini"><strong class="text-white">If</strong> we reduce background contrast, <strong class="text-white">then</strong> time-on-page increases, <strong class="text-white">because</strong> reading fatigue decreases.</p>
+                                </div>
+                                <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+                                    <p class="mini"><strong class="text-white">If</strong> we reserve red only for errors, <strong class="text-white">then</strong> form completion increases, <strong class="text-white">because</strong> anxiety triggers become rarer.</p>
+                                </div>
+                                <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+                                    <p class="mini"><strong class="text-white">If</strong> we add a green confirmation microcopy, <strong class="text-white">then</strong> repeat actions increase, <strong class="text-white">because</strong> users feel safe.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===========================
+                         11. COLOR MYTHS VS REALITY (ADDED — SHORT, NON-CLUSTERED)
+                    ============================ -->
+                    <section class="glass-panel p-8 rounded-3xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold font-display text-white">11. Myths vs Reality: Color Psychology</h2>
+                            <i class="fas fa-question-circle text-slate-600 text-2xl"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <span class="chip">myth</span>
+                                    <span class="chip">reality</span>
+                                </div>
+                                <div class="mt-4 space-y-3">
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <p class="mini"><strong class="text-white">Myth:</strong> Red always increases conversions.</p>
+                                        <p class="mini"><strong class="text-white">Reality:</strong> Red increases urgency, but can decrease trust on high-stakes actions.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <p class="mini"><strong class="text-white">Myth:</strong> Blue is universally “safe.”</p>
+                                        <p class="mini"><strong class="text-white">Reality:</strong> Blue can feel cold for emotional products if used without warm balance.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <p class="mini"><strong class="text-white">Myth:</strong> Pastel equals premium.</p>
+                                        <p class="mini"><strong class="text-white">Reality:</strong> Pastel can look weak if contrast and typography are not strong.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-slate-900/45 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-white font-bold">Practical Corrections</h3>
+                                    <span class="chip">fix</span>
+                                </div>
+                                <div class="mt-4 space-y-3">
+                                    <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                        <p class="mini">If your UI feels cold, add a warm accent only in human moments.</p>
+                                        <p class="mini">Example: onboarding, confirmations, rewards.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                                        <p class="mini">If your warnings are ignored, raise contrast and add icons.</p>
+                                        <p class="mini">Make warning states feel distinct.</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                        <p class="mini">If your “success” feels invisible, add a brief animation.</p>
+                                        <p class="mini">Short, subtle, and consistent.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 p-6 rounded-2xl bg-slate-900/40 border border-white/10">
+                            <div class="flex items-center justify-between flex-wrap gap-3">
+                                <div>
+                                    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-500">Trainer</div>
+                                    <h3 class="text-white font-bold text-lg mt-1">Use color like language, not decoration</h3>
+                                    <p class="mini mt-2">Meaning comes from repetition and consistency.</p>
+                                </div>
+                                <a href="/arcade.html" class="px-5 py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-200 transition-all shadow-glow text-sm">
+                                    Enter Arcade
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+
+                <aside class="lg:col-span-4 space-y-8 sticky top-24 h-fit">
+
+                    <div class="glass-panel p-1 rounded-3xl relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="bg-slate-900/95 p-6 rounded-[22px] relative z-10">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-eye text-white"></i>
+                                </div>
+                                <span class="text-[10px] font-bold bg-white/10 px-2 py-1 rounded text-white">TOOL</span>
+                            </div>
+                            <h3 class="text-white font-bold text-xl mb-2">Master RGB Theory</h3>
+                            <p class="text-slate-400 text-xs mb-6">
+                                Stop reading, start mixing. Train your brain to decompose colors into their component channels.
+                            </p>
+                            <a href="/color-mixer.html" class="block w-full py-3 bg-white text-slate-900 text-center font-bold text-sm rounded-lg hover:scale-[1.02] transition-transform">
+                                Launch Color Mixer
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-3xl">
+                        <h4 class="text-white font-bold mb-4 font-display">Design Resources</h4>
+                        <ul class="space-y-3">
+                            <li>
+                                <a href="/arcade.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group">
+                                    <span class="w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center text-xs font-bold group-hover:bg-pink-500 group-hover:text-white transition-all">01</span>
+                                    <div>
+                                        <div class="text-white text-sm font-bold">The Arcade</div>
+                                        <div class="text-[10px] text-slate-500">Gamified design tests</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/achievements.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group">
+                                    <span class="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-xs font-bold group-hover:bg-yellow-500 group-hover:text-white transition-all">02</span>
+                                    <div>
+                                        <div class="text-white text-sm font-bold">Global Rankings</div>
+                                        <div class="text-[10px] text-slate-500">See top colorists</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/vibe-lab/index.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group">
+                                    <span class="w-8 h-8 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-xs font-bold group-hover:bg-green-500 group-hover:text-white transition-all">03</span>
+                                    <div>
+                                        <div class="text-white text-sm font-bold">Audio Sync</div>
+                                        <div class="text-[10px] text-slate-500">Cross-sensory training</div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-3xl">
+                        <h4 class="text-white font-bold mb-4 font-display">Quick Navigation</h4>
+                        <div class="space-y-2 text-xs">
+                            <a href="#top" class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                                <span class="text-slate-200">Back to Top</span>
+                                <i class="fas fa-arrow-up text-slate-400"></i>
+                            </a>
+                            <a href="#04-color-as-attention" class="hidden"></a>
+                            <a href="/color-hub.html" class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                                <span class="text-slate-200">Palette Hub</span>
+                                <i class="fas fa-palette text-slate-400"></i>
+                            </a>
+                            <a href="/color-mixer.html" class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                                <span class="text-slate-200">Color Mixer</span>
+                                <i class="fas fa-sliders text-slate-400"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-3xl bg-gradient-to-b from-slate-800 to-slate-900 border border-white/5 text-center">
+                        <i class="fas fa-envelope-open-text text-slate-500 text-2xl mb-3"></i>
+                        <h4 class="text-white font-bold text-sm mb-2">Daily Color Theory</h4>
+                        <p class="text-xs text-slate-400 mb-4">Get one hex code breakdown sent to your inbox daily.</p>
+                        <a href="/profile.html" class="text-blue-400 text-xs font-bold hover:text-white transition-colors">Sign In to Subscribe</a>
+                    </div>
+
+                </aside>
+
+            </div>
+
+            <div class="mt-24 pt-12 border-t border-white/10">
+                <h3 class="text-white font-bold font-display text-2xl mb-8">Related Intelligence</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                    <a href="/about.html" class="p-4 rounded-xl bg-slate-900 border border-white/5 hover:border-blue-500/50 transition-colors">
+                        <div class="text-slate-500 text-xs font-bold mb-1 uppercase">Company</div>
+                        <div class="text-white font-bold text-sm">About QuizRealm</div>
+                    </a>
+
+                    <a href="/contact.html" class="p-4 rounded-xl bg-slate-900 border border-white/5 hover:border-blue-500/50 transition-colors">
+                        <div class="text-slate-500 text-xs font-bold mb-1 uppercase">Support</div>
+                        <div class="text-white font-bold text-sm">Contact Us</div>
+                    </a>
+
+                    <a href="/index.html" class="p-4 rounded-xl bg-slate-900 border border-white/5 hover:border-blue-500/50 transition-colors">
+                        <div class="text-slate-500 text-xs font-bold mb-1 uppercase">Home</div>
+                        <div class="text-white font-bold text-sm">Dashboard</div>
+                    </a>
+
+                    <a href="/daily.html" class="p-4 rounded-xl bg-slate-900 border border-white/5 hover:border-blue-500/50 transition-colors">
+                        <div class="text-slate-500 text-xs font-bold mb-1 uppercase">Activity</div>
+                        <div class="text-white font-bold text-sm">Daily Challenge</div>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <quiz-footer></quiz-footer>
+
+</body>
+</html>

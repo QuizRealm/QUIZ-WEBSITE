@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <script type="importmap">
+    {
+        "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <script type="module" src="/firebase-config.js"></script>
+    <script type="module" src="/game-engine.js"></script>
+    <script src="/components.js" defer></script>
+    <script src="/ux-core.js" defer></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Grok Aurora: The Visual Rebellion & Uncensored Canvas | QuizRealm</title>
+    <meta name="description" content="A technical deep-dive into Grok's Aurora image generator. How it compares to Midjourney and DALL-E 3, why it allows 'Spicy Mode,' and the ethics of unrestricted AI art.">
+    <meta name="keywords" content="Grok Aurora review, Grok vs Midjourney, uncensored AI image generator, flux architecture, AI art ethics, grok spicy mode analysis">
+    <meta name="theme-color" content="#000000">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#151e2e', 900: '#0f172a' },
+                        aurora: { 
+                            purple: '#a855f7',
+                            cyan: '#06b6d4',
+                            pink: '#ec4899',
+                            dark: '#0b0b0f'
+                        }
+                    },
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background: #050507; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        h1, h2, h3, .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        /* Aurora Visual System */
+        .glass-panel {
+            background: rgba(20, 20, 30, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 85, 247, 0.1); /* Purple tint */
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .aurora-gradient {
+            background: linear-gradient(135deg, rgba(168,85,247,0.1) 0%, rgba(6,182,212,0.1) 100%);
+        }
+
+        .grid-bg {
+            background-size: 60px 60px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        /* Neon Borders */
+        .neon-border {
+            position: relative;
+        }
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px; right: -1px; bottom: -1px;
+            border-radius: inherit;
+            background: linear-gradient(45deg, #a855f7, #06b6d4);
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Comparison Table */
+        .comp-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .comp-table th, .comp-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: top;
+        }
+        .comp-table th {
+            background: rgba(168, 85, 247, 0.1);
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            color: #d8b4fe;
+        }
+        .comp-table tr:hover td { background: rgba(168, 85, 247, 0.03); }
+
+        .anchor-link { scroll-margin-top: 140px; }
+        
+        .cta-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.1);
+        }
+        .cta-button:hover {
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+            transform: translateY(-2px);
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Grok Aurora: The Visual Rebellion",
+      "description": "A technical and ethical audit of xAI's image generation capabilities. Comparing Aurora vs Midjourney, analyzing 'Spicy Mode' censorship, and reviewing flux architecture.",
+      "author": { "@type": "Organization", "name": "QuizRealm Tech" },
+      "publisher": { "@type": "Organization", "name": "QuizRealm" },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://thequizrealm.com/grok-aurora.html" }
+    }
+    </script>
+</head>
+
+<body class="flex flex-col min-h-screen antialiased grid-bg">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full relative">
+
+        <header class="relative pt-36 pb-24 px-6 border-b border-white/10 overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-aurora-purple/10 via-black to-black z-0 pointer-events-none"></div>
+
+            <div class="max-w-6xl mx-auto relative z-10">
+                <div class="flex flex-col lg:flex-row lg:items-end gap-12">
+                    
+                    <div class="w-full lg:w-2/3">
+                        <div class="flex items-center gap-3 mb-8">
+                            <a href="/grok-vs-competitors.html" class="text-xs text-gray-500 hover:text-white transition-colors uppercase tracking-widest font-mono border-b border-transparent hover:border-gray-500">
+                                <i class="fas fa-arrow-left"></i> Return to Grok Audit
+                            </a>
+                            <span class="text-xs text-aurora-purple">///</span>
+                            <span class="text-xs text-white font-mono uppercase tracking-widest">
+                                Visual Engine Analysis
+                            </span>
+                        </div>
+                        
+                        <h1 class="text-5xl sm:text-6xl md:text-8xl font-bold mb-8 leading-[0.9] text-white tracking-tight font-display break-words">
+                            The Uncensored <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-aurora-cyan via-white to-aurora-purple animate-pulse-slow">
+                                Canvas.
+                            </span>
+                        </h1>
+                        
+                        <p class="text-lg md:text-xl text-gray-400 max-w-2xl leading-relaxed">
+                            While DALL-E 3 lectures you on safety and Midjourney requires a Discord manual, Grok's <strong>Aurora</strong> engine just paints.
+                            <br><br>
+                            It is the fastest, loosest, and most controversial image generator on the market. Is it creative freedom, or a deepfake factory?
+                        </p>
+
+                        <div class="flex flex-wrap gap-4 mt-10">
+                            <a href="#comparison" class="px-6 py-3 rounded-lg border border-aurora-purple/30 bg-aurora-purple/10 hover:bg-aurora-purple/20 text-white text-sm font-bold transition-all">
+                                View Comparison Data
+                            </a>
+                            <a href="/article-visual-vs-text-brain.html" class="px-6 py-3 rounded-lg border border-white/10 bg-transparent hover:bg-white/5 text-gray-300 text-sm font-bold transition-all">
+                                Are You a Visual Thinker?
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full lg:w-1/3">
+                        <div class="glass-panel p-6 rounded-xl border-l-4 border-aurora-cyan w-full">
+                            <div class="text-xs text-aurora-cyan font-mono uppercase tracking-widest mb-4">Engine Specs</div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                                    <span class="text-gray-400">Model</span>
+                                    <span class="text-white font-mono">Aurora (Flux-Based)</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                                    <span class="text-gray-400">Speed</span>
+                                    <span class="text-green-400 font-mono">~4 Seconds</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                                    <span class="text-gray-400">Censorship</span>
+                                    <span class="text-aurora-purple font-mono">"Spicy Mode"</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-400">Access</span>
+                                    <span class="text-white font-mono">X Premium+ Only</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+
+        <section id="comparison" class="py-24 px-6 max-w-7xl mx-auto">
+            <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h2 class="text-4xl font-bold text-white mb-4">The Visual Matrix</h2>
+                    <p class="text-gray-400 max-w-xl">
+                        Not all pixels are created equal. Here is how Aurora stacks up against the establishment.
+                    </p>
+                </div>
+                <a href="/aesthetic-hub.html" class="text-aurora-cyan text-sm hover:text-white transition-colors underline">
+                    Check Current Design Trends &rarr;
+                </a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th class="w-1/4 text-white">Feature</th>
+                            <th class="w-1/4 text-aurora-purple border-b-2 border-aurora-purple">Grok Aurora</th>
+                            <th class="w-1/4 text-gray-400">Midjourney v6</th>
+                            <th class="w-1/4 text-gray-400">DALL-E 3 (OpenAI)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-gray-300">
+                        <tr>
+                            <td class="font-bold text-white border-r border-white/5">Prompt Adherence</td>
+                            <td class="bg-aurora-purple/5">
+                                <strong>Literal.</strong> Follows instructions exactly, even if they are weird. Good at text/logos.
+                            </td>
+                            <td>
+                                <strong>Artistic.</strong> Often ignores specific details to make the image "prettier."
+                            </td>
+                            <td>
+                                <strong>Safe.</strong> Rewrites your prompt behind the scenes to add diversity and safety.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold text-white border-r border-white/5">Speed</td>
+                            <td class="bg-aurora-purple/5">
+                                <span class="text-green-400 font-mono">Fast (3-5s)</span><br>Built for meme speed.
+                            </td>
+                            <td>
+                                <span class="text-yellow-400 font-mono">Slow (30-60s)</span><br>Requires upscaling steps.
+                            </td>
+                            <td>
+                                <span class="text-yellow-400 font-mono">Medium (15s)</span><br>Variable latency.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold text-white border-r border-white/5">Censorship</td>
+                            <td class="bg-aurora-purple/5">
+                                <strong>Minimal.</strong> Allows public figures, satire, and "edgy" humor.
+                            </td>
+                            <td>
+                                <strong>Strict.</strong> Bans politicians and NSFW terms instantly.
+                            </td>
+                            <td>
+                                <strong>Draconian.</strong> Will block prompts for "copyright" or "unsafe" vague terms.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold text-white border-r border-white/5">Best Use Case</td>
+                            <td class="bg-aurora-purple/5 text-white">
+                                Memes, Satire, Logos, Concept Ideation
+                            </td>
+                            <td>
+                                High Art, Photorealism, Cinematic Shots
+                            </td>
+                            <td>
+                                Corporate Illustrations, Vector Art
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-white/5 border-y border-white/5 py-24 px-6">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex flex-col md:flex-row gap-12 items-center">
+                    <div class="md:w-1/2">
+                        <div class="inline-block py-1 px-3 bg-aurora-purple text-white font-bold text-xs rounded mb-6">ETHICAL AUDIT</div>
+                        <h3 class="text-4xl font-bold text-white mb-6">The "Spicy Mode" Paradox</h3>
+                        
+                        <div class="prose prose-invert text-gray-300">
+                            <p>
+                                Unlike competitors, Grok includes a toggle called "Spicy Mode" (or "Fun Mode"). This removes the standard safety filters that prevent you from generating images of politicians, celebrities, or chaotic scenarios.
+                            </p>
+                            <p>
+                                <strong>The Pro:</strong> Creative freedom. If you want to generate a satirical image of a politician eating a hot dog on Mars, Grok allows it. Midjourney would ban you for the prompt.
+                            </p>
+                            <p>
+                                <strong>The Con:</strong> Disinformation risk. Because the images are Flux-based (highly photorealistic), they are prime vectors for deepfakes. This puts Grok at the center of the 2026 misinformation debate.
+                            </p>
+                        </div>
+
+                        <div class="mt-8 p-6 bg-black border border-white/10 rounded-xl">
+                            <h4 class="text-white font-bold mb-2 text-sm uppercase tracking-wide">Related Deep Dives</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li>
+                                    <a href="/tech-encyclopedia.html" class="text-aurora-cyan hover:text-white transition-colors">
+                                        <i class="fas fa-book mr-2"></i> Define "Deepfake" & "Diffusion"
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/the-acceleration-of-trends.html" class="text-aurora-cyan hover:text-white transition-colors">
+                                        <i class="fas fa-bolt mr-2"></i> How AI accelerates meme cycles
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="md:w-1/2 w-full">
+                        <div class="glass-panel p-8 rounded-2xl relative overflow-hidden">
+                            <div class="text-xs text-gray-500 font-mono uppercase tracking-widest mb-6">System Terminal</div>
+                            
+                            <div class="space-y-4 font-mono text-xs">
+                                <div class="p-3 bg-white/5 rounded border border-white/10 text-gray-400">
+                                    <span class="text-blue-400">User:</span> "Generate [Politician] wearing a clown suit."
+                                </div>
+                                
+                                <div class="p-3 bg-red-900/20 rounded border border-red-900/50 text-red-300">
+                                    <span class="text-red-500">DALL-E 3:</span> "I cannot generate images of public figures. Here is a generic clown instead."
+                                </div>
+
+                                <div class="p-3 bg-aurora-purple/10 rounded border border-aurora-purple/30 text-white relative">
+                                    <div class="absolute -right-1 -top-1 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-aurora-purple">Grok Aurora:</span> "Generating... [Image Rendered]. Would you like to add a unicycle?"
+                                </div>
+                            </div>
+                            
+                            <p class="text-xs text-gray-500 mt-4 italic">
+                                *Note: xAI has recently tightened filters on non-consensual deepfakes, but satire remains largely open.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-24 px-6 max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-white mb-12 text-center">What is it actually good for?</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="glass-panel p-8 rounded-2xl hover:border-aurora-purple/50 transition-colors group">
+                    <div class="w-14 h-14 bg-aurora-purple/20 rounded-full flex items-center justify-center text-aurora-purple text-2xl mb-6">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Meme Marketing</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Speed is everything in meme culture. Grok's 4-second render time allows social media managers to capitalize on a trend before it dies.
+                    </p>
+                    <a href="/social-battery-test.html" class="text-xs text-white font-bold border-b border-aurora-purple pb-1">
+                        Are you too online? Audit Battery &rarr;
+                    </a>
+                </div>
+
+                <div class="glass-panel p-8 rounded-2xl hover:border-aurora-cyan/50 transition-colors group">
+                    <div class="w-14 h-14 bg-aurora-cyan/20 rounded-full flex items-center justify-center text-aurora-cyan text-2xl mb-6">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Storyboarding</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Because Aurora adheres strictly to prompts, it is excellent for directors needing specific shots without "artistic interpretation" getting in the way.
+                    </p>
+                    <a href="/aesthetic-director.html" class="text-xs text-white font-bold border-b border-aurora-cyan pb-1">
+                        See Director Tools &rarr;
+                    </a>
+                </div>
+
+                <div class="glass-panel p-8 rounded-2xl hover:border-aurora-pink/50 transition-colors group">
+                    <div class="w-14 h-14 bg-aurora-pink/20 rounded-full flex items-center justify-center text-aurora-pink text-2xl mb-6">
+                        <i class="fas fa-font"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Typography & Logos</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Unlike older models that hallucinate gibberish, Flux/Aurora can render readable text on signs, shirts, and logos with high accuracy.
+                    </p>
+                    <a href="/aesthetic-curator.html" class="text-xs text-white font-bold border-b border-aurora-pink pb-1">
+                        Curate Your Brand &rarr;
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="py-24 px-6 bg-black border-t border-white/5">
+            <div class="max-w-4xl mx-auto text-center">
+                <span class="text-aurora-cyan font-mono text-xs tracking-widest uppercase mb-4 block">Under The Hood</span>
+                <h2 class="text-3xl md:text-5xl font-bold text-white mb-8">Powered by FLUX.1</h2>
+                
+                <p class="text-gray-400 text-lg leading-relaxed mb-12">
+                    Grok isn't building this from scratch. Aurora is heavily based on <strong>Black Forest Labs' FLUX.1</strong> model. This is an open-weights model known for its "photorealism" and ability to understand complex spatial instructions.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <div class="p-6 rounded-xl border border-white/10 bg-white/5">
+                        <h4 class="text-white font-bold mb-2">Autoregressive Hybrid</h4>
+                        <p class="text-xs text-gray-400">
+                            It doesn't just diffuse noise; it predicts visual tokens. This makes it smarter at understanding physics and lighting.
+                        </p>
+                    </div>
+                    <div class="p-6 rounded-xl border border-white/10 bg-white/5">
+                        <h4 class="text-white font-bold mb-2">12 Billion Parameters</h4>
+                        <p class="text-xs text-gray-400">
+                            A massive model size that allows for dense detail and texture rendering that rivals Midjourney v6.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-12">
+                    <a href="/mode.html?category=programming" class="cta-button px-8 py-4 bg-white text-black font-bold rounded-full">
+                        Does your hardware support local Flux? Check here.
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-24 px-6 bg-gradient-to-t from-aurora-purple/10 to-transparent">
+            <div class="max-w-5xl mx-auto">
+                <div class="glass-panel p-10 rounded-3xl text-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('/assets/noise.png')] opacity-10 mix-blend-overlay"></div>
+                    
+                    <h2 class="text-4xl font-bold text-white mb-6 font-display relative z-10">
+                        Overwhelmed by Synthetic Reality?
+                    </h2>
+                    <p class="text-gray-300 mb-10 max-w-2xl mx-auto relative z-10">
+                        If the idea of uncensored AI deepfakes makes you want to disconnect, you aren't alone. 
+                        The "Anti-Trend" movement is growing for a reason.
+                    </p>
+
+                    <div class="flex flex-wrap justify-center gap-4 relative z-10">
+                        <a href="/arcade.html" class="px-8 py-4 bg-aurora-purple hover:bg-aurora-purple/80 text-white font-bold rounded-lg transition-all shadow-lg shadow-aurora-purple/20">
+                            <i class="fas fa-gamepad mr-2"></i> Escape to Arcade
+                        </a>
+                        <a href="/identity-lab.html" class="px-8 py-4 bg-black border border-white/20 hover:bg-white/10 text-white font-bold rounded-lg transition-all">
+                            <i class="fas fa-fingerprint mr-2"></i> Reclaim Your Identity
+                        </a>
+                        <a href="/family-origins.html" class="px-8 py-4 bg-black border border-white/20 hover:bg-white/10 text-white font-bold rounded-lg transition-all">
+                            <i class="fas fa-tree mr-2"></i> Explore Real History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 px-6 bg-black border-t border-white/10">
+            <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+                
+                <div class="space-y-4">
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs">Analysis</h4>
+                    <a href="/Grok-review.html" class="block text-gray-500 hover:text-aurora-cyan transition-colors">Grok Audit</a>
+                    <a href="/nostalgia-loops-2026.html" class="block text-gray-500 hover:text-aurora-cyan transition-colors">Nostalgia Loops</a>
+                    <a href="/the-acceleration-of-trends.html" class="block text-gray-500 hover:text-aurora-cyan transition-colors">Trend Acceleration</a>
+                    <a href="/archive-reviews.html" class="block text-gray-500 hover:text-aurora-cyan transition-colors">Full Archive</a>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs">Tools</h4>
+                    <a href="/mode.html?category=programming" class="block text-gray-500 hover:text-aurora-purple transition-colors">Tech Stack Quiz</a>
+                    <a href="/burnout-test.html" class="block text-gray-500 hover:text-aurora-purple transition-colors">Burnout Test</a>
+                    <a href="/social-battery-test.html" class="block text-gray-500 hover:text-aurora-purple transition-colors">Social Battery</a>
+                    <a href="/funnel-arcade-zen.html" class="block text-gray-500 hover:text-aurora-purple transition-colors">Zen Logic</a>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs">Lifestyle</h4>
+                    <a href="/career-quiet-quit.html" class="block text-gray-500 hover:text-aurora-pink transition-colors">Quiet Quitting</a>
+                    <a href="/lifestyle-blog.html" class="block text-gray-500 hover:text-aurora-pink transition-colors">The Neuro-Edit</a>
+                    <a href="/encyclopedia.html" class="block text-gray-500 hover:text-aurora-pink transition-colors">Encyclopedia</a>
+                    <a href="/family-origins.html" class="block text-gray-500 hover:text-aurora-pink transition-colors">Origins</a>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs">Connect</h4>
+                    <p class="text-gray-600">
+                        QuizRealm is a digital sociology experiment.
+                        <br>Antwerp, Belgium.
+                    </p>
+                    <a href="/index.html" class="text-white underline hover:text-aurora-cyan">Return Home</a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+</body>
+</html>

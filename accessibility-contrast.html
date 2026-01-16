@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <script type="importmap">
+    {
+        "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <script type="module" src="/firebase-config.js"></script>
+    <script src="/components.js" defer></script>
+    <script src="/ux-core.js" defer></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Designing for Everyone: The Master Guide to Color Accessibility | QuizRealm</title>
+    <meta name="description" content="Accessibility is not a constraint; it is a creative challenge. Master WCAG contrast ratios, color blindness simulations, and inclusive design principles.">
+    <meta name="theme-color" content="#0f172a">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#151e2e', 900: '#0f172a' },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'premium-gradient': 'radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%)',
+                    }
+                }
+            },
+            plugins: [
+                function({ addUtilities }) {
+                    addUtilities({
+                        '.glass-panel': {
+                            'background': 'rgba(15, 23, 42, 0.7)',
+                            'backdrop-filter': 'blur(16px)',
+                            'border': '1px solid rgba(255, 255, 255, 0.08)',
+                            'box-shadow': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        }
+                    })
+                }
+            ]
+        }
+    </script>
+
+    <style>
+        body { background: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: -1;
+        }
+
+        /* Simulating Color Blindness Filters */
+        .filter-protanopia { filter: url('#protanopia'); }
+        .filter-deuteranopia { filter: url('#deuteranopia'); }
+        .filter-tritanopia { filter: url('#tritanopia'); }
+        
+        /* Sticky Header Fix (Mobile Only) */
+        #mobile-sticky-nav {
+            position: fixed; top: 0; width: 100%; z-index: 50;
+            transform: translateY(-100%); transition: transform 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            #mobile-sticky-nav.visible { transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen bg-premium-gradient">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <svg style="display: none;">
+        <defs>
+            <filter id="protanopia"><feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0 0.558, 0.442, 0, 0, 0 0, 0.242, 0.758, 0, 0 0, 0, 0, 1, 0"/></filter>
+            <filter id="deuteranopia"><feColorMatrix type="matrix" values="0.625, 0.375, 0, 0, 0 0.7, 0.3, 0, 0, 0 0, 0.3, 0.7, 0, 0 0, 0, 0, 1, 0"/></filter>
+        </defs>
+    </svg>
+
+    <quiz-header></quiz-header>
+
+    <header class="relative pt-32 pb-16 px-6 border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-center">
+            <div class="lg:w-1/2">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-300 text-xs font-mono mb-6 uppercase tracking-widest">
+                    <i class="fas fa-universal-access"></i> Inclusive Design
+                </div>
+                <h1 class="text-4xl md:text-6xl font-bold font-display text-white mb-6 leading-tight">
+                    Accessibility is not a Constraint. <br> <span class="text-slate-500">It is a standard.</span>
+                </h1>
+                <p class="text-slate-400 text-lg leading-relaxed mb-8">
+                    Over 300 million people worldwide suffer from Color Vision Deficiency (CVD). If your design relies solely on hue to convey meaning, you are breaking the experience for 8% of men.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="/color-mixer.html" class="px-6 py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-200 transition-all shadow-lg shadow-white/5">
+                        Test Contrast Sensitivity
+                    </a>
+                </div>
+            </div>
+            
+            <div class="lg:w-1/2 w-full">
+                <div class="glass-panel p-6 rounded-3xl relative">
+                    <div class="absolute -top-4 -right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded shadow-lg transform rotate-3">Don't Do This</div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-slate-200 p-6 rounded-xl flex flex-col items-center justify-center text-center space-y-3">
+                            <div class="w-full h-8 bg-slate-300 rounded flex items-center justify-center">
+                                <span class="text-slate-400 font-bold text-sm">Submit</span>
+                            </div>
+                            <p class="text-slate-400 text-xs">Low Contrast (1.2:1)</p>
+                            <i class="fas fa-times-circle text-red-500 text-2xl"></i>
+                        </div>
+
+                        <div class="bg-slate-900 p-6 rounded-xl flex flex-col items-center justify-center text-center space-y-3 border border-white/10">
+                            <div class="w-full h-8 bg-blue-600 rounded flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                <span class="text-white font-bold text-sm">Submit</span>
+                            </div>
+                            <p class="text-green-400 text-xs">High Contrast (7.1:1)</p>
+                            <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full px-4 md:px-6 py-12 relative z-10">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+            <aside class="lg:col-span-3 space-y-8 h-fit lg:sticky lg:top-24">
+                
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h3 class="text-white font-bold mb-4 font-display text-sm uppercase tracking-widest text-slate-500">Curriculum</h3>
+                    <ul class="space-y-4 text-sm">
+                        <li>
+                            <a href="/accessibility-contrast.html" class="flex items-center gap-3 text-white font-bold border-l-2 border-blue-500 pl-3">
+                                <span>01.</span> WCAG Standards
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/color-mixer.html" class="flex items-center gap-3 text-slate-400 hover:text-white transition-colors border-l-2 border-transparent pl-3 hover:border-slate-600">
+                                <span>02.</span> Contrast Training
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/psychology-of-hues.html" class="flex items-center gap-3 text-slate-400 hover:text-white transition-colors border-l-2 border-transparent pl-3 hover:border-slate-600">
+                                <span>03.</span> Emotional Impact
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-gradient-to-br from-purple-900/50 to-slate-900 border border-white/10 relative overflow-hidden group">
+                    <div class="relative z-10">
+                        <i class="fas fa-trophy text-yellow-400 text-2xl mb-3"></i>
+                        <h4 class="text-white font-bold">Competitive Design?</h4>
+                        <p class="text-xs text-slate-300 mt-2 mb-4">See how your color accuracy ranks against other designers.</p>
+                        <a href="/achievements.html" class="text-xs font-bold text-white bg-white/10 hover:bg-white/20 px-3 py-2 rounded block text-center transition-colors">View Leaderboard</a>
+                    </div>
+                    <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-purple-500/20 rounded-full blur-xl group-hover:bg-purple-500/30 transition-colors"></div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl">
+                     <h3 class="text-white font-bold mb-4 font-display text-sm uppercase tracking-widest text-slate-500">Your Account</h3>
+                     <div class="grid grid-cols-2 gap-2">
+                        <a href="/profile.html" class="p-2 bg-slate-800 rounded text-center text-xs text-slate-300 hover:bg-slate-700 hover:text-white transition-colors">
+                            <i class="fas fa-user block mb-1"></i> Profile
+                            <a href="/daily.html" class="col-span-2 p-2 bg-slate-800 rounded text-center text-xs text-slate-300 hover:bg-slate-700 hover:text-white transition-colors">
+                            <i class="fas fa-calendar-check block mb-1"></i> Daily Challenge
+                        </a>
+                     </div>
+                </div>
+
+            </aside>
+
+            <div class="lg:col-span-9 space-y-16">
+
+                <section>
+                    <div class="flex items-end gap-4 mb-8">
+                        <h2 class="text-3xl font-bold font-display text-white">The Math of Visibility</h2>
+                        <span class="text-xs text-slate-500 pb-1 font-mono">WCAG 2.1</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold text-slate-500">Level A</h3>
+                                <i class="fas fa-ban text-red-500"></i>
+                            </div>
+                            <p class="text-sm text-slate-400 mb-4 h-16">The bare minimum. Often insufficient for visually impaired users. Not recommended for modern UI.</p>
+                            <div class="text-2xl font-mono text-slate-600 font-bold">3.0:1</div>
+                        </div>
+
+                        <div class="p-6 rounded-2xl bg-slate-800 border-2 border-blue-500 relative shadow-lg shadow-blue-500/10">
+                            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Standard</div>
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold text-white">Level AA</h3>
+                                <i class="fas fa-check text-blue-400"></i>
+                            </div>
+                            <p class="text-sm text-slate-300 mb-4 h-16">The legal standard for most web content. Required for body text and interactive elements.</p>
+                            <div class="text-2xl font-mono text-white font-bold">4.5:1</div>
+                        </div>
+
+                        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold text-green-400">Level AAA</h3>
+                                <i class="fas fa-star text-green-500"></i>
+                            </div>
+                            <p class="text-sm text-slate-400 mb-4 h-16">The gold standard. High contrast for enhanced readability in direct sunlight or for elderly users.</p>
+                            <div class="text-2xl font-mono text-green-400 font-bold">7.0:1</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="glass-panel p-8 rounded-3xl">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold font-display text-white mb-2">Simulating Vision Deficiency</h2>
+                        <p class="text-slate-400 text-sm max-w-2xl">
+                            How does your "Red for Error, Green for Success" validation look to someone with Deuteranopia? (Spoiler: It looks like "Brown for Error, Brown for Success").
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        
+                        <div class="group">
+                            <div class="h-32 rounded-xl bg-gradient-to-r from-red-500 via-green-500 to-blue-500 mb-3 border border-white/10"></div>
+                            <h4 class="text-white font-bold">Trichromacy</h4>
+                            <p class="text-xs text-slate-500">Normal Vision (~92% of pop)</p>
+                        </div>
+
+                        <div class="group">
+                            <div class="h-32 rounded-xl bg-gradient-to-r from-red-500 via-green-500 to-blue-500 mb-3 border border-white/10 relative overflow-hidden">
+                                <div class="absolute inset-0 bg-slate-900/40 backdrop-grayscale-[0.5] mix-blend-color"></div>
+                            </div>
+                            <h4 class="text-white font-bold">Protanopia</h4>
+                            <p class="text-xs text-slate-500">Red-Blind (1% of males)</p>
+                        </div>
+
+                        <div class="group">
+                             <div class="h-32 rounded-xl bg-gradient-to-r from-red-500 via-green-500 to-blue-500 mb-3 border border-white/10 relative overflow-hidden">
+                                <div class="absolute inset-0 bg-yellow-900/20 backdrop-sepia-[0.6] mix-blend-color"></div>
+                            </div>
+                            <h4 class="text-white font-bold">Deuteranopia</h4>
+                            <p class="text-xs text-slate-500">Green-Blind (5% of males)</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 p-4 bg-slate-900 rounded-xl border border-white/5 flex gap-4 items-start">
+                        <i class="fas fa-lightbulb text-yellow-400 mt-1"></i>
+                        <div>
+                            <h5 class="text-white font-bold text-sm">Design Tip: The "Squint Test"</h5>
+                            <p class="text-xs text-slate-400 leading-relaxed mt-1">
+                                Never rely on color alone. Always add icons or text labels. If you squint at your screen and the color difference disappears, your accessibility is failing. 
+                            </p>
+                            <a href="/tango-logic.html" class="text-xs text-blue-400 font-bold mt-2 inline-block hover:underline">Practice pattern recognition games -></a>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <h2 class="text-2xl font-bold font-display text-white mb-4">The Science of Luminance</h2>
+                            <div class="prose prose-invert text-sm text-slate-400">
+                                <p>
+                                    Contrast is calculated by comparing the <strong>Relative Luminance</strong> of two colors. Luminance is a value between 0 (Black) and 1 (White).
+                                </p>
+                                <p>
+                                    The Green channel contributes the most to human perception of brightness (71%), followed by Red (21%), and Blue is the darkest (7%).
+                                </p>
+                                <p>
+                                    This is why <code class="text-blue-300">#00FF00</code> (Pure Green) looks much brighter than <code class="text-blue-300">#0000FF</code> (Pure Blue), even though they are mathematically equal in RGB intensity (255).
+                                </p>
+                            </div>
+                            <a href="/color-mixer.html" class="inline-flex items-center gap-2 mt-6 text-white font-bold border-b-2 border-blue-500 pb-1 hover:text-blue-400 transition-colors">
+                                Experience Luminance in the Color Mixer <i class="fas fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="bg-slate-900 p-8 rounded-3xl border border-white/5 relative">
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                        <span>Green Channel Impact</span>
+                                        <span>71%</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-green-500 w-[71%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                        <span>Red Channel Impact</span>
+                                        <span>21%</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-red-500 w-[21%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                        <span>Blue Channel Impact</span>
+                                        <span>7%</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-blue-500 w-[7%]"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-6 text-center">
+                                <div class="text-[10px] text-slate-500 uppercase tracking-widest mb-2">Equation</div>
+                                <code class="text-xs text-slate-300 bg-black/30 px-2 py-1 rounded block">L = 0.2126*R + 0.7152*G + 0.0722*B</code>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="border-t border-white/10 pt-16">
+                    <h2 class="text-2xl font-bold font-display text-white mb-8 text-center">Your Accessibility Toolkit</h2>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <a href="/color-mixer.html" class="group bg-slate-800 hover:bg-slate-700 p-6 rounded-2xl transition-all border border-white/5 hover:border-white/20">
+                            <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-sliders-h"></i>
+                            </div>
+                            <h3 class="text-white font-bold text-sm mb-1">RGB Mixer</h3>
+                            <p class="text-xs text-slate-400">Test manual contrast mixing.</p>
+                        </a>
+
+                        <a href="/arcade.html" class="group bg-slate-800 hover:bg-slate-700 p-6 rounded-2xl transition-all border border-white/5 hover:border-white/20">
+                            <div class="w-10 h-10 bg-purple-500/20 text-purple-400 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <h3 class="text-white font-bold text-sm mb-1">The Arcade</h3>
+                            <p class="text-xs text-slate-400">Gamified vision tests.</p>
+                        </a>
+
+                        <a href="/color-mixer.html" class="group bg-slate-800 hover:bg-slate-700 p-6 rounded-2xl transition-all border border-white/5 hover:border-white/20">
+                            <div class="w-10 h-10 bg-pink-500/20 text-pink-400 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-swatchbook"></i>
+                            </div>
+                            <h3 class="text-white font-bold text-sm mb-1">Aesthetic Hub</h3>
+                            <p class="text-xs text-slate-400">Accessible palette inspiration.</p>
+                        </a>
+
+                        <a href="/vibe-lab/index.html" class="group bg-slate-800 hover:bg-slate-700 p-6 rounded-2xl transition-all border border-white/5 hover:border-white/20">
+                            <div class="w-10 h-10 bg-green-500/20 text-green-400 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-volume-up"></i>
+                            </div>
+                            <h3 class="text-white font-bold text-sm mb-1">Audio Quiz</h3>
+                            <p class="text-xs text-slate-400">Alternative sensory inputs.</p>
+                        </a>
+                    </div>
+                </section>
+<!-- ===========================
+     EXTENDED MODULE 01
+=========================== -->
+<section class="glass-panel p-8 rounded-3xl">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold font-display text-white">
+            Color Is Not Information
+        </h2>
+        <span class="text-xs font-mono text-slate-500">FOUNDATION</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">A Critical Rule</h3>
+            <p class="text-sm text-slate-400">Color may decorate information.</p>
+            <p class="text-sm text-slate-400">Color must never *be* information.</p>
+            <p class="text-sm text-slate-400">If removing color removes meaning, the UI fails.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">Why This Matters</h3>
+            <p class="text-sm text-slate-400">8% of men cannot reliably distinguish red/green.</p>
+            <p class="text-sm text-slate-400">Contrast loss increases with age.</p>
+            <p class="text-sm text-slate-400">Sunlight destroys subtle color cues.</p>
+        </div>
+    </div>
+
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="p-5 bg-green-500/10 border border-green-500/20 rounded-xl">
+            <p class="text-xs font-bold text-green-300 uppercase">Good</p>
+            <p class="text-sm text-slate-200">Icon + text + color</p>
+        </div>
+        <div class="p-5 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+            <p class="text-xs font-bold text-yellow-300 uppercase">Risky</p>
+            <p class="text-sm text-slate-200">Text + color only</p>
+        </div>
+        <div class="p-5 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p class="text-xs font-bold text-red-300 uppercase">Fail</p>
+            <p class="text-sm text-slate-200">Color only</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===========================
+     EXTENDED MODULE 02
+=========================== -->
+<section>
+    <div class="flex items-end gap-4 mb-8">
+        <h2 class="text-3xl font-bold font-display text-white">
+            The Four Failure Modes of Color Accessibility
+        </h2>
+        <span class="text-xs text-slate-500 font-mono pb-1">PATTERNS</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">01. Hue Dependence</h3>
+            <p class="text-sm text-slate-400">Status communicated only by color.</p>
+            <p class="text-sm text-slate-400">No shape change.</p>
+            <p class="text-sm text-slate-400">No icon.</p>
+            <p class="text-sm text-slate-400">No text reinforcement.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">02. Low Luminance Delta</h3>
+            <p class="text-sm text-slate-400">Colors differ in hue, not brightness.</p>
+            <p class="text-sm text-slate-400">Looks fine to designer.</p>
+            <p class="text-sm text-slate-400">Fails contrast math.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">03. Decorative Contrast</h3>
+            <p class="text-sm text-slate-400">High contrast used in backgrounds.</p>
+            <p class="text-sm text-slate-400">Low contrast used in text.</p>
+            <p class="text-sm text-slate-400">Visual energy misallocated.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">04. State Inconsistency</h3>
+            <p class="text-sm text-slate-400">Green sometimes means success.</p>
+            <p class="text-sm text-slate-400">Green sometimes means neutral.</p>
+            <p class="text-sm text-slate-400">User confidence collapses.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===========================
+     EXTENDED MODULE 03
+=========================== -->
+<section class="glass-panel p-8 rounded-3xl">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold font-display text-white">
+            Accessible Color Hierarchy
+        </h2>
+        <span class="text-xs font-mono text-slate-500">SYSTEM DESIGN</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="p-5 rounded-xl bg-slate-900 border border-white/5">
+            <p class="text-xs uppercase text-slate-500 font-bold mb-2">Tier 1</p>
+            <p class="text-sm text-white font-bold">Text</p>
+            <p class="text-xs text-slate-400">Must always pass AA+</p>
+        </div>
+        <div class="p-5 rounded-xl bg-slate-900 border border-white/5">
+            <p class="text-xs uppercase text-slate-500 font-bold mb-2">Tier 2</p>
+            <p class="text-sm text-white font-bold">Controls</p>
+            <p class="text-xs text-slate-400">Buttons, inputs, links</p>
+        </div>
+        <div class="p-5 rounded-xl bg-slate-900 border border-white/5">
+            <p class="text-xs uppercase text-slate-500 font-bold mb-2">Tier 3</p>
+            <p class="text-sm text-white font-bold">Feedback</p>
+            <p class="text-xs text-slate-400">Errors, success, warnings</p>
+        </div>
+        <div class="p-5 rounded-xl bg-slate-900 border border-white/5">
+            <p class="text-xs uppercase text-slate-500 font-bold mb-2">Tier 4</p>
+            <p class="text-sm text-white font-bold">Decoration</p>
+            <p class="text-xs text-slate-400">Never required for meaning</p>
+        </div>
+    </div>
+
+    <div class="mt-8 p-6 bg-slate-900 rounded-xl border border-white/5">
+        <p class="text-sm text-slate-400">Accessibility failure happens when Tier 4 colors interfere with Tier 1 clarity.</p>
+    </div>
+</section>
+
+<!-- ===========================
+     EXTENDED MODULE 04
+=========================== -->
+<section>
+    <h2 class="text-3xl font-bold font-display text-white mb-8">
+        Color Blindness Is Not Binary
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 bg-slate-900 rounded-2xl border border-white/5">
+            <h3 class="text-white font-bold mb-2">Protanomaly</h3>
+            <p class="text-sm text-slate-400">Red sensitivity reduced.</p>
+            <p class="text-sm text-slate-400">Contrast collapses in warm palettes.</p>
+        </div>
+
+        <div class="p-6 bg-slate-900 rounded-2xl border border-white/5">
+            <h3 class="text-white font-bold mb-2">Deuteranomaly</h3>
+            <p class="text-sm text-slate-400">Green confusion dominates.</p>
+            <p class="text-sm text-slate-400">Most common CVD type.</p>
+        </div>
+
+        <div class="p-6 bg-slate-900 rounded-2xl border border-white/5">
+            <h3 class="text-white font-bold mb-2">Tritanomaly</h3>
+            <p class="text-sm text-slate-400">Blue/yellow collapse.</p>
+            <p class="text-sm text-slate-400">Rare but severe.</p>
+        </div>
+    </div>
+
+    <div class="mt-8 p-6 bg-slate-900 rounded-xl border border-white/5">
+        <p class="text-sm text-slate-400">Designing only for “red-green” blindness misses millions of users.</p>
+    </div>
+</section>
+
+<!-- ===========================
+     EXTENDED MODULE 05
+=========================== -->
+<section class="glass-panel p-8 rounded-3xl">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold font-display text-white">
+            Text Is an Accessibility Multiplier
+        </h2>
+        <span class="text-xs font-mono text-slate-500">MICROCOPY</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 bg-slate-900 rounded-xl border border-white/5">
+            <p class="text-sm text-slate-400">“Error” is vague.</p>
+            <p class="text-sm text-slate-400">“Password must be at least 8 characters” is accessible.</p>
+        </div>
+
+        <div class="p-6 bg-slate-900 rounded-xl border border-white/5">
+            <p class="text-sm text-slate-400">“Success” is abstract.</p>
+            <p class="text-sm text-slate-400">“Payment confirmed” builds confidence.</p>
+        </div>
+    </div>
+
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="p-5 bg-green-500/10 border border-green-500/20 rounded-xl">
+            <p class="text-xs uppercase font-bold text-green-300">Confirm</p>
+            <p class="text-sm text-slate-200">Saved successfully</p>
+        </div>
+        <div class="p-5 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+            <p class="text-xs uppercase font-bold text-yellow-300">Warn</p>
+            <p class="text-sm text-slate-200">Review required</p>
+        </div>
+        <div class="p-5 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p class="text-xs uppercase font-bold text-red-300">Error</p>
+            <p class="text-sm text-slate-200">Submission failed</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===========================
+     EXTENDED MODULE 06
+=========================== -->
+<section>
+    <h2 class="text-3xl font-bold font-display text-white mb-8 text-center">
+        Accessibility Is a Conversion Strategy
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+        <div class="p-6 bg-slate-900 rounded-xl border border-white/5">
+            <p class="text-2xl font-mono text-white">+18%</p>
+            <p class="text-xs text-slate-400">Form Completion</p>
+        </div>
+        <div class="p-6 bg-slate-900 rounded-xl border border-white/5">
+            <p class="text-2xl font-mono text-white">-22%</p>
+            <p class="text-xs text-slate-400">Bounce Rate</p>
+        </div>
+        <div class="p-6 bg-slate-900 rounded-xl border border-white/5">
+            <p class="text-2xl font-mono text-white">+31%</p>
+            <p class="text-xs text-slate-400">Task Confidence</p>
+        </div>
+        <div class="p-6 bg-slate-900 rounded-xl border border-white/5">
+            <p class="text-2xl font-mono text-white">+1.7x</p>
+            <p class="text-xs text-slate-400">User Trust</p>
+        </div>
+    </div>
+
+    <div class="mt-10 p-6 bg-slate-900 rounded-xl border border-white/5 text-center">
+        <p class="text-sm text-slate-400">
+            Inclusive design reduces cognitive friction.
+        </p>
+        <p class="text-sm text-slate-400">
+            Reduced friction increases action.
+        </p>
+    </div>
+</section>
+<!-- =========================================
+     EXTENSION PACK 02 — ADD AFTER TOOLKIT
+     (No long paragraphs, only structured UI)
+========================================== -->
+
+<section class="glass-panel p-8 rounded-3xl">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold font-display text-white">04. Accessible Color Tokens</h2>
+        <span class="text-xs font-mono text-slate-500">DESIGN SYSTEM</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-4">Why Tokens Matter</h3>
+            <ul class="space-y-2 text-sm text-slate-400">
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-400 mt-1"></i><span>Accessibility becomes repeatable.</span></li>
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-400 mt-1"></i><span>Contrast does not depend on a designer mood.</span></li>
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-400 mt-1"></i><span>States remain consistent across the product.</span></li>
+                <li class="flex items-start gap-2"><i class="fas fa-check text-green-400 mt-1"></i><span>Teams ship faster with less regression.</span></li>
+            </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-4">Token Categories</h3>
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="p-3 rounded-lg bg-black/30 border border-white/10">
+                    <div class="text-slate-400 uppercase font-bold">Text</div>
+                    <div class="text-white font-mono mt-1">text/primary</div>
+                </div>
+                <div class="p-3 rounded-lg bg-black/30 border border-white/10">
+                    <div class="text-slate-400 uppercase font-bold">Surface</div>
+                    <div class="text-white font-mono mt-1">bg/1</div>
+                </div>
+                <div class="p-3 rounded-lg bg-black/30 border border-white/10">
+                    <div class="text-slate-400 uppercase font-bold">Borders</div>
+                    <div class="text-white font-mono mt-1">border/subtle</div>
+                </div>
+                <div class="p-3 rounded-lg bg-black/30 border border-white/10">
+                    <div class="text-slate-400 uppercase font-bold">Feedback</div>
+                    <div class="text-white font-mono mt-1">state/success</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-4">Non-Negotiables</h3>
+            <div class="space-y-3">
+                <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                    <div class="text-xs uppercase font-bold text-blue-300">Rule</div>
+                    <div class="text-sm text-slate-200">Every text token must pass AA on every surface token.</div>
+                </div>
+                <div class="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                    <div class="text-xs uppercase font-bold text-purple-300">Rule</div>
+                    <div class="text-sm text-slate-200">Every state token must include icon + label by default.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="flex items-end justify-between mb-8">
+        <h2 class="text-3xl font-bold font-display text-white">05. The Contrast Audit Checklist</h2>
+        <span class="text-xs font-mono text-slate-500 pb-1">QA</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-8 rounded-3xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-6">Before You Ship</h3>
+            <div class="space-y-4 text-sm">
+                <div class="flex items-start gap-3">
+                    <span class="w-7 h-7 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-xs font-bold">01</span>
+                    <div>
+                        <div class="text-white font-bold">Text vs Background</div>
+                        <div class="text-slate-400">All body text passes AA minimum.</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-7 h-7 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-xs font-bold">02</span>
+                    <div>
+                        <div class="text-white font-bold">Placeholder vs Background</div>
+                        <div class="text-slate-400">Placeholder is readable but visually secondary.</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-7 h-7 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-xs font-bold">03</span>
+                    <div>
+                        <div class="text-white font-bold">Link Visibility</div>
+                        <div class="text-slate-400">Not only color. Also underline or weight.</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-7 h-7 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-xs font-bold">04</span>
+                    <div>
+                        <div class="text-white font-bold">Focus States</div>
+                        <div class="text-slate-400">Keyboard focus is visible on every surface.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 rounded-3xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-6">Common Misses</h3>
+            <div class="space-y-4 text-sm">
+                <div class="flex items-start gap-3">
+                    <span class="w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">A</span>
+                    <div>
+                        <div class="text-white font-bold">Disabled Buttons</div>
+                        <div class="text-slate-400">Disabled text becomes invisible in dark mode.</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">B</span>
+                    <div>
+                        <div class="text-white font-bold">Badges</div>
+                        <div class="text-slate-400">Badges use pale text on bright colors.</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">C</span>
+                    <div>
+                        <div class="text-white font-bold">Charts</div>
+                        <div class="text-slate-400">Legend only uses color and no pattern.</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">D</span>
+                    <div>
+                        <div class="text-white font-bold">Error States</div>
+                        <div class="text-slate-400">Red border without error message text.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="glass-panel p-8 rounded-3xl">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold font-display text-white">06. Accessible States Library</h2>
+        <span class="text-xs font-mono text-slate-500">UI PATTERNS</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-green-500/20 text-green-400 flex items-center justify-center">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div>
+                    <div class="text-white font-bold">Success</div>
+                    <div class="text-xs text-slate-500 font-mono">state/success</div>
+                </div>
+            </div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Includes icon</li>
+                <li>Includes label</li>
+                <li>Readable on dark surfaces</li>
+                <li>Does not rely on green hue</li>
+            </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center">
+                    <i class="fas fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <div class="text-white font-bold">Error</div>
+                    <div class="text-xs text-slate-500 font-mono">state/error</div>
+                </div>
+            </div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Plain sentence explanation</li>
+                <li>Action to resolve</li>
+                <li>Border + icon + text</li>
+                <li>No “red only” rule</li>
+            </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-yellow-500/20 text-yellow-400 flex items-center justify-center">
+                    <i class="fas fa-circle-info"></i>
+                </div>
+                <div>
+                    <div class="text-white font-bold">Warning</div>
+                    <div class="text-xs text-slate-500 font-mono">state/warn</div>
+                </div>
+            </div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Not scary by default</li>
+                <li>Signals attention, not panic</li>
+                <li>Readable for low-vision</li>
+                <li>Conveys next step</li>
+            </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div>
+                    <div class="text-white font-bold">Loading</div>
+                    <div class="text-xs text-slate-500 font-mono">state/loading</div>
+                </div>
+            </div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Shows progress when possible</li>
+                <li>Never “infinite” silently</li>
+                <li>Accessible text alternative</li>
+                <li>Does not rely on faint gray</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="flex items-end justify-between mb-8">
+        <h2 class="text-3xl font-bold font-display text-white">07. Data Visualization Without Color Dependence</h2>
+        <span class="text-xs font-mono text-slate-500 pb-1">CHARTS</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="p-8 rounded-3xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-6">Replace “Color Only” With</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div class="p-5 rounded-xl bg-black/30 border border-white/10">
+                    <div class="text-xs uppercase text-slate-500 font-bold">Pattern</div>
+                    <div class="text-slate-300 mt-1">Striped fills, dotted fills</div>
+                </div>
+                <div class="p-5 rounded-xl bg-black/30 border border-white/10">
+                    <div class="text-xs uppercase text-slate-500 font-bold">Shape</div>
+                    <div class="text-slate-300 mt-1">Circle, square, triangle markers</div>
+                </div>
+                <div class="p-5 rounded-xl bg-black/30 border border-white/10">
+                    <div class="text-xs uppercase text-slate-500 font-bold">Labeling</div>
+                    <div class="text-slate-300 mt-1">Direct series labels on lines</div>
+                </div>
+                <div class="p-5 rounded-xl bg-black/30 border border-white/10">
+                    <div class="text-xs uppercase text-slate-500 font-bold">Ordering</div>
+                    <div class="text-slate-300 mt-1">Sort values to reduce scan effort</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 rounded-3xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-6">Legend Accessibility</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/10">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded bg-white/10 border border-white/10 flex items-center justify-center text-[10px] text-slate-300 font-bold">A</span>
+                        <span class="text-sm text-slate-300">Series has name</span>
+                    </div>
+                    <i class="fas fa-check text-green-400"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/10">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded bg-white/10 border border-white/10 flex items-center justify-center text-[10px] text-slate-300 font-bold">B</span>
+                        <span class="text-sm text-slate-300">Series has pattern</span>
+                    </div>
+                    <i class="fas fa-check text-green-400"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/10">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded bg-white/10 border border-white/10 flex items-center justify-center text-[10px] text-slate-300 font-bold">C</span>
+                        <span class="text-sm text-slate-300">Series has contrast</span>
+                    </div>
+                    <i class="fas fa-check text-green-400"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/10">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded bg-white/10 border border-white/10 flex items-center justify-center text-[10px] text-slate-300 font-bold">D</span>
+                        <span class="text-sm text-slate-300">Legend not required to decode</span>
+                    </div>
+                    <i class="fas fa-check text-green-400"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="glass-panel p-8 rounded-3xl">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold font-display text-white">08. Dark Mode Contrast Traps</h2>
+        <span class="text-xs font-mono text-slate-500">REAL WORLD</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">Trap: “Muted Gray”</h3>
+            <p class="text-sm text-slate-400">Designers reduce brightness too far.</p>
+            <p class="text-sm text-slate-400">Text becomes decorative instead of readable.</p>
+            <p class="text-sm text-slate-400">Users increase zoom instead of engaging.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">Trap: “Neon on Black”</h3>
+            <p class="text-sm text-slate-400">Vibrant colors can bleed.</p>
+            <p class="text-sm text-slate-400">Especially on OLED at night.</p>
+            <p class="text-sm text-slate-400">Comfort drops over long sessions.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">Trap: “Thin Fonts”</h3>
+            <p class="text-sm text-slate-400">Low weight + low contrast = invisibility.</p>
+            <p class="text-sm text-slate-400">Fails for older users first.</p>
+            <p class="text-sm text-slate-400">Also fails in sunlight.</p>
+        </div>
+    </div>
+
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-6 rounded-2xl bg-green-500/10 border border-green-500/20">
+            <div class="text-xs uppercase font-bold text-green-300 mb-2">Safe Strategy</div>
+            <div class="text-sm text-slate-200">Use fewer grays.</div>
+            <div class="text-sm text-slate-200">Use clear surfaces.</div>
+            <div class="text-sm text-slate-200">Use AA+ for body text.</div>
+        </div>
+        <div class="p-6 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+            <div class="text-xs uppercase font-bold text-blue-300 mb-2">Safe Strategy</div>
+            <div class="text-sm text-slate-200">Reserve neon for accents.</div>
+            <div class="text-sm text-slate-200">Keep primary text calm.</div>
+            <div class="text-sm text-slate-200">Let contrast do the work.</div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="flex items-end justify-between mb-8">
+        <h2 class="text-3xl font-bold font-display text-white">09. Forms: Accessible Validation That People Trust</h2>
+        <span class="text-xs font-mono text-slate-500 pb-1">UX</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="p-8 rounded-3xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-6">Better Validation Signals</h3>
+            <div class="space-y-4 text-sm">
+                <div class="p-5 rounded-xl bg-black/30 border border-white/10">
+                    <div class="flex items-center justify-between">
+                        <span class="text-white font-bold">Use a symbol</span>
+                        <i class="fas fa-check text-green-400"></i>
+                    </div>
+                    <div class="text-slate-400 mt-2">Check icon for valid.</div>
+                    <div class="text-slate-400">Alert icon for invalid.</div>
+                </div>
+                <div class="p-5 rounded-xl bg-black/30 border border-white/10">
+                    <div class="flex items-center justify-between">
+                        <span class="text-white font-bold">Use plain language</span>
+                        <i class="fas fa-check text-green-400"></i>
+                    </div>
+                    <div class="text-slate-400 mt-2">Say what to do next.</div>
+                    <div class="text-slate-400">Avoid vague “invalid input”.</div>
+                </div>
+                <div class="p-5 rounded-xl bg-black/30 border border-white/10">
+                    <div class="flex items-center justify-between">
+                        <span class="text-white font-bold">Show it near the field</span>
+                        <i class="fas fa-check text-green-400"></i>
+                    </div>
+                    <div class="text-slate-400 mt-2">No top-of-page error dumps.</div>
+                    <div class="text-slate-400">No mystery scrolling.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 rounded-3xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-6">Validation Failures</h3>
+            <div class="space-y-4 text-sm">
+                <div class="p-5 rounded-xl bg-red-500/10 border border-red-500/20">
+                    <div class="text-xs uppercase font-bold text-red-300">Failure</div>
+                    <div class="text-sm text-slate-200 mt-2">Only a red outline.</div>
+                    <div class="text-sm text-slate-200">No message.</div>
+                </div>
+                <div class="p-5 rounded-xl bg-red-500/10 border border-red-500/20">
+                    <div class="text-xs uppercase font-bold text-red-300">Failure</div>
+                    <div class="text-sm text-slate-200 mt-2">Error text in faint gray.</div>
+                    <div class="text-sm text-slate-200">Invisible in dark mode.</div>
+                </div>
+                <div class="p-5 rounded-xl bg-red-500/10 border border-red-500/20">
+                    <div class="text-xs uppercase font-bold text-red-300">Failure</div>
+                    <div class="text-sm text-slate-200 mt-2">Green = success without icon.</div>
+                    <div class="text-sm text-slate-200">CVD users see “neutral”.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="glass-panel p-8 rounded-3xl">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold font-display text-white">10. Accessible Palette Recipes</h2>
+        <span class="text-xs font-mono text-slate-500">PRACTICAL</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="text-xs uppercase font-bold text-slate-500 mb-3">Recipe</div>
+            <div class="text-white font-bold mb-2">High Contrast Neutral</div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Text: near-white</li>
+                <li>Surface: deep slate</li>
+                <li>Border: subtle gray</li>
+                <li>Accent: blue</li>
+            </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="text-xs uppercase font-bold text-slate-500 mb-3">Recipe</div>
+            <div class="text-white font-bold mb-2">Soft Dark Mode</div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Use fewer pure blacks</li>
+                <li>Use surfaces stacked</li>
+                <li>Reserve neon for icons</li>
+                <li>Keep body text stable</li>
+            </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="text-xs uppercase font-bold text-slate-500 mb-3">Recipe</div>
+            <div class="text-white font-bold mb-2">Accessible Alerts</div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Icon + label first</li>
+                <li>Color as secondary</li>
+                <li>Keep background calm</li>
+                <li>Use borders for structure</li>
+            </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="text-xs uppercase font-bold text-slate-500 mb-3">Recipe</div>
+            <div class="text-white font-bold mb-2">Accessible Charts</div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Patterns for categories</li>
+                <li>Direct labels on data</li>
+                <li>Legend optional</li>
+                <li>High-contrast grid lines</li>
+            </ul>
+        </div>
+    </div>
+
+    
+</section>
+
+<section>
+    <div class="flex items-end justify-between mb-8">
+        <h2 class="text-3xl font-bold font-display text-white">11. The “Minimum Viable Accessibility” Myth</h2>
+        <span class="text-xs font-mono text-slate-500 pb-1">REALITY CHECK</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">What Teams Say</h3>
+            <ul class="text-sm text-slate-400 space-y-2">
+                <li>“We only need AA on the homepage.”</li>
+                <li>“Users can zoom.”</li>
+                <li>“Design will fix later.”</li>
+            </ul>
+        </div>
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">What Happens</h3>
+            <ul class="text-sm text-slate-400 space-y-2">
+                <li>Users bounce at checkout.</li>
+                <li>Support tickets increase.</li>
+                <li>Brand trust declines.</li>
+            </ul>
+        </div>
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <h3 class="text-white font-bold mb-3">What Works</h3>
+            <ul class="text-sm text-slate-400 space-y-2">
+                <li>Ship tokens.</li>
+                <li>Audit at component level.</li>
+                <li>Lock patterns into UI kit.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="glass-panel p-8 rounded-3xl">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold font-display text-white">12. Quick Reference: Common UI Components</h2>
+        <span class="text-xs font-mono text-slate-500">CHEAT SHEET</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="text-white font-bold mb-3">Buttons</div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Text AA minimum</li>
+                <li>Hover state visible</li>
+                <li>Focus ring visible</li>
+                <li>Disabled still readable</li>
+            </ul>
+        </div>
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="text-white font-bold mb-3">Inputs</div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Label is persistent</li>
+                <li>Error includes message</li>
+                <li>Hint has enough contrast</li>
+                <li>Border not “hairline only”</li>
+            </ul>
+        </div>
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="text-white font-bold mb-3">Cards</div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Surface separation clear</li>
+                <li>Text hierarchy strong</li>
+                <li>Meta text not too faint</li>
+                <li>Interactive states obvious</li>
+            </ul>
+        </div>
+        <div class="p-6 rounded-2xl bg-slate-900 border border-white/5">
+            <div class="text-white font-bold mb-3">Navigation</div>
+            <ul class="text-xs text-slate-400 space-y-2">
+                <li>Active item not only color</li>
+                <li>Underline or indicator</li>
+                <li>Keyboard reachable</li>
+                <li>Focus order predictable</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-8 text-center">
+        <a href="/color-mixer.html" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-200 transition-colors">
+            <i class="fas fa-eye"></i>
+            <span>Train Contrast Instinct</span>
+        </a>
+    </div>
+</section>
+
+               
+
+            </div>
+        </div>
+    </main>
+
+    <quiz-footer></quiz-footer>
+</body>
+</html>
