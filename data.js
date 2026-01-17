@@ -5592,7 +5592,6 @@ const rickandmortyBank = {
     { question: "What is the name of the microverse battery creator inside Rick's battery?", options: ["Zeep Xanflorp", "Kyle", "Chris", "Teeny"], correctIndex: 0 },
     { question: "What is the name of Summer's ex-boyfriend?", options: ["Ethan", "Brad", "Chad", "Toby"], correctIndex: 0 },
     { question: "What does the sun do on the planet the family moves to in the Season 2 finale?", options: ["It screams", "It blinks", "It laughs", "It cries"], correctIndex: 0 },
-    { question: "Who provides the voice for the spaceship's AI?", options: ["Keep Summer Safe", "GLaDOS", "Siri", "Alexa"], correctIndex: 0 },
     { question: "What is the name of the cereal Rick eats?", options: ["Strawberry Smiggles", "Eyeholes", "Plumbus Puffs", "Simple Rick's"], correctIndex: 0 },
     { question: "What is the name of the game Roy plays in Blips and Chitz?", options: ["Roy: A Life Well Lived", "Troy: The Odyssey", "Boy: The Journey", "Joy: The Game"], correctIndex: 0 },
     { question: "What is the name of the cloud of gas that sings 'Goodbye Moonmen'?", options: ["Fart", "Cloudy", "Gas", "Nebula"], correctIndex: 0 },
