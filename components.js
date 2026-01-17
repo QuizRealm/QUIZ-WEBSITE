@@ -35,19 +35,19 @@ function getHeaderUserSnapshot() {
 
 function getArcadeLinksMarkup() {
     const games = [
-        { url: 'fusion-core.html', icon: 'fa-microchip', color: 'green', title: 'Logic League', sub: 'Mastermind' },
-        { url: 'nexus.html', icon: 'fa-th', color: 'yellow', title: 'Connections', sub: 'Grouping' },
-        { url: 'mini-crossword.html', icon: 'fa-border-all', color: 'blue', title: 'Mini Cross', sub: '5x5 Puzzle' },
-        { url: 'word-ladder.html', icon: 'fa-stairs', color: 'pink', title: 'Word Ladder', sub: 'Bridge Gap' },
-        { url: 'tango-logic.html', icon: 'fa-chess-board', color: 'indigo', title: 'Tango Logic', sub: 'Binary' },
-        { url: 'timeline-history.html', icon: 'fa-hourglass-half', color: 'amber', title: 'Timeline', sub: 'History' },
-        { url: 'cryptex.html', icon: 'fa-lock', color: 'lime', title: 'Cryptex', sub: 'Code Break' },
-        { url: 'odd-one-out.html', icon: 'fa-shapes', color: 'teal', title: 'Odd One Out', sub: 'Pattern' },
-        { url: 'two-truths-trap.html', icon: 'fa-mask', color: 'rose', title: 'Two Truths', sub: 'Find Trap' },
-        { url: 'spelling.html', icon: 'fab fa-forumbee', color: 'orange', title: 'Spelling', sub: '7 Letters' },
-        { url: 'rapid.html', icon: 'fa-bolt', color: 'red', title: 'Rapid Fire', sub: 'Speed' },
-        { url: 'hangman.html', icon: 'fa-font', color: 'emerald', title: 'Hangman', sub: 'Classic' },
-        { url: 'minigames.html', icon: 'fa-pencil-alt', color: 'fuchsia', title: 'Pictionary', sub: 'Draw' }
+        { url: '/fusion-core.html', icon: 'fa-microchip', color: 'green', title: 'Logic League', sub: 'Mastermind' },
+        { url: '/nexus.html', icon: 'fa-th', color: 'yellow', title: 'Connections', sub: 'Grouping' },
+        { url: '/mini-crossword.html', icon: 'fa-border-all', color: 'blue', title: 'Mini Cross', sub: '5x5 Puzzle' },
+        { url: '/word-ladder.html', icon: 'fa-stairs', color: 'pink', title: 'Word Ladder', sub: 'Bridge Gap' },
+        { url: '/tango-logic.html', icon: 'fa-chess-board', color: 'indigo', title: 'Tango Logic', sub: 'Binary' },
+        { url: '/timeline-history.html', icon: 'fa-hourglass-half', color: 'amber', title: 'Timeline', sub: 'History' },
+        { url: '/cryptex.html', icon: 'fa-lock', color: 'lime', title: 'Cryptex', sub: 'Code Break' },
+        { url: '/odd-one-out.html', icon: 'fa-shapes', color: 'teal', title: 'Odd One Out', sub: 'Pattern' },
+        { url: '/two-truths-trap.html', icon: 'fa-mask', color: 'rose', title: 'Two Truths', sub: 'Find Trap' },
+        { url: '/spelling.html', icon: 'fab fa-forumbee', color: 'orange', title: 'Spelling', sub: '7 Letters' },
+        { url: '/rapid.html', icon: 'fa-bolt', color: 'red', title: 'Rapid Fire', sub: 'Speed' },
+        { url: '/hangman.html', icon: 'fa-font', color: 'emerald', title: 'Hangman', sub: 'Classic' },
+        { url: '/minigames.html', icon: 'fa-pencil-alt', color: 'fuchsia', title: 'Pictionary', sub: 'Draw' }
     ];
 
     return games.map(g => `
@@ -98,7 +98,7 @@ function getQuizHeaderMarkup() {
         <div class="hidden md:flex sticky top-0 w-full backdrop-blur-2xl bg-[#020617]/90 border-b border-white/10 shadow-xl shadow-black/40 mb-0 h-16 items-center justify-between px-6">
             <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-60"></div>
 
-            <a href="index.html" class="flex items-center gap-2.5 group shrink-0">
+            <a href="/index.html" class="flex items-center gap-2.5 group shrink-0">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-900 to-[#020617] border border-blue-500/30 flex items-center justify-center shadow-[0_0_14px_rgba(59,130,246,0.35)] group-hover:shadow-[0_0_22px_rgba(59,130,246,0.6)] transition-all duration-300 group-hover:scale-105">
                     <i class="fas fa-ghost text-lg text-blue-400 group-hover:text-white transition-colors"></i>
                 </div>
@@ -113,17 +113,17 @@ function getQuizHeaderMarkup() {
             </a>
 
             <nav class="flex items-center gap-1 bg-white/5/0 px-1 py-0.5 rounded-full border border-white/5">
-                <a href="index.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
+                <a href="/index.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
                     <i class="fas fa-home text-slate-500 text-xs"></i> <span>Home</span>
                 </a>
 
-                 <a href="categories.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
+                 <a href="/categories.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
                     <i class="fas fa-layer-group text-slate-500 text-xs"></i> <span>Categories</span>
                 </a>
                 
 
                 
-                <a href="identity-lab.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] mr-1">
+                <a href="/identity-lab.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] mr-1">
                     <div class="absolute inset-0 bg-gradient-to-r from-violet-900/50 to-fuchsia-900/50 border border-violet-500/40 group-hover:border-fuchsia-400/70 rounded-full transition-colors"></div>
                     <div class="relative flex items-center gap-1.5">
                         <i class="fas fa-fingerprint text-[10px] text-fuchsia-300 group-hover:text-white transition-colors"></i>
@@ -140,7 +140,7 @@ function getQuizHeaderMarkup() {
                 </a>
 
                 <div class="relative group h-full">
-                    <a href="arcade.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
+                    <a href="/arcade.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
                         <i class="fas fa-gamepad text-slate-500 group-hover:text-pink-400 transition-colors text-xs"></i> 
                         <span>Arcade</span>
                         <i class="fas fa-chevron-down text-[8px] opacity-50 ml-0.5 group-hover:translate-y-0.5 transition-transform"></i>
@@ -173,7 +173,7 @@ function getQuizHeaderMarkup() {
 
         <div id="mobile-sticky-header" class="md:hidden fixed top-0 left-0 w-full z-50 bg-[#020617]/95 backdrop-blur-xl border-b border-white/10 transition-all duration-300 py-4 h-[70px] flex items-center justify-between px-4">
             
-            <a href="index.html" class="flex items-center gap-2">
+            <a href="/index.html" class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg bg-blue-900/50 border border-blue-500/30 flex items-center justify-center">
                     <i class="fas fa-ghost text-blue-400 text-sm"></i>
                 </div>
@@ -182,21 +182,21 @@ function getQuizHeaderMarkup() {
 
             <div class="flex items-center gap-4">
 
-             <a href="categories.html" class="flex flex-col items-center justify-center w-8">
+             <a href="/categories.html" class="flex flex-col items-center justify-center w-8">
                     <i class="fas fa-layer-group text-blue-400 text-lg mb-0.5"></i>
                 </a>
                 
-                <a href="identity-lab.html" class="flex flex-col items-center justify-center w-8">
+                <a href="/identity-lab.html" class="flex flex-col items-center justify-center w-8">
                     <i class="fas fa-fingerprint text-fuchsia-400 text-lg mb-0.5"></i>
                 </a>
                 
-                <a href="arcade.html" class="flex flex-col items-center justify-center w-8">
+                <a href="/arcade.html" class="flex flex-col items-center justify-center w-8">
                     <i class="fas fa-gamepad text-pink-400 text-lg mb-0.5"></i>
                 </a>
 
                
 
-                <a href="profile.html" class="relative w-8 h-8 rounded-full border border-white/20 p-[1px]">
+                <a href="/profile.html" class="relative w-8 h-8 rounded-full border border-white/20 p-[1px]">
                     <img src="${avatarUrl}" class="w-full h-full rounded-full object-cover">
                 </a>
             </div>
@@ -236,22 +236,22 @@ function getQuizFooterMarkup() {
                 <div>
                     <h4 class="text-white font-bold uppercase tracking-wider mb-5 text-[10px]">Explore</h4>
                     <ul class="space-y-3 text-slate-400">
-                        <li><a href="index.html" class="hover:text-white transition flex items-center gap-2"><i class="fas fa-home text-[10px] text-slate-600" aria-label="Go to Homepage"></i> Home</a></li>
-                        <li><a href="christmas-hub.html" class="text-red-400 hover:text-red-300 transition font-bold flex items-center gap-2"><i class="fas fa-tree text-[10px]"></i> Holiday Hub</a></li>
-                        <li><a href="categories.html" class="hover:text-white transition">All Categories</a></li>
-                        <li><a href="arcade.html" class="hover:text-white transition text-pink-400">The Arcade</a></li>
-                        <li><a href="achievements.html" class="hover:text-white transition">Trophy Room</a></li>
+                        <li><a href="/index.html" class="hover:text-white transition flex items-center gap-2"><i class="fas fa-home text-[10px] text-slate-600" aria-label="Go to Homepage"></i> Home</a></li>
+                        <li><a href="/christmas-hub.html" class="text-red-400 hover:text-red-300 transition font-bold flex items-center gap-2"><i class="fas fa-tree text-[10px]"></i> Holiday Hub</a></li>
+                        <li><a href="/categories.html" class="hover:text-white transition">All Categories</a></li>
+                        <li><a href="/arcade.html" class="hover:text-white transition text-pink-400">The Arcade</a></li>
+                        <li><a href="/achievements.html" class="hover:text-white transition">Trophy Room</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <h4 class="text-white font-bold uppercase tracking-wider mb-5 text-[10px]">Company</h4>
                     <ul class="space-y-3 text-slate-400">
-                        <li><a href="about.html" class="hover:text-white transition">About Us</a></li>
-                        <li><a href="contact.html" class="hover:text-white transition">Contact</a></li>
-                        <li><a href="privacy.html" class="hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="Terms.html" class="hover:text-white transition">Terms of Use</a></li>
-                        <li><a href="FAQ.html" class="hover:text-white transition">FAQs</a></li>
+                        <li><a href="/about.html" class="hover:text-white transition">About Us</a></li>
+                        <li><a href="/contact.html" class="hover:text-white transition">Contact</a></li>
+                        <li><a href="/privacy.html" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="/Terms.html" class="hover:text-white transition">Terms of Use</a></li>
+                        <li><a href="/FAQ.html" class="hover:text-white transition">FAQs</a></li>
                     </ul>
                 </div>
 
