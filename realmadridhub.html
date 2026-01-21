@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Real Madrid: The Official Fan Hub | Stats, History & Quizzes</title>
+  <meta name="description" content="The definitive interactive archive for Real Madrid C.F. Explore the Galácticos era, analyze the 15 UCL titles, and test your knowledge in the tactical simulator.">
+
+  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="shortcut icon" href="/assets/rm-favicon.ico">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            rmBlue: '#001A57',     // Official Royal Blue
+            rmGold: '#FEBE10',     // Official Icon Gold
+            rmDark: '#0B0F19',     // Text Black
+            paper: '#F8F9FA',      // Clean Background
+            surface: '#FFFFFF',    // Card Background
+          },
+          boxShadow: {
+            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+            'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #F8F9FA;
+      color: #0B0F19;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* === EDITORIAL CARD STYLES === */
+    .feature-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 26, 87, 0.08);
+      border-color: #FEBE10;
+    }
+
+    .feature-card:hover .card-arrow {
+      transform: translateX(4px);
+      color: #FEBE10;
+    }
+
+    .card-image-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card-image-wrapper img {
+      transition: transform 0.6s ease;
+    }
+    
+    .feature-card:hover img {
+      transform: scale(1.05);
+    }
+
+    /* === GAME TICKET STYLES === */
+    .game-pass {
+      background: #001A57; /* RM Blue Background for Games */
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .game-pass::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0; width: 6px;
+      background: #FEBE10;
+    }
+
+    /* === UTILITIES === */
+    .text-outline {
+      -webkit-text-stroke: 1px rgba(0,0,0,0.1);
+      color: transparent;
+    }
+
+    .seo-deck {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    color: #e2e8f0;
+}
+.seo-title {
+    font-family: 'Cinzel', serif;
+    color: #FEBE10;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(254, 190, 16, 0.3);
+    padding-bottom: 1rem;
+}
+.seo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+.seo-stat-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border-left: 3px solid #FEBE10;
+}
+.seo-list li {
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+.seo-list li::before {
+    content: 'â€¢';
+    color: #FEBE10;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+.seo-micro-text {
+    line-height: 1.8;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin-bottom: 1.5rem;
+}
+.keyword-highlight {
+    color: #fff;
+    font-weight: 600;
+}
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen selection:bg-rmBlue selection:text-white">
+  
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <header class="relative bg-white border-b border-gray-200">
+    <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
+    
+    <div class="w-full max-w-7xl mx-auto px-6 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+      
+      <div class="space-y-6">
+        <div class="inline-flex items-center gap-3">
+          <span class="h-px w-8 bg-rmGold"></span>
+          <span class="text-xs font-bold uppercase tracking-widest text-rmBlue">The Official Archive</span>
+        </div>
+        
+        <h1 class="font-serif text-6xl lg:text-8xl text-rmDark leading-[0.9] font-black">
+          REAL <br>
+          <span class="text-rmBlue">MADRID</span> <br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-rmGold to-yellow-600">HUB</span>
+        </h1>
+        
+        <p class="text-lg text-gray-600 max-w-lg leading-relaxed font-light">
+          Experience the history of the greatest club in the world. From the <strong>15 Champions League</strong> titles to the future of <strong>La Fábrica</strong>.
+        </p>
+
+        <div class="flex flex-wrap gap-4 pt-4">
+          <a href="#library" class="px-8 py-3 bg-rmBlue text-white font-bold uppercase tracking-wider text-sm hover:bg-black transition-colors shadow-lg">
+            Start Exploring
+          </a>
+          <a href="#arena" class="px-8 py-3 bg-white border border-gray-300 text-rmBlue font-bold uppercase tracking-wider text-sm hover:border-rmGold hover:text-rmGold transition-colors">
+            Play Games
+          </a>
+        </div>
+      </div>
+
+      <div class="relative h-[400px] lg:h-[600px] flex items-center justify-center">
+        <div class="absolute w-[400px] h-[400px] rounded-full border border-gray-100 bg-gray-50"></div>
+        <div class="absolute w-[300px] h-[300px] rounded-full border border-rmGold/20"></div>
+        
+        <img src="/assets/rm-hero-white.png" alt="Real Madrid Players" class="relative z-10 w-auto h-full object-contain drop-shadow-2xl hover:scale-105 transition duration-700">
+        
+        <div class="absolute bottom-10 -left-4 bg-white p-4 shadow-xl border-l-4 border-rmGold animate-bounce" style="animation-duration: 3s;">
+          <div class="text-3xl font-serif font-bold text-rmBlue">15</div>
+          <div class="text-xs font-bold uppercase tracking-widest text-gray-400">European Cups</div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="w-full max-w-7xl mx-auto px-6 py-16 space-y-24">
+
+    <section id="library">
+      <div class="flex items-end justify-between mb-12">
+        <div>
+          <h2 class="font-serif text-4xl text-rmDark mb-2">The Encyclopedia</h2>
+          <div class="h-1 w-20 bg-rmGold"></div>
+        </div>
+        <a href="real-madrid-history.html" class="hidden md:flex items-center gap-2 text-sm font-bold text-rmBlue hover:text-rmGold transition">
+          View Full Timeline <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+
+        <a href="real-madrid-history.html" class="feature-card rounded-none lg:col-span-8 group block h-[400px]">
+          <div class="absolute inset-0 card-image-wrapper">
+             <img src="/assets/rm-ucl-lift.png" class="w-full h-full object-cover">
+             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+          </div>
+          <div class="absolute bottom-0 left-0 p-8 w-full">
+             <div class="text-rmGold text-xs font-bold uppercase tracking-widest mb-2">Vol. I — The History</div>
+             <h3 class="font-serif text-4xl text-white mb-2 group-hover:underline decoration-rmGold underline-offset-4">Kings of Europe</h3>
+             <p class="text-white/80 text-sm max-w-md">An in-depth analysis of the 15 Champions League titles and the winning DNA.</p>
+          </div>
+        </a>
+
+        <a href="real-madrid-The-kings-of-europe.html" class="feature-card rounded-none lg:col-span-4 group block h-[400px] flex flex-col">
+          <div class="h-1/2 card-image-wrapper relative">
+             <img src="/assets/zidane-volley1.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0">
+          </div>
+          <div class="h-1/2 p-8 flex flex-col justify-center bg-white border-t border-gray-100">
+             <div class="text-rmBlue text-xs font-bold uppercase tracking-widest mb-2">Vol. II — Icons</div>
+             <h3 class="font-serif text-2xl text-rmDark mb-2">The Galácticos</h3>
+             <p class="text-gray-500 text-xs leading-relaxed mb-4">Zidane. Ronaldo. Beckham. The era that redefined football business.</p>
+             <span class="card-arrow text-gray-300 transition-transform"><i class="fas fa-long-arrow-alt-right"></i></span>
+          </div>
+        </a>
+
+        <a href="real-madrid-stadium.html" class="feature-card rounded-none lg:col-span-4 group block h-[350px]">
+           <div class="h-full relative card-image-wrapper">
+              <img src="/assets/bernabeu-new.png" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-rmBlue/90 opacity-0 group-hover:opacity-90 transition-opacity duration-500 flex items-center justify-center">
+                 <span class="text-white font-serif text-2xl italic border-b border-rmGold pb-1">Enter The Temple</span>
+              </div>
+              <div class="absolute bottom-0 left-0 p-6 w-full bg-white transition-transform duration-300 group-hover:translate-y-full">
+                 <h3 class="font-serif text-xl text-rmDark">The Bernabéu</h3>
+                 <p class="text-xs text-gray-500">Engineering & Lore</p>
+              </div>
+           </div>
+        </a>
+
+        <a href="real-madrid-kits.html" class="feature-card rounded-none lg:col-span-4 group block h-[350px] bg-white p-8 border border-gray-200 hover:border-rmGold">
+           <div class="h-full flex flex-col justify-between">
+              <div class="flex justify-between items-start">
+                 <div class="text-6xl text-gray-100 font-serif font-bold group-hover:text-rmBlue/10 transition-colors">04</div>
+                 <i class="fas fa-tshirt text-2xl text-rmGold"></i>
+              </div>
+              <div>
+                 <h3 class="font-serif text-2xl text-rmDark mb-2">The Aesthetics</h3>
+                 <p class="text-sm text-gray-500 leading-relaxed">
+                    Why White? The history of the crest, the kits, and the Adidas partnership.
+                 </p>
+              </div>
+           </div>
+        </a>
+
+        <a href="real-madrid-future.html" class="feature-card rounded-none lg:col-span-4 group block h-[350px] bg-rmDark relative">
+           <div class="absolute top-0 right-0 p-10 opacity-10">
+              <i class="fas fa-bolt text-9xl text-white"></i>
+           </div>
+           <div class="absolute bottom-0 left-0 p-8">
+              <div class="text-rmGold text-xs font-bold uppercase tracking-widest mb-2">Vol. V — Future</div>
+              <h3 class="font-serif text-3xl text-white mb-2">The Dynasty</h3>
+              <p class="text-gray-400 text-xs">Bellingham, Endrick & The Academy.</p>
+           </div>
+        </a>
+
+      </div>
+    </section>
+
+    <section id="arena" class="bg-gray-50 rounded-3xl p-8 lg:p-16 border border-gray-200">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-rmGold font-bold tracking-widest text-xs uppercase">Interactive Zone</span>
+        <h2 class="font-serif text-4xl md:text-5xl text-rmDark mt-3 mb-6">Matchday Experience</h2>
+        <p class="text-gray-500">
+          Step onto the pitch. Select a challenge to earn XP and climb the global Real Madrid leaderboard.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <a href="/real-madrid-quiz.html" class="game-pass rounded-xl p-8 group hover:-translate-y-2 transition-transform duration-300">
+           <div class="flex justify-between items-start mb-8">
+              <span class="bg-white/10 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Trivia</span>
+              <i class="fas fa-trophy text-2xl text-rmGold group-hover:scale-110 transition-transform"></i>
+           </div>
+           <h3 class="font-serif text-2xl text-white mb-2">The Ultimate Quiz</h3>
+           <p class="text-white/60 text-sm mb-6 leading-relaxed">
+              20 difficult questions about Real Madrid history. Can you reach "Galáctico" rank?
+           </p>
+           <div class="flex items-center text-rmGold text-xs font-bold uppercase tracking-widest group-hover:gap-2 transition-all">
+              Play Now <i class="fas fa-chevron-right ml-2"></i>
+           </div>
+        </a>
+
+        <a href="/arcadereal.html" class="game-pass rounded-xl p-8 group hover:-translate-y-2 transition-transform duration-300 bg-white border border-gray-200">
+           <style>.game-pass.bg-white { background: #fff; color: #0B0F19; border-left: 4px solid #001A57; } .game-pass.bg-white::after { display: none; }</style>
+           
+           <div class="flex justify-between items-start mb-8">
+              <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Arcade</span>
+              <i class="fas fa-stopwatch text-2xl text-rmBlue"></i>
+           </div>
+           <h3 class="font-serif text-2xl text-rmDark mb-2">Training Ground</h3>
+           <p class="text-gray-500 text-sm mb-6 leading-relaxed">
+              Test your reflexes. Logic puzzles, word ladders, and rapid-fire challenges.
+           </p>
+           <div class="flex items-center text-rmBlue text-xs font-bold uppercase tracking-widest group-hover:gap-2 transition-all">
+              Start Session <i class="fas fa-chevron-right ml-2"></i>
+           </div>
+        </a>
+
+        <a href="/real-player-analysis.html" class="game-pass rounded-xl p-8 group hover:-translate-y-2 transition-transform duration-300" style="background: #1a1a1a;">
+           <div class="flex justify-between items-start mb-8">
+              <span class="bg-white/10 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Personality</span>
+              <i class="fas fa-fingerprint text-2xl text-white"></i>
+           </div>
+           <h3 class="font-serif text-2xl text-white mb-2">Player DNA Test</h3>
+           <p class="text-white/60 text-sm mb-6 leading-relaxed">
+              Are you a Leader like Ramos or an Artist like Benzema? Find your archetype.
+           </p>
+           <div class="flex items-center text-white text-xs font-bold uppercase tracking-widest group-hover:gap-2 transition-all">
+              Scan DNA <i class="fas fa-chevron-right ml-2"></i>
+           </div>
+        </a>
+
+      </div>
+    </section>
+<div class="seo-deck">
+    <h2 class="seo-title">The Weight of the Number 7</h2>
+    
+    <div class="seo-grid">
+        <div class="seo-column">
+            <p class="seo-micro-text">
+                In most clubs, the number 10 is the most prestigious jersey. At Real Madrid, it is the <strong>Number 7</strong>. It is a shirt reserved not just for the best player, but for the spiritual leader of the team.
+            </p>
+            <p class="seo-micro-text">
+                The lineage begins with <strong>Raymond Kopa</strong> and <strong>Amancio Amaro</strong>, but it became a cult symbol with <strong>Juanito</strong> in the 80s—a player defined by his passion and "never surrender" attitude.
+            </p>
+            <div class="seo-stat-box mt-4">
+                <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">The "7" Dynasty</h4>
+                <ul class="seo-list text-sm">
+                    <li><strong>Juanito (1977-1987):</strong> The soul of the comeback.</li>
+                    <li><strong>Emilio Butragueño (1984-1995):</strong> The genius of the academy.</li>
+                    <li><strong>Raúl González (1994-2010):</strong> The eternal captain.</li>
+                    <li><strong>Cristiano Ronaldo (2010-2018):</strong> The greatest goalscorer.</li>
+                    <li><strong>Vinícius Jr (2023-Present):</strong> The new heir.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="seo-column">
+            <h3 class="text-xl text-white font-serif mb-4">Passing the Torch</h3>
+            <p class="seo-micro-text">
+                When <strong>Cristiano Ronaldo</strong> left in 2018, the shirt became heavy. Mariano Díaz struggled to carry the burden, and Eden Hazard, signed for €115M, famously failed to live up to the legacy due to injuries.
+            </p>
+            <p class="seo-micro-text">
+                In 2023, <strong>Vinícius Jr</strong> requested the number, signaling his readiness to lead the new generation. Unlike the "Number 10" (worn by Figo, Özil, Modric) which represents creativity, the Madrid "7" represents <strong>voracity</strong> and leadership.
+            </p>
+            <p class="seo-micro-text">
+                It is a shirt that demands goals. Cristiano Ronaldo scored 450 goals in it. Raúl scored 323. The Bernabéu crowd is notoriously patient with young players, but they demand immediate excellence from whoever wears the 7.
+            </p>
+        </div>
+    </div>
+</div>
+  </main>
+
+
+</body>
+    <quiz-footer></quiz-footer>
+</html>

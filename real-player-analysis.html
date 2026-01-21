@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Madrid DNA Scan | Player Personality Test</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['Share Tech Mono', 'monospace'],
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          },
+          colors: {
+            rmBlue: '#001A57',
+            rmGold: '#FEBE10',
+            medical: '#0EA5E9', // Light Blue for "Tech/Medical" feel
+          },
+          animation: {
+            'scan-line': 'scanLine 2s linear infinite',
+            'blink': 'blink 1s step-end infinite',
+          },
+          keyframes: {
+            scanLine: {
+              '0%': { top: '0%' },
+              '100%': { top: '100%' }
+            },
+            blink: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #F8FAFC; color: #0F172A; }
+    
+    /* SCANNER EFFECT */
+    .scanner-box {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #E2E8F0;
+    }
+    .scanner-line {
+      position: absolute;
+      left: 0; width: 100%; height: 2px;
+      background: #FEBE10;
+      box-shadow: 0 0 10px #FEBE10;
+      z-index: 10;
+    }
+
+    /* CHOICE BUTTONS */
+    .dna-btn {
+      background: white;
+      border: 1px solid #E2E8F0;
+      transition: all 0.2s ease;
+    }
+    .dna-btn:hover {
+      border-color: #001A57;
+      background: #F1F5F9;
+      transform: translateX(4px);
+    }
+    .dna-btn.selected {
+      background: #001A57;
+      color: white;
+      border-color: #001A57;
+    }
+
+    /* TYPING TEXT */
+    .typing::after { content: '_'; animation: blink 1s infinite; }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow flex items-center justify-center p-4">
+
+    <div id="intro-screen" class="max-w-2xl w-full bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden relative">
+      <div class="h-2 w-full bg-rmBlue"></div>
+      
+      <div class="p-8 md:p-12 text-center">
+        <div class="w-16 h-16 bg-blue-50 text-rmBlue rounded-full flex items-center justify-center mx-auto mb-6 text-2xl border border-blue-100">
+          <i class="fas fa-fingerprint"></i>
+        </div>
+
+        <h1 class="font-serif text-4xl md:text-5xl text-rmBlue mb-4">DNA Analysis</h1>
+        <p class="text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
+          Welcome to Valdebebas. Before you sign the contract, we need to understand your psychology. Are you a leader, a genius, or a machine?
+        </p>
+
+        <div class="flex flex-col gap-3 max-w-xs mx-auto">
+          <button onclick="startScan()" class="w-full py-4 bg-rmBlue text-white font-bold uppercase tracking-widest rounded hover:bg-black transition-colors shadow-lg">
+            Start Medical
+          </button>
+          <div class="flex justify-between text-[10px] text-gray-400 font-mono uppercase">
+            <span>Est. Time: 2m</span>
+            <span>Accuracy: 99.9%</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-gray-50 p-4 border-t border-gray-100 flex justify-between items-center text-xs font-mono text-gray-400">
+        <span>UNIT: MEDICAL-01</span>
+        <span class="animate-pulse text-green-500">● SYSTEM READY</span>
+      </div>
+    </div>
+
+    <div id="test-screen" class="hidden max-w-3xl w-full">
+      
+      <div class="flex items-end justify-between mb-6 px-2">
+        <div class="text-rmBlue font-mono text-sm">
+          <span class="text-rmGold mr-2">>>></span>PROCESSING...
+        </div>
+        <div class="text-rmBlue font-bold font-serif text-2xl">
+          <span id="q-number">01</span><span class="text-gray-300 text-lg">/08</span>
+        </div>
+      </div>
+
+      <div class="scanner-box bg-white rounded-xl shadow-lg p-8 md:p-10 mb-6">
+        <div id="scan-bar" class="scanner-line animate-scan-line"></div>
+        
+        <h2 id="q-text" class="text-2xl md:text-3xl font-serif text-rmBlue mb-10 leading-tight">
+          Loading Question...
+        </h2>
+
+        <div id="choices-grid" class="grid grid-cols-1 gap-3 relative z-20">
+          </div>
+      </div>
+
+    </div>
+
+    <div id="result-screen" class="hidden max-w-lg w-full bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden text-center">
+      
+      <div class="bg-rmBlue p-8 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+        
+        <div class="relative z-10">
+          <div class="text-rmGold text-xs font-bold uppercase tracking-widest mb-2">Match Found</div>
+          <h2 id="result-name" class="font-serif text-4xl text-white mb-1">LOADING</h2>
+          <div id="result-archetype" class="text-blue-200 font-mono text-sm">ANALYZING...</div>
+        </div>
+      </div>
+
+      <div class="p-8">
+        <p id="result-desc" class="text-gray-600 leading-relaxed mb-8 text-sm">
+          Generating report...
+        </p>
+
+        <div class="grid grid-cols-3 gap-2 mb-8 text-center">
+          <div class="p-2 bg-gray-50 rounded border border-gray-100">
+            <div class="text-[10px] text-gray-400 uppercase">Role</div>
+            <div id="stat-role" class="font-bold text-rmBlue text-sm">--</div>
+          </div>
+          <div class="p-2 bg-gray-50 rounded border border-gray-100">
+            <div class="text-[10px] text-gray-400 uppercase">Mentality</div>
+            <div id="stat-mind" class="font-bold text-rmBlue text-sm">--</div>
+          </div>
+          <div class="p-2 bg-gray-50 rounded border border-gray-100">
+            <div class="text-[10px] text-gray-400 uppercase">Value</div>
+            <div id="stat-value" class="font-bold text-rmGold text-sm">--</div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <a href="/realmadridhub.html" class="block w-full py-3 bg-white border border-gray-200 text-rmBlue font-bold uppercase tracking-widest rounded hover:bg-gray-50 transition">
+            Save To Archive
+          </a>
+          <button onclick="location.reload()" class="block w-full py-3 text-gray-400 text-xs font-bold uppercase hover:text-rmBlue transition">
+            Recalibrate Scanner
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+ <quiz-footer></quiz-footer>
+  <script>
+    // === DATA ===
+    const questions = [
+      {
+        q: "It's the 90th minute. 1-1. We get a penalty. Who takes it?",
+        a: [
+          { text: "Me. Nobody else touches the ball.", type: "CR7" },
+          { text: "The designated taker. Rules are rules.", type: "KROOS" },
+          { text: "I give it to the striker who is struggling.", type: "BENZEMA" },
+          { text: "I celebrate before it's even scored.", type: "VINI" }
+        ]
+      },
+      {
+        q: "We just lost 4-0 to Barcelona. What is your reaction?",
+        a: [
+          { text: "Lock the dressing room. Scream at everyone.", type: "RAMOS" },
+          { text: "Go home, analyze the video, silence.", type: "KROOS" },
+          { text: "Apologize to the fans on Instagram.", type: "MODRIC" },
+          { text: "Work harder in the gym the next morning.", type: "CR7" }
+        ]
+      },
+      {
+        q: "A defender tackles you hard. What do you do?",
+        a: [
+          { text: "Get up and nutmeg him next play.", type: "VINI" },
+          { text: "Stay down, get him a yellow card.", type: "SMART" },
+          { text: "Tackle him back twice as hard.", type: "RAMOS" },
+          { text: "Ignore him. He is beneath me.", type: "BENZEMA" }
+        ]
+      },
+      {
+        q: "PSG offers you €100M a year to leave Madrid. You say:",
+        a: [
+          { text: "Where do I sign?", type: "MERC" },
+          { text: "I want to retire at the Bernabéu.", type: "MODRIC" },
+          { text: "Use it to get a raise from Florentino.", type: "CR7" },
+          { text: "Laugh and hang up.", type: "VALVERDE" }
+        ]
+      },
+      {
+        q: "What is your preferred style of play?",
+        a: [
+          { text: "Chaos. Running, dribbling, pace.", type: "VINI" },
+          { text: "Control. 98% passing accuracy.", type: "KROOS" },
+          { text: "Efficiency. 1 touch, 1 goal.", type: "CR7" },
+          { text: "Art. Making the difficult look easy.", type: "BENZEMA" }
+        ]
+      },
+      {
+        q: "The manager benches you for the Champions League final.",
+        a: [
+          { text: "Create a problem in the media.", type: "EGO" },
+          { text: "Accept it. Support the team.", type: "NACHO" },
+          { text: "Demand a transfer immediately.", type: "CR7" },
+          { text: "Prove him wrong when I get subbed in.", type: "RODRYGO" }
+        ]
+      },
+      {
+        q: "Which attribute matters most to you?",
+        a: [
+          { text: "Winning. By any means necessary.", type: "RAMOS" },
+          { text: "Beauty. Football is a show.", type: "ZIDANE" },
+          { text: "Stats. Records are forever.", type: "CR7" },
+          { text: "Loyalty. The badge comes first.", type: "NACHO" }
+        ]
+      },
+      {
+        q: "Pick a post-match meal.",
+        a: [
+          { text: "Plain chicken and broccoli. Recovery.", type: "CR7" },
+          { text: "A nice dinner with family.", type: "MODRIC" },
+          { text: "Party with the team.", type: "VINI" },
+          { text: "Pasta. Simple and effective.", type: "KROOS" }
+        ]
+      }
+    ];
+
+    // === RESULTS ===
+    const results = {
+      "CR7": {
+        name: "Cristiano Ronaldo",
+        type: "THE MACHINE",
+        desc: "You are obsessed with perfection. You demand the best from yourself and everyone around you. You are arrogant, but you back it up with numbers.",
+        stats: ["Goalscorer", "Elite", "€1B"]
+      },
+      "RAMOS": {
+        name: "Sergio Ramos",
+        type: "THE COMMANDER",
+        desc: "You were born to lead. You thrive in chaos and pressure. You will break a leg to save a goal. The team fears and loves you.",
+        stats: ["Captain", "Aggressive", "Priceless"]
+      },
+      "MODRIC": {
+        name: "Luka Modrić",
+        type: "THE MAESTRO",
+        desc: "You are timeless. You don't run the most, but you think the fastest. You solve problems before they happen. A pure genius.",
+        stats: ["Playmaker", "High IQ", "Untransferable"]
+      },
+      "VINI": {
+        name: "Vinícius Jr",
+        type: "THE SPARK",
+        desc: "You play with joy and fire. You frustrate opponents with your skill and your attitude. You are the future of the club.",
+        stats: ["Winger", "Creative", "€200M"]
+      },
+      "KROOS": {
+        name: "Toni Kroos",
+        type: "THE SNIPER",
+        desc: "Ice in your veins. You never sweat. You view football as a game of chess, not a physical battle. Precision over power.",
+        stats: ["Controller", "Calm", "Legend"]
+      },
+      "BENZEMA": {
+        name: "Karim Benzema",
+        type: "THE ARTIST",
+        desc: "You play for the team, not for yourself. You make everyone around you better. But when the team needs a hero, you step up.",
+        stats: ["Forward", "Elegant", "Legend"]
+      }
+    };
+
+    // === STATE ===
+    let scores = { "CR7":0, "RAMOS":0, "MODRIC":0, "VINI":0, "KROOS":0, "BENZEMA":0 };
+    let currentIdx = 0;
+
+    // === ELEMENTS ===
+    const els = {
+      intro: document.getElementById('intro-screen'),
+      test: document.getElementById('test-screen'),
+      result: document.getElementById('result-screen'),
+      qText: document.getElementById('q-text'),
+      grid: document.getElementById('choices-grid'),
+      count: document.getElementById('q-number')
+    };
+
+    function startScan() {
+      els.intro.classList.add('hidden');
+      els.test.classList.remove('hidden');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[currentIdx];
+      els.qText.innerText = q.q;
+      els.count.innerText = "0" + (currentIdx + 1);
+      
+      els.grid.innerHTML = '';
+      
+      // Shuffle answers slightly for variety
+      const answers = q.a.sort(() => Math.random() - 0.5);
+
+      answers.forEach(ans => {
+        const btn = document.createElement('button');
+        btn.className = "dna-btn w-full p-5 text-left font-sans font-semibold text-gray-700 rounded-lg flex items-center gap-4 group";
+        btn.innerHTML = `
+          <div class="w-4 h-4 rounded-full border border-gray-300 group-hover:border-rmBlue group-hover:bg-rmBlue transition-colors"></div>
+          <span>${ans.text}</span>
+        `;
+        btn.onclick = () => handleAnswer(ans.type);
+        els.grid.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(type) {
+      // Add points logic
+      if(scores[type] !== undefined) scores[type] += 2;
+      
+      // Secondary logic mappings (simple heuristics)
+      if(type === "EGO" || type === "MERC") scores["CR7"] += 1;
+      if(type === "SMART") scores["MODRIC"] += 1;
+      if(type === "VALVERDE") scores["RAMOS"] += 1;
+      if(type === "RODRYGO") scores["VINI"] += 1;
+      if(type === "NACHO") scores["KROOS"] += 1; // Loyal/Stable
+      if(type === "ZIDANE") scores["BENZEMA"] += 2;
+
+      currentIdx++;
+
+      if(currentIdx >= questions.length) {
+        showResult();
+      } else {
+        loadQuestion();
+      }
+    }
+
+    function showResult() {
+      els.test.classList.add('hidden');
+      els.result.classList.remove('hidden');
+
+      // Find max score
+      let winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+      // Fallback
+      if(scores[winner] === 0) winner = "MODRIC"; 
+
+      const data = results[winner];
+
+      document.getElementById('result-name').innerText = data.name;
+      document.getElementById('result-archetype').innerText = data.type;
+      document.getElementById('result-desc').innerText = data.desc;
+      
+      document.getElementById('stat-role').innerText = data.stats[0];
+      document.getElementById('stat-mind').innerText = data.stats[1];
+      document.getElementById('stat-value').innerText = data.stats[2];
+    }
+  </script>
+
+</body>
+
+</html>

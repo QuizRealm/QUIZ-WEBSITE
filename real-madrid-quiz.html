@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The RM Entrance Exam | Real Madrid Trivia</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;600;800&family=Chakra+Petch:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+            tech: ['Chakra Petch', 'sans-serif'],
+          },
+          colors: {
+            rmBlue: '#001A57',
+            rmGold: '#FEBE10',
+            rmDark: '#0B0F19',
+            paper: '#F8F9FA',
+          },
+          animation: {
+            'slide-in': 'slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+            'pulse-gold': 'pulseGold 2s infinite',
+          },
+          keyframes: {
+            slideIn: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' }
+            },
+            pulseGold: {
+              '0%': { boxShadow: '0 0 0 0 rgba(254, 190, 16, 0.4)' },
+              '70%': { boxShadow: '0 0 0 10px rgba(254, 190, 16, 0)' },
+              '100%': { boxShadow: '0 0 0 0 rgba(254, 190, 16, 0)' }
+            }
+          }
+        }
+      }
+    }
+
+    
+  </script>
+
+  <style>
+    body { background-color: #F8F9FA; color: #0B0F19; overflow-x: hidden; }
+    
+    /* PROGRESS BAR */
+    .progress-track { background: #E2E8F0; height: 4px; width: 100%; position: relative; }
+    .progress-fill { background: #001A57; height: 100%; transition: width 0.5s ease; position: relative; }
+    .progress-fill::after { content: ''; position: absolute; right: 0; top: -2px; width: 8px; height: 8px; background: #FEBE10; border-radius: 50%; box-shadow: 0 0 10px #FEBE10; }
+
+    /* OPTION CARDS */
+    .option-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .option-card:hover {
+      border-color: #001A57;
+      transform: translateX(4px);
+      background: #F8FAFC;
+    }
+    .option-card.selected { border-color: #001A57; background: #001A57; color: white; }
+    .option-card.correct { border-color: #10B981; background: #DCFCE7; color: #064E3B; }
+    .option-card.wrong { border-color: #EF4444; background: #FEE2E2; color: #7F1D1D; }
+
+    /* TIMER RING */
+    .timer-ring circle { transition: stroke-dashoffset 1s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
+    
+    /* CONFETTI */
+    .confetti { position: absolute; width: 10px; height: 10px; background-color: #FEBE10; animation: fall linear forwards; }
+    @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
+    .seo-deck {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    color: #e2e8f0;
+}
+.seo-title {
+    font-family: 'Cinzel', serif;
+    color: #FEBE10;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(254, 190, 16, 0.3);
+    padding-bottom: 1rem;
+}
+.seo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+.seo-stat-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border-left: 3px solid #FEBE10;
+}
+.seo-list li {
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+.seo-list li::before {
+    content: 'â€¢';
+    color: #FEBE10;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+.seo-micro-text {
+    line-height: 1.8;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin-bottom: 1.5rem;
+}
+.keyword-highlight {
+    color: #fff;
+    font-weight: 600;
+}
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow relative flex items-center justify-center p-4">
+    
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
+      <img src="/assets/rm-crest-hd.png" alt="Crest" class="w-[800px] grayscale">
+    </div>
+
+    <div id="start-screen" class="max-w-2xl w-full bg-white border border-gray-200 shadow-2xl rounded-2xl p-8 md:p-12 relative overflow-hidden z-10 text-center">
+      <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rmBlue via-rmBlue to-rmGold"></div>
+      
+      <div class="mb-8">
+        <span class="inline-block px-3 py-1 bg-rmBlue/5 text-rmBlue text-[10px] font-bold uppercase tracking-widest rounded mb-4">Official Club Exam</span>
+        <h1 class="font-serif text-5xl md:text-6xl text-rmDark mb-4">The Trial</h1>
+        <p class="text-gray-500 text-lg leading-relaxed">
+          "Listen to me. To wear this white shirt is a responsibility. We do not accept average. Prove you know the history, or leave via the back door."
+        </p>
+        <div class="mt-4 flex items-center justify-center gap-2 text-sm font-bold text-gray-400">
+          <span>— The President</span>
+          <img src="/assets/florentino-sig.png" alt="Signature" class="h-8 opacity-50">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4 mb-8 border-y border-gray-100 py-6">
+        <div>
+          <div class="text-2xl font-serif font-bold text-rmBlue">20</div>
+          <div class="text-[10px] uppercase tracking-widest text-gray-400">Questions</div>
+        </div>
+        <div>
+          <div class="text-2xl font-serif font-bold text-rmBlue">15s</div>
+          <div class="text-[10px] uppercase tracking-widest text-gray-400">Per Round</div>
+        </div>
+        <div>
+          <div class="text-2xl font-serif font-bold text-rmGold">X2</div>
+          <div class="text-[10px] uppercase tracking-widest text-gray-400">Streak Bonus</div>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-rmBlue text-white font-bold uppercase tracking-widest rounded hover:bg-black transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+        Sign The Contract
+      </button>
+    </div>
+
+    <div id="game-screen" class="hidden w-full max-w-4xl z-10">
+      
+      <div class="flex items-end justify-between mb-6">
+        <div class="text-left">
+          <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Question</div>
+          <div class="text-3xl font-serif text-rmDark"><span id="q-current">1</span><span class="text-gray-300 text-xl">/20</span></div>
+        </div>
+        
+        <div class="relative w-16 h-16 flex items-center justify-center">
+          <svg class="timer-ring w-full h-full transform -rotate-90">
+            <circle cx="32" cy="32" r="28" stroke="#E2E8F0" stroke-width="4" fill="transparent"></circle>
+            <circle id="timer-circle" cx="32" cy="32" r="28" stroke="#FEBE10" stroke-width="4" fill="transparent" stroke-dasharray="176" stroke-dashoffset="0"></circle>
+          </svg>
+          <span id="timer-text" class="absolute text-lg font-bold font-mono text-rmBlue">15</span>
+        </div>
+
+        <div class="text-right">
+          <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Score</div>
+          <div id="score-display" class="text-3xl font-serif text-rmBlue">0</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-6 relative min-h-[400px] flex flex-col md:flex-row">
+        
+        <div class="w-full md:w-5/12 relative h-48 md:h-auto bg-gray-100">
+          <img id="q-image" src="" alt="Question Context" class="w-full h-full object-cover transition-opacity duration-300">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6 md:hidden">
+            <span class="text-white text-xs font-bold uppercase tracking-widest bg-rmGold/80 text-black px-2 py-1 rounded">History</span>
+          </div>
+        </div>
+
+        <div class="w-full md:w-7/12 p-6 md:p-10 flex flex-col justify-center">
+          <div id="q-category" class="hidden md:inline-block self-start px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest rounded mb-4">
+            Tactics
+          </div>
+          
+          <h2 id="q-text" class="text-2xl md:text-3xl font-serif text-rmDark mb-8 leading-tight">
+            Loading...
+          </h2>
+
+          <div id="options-grid" class="grid grid-cols-1 gap-3">
+            </div>
+        </div>
+      
+      </div>
+
+      <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+        <div id="progress-bar" class="bg-rmBlue h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+    </div>
+
+    <div id="result-screen" class="hidden max-w-xl w-full bg-white border border-gray-200 shadow-2xl rounded-2xl p-8 relative overflow-hidden z-20 text-center">
+      <div id="confetti-container"></div>
+      
+      <div class="relative z-10">
+        <div id="result-badge" class="w-20 h-20 mx-auto rounded-full bg-rmBlue text-rmGold flex items-center justify-center text-3xl font-bold mb-6 border-4 border-white shadow-lg">
+          A+
+        </div>
+
+        <h2 class="font-serif text-4xl text-rmDark mb-2">Performance Review</h2>
+        <p id="result-desc" class="text-gray-500 mb-8">You are ready for the first team.</p>
+
+        <div class="grid grid-cols-3 gap-2 mb-8 bg-gray-50 p-4 rounded-xl border border-gray-100">
+          <div>
+            <div class="text-xs uppercase text-gray-400">Score</div>
+            <div id="final-score" class="font-bold text-xl text-rmBlue">0</div>
+          </div>
+          <div>
+            <div class="text-xs uppercase text-gray-400">Correct</div>
+            <div id="final-correct" class="font-bold text-xl text-green-600">0/20</div>
+          </div>
+          <div>
+            <div class="text-xs uppercase text-gray-400">Rank</div>
+            <div id="final-rank" class="font-bold text-xl text-rmGold">--</div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <a href="/realmadridhub.html" class="block w-full py-3 bg-rmBlue text-white font-bold uppercase tracking-widest rounded hover:bg-black transition-colors">
+            Return to Hub
+          </a>
+          <button onclick="location.reload()" class="block w-full py-3 bg-white border border-gray-200 text-gray-600 font-bold uppercase tracking-widest rounded hover:border-rmGold hover:text-rmGold transition-colors">
+            Retake Exam
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // === DATA ===
+    const questions = [
+      {
+        q: "In what year was Real Madrid officially founded?",
+        a: ["1902", "1899", "1910", "1920"],
+        c: 0,
+        cat: "History",
+        img: "/assets/history-bw.png"
+      },
+      {
+        q: "Who is the club's all-time top goalscorer?",
+        a: ["Raúl", "Karim Benzema", "Cristiano Ronaldo", "Di Stéfano"],
+        c: 2,
+        cat: "Legends",
+        img: "/assets/cr7-celebration.png"
+      },
+      {
+        q: "Which manager led the club to 'La Decima' (10th UCL)?",
+        a: ["Zinedine Zidane", "Carlo Ancelotti", "José Mourinho", "Vicente del Bosque"],
+        c: 1,
+        cat: "Managers",
+        img: "/assets/ancelotti.png"
+      },
+      {
+        q: "What is the nickname often used for Real Madrid fans?",
+        a: ["Los Culés", "Los Vikingos", "Los Indios", "Los Che"],
+        c: 1,
+        cat: "Culture",
+        img: "/assets/fans.png"
+      },
+      {
+        q: "Who scored the winning volley in the 2002 Champions League final?",
+        a: ["Figo", "Raúl", "Roberto Carlos", "Zinedine Zidane"],
+        c: 3,
+        cat: "Moments",
+        img: "/assets/zidane-volley.png"
+      },
+      {
+        q: "Which player has won the most trophies in Real Madrid history (as of 2024)?",
+        a: ["Luka Modric", "Sergio Ramos", "Marcelo", "Nacho"],
+        c: 0,
+        cat: "Records",
+        img: "/assets/modric.png"
+      },
+      {
+        q: "What is the name of Real Madrid's basketball team arena?",
+        a: ["WiZink Center", "Palau Blaugrana", "Caja Mágica", "Bernabéu Court"],
+        c: 0,
+        cat: "Club",
+        img: "/assets/basket.png"
+      },
+      {
+        q: "Who was the first 'Galáctico' signed by Florentino Pérez in 2000?",
+        a: ["Zidane", "Ronaldo", "Beckham", "Luís Figo"],
+        c: 3,
+        cat: "Transfers",
+        img: "/assets/figo-presentation.png"
+      },
+      {
+        q: "Which team did Real Madrid defeat to win their 15th UCL title?",
+        a: ["Liverpool", "Bayern Munich", "Borussia Dortmund", "Man City"],
+        c: 2,
+        cat: "Recent",
+        img: "/assets/ucl-15.png"
+      },
+      {
+        q: "The 'Spirit of Juanito' refers to the club's ability to:",
+        a: ["Score free kicks", "Comeback from defeat", "Buy expensive players", "Defend leads"],
+        c: 1,
+        cat: "Lore",
+        img: "/assets/juanito.png"
+      },
+      {
+        q: "How many minutes is a match at the Bernabéu, according to legend?",
+        a: ["90", "Molto Longo", "Until Madrid scores", "93"],
+        c: 1,
+        cat: "Quotes",
+        img: "/assets/bernabeu-interior.png"
+      },
+      {
+        q: "Which number did Jude Bellingham choose to honor Zidane?",
+        a: ["10", "8", "7", "5"],
+        c: 3,
+        cat: "Squad",
+        img: "/assets/bellingham.png"
+      },
+      {
+        q: "What color is the sash on the club's crest?",
+        a: ["Red", "Blue", "Mulberry (Purple)", "Gold"],
+        c: 2,
+        cat: "Identity",
+        img: "/assets/rm-crest-hd.png"
+      },
+      {
+        q: "Who scored the 92:48 equalizer in Lisbon?",
+        a: ["Bale", "Ronaldo", "Sergio Ramos", "Marcelo"],
+        c: 2,
+        cat: "Moments",
+        img: "/assets/ramos-header.png"
+      },
+      {
+        q: "Which German midfielder was known as 'The Sniper'?",
+        a: ["Ozil", "Khedira", "Toni Kroos", "Schuster"],
+        c: 2,
+        cat: "Legends",
+        img: "/assets/kroos.png"
+      },
+      {
+        q: "Real Madrid's academy is called:",
+        a: ["La Masia", "La Fábrica", "Castilla", "The Factory"],
+        c: 1,
+        cat: "Academy",
+        img: "/assets/academy-pitch.png"
+      },
+      {
+        q: "Which president served the longest term?",
+        a: ["Santiago Bernabéu", "Florentino Pérez", "Lorenzo Sanz", "Calderón"],
+        c: 0,
+        cat: "Presidents",
+        img: "/assets/bernabeu-portrait.png"
+      },
+      {
+        q: "What year did CR7 leave Real Madrid?",
+        a: ["2016", "2017", "2018", "2019"],
+        c: 2,
+        cat: "History",
+        img: "/assets/cr7-juve.png"
+      },
+      {
+        q: "Who is the 'Vulture' (El Buitre)?",
+        a: ["Raúl", "Emilio Butragueño", "Hugo Sánchez", "Benzema"],
+        c: 1,
+        cat: "Legends",
+        img: "/assets/butragueno.png"
+      },
+      {
+        q: "What is the capacity of the renovated Santiago Bernabéu?",
+        a: ["75,000", "81,000", "83,186", "99,000"],
+        c: 2,
+        cat: "Stadium",
+        img: "/assets/bernabeu-new.png"
+      }
+    ];
+
+    // === GAME ENGINE ===
+    let currentIdx = 0;
+    let score = 0;
+    let streak = 0;
+    let timer;
+    const TIME_LIMIT = 15;
+    
+    const els = {
+      start: document.getElementById('start-screen'),
+      game: document.getElementById('game-screen'),
+      result: document.getElementById('result-screen'),
+      qText: document.getElementById('q-text'),
+      qImg: document.getElementById('q-image'),
+      qCat: document.getElementById('q-category'),
+      qGrid: document.getElementById('options-grid'),
+      timerText: document.getElementById('timer-text'),
+      timerCircle: document.getElementById('timer-circle'),
+      score: document.getElementById('score-display'),
+      current: document.getElementById('q-current'),
+      progress: document.getElementById('progress-bar')
+    };
+
+    function startGame() {
+      els.start.classList.add('hidden');
+      els.game.classList.remove('hidden');
+      els.game.classList.add('flex', 'flex-col');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      if(currentIdx >= questions.length) {
+        endGame();
+        return;
+      }
+
+      const q = questions[currentIdx];
+      
+      // Update UI
+      els.qText.innerText = q.q;
+      els.qCat.innerText = q.cat;
+      els.qImg.src = q.img;
+      els.current.innerText = currentIdx + 1;
+      els.progress.style.width = `${((currentIdx) / questions.length) * 100}%`;
+      
+      // Reset Timer
+      clearInterval(timer);
+      startTimer();
+
+      // Render Options
+      els.qGrid.innerHTML = '';
+      q.a.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "option-card w-full p-4 text-left font-sans font-semibold text-gray-700 rounded-lg flex justify-between items-center group";
+        btn.innerHTML = `<span>${opt}</span> <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>`;
+        btn.onclick = () => handleAnswer(idx, btn);
+        els.qGrid.appendChild(btn);
+      });
+    }
+
+    function startTimer() {
+      let timeLeft = TIME_LIMIT;
+      const totalDash = 176;
+      els.timerText.innerText = timeLeft;
+      els.timerCircle.style.strokeDashoffset = 0;
+      els.timerCircle.style.stroke = "#FEBE10";
+
+      timer = setInterval(() => {
+        timeLeft--;
+        els.timerText.innerText = timeLeft;
+        const offset = totalDash - (timeLeft / TIME_LIMIT) * totalDash;
+        els.timerCircle.style.strokeDashoffset = offset;
+
+        if(timeLeft <= 5) els.timerCircle.style.stroke = "#EF4444";
+
+        if(timeLeft <= 0) {
+          clearInterval(timer);
+          handleAnswer(-1, null); // Time out
+        }
+      }, 1000);
+    }
+
+    function handleAnswer(selectedIdx, btn) {
+      clearInterval(timer);
+      const q = questions[currentIdx];
+      const buttons = els.qGrid.querySelectorAll('button');
+      
+      // Lock interaction
+      buttons.forEach(b => b.onclick = null);
+
+      if(selectedIdx === q.c) {
+        // Correct
+        if(btn) {
+          btn.classList.add('correct');
+          btn.innerHTML = `<span>${q.a[selectedIdx]}</span> <i class="fas fa-check"></i>`;
+        }
+        streak++;
+        score += 100 + (streak * 10);
+      } else {
+        // Wrong
+        streak = 0;
+        if(btn) {
+          btn.classList.add('wrong');
+          btn.innerHTML = `<span>${q.a[selectedIdx]}</span> <i class="fas fa-times"></i>`;
+        }
+        // Highlight correct
+        if(selectedIdx !== -1) {
+            buttons[q.c].classList.add('correct');
+        }
+      }
+
+      els.score.innerText = score;
+
+      setTimeout(() => {
+        currentIdx++;
+        loadQuestion();
+      }, 1500);
+    }
+
+    function endGame() {
+      els.game.classList.add('hidden');
+      els.result.classList.remove('hidden');
+
+      document.getElementById('final-score').innerText = score;
+      document.getElementById('final-correct').innerText = `${Math.round((score/3000)*20)}/20`; // Rough calc
+
+      // Rank Logic
+      let rank = "Water Boy";
+      let desc = "Did you accidentally walk into the wrong stadium?";
+      let badge = "F";
+      
+      if(score > 2500) {
+        rank = "Club Legend";
+        desc = "Your statue is being built outside the Bernabéu as we speak.";
+        badge = "S+";
+        triggerConfetti();
+      } else if (score > 1800) {
+        rank = "Galáctico";
+        desc = "Florentino is preparing the contract. Welcome to the first team.";
+        badge = "A";
+      } else if (score > 1000) {
+        rank = "Castilla Player";
+        desc = "Solid potential, but you need a loan spell at Getafe first.";
+        badge = "B";
+      }
+
+      document.getElementById('result-badge').innerText = badge;
+      document.getElementById('result-desc').innerText = desc;
+      document.getElementById('final-rank').innerText = rank;
+
+      // Save to Firebase (if available)
+      if(window.saveGameScore) {
+          window.saveGameScore('Real Madrid Trivia', score, rank);
+      }
+    }
+
+    function triggerConfetti() {
+      const colors = ['#FEBE10', '#001A57', '#FFFFFF'];
+      for(let i=0; i<50; i++) {
+        const conf = document.createElement('div');
+        conf.className = 'confetti';
+        conf.style.left = Math.random() * 100 + '%';
+        conf.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+        conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        document.getElementById('confetti-container').appendChild(conf);
+      }
+    }
+  </script>
+</body>
+<div class="seo-deck">
+    <h2 class="seo-title">Plaza de Cibeles: The Meeting Point</h2>
+    
+    <div class="seo-grid">
+        <div class="seo-column">
+            <p class="seo-micro-text">
+                Every major Real Madrid trophy ends in the same place: The <strong>Plaza de Cibeles</strong> in central Madrid. This neo-classical fountain, depicting the goddess Cybele on a chariot pulled by lions, is the spiritual home of <em>Madridismo</em> celebrations.
+            </p>
+            <p class="seo-micro-text">
+                The tradition began in the 1980s. Originally, fans of both Real Madrid and Atlético Madrid celebrated there, but over time, Atlético moved to the Neptune fountain down the street, leaving Cibeles exclusively for Los Blancos.
+            </p>
+            
+            <div class="seo-stat-box mt-4">
+                <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">The Ritual Steps</h4>
+                <ul class="seo-list text-sm">
+                    <li><strong>The Bus Ride:</strong> The team travels via open-top bus from the Bernabéu.</li>
+                    <li><strong>The Walkway:</strong> A crane lifts the team captain to the top of the statue.</li>
+                    <li><strong>The Crowning:</strong> The Captain ties a Real Madrid flag and scarf around the goddess's neck.</li>
+                    <li><strong>The Kiss:</strong> The Captain kisses the statue to seal the season.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="seo-column">
+            <h3 class="text-xl text-white font-serif mb-4">Iconic Captain Moments</h3>
+            <p class="seo-micro-text">
+                The image of the captain atop the fountain is the defining photo of any successful season. <strong>Raúl</strong> famously climbed the statue like a bullfighter. <strong>Sergio Ramos</strong> made it a spectacle. <strong>Marcelo</strong> brought a carnival atmosphere.
+            </p>
+            <p class="seo-micro-text">
+                <strong>Nacho Fernández</strong>, the 2024 captain, had the honor of crowning the goddess after the 15th Champions League & La Liga double.
+            </p>
+            <p class="seo-micro-text">
+                During the celebrations, hundreds of thousands of fans fill the streets of Paseo de la Castellana and Calle de Alcalá, creating a sea of white. It is a moment of communion between the squad and the city.
+            </p>
+        </div>
+    </div>
+</div>
+      <quiz-footer></quiz-footer>
+
+</html>

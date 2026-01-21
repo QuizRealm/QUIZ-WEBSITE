@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stat Wars | Real Madrid Arcade | Higher or Lower</title>
+  <meta name="description" content="Play Stat Wars: The ultimate Real Madrid higher or lower game. Test your knowledge of player stats, transfer fees, and trophies.">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Inter:wght@400;600;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            header: ['Oswald', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Cinzel', 'serif'],
+          },
+          colors: {
+            rmBlue: '#001A57',
+            rmGold: '#FEBE10',
+            rmDark: '#0B0F19',
+            correct: '#10B981',
+            wrong: '#EF4444',
+          },
+          animation: {
+            'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            'slide-up': 'slideUp 0.5s ease-out',
+            'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+          },
+          keyframes: {
+            pop: {
+              '0%': { transform: 'scale(0.9)', opacity: '0' },
+              '100%': { transform: 'scale(1)', opacity: '1' }
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(100%)' },
+              '100%': { transform: 'translateY(0)' }
+            },
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #F8F9FA; color: #0B0F19; overflow-x: hidden; }
+    
+    /* VS CIRCLE */
+    .vs-badge {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+      background: white;
+      border: 4px solid #FEBE10;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900;
+      font-family: 'Oswald', sans-serif;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    /* CARD STYLING */
+    .game-card {
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* ANIMATIONS FOR RESULT */
+    .bg-reveal-correct { background-color: #10B981 !important; }
+    .bg-reveal-wrong { background-color: #EF4444 !important; }
+    
+    .stat-number { font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+
+    /* SEO CONTENT CARDS */
+    .seo-deck {
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+        color: #e2e8f0;
+    }
+    .seo-title {
+        font-family: 'Cinzel', serif;
+        color: #FEBE10;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(254, 190, 16, 0.3);
+        padding-bottom: 1rem;
+    }
+    .seo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    .seo-stat-box {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        border-left: 3px solid #FEBE10;
+    }
+    .seo-list li {
+        margin-bottom: 0.8rem;
+        padding-left: 1.5rem;
+        position: relative;
+    }
+    .seo-list li::before {
+        content: '•';
+        color: #FEBE10;
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+    }
+    .seo-micro-text {
+        line-height: 1.8;
+        font-size: 0.95rem;
+        color: #cbd5e1;
+        margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+  <quiz-header></quiz-header>
+
+  <div class="fixed top-16 left-0 w-full z-30 pointer-events-none p-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="bg-white/90 backdrop-blur border border-gray-200 px-4 py-2 rounded-full shadow-lg flex items-center gap-3 pointer-events-auto">
+            <a href="/realmadridhub.html" class="text-gray-400 hover:text-rmBlue transition"><i class="fas fa-arrow-left"></i></a>
+            <span class="w-px h-4 bg-gray-300"></span>
+            <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Stat Wars</span>
+        </div>
+        <div class="bg-rmBlue text-white px-6 py-2 rounded-full shadow-lg flex items-center gap-4">
+            <div class="text-center">
+                <span class="block text-[10px] text-rmGold uppercase tracking-widest font-bold">Score</span>
+                <span id="score-display" class="block font-header text-2xl leading-none">0</span>
+            </div>
+            <div class="w-px h-8 bg-white/20"></div>
+            <div class="text-center">
+                <span class="block text-[10px] text-gray-400 uppercase tracking-widest font-bold">High Score</span>
+                <span id="high-score-display" class="block font-header text-xl leading-none text-gray-300">0</span>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <main class="relative flex flex-col md:flex-row h-[85vh]">
+
+    <div class="vs-badge text-rmBlue text-xl">VS</div>
+
+    <div id="left-card" class="game-card w-full md:w-1/2 h-1/2 md:h-full bg-rmBlue text-white flex flex-col items-center justify-center p-8 relative z-10">
+       <div class="text-center animate-pop">
+          <i id="left-icon" class="fas fa-futbol text-4xl text-rmGold mb-4 opacity-80"></i>
+          <h2 id="left-name" class="font-header text-4xl md:text-6xl uppercase mb-2">C. Ronaldo</h2>
+          <div class="text-sm font-sans text-gray-300 uppercase tracking-widest mb-6" id="left-label">All-Time Goals</div>
+          
+          <div class="text-7xl md:text-8xl font-header font-bold text-white stat-number" id="left-stat">450</div>
+       </div>
+       <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none"></div>
+    </div>
+
+    <div id="right-card" class="game-card w-full md:w-1/2 h-1/2 md:h-full bg-white text-rmBlue flex flex-col items-center justify-center p-8 relative z-10">
+       
+       <div class="text-center relative z-20">
+          <i id="right-icon" class="fas fa-futbol text-4xl text-rmBlue/30 mb-4"></i>
+          <h2 id="right-name" class="font-header text-4xl md:text-6xl uppercase mb-2">Benzema</h2>
+          <div class="text-sm font-sans text-gray-500 uppercase tracking-widest mb-8" id="right-label">All-Time Goals</div>
+
+          <div id="game-controls" class="flex flex-col gap-3 w-48 mx-auto">
+             <button onclick="makeGuess('higher')" class="group w-full py-4 bg-rmBlue text-white rounded-xl font-bold uppercase tracking-widest hover:bg-rmGold hover:text-black transition-all shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2">
+                <i class="fas fa-caret-up text-lg"></i> Higher
+             </button>
+             <button onclick="makeGuess('lower')" class="group w-full py-4 bg-white border-2 border-gray-200 text-gray-600 rounded-xl font-bold uppercase tracking-widest hover:border-rmBlue hover:text-rmBlue transition-all shadow-sm hover:-translate-y-1 flex items-center justify-center gap-2">
+                <i class="fas fa-caret-down text-lg"></i> Lower
+             </button>
+          </div>
+
+          <div id="right-stat-container" class="hidden mt-4 animate-pop">
+             <div class="text-7xl md:text-8xl font-header font-bold stat-number" id="right-stat">354</div>
+          </div>
+       </div>
+
+       <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
+    </div>
+
+    <div id="game-over" class="hidden absolute inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+       <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl animate-pop">
+          <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+             <i class="fas fa-times"></i>
+          </div>
+          <h2 class="font-header text-4xl text-rmBlue mb-2">Game Over</h2>
+          <p class="text-gray-500 mb-6">You reached a streak of <span id="final-score" class="font-bold text-black">0</span>.</p>
+          
+          <button onclick="restartGame()" class="w-full py-3 bg-rmBlue text-white font-bold rounded-lg mb-3 hover:bg-black transition">
+             Play Again
+          </button>
+          <a href="/realmadridhub.html" class="block w-full py-3 text-gray-400 font-bold hover:text-rmBlue transition text-sm">
+             Back to Hub
+          </a>
+       </div>
+    </div>
+
+  </main>
+
+  <section class="max-w-7xl mx-auto px-4 py-16">
+    
+    <div class="text-center mb-12">
+        <h2 class="font-header text-4xl text-rmBlue mb-2">The Data Behind the Glory</h2>
+        <div class="h-1 w-24 bg-rmGold mx-auto rounded-full"></div>
+        <p class="mt-4 text-gray-600">Deep dive into the numbers that define Real Madrid's greatest legends.</p>
+    </div>
+
+    <div class="seo-deck">
+        <h2 class="seo-title">The Goalscoring Hierarchy</h2>
+        <div class="seo-grid">
+            <div class="seo-column">
+                <p class="seo-micro-text">
+                    Cristiano Ronaldo's record of <strong>450 goals</strong> in 438 matches represents a statistical anomaly in modern football. Averaging more than 1.0 goals per game over nine seasons is a feat unlikely to be matched.
+                </p>
+                <p class="seo-micro-text">
+                    Before the CR7 era, <strong>Raúl González</strong> held the record for decades. His 323 goals came from consistency over 16 seasons. Unlike Ronaldo, who evolved into a pure poacher, Raúl was a support striker who defined the 'Galáctico' spirit.
+                </p>
+                <div class="seo-stat-box mt-4">
+                    <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Top 5 All-Time Scorers</h4>
+                    <ul class="seo-list text-sm">
+                        <li><strong>C. Ronaldo:</strong> 450 Goals (Ratio: 1.03)</li>
+                        <li><strong>K. Benzema:</strong> 354 Goals (Ratio: 0.54)</li>
+                        <li><strong>Raúl:</strong> 323 Goals (Ratio: 0.44)</li>
+                        <li><strong>Di Stéfano:</strong> 308 Goals (Ratio: 0.78)</li>
+                        <li><strong>Santillana:</strong> 290 Goals (Ratio: 0.45)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="seo-column">
+                <h3 class="text-xl text-white font-serif mb-4">Benzema's Late Bloom</h3>
+                <p class="seo-micro-text">
+                    Karim Benzema's rise to second place is a story of patience. For years, he played as the facilitator for Ronaldo. Only after 2018 did he become the primary scorer, culminating in his <strong>2022 Ballon d'Or</strong> season.
+                </p>
+                <p class="seo-micro-text">
+                    <strong>Alfredo Di Stéfano</strong> remains the most impactful player. His 308 goals helped secure the first five European Cups. In the 1950s context, his versatility was revolutionary—defending, playmaking, and scoring in the same match.
+                </p>
+                <p class="seo-micro-text">
+                    The modern era sees <strong>Vinicius Jr</strong> and <strong>Rodrygo</strong> climbing the charts rapidly. Their goal contributions in Champions League knockout stages suggest they will eventually challenge the top 10 historical rankings.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="seo-deck">
+        <h2 class="seo-title">The Most Decorated Players</h2>
+        <div class="seo-grid">
+            <div class="seo-column">
+                <p class="seo-micro-text">
+                    Winning at Real Madrid is mandatory. The recent era (2014-2024) has produced the most decorated players in club history. <strong>Luka Modrić</strong> and <strong>Nacho Fernández</strong> hold the joint record with 26 titles each.
+                </p>
+                <p class="seo-micro-text">
+                    This surpasses the previous benchmark set by <strong>Marcelo</strong> (25) and Karim Benzema (25). The longevity required to reach these numbers is immense, often spanning over a decade of elite performance.
+                </p>
+                <div class="seo-stat-box mt-4">
+                    <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Title Leaders</h4>
+                    <ul class="seo-list text-sm">
+                        <li><strong>Modrić / Nacho:</strong> 26 Titles</li>
+                        <li><strong>Marcelo / Benzema:</strong> 25 Titles</li>
+                        <li><strong>Carvajal:</strong> 25 Titles</li>
+                        <li><strong>Paco Gento:</strong> 23 Titles (inc. 6 European Cups)</li>
+                        <li><strong>Sergio Ramos:</strong> 22 Titles</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="seo-column">
+                <h3 class="text-xl text-white font-serif mb-4">The Champions League Factor</h3>
+                <p class="seo-micro-text">
+                    The defining metric for a Real Madrid legend is the <strong>European Cup</strong>. Paco Gento is the only player in history to win 6. However, the modern core (Modrić, Carvajal, Kroos, Nacho) have all reached 6 titles, equaling the legendary winger.
+                </p>
+                <p class="seo-micro-text">
+                    <strong>Toni Kroos</strong> retired with 6 UCL titles (5 with Madrid, 1 with Bayern). His retirement in 2024 marked the end of an era of unprecedented midfield dominance alongside Modrić and Casemiro.
+                </p>
+                <p class="seo-micro-text">
+                    Winning La Liga is difficult, but the club's obsession is Europe. Players like <strong>Isco</strong> and <strong>Bale</strong> (5 UCLs) have more European titles than most historic clubs combined, highlighting the specialized nature of this squad.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="seo-deck">
+        <h2 class="seo-title">Transfer Market Economics</h2>
+        <div class="seo-grid">
+            <div class="seo-column">
+                <h3 class="text-xl text-white font-serif mb-4">Galácticos 1.0 vs 3.0</h3>
+                <p class="seo-micro-text">
+                    The <strong>Galáctico</strong> strategy has evolved. In the early 2000s, Florentino Pérez broke world records for established stars like Zidane (€77M), Figo (€60M), and Beckham (€37M). This was about marketing as much as football.
+                </p>
+                <p class="seo-micro-text">
+                    Today, the strategy focuses on high-potential youth. <strong>Vinícius Jr</strong> and <strong>Rodrygo</strong> were signed for €45M each as teenagers. This "high risk, high reward" approach pays off when player values skyrocket past €150M.
+                </p>
+                <div class="seo-stat-box mt-4">
+                    <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Most Expensive Signings</h4>
+                    <ul class="seo-list text-sm">
+                        <li><strong>Eden Hazard (2019):</strong> €115M (The cautionary tale)</li>
+                        <li><strong>Jude Bellingham (2023):</strong> €103M (Immediate impact)</li>
+                        <li><strong>Gareth Bale (2013):</strong> €101M (Scored winning finals goals)</li>
+                        <li><strong>C. Ronaldo (2009):</strong> €94M (Best ROI in history)</li>
+                        <li><strong>Tchouaméni (2022):</strong> €80M (Strategic pivot)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="seo-column">
+                <p class="seo-micro-text">
+                    <strong>Eden Hazard</strong> remains the outlier. His €115M transfer is statistically the poorest return on investment due to injuries. Conversely, Cristiano Ronaldo's €94M fee looks like a bargain given his 450 goals and 4 UCL titles.
+                </p>
+                <p class="seo-micro-text">
+                    <strong>Jude Bellingham</strong> represents the perfect modern signing: elite talent, high marketing value, and youth. His immediate impact (scoring in his first Clásico) justified the €103M price tag within months.
+                </p>
+                <p class="seo-micro-text">
+                    The club also excels at sales. Selling players like Morata (€66M), Di María (€75M), and Casemiro (€70M) at the right time funds the next generation of superstars without breaking Financial Fair Play rules.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="seo-deck">
+        <h2 class="seo-title">The 500+ Club (Appearances)</h2>
+        <div class="seo-grid">
+            <div class="seo-column">
+                <p class="seo-micro-text">
+                    Surviving at Real Madrid is arguably harder than arriving. The pressure to perform every week means few players last more than a decade. The <strong>700-club</strong> is an exclusive tier of legends who defined entire eras.
+                </p>
+                <p class="seo-micro-text">
+                    <strong>Raúl González</strong> (741) tops the list, embodying the tireless work ethic of the club. Close behind is <strong>Iker Casillas</strong> (725), the goalkeeper who debuted as a teenager and left as a world champion.
+                </p>
+                <div class="seo-stat-box mt-4">
+                    <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Most Appearances</h4>
+                    <ul class="seo-list text-sm">
+                        <li><strong>Raúl:</strong> 741 Matches</li>
+                        <li><strong>Casillas:</strong> 725 Matches</li>
+                        <li><strong>Manolo Sanchís:</strong> 710 Matches</li>
+                        <li><strong>Sergio Ramos:</strong> 671 Matches</li>
+                        <li><strong>Karim Benzema:</strong> 648 Matches</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="seo-column">
+                <h3 class="text-xl text-white font-serif mb-4">Foreign Legends</h3>
+                <p class="seo-micro-text">
+                    While Spanish players dominate the all-time list, <strong>Karim Benzema</strong> holds the record for a foreign player (648). <strong>Marcelo</strong> and <strong>Roberto Carlos</strong> follow, cementing Brazil's massive influence on the club's history.
+                </p>
+                <p class="seo-micro-text">
+                    <strong>Toni Kroos</strong> and <strong>Luka Modrić</strong> are the midfield benchmarks. Modrić, playing well into his late 30s, defies the physical demands of modern football through supreme technical ability and intelligence.
+                </p>
+                <p class="seo-micro-text">
+                    The next generation aims for these numbers. <strong>Fede Valverde</strong> and <strong>Vinicius Jr</strong>, having started young, are on pace to challenge the 500-match milestone if they remain at the club for their full careers.
+                </p>
+            </div>
+        </div>
+    </div>
+
+  </section>
+
+  <script>
+    // === GAME LOGIC ===
+    const database = [
+        { name: "C. Ronaldo", stat: 450, type: "Goals", icon: "fa-futbol" },
+        { name: "Benzema", stat: 354, type: "Goals", icon: "fa-futbol" },
+        { name: "Raúl", stat: 323, type: "Goals", icon: "fa-futbol" },
+        { name: "Di Stéfano", stat: 308, type: "Goals", icon: "fa-futbol" },
+        { name: "Puskás", stat: 242, type: "Goals", icon: "fa-futbol" },
+        { name: "Hugo Sánchez", stat: 208, type: "Goals", icon: "fa-futbol" },
+        { name: "Gento", stat: 182, type: "Goals", icon: "fa-futbol" },
+        { name: "Butragueño", stat: 171, type: "Goals", icon: "fa-futbol" },
+        { name: "Pirri", stat: 172, type: "Goals", icon: "fa-futbol" },
+        { name: "Amancio", stat: 155, type: "Goals", icon: "fa-futbol" },
+        
+        { name: "Modrić", stat: 26, type: "Trophies", icon: "fa-trophy" },
+        { name: "Nacho", stat: 26, type: "Trophies", icon: "fa-trophy" },
+        { name: "Marcelo", stat: 25, type: "Trophies", icon: "fa-trophy" },
+        { name: "Benzema", stat: 25, type: "Trophies", icon: "fa-trophy" },
+        { name: "Carvajal", stat: 25, type: "Trophies", icon: "fa-trophy" },
+        { name: "S. Ramos", stat: 22, type: "Trophies", icon: "fa-trophy" },
+        { name: "Casillas", stat: 19, type: "Trophies", icon: "fa-trophy" },
+        { name: "Chendo", stat: 18, type: "Trophies", icon: "fa-trophy" },
+        
+        { name: "Raúl", stat: 741, type: "Appearances", icon: "fa-tshirt" },
+        { name: "Casillas", stat: 725, type: "Appearances", icon: "fa-tshirt" },
+        { name: "Sanchís", stat: 710, type: "Appearances", icon: "fa-tshirt" },
+        { name: "S. Ramos", stat: 671, type: "Appearances", icon: "fa-tshirt" },
+        { name: "Benzema", stat: 648, type: "Appearances", icon: "fa-tshirt" },
+        { name: "Hierro", stat: 601, type: "Appearances", icon: "fa-tshirt" },
+        { name: "Gento", stat: 600, type: "Appearances", icon: "fa-tshirt" },
+        
+        { name: "Hazard", stat: 115, type: "Transfer Fee (€M)", icon: "fa-euro-sign" },
+        { name: "Bellingham", stat: 103, type: "Transfer Fee (€M)", icon: "fa-euro-sign" },
+        { name: "Bale", stat: 101, type: "Transfer Fee (€M)", icon: "fa-euro-sign" },
+        { name: "C. Ronaldo", stat: 94, type: "Transfer Fee (€M)", icon: "fa-euro-sign" },
+        { name: "Tchouaméni", stat: 80, type: "Transfer Fee (€M)", icon: "fa-euro-sign" },
+        { name: "Zidane", stat: 77, type: "Transfer Fee (€M)", icon: "fa-euro-sign" },
+        { name: "James", stat: 75, type: "Transfer Fee (€M)", icon: "fa-euro-sign" },
+        { name: "Kaká", stat: 67, type: "Transfer Fee (€M)", icon: "fa-euro-sign" },
+        { name: "Jović", stat: 63, type: "Transfer Fee (€M)", icon: "fa-euro-sign" },
+        { name: "Figo", stat: 60, type: "Transfer Fee (€M)", icon: "fa-euro-sign" }
+    ];
+
+    // === STATE ===
+    let score = 0;
+    let itemA, itemB;
+    let highScore = localStorage.getItem('rmStatsHighScore') || 0;
+
+    // === DOM ELEMENTS ===
+    const els = {
+        leftCard: document.getElementById('left-card'),
+        rightCard: document.getElementById('right-card'),
+        leftName: document.getElementById('left-name'),
+        leftStat: document.getElementById('left-stat'),
+        leftLabel: document.getElementById('left-label'),
+        leftIcon: document.getElementById('left-icon'),
+        
+        rightName: document.getElementById('right-name'),
+        rightStat: document.getElementById('right-stat'),
+        rightLabel: document.getElementById('right-label'),
+        rightIcon: document.getElementById('right-icon'),
+        rightContainer: document.getElementById('right-stat-container'),
+        
+        controls: document.getElementById('game-controls'),
+        score: document.getElementById('score-display'),
+        highScore: document.getElementById('high-score-display'),
+        gameOver: document.getElementById('game-over'),
+        finalScore: document.getElementById('final-score')
+    };
+
+    // === INIT ===
+    function init() {
+        els.highScore.innerText = highScore;
+        pickRandomPair();
+        render();
+    }
+
+    function pickRandomPair() {
+        // If we have an itemB from previous round, it becomes itemA
+        if (itemB) {
+            itemA = itemB;
+        } else {
+            itemA = database[Math.floor(Math.random() * database.length)];
+        }
+
+        // Pick itemB (must be same category, distinct from itemA)
+        let candidates = database.filter(i => i.type === itemA.type && i.name !== itemA.name);
+        itemB = candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+    function render() {
+        // Reset UI
+        els.rightContainer.classList.add('hidden');
+        els.controls.classList.remove('hidden');
+        els.rightCard.classList.remove('bg-reveal-correct', 'bg-reveal-wrong', 'text-white');
+        els.rightCard.classList.add('bg-white', 'text-rmBlue');
+
+        // Render Left
+        els.leftName.innerText = itemA.name;
+        els.leftStat.innerText = itemA.stat;
+        els.leftLabel.innerText = "Total " + itemA.type;
+        els.leftIcon.className = `fas ${itemA.icon} text-4xl text-rmGold mb-4 opacity-80`;
+
+        // Render Right
+        els.rightName.innerText = itemB.name;
+        els.rightStat.innerText = itemB.stat;
+        els.rightLabel.innerText = "Total " + itemB.type;
+        els.rightIcon.className = `fas ${itemB.icon} text-4xl text-rmBlue/30 mb-4`;
+    }
+
+    window.makeGuess = function(guess) {
+        // Logic
+        const isHigher = itemB.stat >= itemA.stat;
+        const isCorrect = (guess === 'higher' && isHigher) || (guess === 'lower' && !isHigher);
+
+        // UI Reveal
+        els.controls.classList.add('hidden');
+        els.rightContainer.classList.remove('hidden');
+
+        if (isCorrect) {
+            // Success Animation
+            score++;
+            els.score.innerText = score;
+            els.rightCard.classList.remove('bg-white', 'text-rmBlue');
+            els.rightCard.classList.add('bg-reveal-correct', 'text-white');
+            els.rightIcon.classList.remove('text-rmBlue/30');
+            els.rightIcon.classList.add('text-white');
+
+            setTimeout(() => {
+                pickRandomPair();
+                render();
+            }, 1500);
+        } else {
+            // Game Over Animation
+            els.rightCard.classList.remove('bg-white', 'text-rmBlue');
+            els.rightCard.classList.add('bg-reveal-wrong', 'text-white');
+            els.rightCard.classList.add('animate-shake');
+            
+            setTimeout(() => {
+                gameOver();
+            }, 1000);
+        }
+    };
+
+    function gameOver() {
+        if(score > highScore) {
+            highScore = score;
+            localStorage.setItem('rmStatsHighScore', highScore);
+        }
+        els.finalScore.innerText = score;
+        els.gameOver.classList.remove('hidden');
+    }
+
+    window.restartGame = function() {
+        score = 0;
+        itemB = null; // Full reset
+        els.score.innerText = "0";
+        els.gameOver.classList.add('hidden');
+        els.rightCard.classList.remove('animate-shake');
+        init();
+    };
+
+    // Start
+    init();
+
+  </script>
+  
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>

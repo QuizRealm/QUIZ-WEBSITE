@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/components.js" defer></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Madrid Squad Builder Ultimate | Tactics & History</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600&family=Inter:wght@400;600;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            tech: ['Teko', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+            hud: ['Rajdhani', 'sans-serif'],
+          },
+          colors: {
+            rmBlue: '#001A57',
+            rmGold: '#FEBE10',
+            rmDark: '#0B0F19',
+            pitchGreen: '#1a472a',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+
+    
+    body { background-color: #0F172A; color: white; overflow-x: hidden; }
+
+    /* === PITCH 3D EFFECT === */
+    .pitch-container {
+      perspective: 1200px;
+      overflow: visible;
+    }
+    .pitch {
+      background: 
+        repeating-linear-gradient(
+          0deg,
+          #1a472a 0px,
+          #1a472a 40px,
+          #205533 40px,
+          #205533 80px
+        );
+      transform: rotateX(25deg) scale(0.95);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      border: 4px solid rgba(255,255,255,0.1);
+      position: relative;
+      transition: transform 0.5s ease;
+    }
+    
+    /* === PLAYER NODE === */
+    .player-node {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      z-index: 10;
+    }
+    .player-node:hover { transform: scale(1.15) translateY(-10px) !important; z-index: 50; }
+    
+    .empty-slot {
+      background: rgba(0, 26, 87, 0.8);
+      border: 2px dashed rgba(255,255,255,0.3);
+      backdrop-filter: blur(4px);
+    }
+    .filled-slot {
+      background: linear-gradient(135deg, #0f172a, #000);
+      border: 2px solid #FEBE10;
+      box-shadow: 0 4px 15px rgba(254, 190, 16, 0.4);
+    }
+
+    /* === UI PANELS === */
+    .hud-panel {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+    }
+    
+    /* === SCROLLBAR === */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #FEBE10; }
+
+    /* === ANIMATIONS === */
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
+
+    .seo-deck {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    color: #e2e8f0;
+}
+.seo-title {
+    font-family: 'Cinzel', serif;
+    color: #FEBE10;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(254, 190, 16, 0.3);
+    padding-bottom: 1rem;
+}
+.seo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+.seo-stat-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border-left: 3px solid #FEBE10;
+}
+.seo-list li {
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+.seo-list li::before {
+    content: 'â€¢';
+    color: #FEBE10;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+.seo-micro-text {
+    line-height: 1.8;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin-bottom: 1.5rem;
+}
+.keyword-highlight {
+    color: #fff;
+    font-weight: 600;
+}
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+  <quiz-header></quiz-header>
+
+  <main class="flex-grow flex flex-col items-center py-6 px-4 md:px-8">
+
+    <div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+      
+      <div class="lg:col-span-8 flex flex-col gap-4">
+        <div>
+          <h1 class="font-tech text-5xl text-white uppercase tracking-wider leading-none">
+            Tactical <span class="text-rmGold">Mastermind</span>
+          </h1>
+          <p class="text-slate-400 text-sm mt-1">Build your All-Time Real Madrid XI. Select a Manager to apply tactical buffs.</p>
+        </div>
+
+        <div class="hud-panel p-4 rounded-xl flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div class="flex items-center gap-3 w-full md:w-auto">
+            <span class="text-xs font-bold uppercase text-slate-500">System:</span>
+            <select id="formation-select" onchange="changeFormation(this.value)" class="bg-black border border-white/20 text-white text-sm rounded px-3 py-2 focus:border-rmGold outline-none w-full md:w-48 font-mono">
+              <optgroup label="Modern">
+                <option value="4-3-3" selected>4-3-3 (Classic)</option>
+                <option value="4-3-3-false9">4-3-3 (False 9)</option>
+                <option value="4-2-3-1">4-2-3-1 (Double Pivot)</option>
+                <option value="4-4-2-diamond">4-4-2 (Diamond)</option>
+                <option value="4-1-2-1-2">4-1-2-1-2 (Narrow)</option>
+              </optgroup>
+              <optgroup label="Classic / Defensive">
+                <option value="4-4-2">4-4-2 (Flat)</option>
+                <option value="4-5-1">4-5-1 (Park the Bus)</option>
+                <option value="5-3-2">5-3-2 (Counter Attack)</option>
+                <option value="3-5-2">3-5-2 (Wing Backs)</option>
+                <option value="3-4-3">3-4-3 (Cruyff)</option>
+              </optgroup>
+              <optgroup label="Attacking">
+                <option value="4-2-4">4-2-4 (All Out)</option>
+                <option value="3-4-1-2">3-4-1-2</option>
+                <option value="4-3-2-1">4-3-2-1 (Christmas Tree)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-3 w-full md:w-auto">
+            <span class="text-xs font-bold uppercase text-slate-500">Manager:</span>
+            <select id="manager-select" onchange="changeManager(this.value)" class="bg-black border border-white/20 text-white text-sm rounded px-3 py-2 focus:border-rmGold outline-none w-full md:w-48 font-mono">
+              <option value="none">-- Select Boss --</option>
+              <option value="ancelotti">Carlo Ancelotti (+2 Calm)</option>
+              <option value="zidane">Zinedine Zidane (+2 Tech)</option>
+              <option value="mourinho">José Mourinho (+2 Def)</option>
+              <option value="delbosque">Vicente del Bosque (+2 Chem)</option>
+              <option value="munoz">Miguel Muñoz (+3 Hist)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-4 hud-panel p-4 rounded-xl flex flex-col justify-between">
+        <div class="flex justify-between items-start mb-2">
+          <span class="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Team Rating</span>
+          <i class="fas fa-chart-line text-rmGold"></i>
+        </div>
+        <div class="flex items-end gap-2">
+          <div id="squad-rating" class="text-6xl font-hud text-white font-bold leading-none">0</div>
+          <div class="text-sm text-green-400 font-mono mb-1" id="manager-buff-text"></div>
+        </div>
+        <div class="w-full bg-slate-800 h-1 mt-4 rounded-full overflow-hidden">
+          <div id="rating-bar" class="bg-gradient-to-r from-rmBlue to-rmGold h-full w-0 transition-all duration-1000"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <div class="lg:col-span-3 space-y-4 order-2 lg:order-1">
+        
+        <div class="hud-panel p-4 rounded-lg border-l-4 border-rmBlue">
+          <div class="flex items-center justify-between mb-2 cursor-pointer" onclick="toggleCard('guide-card')">
+            <h3 class="font-tech text-xl text-white uppercase">Tactical Guide</h3>
+            <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+          </div>
+          <div id="guide-card" class="text-xs text-slate-400 leading-relaxed">
+            <p class="mb-2">1. Choose your formation from the tactical menu.</p>
+            <p class="mb-2">2. Click on any position (+) on the pitch to open the player database.</p>
+            <p>3. Fill all 11 slots + 5 bench slots to unlock the full squad rating.</p>
+          </div>
+        </div>
+
+        <div class="hud-panel p-4 rounded-lg border-l-4 border-rmGold">
+          <div class="flex items-center justify-between mb-2 cursor-pointer" onclick="toggleCard('chem-card')">
+            <h3 class="font-tech text-xl text-white uppercase">Era Bonuses</h3>
+            <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+          </div>
+          <div id="chem-card" class="text-xs text-slate-400 leading-relaxed hidden">
+            <p class="mb-2">Combine players from the same historic era to boost chemistry:</p>
+            <ul class="list-disc pl-4 space-y-1">
+              <li><span class="text-white">Galácticos (2000-2006):</span> +2 ATK</li>
+              <li><span class="text-white">Three-Peat (2016-2018):</span> +3 MID</li>
+              <li><span class="text-white">Ye-Yé (1960s):</span> +2 DEF</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="hud-panel p-4 rounded-lg border-l-4 border-green-500">
+          <div class="flex items-center justify-between mb-2 cursor-pointer" onclick="toggleCard('mgr-card')">
+            <h3 class="font-tech text-xl text-white uppercase">Manager Impact</h3>
+            <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+          </div>
+          <div id="mgr-card" class="text-xs text-slate-400 leading-relaxed hidden">
+            <p class="mb-2">Each manager changes the squad's performance ceiling:</p>
+            <ul class="list-disc pl-4 space-y-1">
+              <li><strong>Zidane:</strong> Boosts Technical Stats.</li>
+              <li><strong>Mourinho:</strong> Boosts Defensive Solidity.</li>
+              <li><strong>Ancelotti:</strong> 'Power of Friendship' (Late Game goals).</li>
+            </ul>
+          </div>
+        </div>
+
+        <button onclick="resetSquad()" class="w-full py-3 border border-red-500/30 text-red-400 text-xs font-bold uppercase rounded hover:bg-red-500/10 transition flex items-center justify-center gap-2">
+          <i class="fas fa-trash"></i> Reset Board
+        </button>
+        <button onclick="shareSquad()" class="w-full py-3 bg-rmGold text-black font-bold text-xs uppercase rounded hover:bg-white transition flex items-center justify-center gap-2 shadow-lg shadow-rmGold/10">
+          <i class="fas fa-share-alt"></i> Share Squad
+        </button>
+
+      </div>
+
+      <div class="lg:col-span-7 order-1 lg:order-2 flex justify-center">
+        <div class="pitch-container w-full aspect-[3/4] md:aspect-[4/3] max-w-[600px]">
+          <div class="pitch w-full h-full rounded-lg overflow-hidden relative" id="pitch-surface">
+            <div class="absolute top-0 left-0 w-full h-full border border-white/20"></div>
+            <div class="absolute top-1/2 left-0 w-full h-px bg-white/30 -translate-y-1/2"></div>
+            <div class="absolute top-1/2 left-1/2 w-24 h-24 border border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute top-0 left-1/2 w-40 h-16 border-x border-b border-white/30 -translate-x-1/2"></div>
+            <div class="absolute bottom-0 left-1/2 w-40 h-16 border-x border-t border-white/30 -translate-x-1/2"></div>
+
+            <div id="formation-layer" class="absolute inset-0 z-20"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-2 order-3 space-y-2">
+        <div class="text-[10px] font-bold uppercase text-slate-500 tracking-widest mb-2 border-b border-white/10 pb-2">Substitutes</div>
+        
+        <div id="bench-layer" class="flex flex-row lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+          <div class="bench-slot w-14 h-14 lg:w-full lg:h-auto lg:p-2 bg-slate-800 rounded border border-white/10 flex items-center justify-center lg:justify-start gap-3 cursor-pointer hover:border-rmGold transition" onclick="openSelection('B1', 'ANY')">
+            <div class="text-xs text-white/50 font-bold">SUB</div>
+            <div class="hidden lg:block text-xs text-slate-500 italic">Empty Slot</div>
+          </div>
+          <div class="bench-slot w-14 h-14 lg:w-full lg:h-auto lg:p-2 bg-slate-800 rounded border border-white/10 flex items-center justify-center lg:justify-start gap-3 cursor-pointer hover:border-rmGold transition" onclick="openSelection('B2', 'ANY')">
+            <div class="text-xs text-white/50 font-bold">SUB</div>
+            <div class="hidden lg:block text-xs text-slate-500 italic">Empty Slot</div>
+          </div>
+          <div class="bench-slot w-14 h-14 lg:w-full lg:h-auto lg:p-2 bg-slate-800 rounded border border-white/10 flex items-center justify-center lg:justify-start gap-3 cursor-pointer hover:border-rmGold transition" onclick="openSelection('B3', 'ANY')">
+            <div class="text-xs text-white/50 font-bold">SUB</div>
+            <div class="hidden lg:block text-xs text-slate-500 italic">Empty Slot</div>
+          </div>
+          <div class="bench-slot w-14 h-14 lg:w-full lg:h-auto lg:p-2 bg-slate-800 rounded border border-white/10 flex items-center justify-center lg:justify-start gap-3 cursor-pointer hover:border-rmGold transition" onclick="openSelection('B4', 'ANY')">
+            <div class="text-xs text-white/50 font-bold">SUB</div>
+            <div class="hidden lg:block text-xs text-slate-500 italic">Empty Slot</div>
+          </div>
+          <div class="bench-slot w-14 h-14 lg:w-full lg:h-auto lg:p-2 bg-slate-800 rounded border border-white/10 flex items-center justify-center lg:justify-start gap-3 cursor-pointer hover:border-rmGold transition" onclick="openSelection('B5', 'ANY')">
+            <div class="text-xs text-white/50 font-bold">SUB</div>
+            <div class="hidden lg:block text-xs text-slate-500 italic">Empty Slot</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <div id="player-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeModal()"></div>
+    
+    <div class="bg-[#0f172a] w-full max-w-lg rounded-xl border border-white/10 overflow-hidden relative z-10 flex flex-col max-h-[85vh] shadow-2xl animate-slide-up">
+      
+      <div class="p-4 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-rmBlue to-black">
+        <div>
+          <h3 class="font-tech text-2xl text-white uppercase tracking-wide" id="modal-title">Select Player</h3>
+          <p class="text-[10px] text-rmGold uppercase tracking-widest">Filter by Position</p>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-500 transition"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="flex gap-2 p-2 overflow-x-auto border-b border-white/5 bg-black/20">
+        <button onclick="filterPlayers('ALL')" class="px-3 py-1 text-xs font-bold rounded bg-white/10 hover:bg-white/20">ALL</button>
+        <button onclick="filterPlayers('FWD')" class="px-3 py-1 text-xs font-bold rounded bg-white/10 hover:bg-white/20">ATT</button>
+        <button onclick="filterPlayers('MID')" class="px-3 py-1 text-xs font-bold rounded bg-white/10 hover:bg-white/20">MID</button>
+        <button onclick="filterPlayers('DEF')" class="px-3 py-1 text-xs font-bold rounded bg-white/10 hover:bg-white/20">DEF</button>
+        <button onclick="filterPlayers('GK')" class="px-3 py-1 text-xs font-bold rounded bg-white/10 hover:bg-white/20">GK</button>
+      </div>
+
+      <div class="p-2 overflow-y-auto space-y-1" id="player-list">
+        </div>
+
+    </div>
+  </div>
+
+  <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-rmGold text-black px-6 py-3 rounded-full font-bold shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+    <i class="fas fa-check-circle"></i> <span id="toast-msg">Action Successful</span>
+  </div>
+
+  <script>
+    // === 1. EXTENDED DATABASE ===
+    const database = [
+      // KEEPERS
+      { id: 'casillas', name: 'I. Casillas', pos: 'GK', rat: 94, era: 'Galactico' },
+      { id: 'courtois', name: 'Courtois', pos: 'GK', rat: 92, era: 'Modern' },
+      { id: 'navas', name: 'K. Navas', pos: 'GK', rat: 89, era: 'ThreePeat' },
+      { id: 'zamora', name: 'R. Zamora', pos: 'GK', rat: 91, era: 'Classic' },
+      { id: 'buyo', name: 'Paco Buyo', pos: 'GK', rat: 86, era: 'Quinta' },
+      
+      // DEFENDERS
+      { id: 'ramos', name: 'S. Ramos', pos: 'DEF', rat: 95, era: 'ThreePeat' },
+      { id: 'hierro', name: 'F. Hierro', pos: 'DEF', rat: 90, era: 'Galactico' },
+      { id: 'rc3', name: 'R. Carlos', pos: 'DEF', rat: 92, era: 'Galactico' },
+      { id: 'marcelo', name: 'Marcelo', pos: 'DEF', rat: 91, era: 'ThreePeat' },
+      { id: 'pepe', name: 'Pepe', pos: 'DEF', rat: 88, era: 'ThreePeat' },
+      { id: 'carvajal', name: 'Carvajal', pos: 'DEF', rat: 87, era: 'Modern' },
+      { id: 'varane', name: 'R. Varane', pos: 'DEF', rat: 86, era: 'ThreePeat' },
+      { id: 'sanchis', name: 'Sanchís', pos: 'DEF', rat: 88, era: 'Quinta' },
+      { id: 'salgado', name: 'M. Salgado', pos: 'DEF', rat: 85, era: 'Galactico' },
+      { id: 'militao', name: 'Militão', pos: 'DEF', rat: 86, era: 'Modern' },
+      { id: 'rudiger', name: 'Rüdiger', pos: 'DEF', rat: 87, era: 'Modern' },
+      { id: 'alaba', name: 'D. Alaba', pos: 'DEF', rat: 86, era: 'Modern' },
+
+      // MIDFIELDERS
+      { id: 'zidane', name: 'Zidane', pos: 'MID', rat: 96, era: 'Galactico' },
+      { id: 'modric', name: 'L. Modrić', pos: 'MID', rat: 93, era: 'ThreePeat' },
+      { id: 'kroos', name: 'T. Kroos', pos: 'MID', rat: 92, era: 'ThreePeat' },
+      { id: 'casemiro', name: 'Casemiro', pos: 'MID', rat: 89, era: 'ThreePeat' },
+      { id: 'alonso', name: 'X. Alonso', pos: 'MID', rat: 88, era: 'Galactico' },
+      { id: 'redondo', name: 'Redondo', pos: 'MID', rat: 90, era: 'Classic' },
+      { id: 'makelele', name: 'Makélélé', pos: 'MID', rat: 87, era: 'Galactico' },
+      { id: 'guti', name: 'Guti.HAZ', pos: 'MID', rat: 86, era: 'Galactico' },
+      { id: 'bellingham', name: 'Bellingham', pos: 'MID', rat: 91, era: 'Modern' },
+      { id: 'valverde', name: 'Valverde', pos: 'MID', rat: 89, era: 'Modern' },
+      { id: 'ozil', name: 'M. Özil', pos: 'MID', rat: 88, era: 'Mourinho' },
+      { id: 'kaka', name: 'Kaká', pos: 'MID', rat: 87, era: 'Galactico' },
+      { id: 'camavinga', name: 'Camavinga', pos: 'MID', rat: 86, era: 'Modern' },
+
+      // FORWARDS
+      { id: 'cr7', name: 'C. Ronaldo', pos: 'FWD', rat: 99, era: 'ThreePeat' },
+      { id: 'benzema', name: 'Benzema', pos: 'FWD', rat: 92, era: 'ThreePeat' },
+      { id: 'raul', name: 'Raúl', pos: 'FWD', rat: 91, era: 'Galactico' },
+      { id: 'distefano', name: 'Di Stéfano', pos: 'FWD', rat: 98, era: 'Classic' },
+      { id: 'puskas', name: 'Puskás', pos: 'FWD', rat: 95, era: 'Classic' },
+      { id: 'r9', name: 'Ronaldo', pos: 'FWD', rat: 96, era: 'Galactico' },
+      { id: 'bale', name: 'G. Bale', pos: 'FWD', rat: 90, era: 'ThreePeat' },
+      { id: 'vini', name: 'Vinícius Jr', pos: 'FWD', rat: 92, era: 'Modern' },
+      { id: 'figo', name: 'Luís Figo', pos: 'FWD', rat: 90, era: 'Galactico' },
+      { id: 'butra', name: 'Butragueño', pos: 'FWD', rat: 89, era: 'Quinta' },
+      { id: 'hugo', name: 'Hugo Sánchez', pos: 'FWD', rat: 89, era: 'Classic' },
+      { id: 'mbappe', name: 'Mbappé', pos: 'FWD', rat: 94, era: 'Modern' },
+      { id: 'rodrygo', name: 'Rodrygo', pos: 'FWD', rat: 87, era: 'Modern' }
+    ];
+
+    // === 2. EXTENDED FORMATIONS CONFIG ===
+    // Coordinates are % Top, % Left. 
+    // Standard pitch: Top 0 is away goal, Bottom 100 is home goal.
+    // For visual clarity: GK is at ~90% Top (bottom of div), Striker at ~10% Top.
+    const formations = {
+      '4-3-3': [
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 15, role: 'DEF' }, { t: 78, l: 38, role: 'DEF' }, { t: 78, l: 62, role: 'DEF' }, { t: 75, l: 85, role: 'DEF' },
+        { t: 60, l: 50, role: 'MID' }, { t: 50, l: 25, role: 'MID' }, { t: 50, l: 75, role: 'MID' },
+        { t: 25, l: 20, role: 'FWD' }, { t: 15, l: 50, role: 'FWD' }, { t: 25, l: 80, role: 'FWD' }
+      ],
+      '4-3-3-false9': [ // CDM, 2 CM, CF deeper
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 15, role: 'DEF' }, { t: 78, l: 38, role: 'DEF' }, { t: 78, l: 62, role: 'DEF' }, { t: 75, l: 85, role: 'DEF' },
+        { t: 60, l: 50, role: 'MID' }, { t: 50, l: 30, role: 'MID' }, { t: 50, l: 70, role: 'MID' },
+        { t: 25, l: 20, role: 'FWD' }, { t: 25, l: 50, role: 'MID' }, { t: 25, l: 80, role: 'FWD' } // Center is deeper
+      ],
+      '4-4-2': [ // Flat
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 15, role: 'DEF' }, { t: 78, l: 38, role: 'DEF' }, { t: 78, l: 62, role: 'DEF' }, { t: 75, l: 85, role: 'DEF' },
+        { t: 45, l: 15, role: 'MID' }, { t: 50, l: 38, role: 'MID' }, { t: 50, l: 62, role: 'MID' }, { t: 45, l: 85, role: 'MID' },
+        { t: 15, l: 35, role: 'FWD' }, { t: 15, l: 65, role: 'FWD' }
+      ],
+      '4-4-2-diamond': [ // CDM, LM, RM, CAM, 2 ST
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 15, role: 'DEF' }, { t: 78, l: 38, role: 'DEF' }, { t: 78, l: 62, role: 'DEF' }, { t: 75, l: 85, role: 'DEF' },
+        { t: 60, l: 50, role: 'MID' }, 
+        { t: 45, l: 25, role: 'MID' }, { t: 45, l: 75, role: 'MID' }, 
+        { t: 30, l: 50, role: 'MID' },
+        { t: 12, l: 35, role: 'FWD' }, { t: 12, l: 65, role: 'FWD' }
+      ],
+      '4-2-3-1': [ // 2 CDM, 3 CAM, 1 ST
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 15, role: 'DEF' }, { t: 78, l: 38, role: 'DEF' }, { t: 78, l: 62, role: 'DEF' }, { t: 75, l: 85, role: 'DEF' },
+        { t: 60, l: 35, role: 'MID' }, { t: 60, l: 65, role: 'MID' },
+        { t: 35, l: 20, role: 'MID' }, { t: 35, l: 50, role: 'MID' }, { t: 35, l: 80, role: 'MID' },
+        { t: 12, l: 50, role: 'FWD' }
+      ],
+      '3-5-2': [ // 3 CB, 2 WB, 3 CM, 2 ST
+        { t: 88, l: 50, role: 'GK' },
+        { t: 78, l: 30, role: 'DEF' }, { t: 80, l: 50, role: 'DEF' }, { t: 78, l: 70, role: 'DEF' },
+        { t: 55, l: 10, role: 'MID' }, { t: 55, l: 90, role: 'MID' },
+        { t: 60, l: 40, role: 'MID' }, { t: 60, l: 60, role: 'MID' }, { t: 40, l: 50, role: 'MID' },
+        { t: 15, l: 35, role: 'FWD' }, { t: 15, l: 65, role: 'FWD' }
+      ],
+      '3-4-3': [
+        { t: 88, l: 50, role: 'GK' },
+        { t: 78, l: 30, role: 'DEF' }, { t: 80, l: 50, role: 'DEF' }, { t: 78, l: 70, role: 'DEF' },
+        { t: 50, l: 15, role: 'MID' }, { t: 55, l: 40, role: 'MID' }, { t: 55, l: 60, role: 'MID' }, { t: 50, l: 85, role: 'MID' },
+        { t: 20, l: 20, role: 'FWD' }, { t: 15, l: 50, role: 'FWD' }, { t: 20, l: 80, role: 'FWD' }
+      ],
+      '5-3-2': [ // Very Defensive
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 10, role: 'DEF' }, { t: 78, l: 30, role: 'DEF' }, { t: 80, l: 50, role: 'DEF' }, { t: 78, l: 70, role: 'DEF' }, { t: 75, l: 90, role: 'DEF' },
+        { t: 55, l: 30, role: 'MID' }, { t: 55, l: 50, role: 'MID' }, { t: 55, l: 70, role: 'MID' },
+        { t: 15, l: 35, role: 'FWD' }, { t: 15, l: 65, role: 'FWD' }
+      ],
+      '4-1-2-1-2': [ // Wide Diamond
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 15, role: 'DEF' }, { t: 78, l: 38, role: 'DEF' }, { t: 78, l: 62, role: 'DEF' }, { t: 75, l: 85, role: 'DEF' },
+        { t: 65, l: 50, role: 'MID' },
+        { t: 45, l: 15, role: 'MID' }, { t: 45, l: 85, role: 'MID' },
+        { t: 30, l: 50, role: 'MID' },
+        { t: 12, l: 35, role: 'FWD' }, { t: 12, l: 65, role: 'FWD' }
+      ],
+      '4-5-1': [ // Flat 5
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 15, role: 'DEF' }, { t: 78, l: 38, role: 'DEF' }, { t: 78, l: 62, role: 'DEF' }, { t: 75, l: 85, role: 'DEF' },
+        { t: 50, l: 10, role: 'MID' }, { t: 50, l: 30, role: 'MID' }, { t: 50, l: 50, role: 'MID' }, { t: 50, l: 70, role: 'MID' }, { t: 50, l: 90, role: 'MID' },
+        { t: 15, l: 50, role: 'FWD' }
+      ],
+      '4-3-2-1': [ // Christmas Tree
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 15, role: 'DEF' }, { t: 78, l: 38, role: 'DEF' }, { t: 78, l: 62, role: 'DEF' }, { t: 75, l: 85, role: 'DEF' },
+        { t: 60, l: 30, role: 'MID' }, { t: 60, l: 50, role: 'MID' }, { t: 60, l: 70, role: 'MID' },
+        { t: 35, l: 40, role: 'MID' }, { t: 35, l: 60, role: 'MID' },
+        { t: 15, l: 50, role: 'FWD' }
+      ],
+      '4-2-4': [ // All Out Attack
+        { t: 88, l: 50, role: 'GK' },
+        { t: 75, l: 15, role: 'DEF' }, { t: 78, l: 38, role: 'DEF' }, { t: 78, l: 62, role: 'DEF' }, { t: 75, l: 85, role: 'DEF' },
+        { t: 55, l: 35, role: 'MID' }, { t: 55, l: 65, role: 'MID' },
+        { t: 20, l: 15, role: 'FWD' }, { t: 15, l: 38, role: 'FWD' }, { t: 15, l: 62, role: 'FWD' }, { t: 20, l: 85, role: 'FWD' }
+      ]
+    };
+
+    // === STATE ===
+    let currentSquad = Array(11).fill(null);
+    let benchSquad = Array(5).fill(null);
+    let activeIndex = null;
+    let isBenchSelection = false;
+    let activeFormation = '4-3-3';
+    let activeManager = 'none';
+
+    // === DOM ELEMENTS ===
+    const els = {
+      layer: document.getElementById('formation-layer'),
+      modal: document.getElementById('player-modal'),
+      playerList: document.getElementById('player-list'),
+      rating: document.getElementById('squad-rating'),
+      ratingBar: document.getElementById('rating-bar'),
+      managerSelect: document.getElementById('manager-select'),
+      formationSelect: document.getElementById('formation-select'),
+      toast: document.getElementById('toast'),
+      toastMsg: document.getElementById('toast-msg'),
+      buffText: document.getElementById('manager-buff-text')
+    };
+
+    // === INIT ===
+    renderPitch();
+
+    // === FUNCTIONS ===
+    function changeFormation(val) {
+      activeFormation = val;
+      renderPitch();
+    }
+
+    function changeManager(val) {
+      activeManager = val;
+      calculateRating();
+      
+      const buffs = {
+        'none': '',
+        'ancelotti': '+2 Calm',
+        'zidane': '+2 Tech',
+        'mourinho': '+2 Def',
+        'delbosque': '+2 Chem',
+        'munoz': '+3 Hist'
+      };
+      els.buffText.innerText = buffs[val];
+    }
+
+    function renderPitch() {
+      els.layer.innerHTML = '';
+      const positions = formations[activeFormation];
+
+      positions.forEach((pos, idx) => {
+        const player = currentSquad[idx];
+        const el = document.createElement('div');
+        el.className = `player-node absolute w-12 h-12 md:w-16 md:h-16 rounded-full flex flex-col items-center justify-center shadow-2xl transition-all duration-300 ${player ? 'filled-slot' : 'empty-slot'}`;
+        el.style.top = pos.t + '%';
+        el.style.left = pos.l + '%';
+        el.style.transform = 'translate(-50%, -50%)';
+        
+        if(player) {
+          el.innerHTML = `
+            <div class="text-[10px] md:text-xs font-bold text-rmGold bg-black/80 px-1 rounded -mt-4 mb-1 border border-white/20">${player.rat}</div>
+            <i class="fas fa-tshirt text-lg md:text-2xl text-white"></i>
+            <div class="absolute -bottom-4 bg-black/90 px-2 py-0.5 rounded text-[8px] md:text-[10px] font-bold text-white whitespace-nowrap border border-white/20 shadow-lg">${player.name}</div>
+          `;
+        } else {
+          el.innerHTML = `<i class="fas fa-plus text-white/50"></i>`;
+        }
+
+        el.onclick = () => openSelection(idx, pos.role, false);
+        els.layer.appendChild(el);
+      });
+      calculateRating();
+    }
+
+    function openSelection(idx, roleFilter, isBench) {
+      activeIndex = idx;
+      isBenchSelection = isBench;
+      
+      document.getElementById('modal-title').innerText = isBench ? "Select Substitute" : `Select ${roleFilter}`;
+      
+      // Initial render filtered by role
+      filterPlayers(roleFilter === 'ANY' ? 'ALL' : roleFilter);
+      
+      els.modal.classList.remove('hidden');
+      els.modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      els.modal.classList.add('hidden');
+      els.modal.classList.remove('flex');
+    }
+
+    function filterPlayers(filter) {
+      const list = els.playerList;
+      list.innerHTML = '';
+      
+      let pool = database;
+      if (filter !== 'ALL') {
+        pool = database.filter(p => p.pos === filter);
+      }
+      
+      // Sort by rating desc
+      pool.sort((a,b) => b.rat - a.rat);
+
+      pool.forEach(p => {
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded hover:bg-rmBlue hover:border-rmGold cursor-pointer group transition";
+        item.onclick = () => selectPlayer(p);
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-black rounded flex items-center justify-center font-bold text-white text-sm border border-white/20 group-hover:border-rmGold">${p.rat}</div>
+            <div>
+              <div class="font-bold text-sm text-white group-hover:text-rmGold">${p.name}</div>
+              <div class="text-[10px] text-slate-500 uppercase">${p.pos} • ${p.era}</div>
+            </div>
+          </div>
+          <i class="fas fa-plus-circle text-slate-500 group-hover:text-white"></i>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function selectPlayer(player) {
+      if (isBenchSelection) {
+        benchSquad[activeIndex] = player;
+        updateBenchUI();
+      } else {
+        currentSquad[activeIndex] = player;
+        renderPitch();
+      }
+      closeModal();
+    }
+
+    function updateBenchUI() {
+      const slots = document.querySelectorAll('.bench-slot');
+      benchSquad.forEach((p, idx) => {
+        if(p) {
+          slots[idx].innerHTML = `
+            <div class="w-8 h-8 bg-black rounded flex items-center justify-center font-bold text-white text-xs border border-rmGold">${p.rat}</div>
+            <div class="hidden lg:block text-left">
+               <div class="text-xs font-bold text-white truncate w-24">${p.name}</div>
+               <div class="text-[9px] text-slate-500">${p.pos}</div>
+            </div>
+          `;
+          slots[idx].classList.add('border-rmGold');
+        }
+      });
+      calculateRating();
+    }
+
+    function calculateRating() {
+      let total = 0;
+      let count = 0;
+      
+      // Main Squad (Weight 1.0)
+      currentSquad.forEach(p => {
+        if(p) { total += p.rat; count++; }
+      });
+      
+      // Bench (Weight 0.5)
+      benchSquad.forEach(p => {
+        if(p) { total += (p.rat * 0.5); count += 0.5; }
+      });
+
+      let avg = count > 0 ? Math.round(total / count) : 0;
+
+      // Manager Bonus
+      if (activeManager !== 'none' && count > 5) avg += 2;
+
+      els.rating.innerText = avg;
+      els.ratingBar.style.width = avg + '%';
+    }
+
+    function resetSquad() {
+      currentSquad = Array(11).fill(null);
+      benchSquad = Array(5).fill(null);
+      
+      // Reset Bench UI
+      document.querySelectorAll('.bench-slot').forEach(el => {
+         el.innerHTML = `<div class="text-xs text-white/50 font-bold">SUB</div><div class="hidden lg:block text-xs text-slate-500 italic">Empty Slot</div>`;
+         el.classList.remove('border-rmGold');
+      });
+      
+      renderPitch();
+      showToast('Squad Cleared');
+    }
+
+    function shareSquad() {
+      // Generate Text Summary
+      let text = `👑 My Real Madrid Ultimate XI 👑\nFormation: ${activeFormation}\nRating: ${els.rating.innerText}\n\n`;
+      currentSquad.forEach(p => {
+        if(p) text += `▫️ ${p.name} (${p.rat})\n`;
+      });
+      text += `\nBuilt on QuizRealm. Can you beat this?`;
+
+      // Copy to clipboard
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Squad copied to clipboard!');
+      }).catch(err => {
+        showToast('Error copying squad');
+      });
+    }
+
+    function showToast(msg) {
+      els.toastMsg.innerText = msg;
+      els.toast.classList.remove('opacity-0', 'translate-y-20');
+      setTimeout(() => {
+        els.toast.classList.add('opacity-0', 'translate-y-20');
+      }, 3000);
+    }
+
+    function toggleCard(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle('hidden');
+    }
+
+  </script>
+
+  <div class="seo-deck">
+    <h2 class="seo-title">The Economics of Real Madrid: World's Most Valuable Club</h2>
+    
+    <div class="seo-grid">
+        <div class="seo-column">
+            <p class="seo-micro-text">
+                Real Madrid C.F. is not just a sports team; it is a global financial superpower. Consistently ranked by <strong>Forbes</strong> as the most valuable football club in the world, the entity generates revenue through a diverse ecosystem of sponsorships, matchday income, and global merchandise sales.
+            </p>
+            <p class="seo-micro-text">
+                The financial stability of the club is unique because it is owned by its members (<strong>Socios</strong>), rather than a state-owned entity or a private billionaire. This democratic structure forces the board, led by <strong>Florentino Pérez</strong>, to innovate constantly to compete with the oil-rich clubs of the Premier League and Ligue 1.
+            </p>
+            
+            <div class="seo-stat-box">
+                <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Revenue Streams (Est. Annual)</h4>
+                <ul class="seo-list text-sm">
+                    <li><strong>Adidas Kit Deal:</strong> €120 Million / Year (Guaranteed)</li>
+                    <li><strong>Fly Emirates (Shirt):</strong> €70 Million / Year</li>
+                    <li><strong>HP (Sleeve Sponsor):</strong> €70 Million / Year</li>
+                    <li><strong>Bernabéu Events:</strong> €400 Million (Projected)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="seo-column">
+            <h3 class="text-xl text-white font-serif mb-4">The "Bernabéu Engine" Strategy</h3>
+            <p class="seo-micro-text">
+                The recent renovation of the <strong>Santiago Bernabéu Stadium</strong> was a strategic economic decision. By installing a retractable pitch (the Hypogeum), the stadium can now host events 365 days a year without damaging the grass.
+            </p>
+            <p class="seo-micro-text">
+                This transforms the venue from a football stadium into a <strong>global entertainment hub</strong>. It can host NFL games, NBA exhibition matches, Taylor Swift concerts, and corporate conventions simultaneously. This diversification creates a "super-revenue" stream independent of football results.
+            </p>
+            <p class="seo-micro-text">
+                <strong>Brand Value & Global Reach:</strong> Real Madrid consistently tops the "Deloitte Football Money League." The club leverages its 500+ million social media followers to secure lucrative regional partnerships in Asia, North America, and the Middle East.
+            </p>
+            <p class="seo-micro-text">
+                The philosophy is cyclical: Buy the best players (Galácticos) -> Win Trophies -> Increase Brand Value -> Generate More Revenue -> Buy Better Players. This is the <strong>virtuous cycle</strong> that has kept Madrid at the top for a century.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+ <quiz-footer></quiz-footer>
+</html>
