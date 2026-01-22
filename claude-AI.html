@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+
+    <script type="importmap">
+    {
+        "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <script type="module" src="/firebase-config.js"></script>
+    <script type="module" src="/game-engine.js"></script>
+    <script src="/components.js" defer></script>
+    <script src="/ux-core.js" defer></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Claude 3.5 Sonnet: The Architect of Logic & Code | QuizRealm</title>
+    <meta name="description" content="A deep technical audit of Anthropic's Claude 3.5 Sonnet. Analysis of 'Artifacts' UI, Constitutional AI ethics, and why it outperforms GPT-4o in coding and nuance.">
+    <meta name="keywords" content="Claude 3.5 Sonnet review, Anthropic vs OpenAI, Claude Artifacts tutorial, constitutional AI, best AI for coding 2026, Claude vs GPT-4o">
+    <meta name="theme-color" content="#000000">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#151e2e', 900: '#0f172a' },
+                        aurora: { 
+                            purple: '#a855f7',
+                            cyan: '#06b6d4',
+                            pink: '#ec4899',
+                            dark: '#0b0b0f',
+                            orange: '#f97316' // Added for Claude branding accent
+                        },
+                    },
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background: #050507; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        h1, h2, h3, .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        /* Aurora Visual System */
+        .glass-panel {
+            background: rgba(20, 20, 30, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(249, 115, 22, 0.1); /* Orange tint for Claude */
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .aurora-gradient {
+            background: linear-gradient(135deg, rgba(249,115,22,0.1) 0%, rgba(168,85,247,0.1) 100%);
+        }
+
+        .grid-bg {
+            background-size: 60px 60px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        /* Comparison Table */
+        .comp-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .comp-table th, .comp-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: top;
+        }
+        .comp-table th {
+            background: rgba(249, 115, 22, 0.1);
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            color: #fdba74;
+        }
+        .comp-table tr:hover td { background: rgba(249, 115, 22, 0.03); }
+
+        .cta-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);
+        }
+        .cta-button:hover {
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.4);
+            transform: translateY(-2px);
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Claude 3.5 Sonnet: The Architect of Logic",
+      "description": "A comprehensive review of Anthropic's Claude 3.5 Sonnet, highlighting its coding superiority, 'Artifacts' interface, and Constitutional AI safety framework.",
+      "author": { "@type": "Organization", "name": "QuizRealm Tech" },
+      "publisher": { "@type": "Organization", "name": "QuizRealm" },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://thequizrealm.com/claude-AI.html" }
+    }
+    </script>
+</head>
+
+<body class="flex flex-col min-h-screen antialiased grid-bg">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full relative">
+
+        <header class="relative pt-36 pb-24 px-6 border-b border-white/10 overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-aurora-orange/10 via-black to-black z-0 pointer-events-none"></div>
+
+            <div class="max-w-6xl mx-auto relative z-10">
+                <div class="flex flex-col lg:flex-row lg:items-end gap-12">
+                    
+                    <div class="w-full lg:w-2/3">
+                        <div class="flex items-center gap-3 mb-8">
+                            <a href="/tech-encyclopedia.html" class="text-xs text-gray-500 hover:text-white transition-colors uppercase tracking-widest font-mono border-b border-transparent hover:border-gray-500">
+                                <i class="fas fa-arrow-left"></i> Encyclopedia
+                            </a>
+                            <span class="text-xs text-aurora-orange">///</span>
+                            <span class="text-xs text-white font-mono uppercase tracking-widest">
+                                AI Intelligence Audit
+                            </span>
+                        </div>
+                        
+                        <h1 class="text-5xl sm:text-6xl md:text-8xl font-bold mb-8 leading-[0.9] text-white tracking-tight font-display break-words">
+                            The Silent <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-aurora-orange via-white to-aurora-purple animate-pulse-slow">
+                                Genius.
+                            </span>
+                        </h1>
+                        
+                        <p class="text-lg md:text-xl text-gray-400 max-w-2xl leading-relaxed">
+                            While OpenAI chases voice modes and celebrity partnerships, Anthropic's <strong>Claude 3.5 Sonnet</strong> has quietly become the engineer's weapon of choice.
+                            <br><br>
+                            It doesn't just chat; it builds. With "Artifacts" and a massive context window, is this the end of the traditional IDE?
+                        </p>
+
+                        <div class="flex flex-wrap gap-4 mt-10">
+                            <a href="#artifacts" class="px-6 py-3 rounded-lg border border-aurora-orange/30 bg-aurora-orange/10 hover:bg-aurora-orange/20 text-white text-sm font-bold transition-all">
+                                See "Artifacts" Demo
+                            </a>
+                            <a href="/mode.html?category=programming" class="px-6 py-3 rounded-lg border border-white/10 bg-transparent hover:bg-white/5 text-gray-300 text-sm font-bold transition-all">
+                                Test Your Coding Logic
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full lg:w-1/3">
+                        <div class="glass-panel p-6 rounded-xl border-l-4 border-aurora-orange w-full">
+                            <div class="text-xs text-aurora-orange font-mono uppercase tracking-widest mb-4">System Specs</div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                                    <span class="text-gray-400">Model Family</span>
+                                    <span class="text-white font-mono">Claude 3.5 (Sonnet/Opus)</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                                    <span class="text-gray-400">Context Window</span>
+                                    <span class="text-green-400 font-mono">200k Tokens</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                                    <span class="text-gray-400">Specialty</span>
+                                    <span class="text-aurora-orange font-mono">Coding & Reasoning</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-400">Architecture</span>
+                                    <span class="text-white font-mono">Constitutional AI</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+
+        <section id="comparison" class="py-24 px-6 max-w-7xl mx-auto">
+            <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h2 class="text-4xl font-bold text-white mb-4">The Intelligence Matrix</h2>
+                    <p class="text-gray-400 max-w-xl">
+                        The AI wars are no longer about who can write a poem. They are about who can solve a physics problem or debug a kernel. Here is where Claude stands.
+                    </p>
+                </div>
+                <a href="/tech-encyclopedia.html" class="text-aurora-cyan text-sm hover:text-white transition-colors underline">
+                    Define "Context Window" &rarr;
+                </a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th class="w-1/4 text-white">Feature</th>
+                            <th class="w-1/4 text-aurora-orange border-b-2 border-aurora-orange">Claude 3.5 Sonnet</th>
+                            <th class="w-1/4 text-gray-400">GPT-4o (OpenAI)</th>
+                            <th class="w-1/4 text-gray-400">Gemini 1.5 Pro</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-gray-300">
+                        <tr>
+                            <td class="font-bold text-white border-r border-white/5">Coding Accuracy</td>
+                            <td class="bg-aurora-orange/5">
+                                <strong>Elite.</strong> "One-shot" coding capability is currently industry-leading. Fewer hallucinations in Python/React.
+                            </td>
+                            <td>
+                                <strong>Strong.</strong> Excellent at snippets, but often gets lost in larger file structures.
+                            </td>
+                            <td>
+                                <strong>Variable.</strong> Good at integration with Google ecosystem, but less consistent logic.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold text-white border-r border-white/5">Tone & Nuance</td>
+                            <td class="bg-aurora-orange/5">
+                                <span class="text-green-400 font-mono">Human-Like</span><br>Writes with warmth and reduced "AI-slop" adjectives.
+                            </td>
+                            <td>
+                                <span class="text-yellow-400 font-mono">Robotic</span><br>Overuses words like "delve," "testament," and "tapestry."
+                            </td>
+                            <td>
+                                <span class="text-yellow-400 font-mono">Corporate</span><br>Very safe, sometimes overly verbose.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold text-white border-r border-white/5">Interface</td>
+                            <td class="bg-aurora-orange/5">
+                                <strong>Artifacts.</strong> A dedicated window for code/previews (see below). Game changer.
+                            </td>
+                            <td>
+                                <strong>Chat Stream.</strong> Linear chat. Code blocks are embedded in text.
+                            </td>
+                            <td>
+                                <strong>Workspace.</strong> Integrated with Docs/Drive, but the UI is cluttered.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold text-white border-r border-white/5">Cost/Speed</td>
+                            <td class="bg-aurora-orange/5 text-white">
+                                High Speed / Mid Cost
+                            </td>
+                            <td>
+                                High Speed / High Cost
+                            </td>
+                            <td>
+                                Mid Speed / Low Cost
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="artifacts" class="bg-white/5 border-y border-white/5 py-24 px-6">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex flex-col md:flex-row gap-12 items-center">
+                    <div class="md:w-1/2">
+                        <div class="inline-block py-1 px-3 bg-aurora-orange text-black font-bold text-xs rounded mb-6">UI REVOLUTION</div>
+                        <h3 class="text-4xl font-bold text-white mb-6">The "Artifacts" Breakthrough</h3>
+                        
+                        <div class="prose prose-invert text-gray-300">
+                            <p>
+                                Before Claude 3.5, working with AI meant scrolling through endless walls of text to find that one React component or SVG file. Anthropic changed the paradigm with <strong>Artifacts</strong>.
+                            </p>
+                            <p>
+                                When you ask Claude to write code, design a website, or draft a document, it opens a dedicated window on the right side of your screen. This isn't just a display; it's a live, rendered preview.
+                            </p>
+                            <p>
+                                <strong>Why it matters:</strong> It turns the LLM from a "chatbot" into a "workspace." You can iterate on the code in the right panel while chatting in the left panel. It creates a feedback loop that feels less like prompting and more like pair programming.
+                            </p>
+                        </div>
+
+                        <div class="mt-8 p-6 bg-black border border-white/10 rounded-xl">
+                            <h4 class="text-white font-bold mb-2 text-sm uppercase tracking-wide">Explore Digital Workflows</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li>
+                                    <a href="/career-quiet-quit.html" class="text-aurora-cyan hover:text-white transition-colors">
+                                        <i class="fas fa-briefcase mr-2"></i> Is AI automating your "Quiet Quitting"?
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/article-gamify-meetings.html" class="text-aurora-cyan hover:text-white transition-colors">
+                                        <i class="fas fa-users mr-2"></i> Using Artifacts to Gamify Corporate Meetings
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/article-visual-vs-text-brain.html" class="text-aurora-cyan hover:text-white transition-colors">
+                                        <i class="fas fa-brain mr-2"></i> Are you a Visual Thinker (Artifacts) or Text Thinker (Chat)?
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="md:w-1/2 w-full">
+                        <div class="glass-panel p-8 rounded-2xl relative overflow-hidden h-96 flex flex-col">
+                            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-2">
+                                <div class="text-xs text-gray-500 font-mono uppercase tracking-widest">Claude Interface Mockup</div>
+                                <div class="flex gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-grow gap-4">
+                                <div class="w-1/2 flex flex-col gap-3 opacity-50">
+                                    <div class="bg-white/10 h-8 w-3/4 rounded"></div>
+                                    <div class="bg-white/5 h-20 w-full rounded"></div>
+                                    <div class="bg-white/10 h-8 w-1/2 rounded self-end mt-4"></div>
+                                </div>
+
+                                <div class="w-1/2 border-l border-aurora-orange/50 pl-4 relative">
+                                    <div class="absolute -top-2 right-0 bg-aurora-orange text-black text-[10px] font-bold px-2 py-0.5 rounded">ARTIFACT ACTIVE</div>
+                                    <div class="bg-black border border-white/20 h-full rounded p-4 font-mono text-[10px] text-green-400 overflow-hidden">
+                                        &lt;React.Component&gt;<br>
+                                        &nbsp;&nbsp;return (<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hello World<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;<br>
+                                        &nbsp;&nbsp;)<br>
+                                        &lt;/React.Component&gt;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-24 px-6 max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-white mb-12 text-center">The "Constitutional" Difference</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="glass-panel p-8 rounded-2xl hover:border-aurora-purple/50 transition-colors group">
+                    <div class="w-14 h-14 bg-aurora-purple/20 rounded-full flex items-center justify-center text-aurora-purple text-2xl mb-6">
+                        <i class="fas fa-scale-balanced"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Constitutional AI</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Unlike models trained on "human feedback" (RLHF) which can be biased or tricked, Claude is trained on a "Constitution" of principles (like the UN Declaration of Human Rights). This makes it harder to "jailbreak" but also more reliable for enterprise.
+                    </p>
+                    <a href="/apology-test.html" class="text-xs text-white font-bold border-b border-aurora-purple pb-1">
+                        Test Your Own Moral Compass &rarr;
+                    </a>
+                </div>
+
+                <div class="glass-panel p-8 rounded-2xl hover:border-aurora-cyan/50 transition-colors group">
+                    <div class="w-14 h-14 bg-aurora-cyan/20 rounded-full flex items-center justify-center text-aurora-cyan text-2xl mb-6">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Complex Reasoning</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        In the "Needle in a Haystack" test (finding a tiny fact in a massive document), Claude scores near 100%. It is the preferred tool for legal analysis, research papers, and debugging legacy codebases.
+                    </p>
+                    <a href="/encyclopedia.html" class="text-xs text-white font-bold border-b border-aurora-cyan pb-1">
+                        Visit the Knowledge Vault &rarr;
+                    </a>
+                </div>
+
+                <div class="glass-panel p-8 rounded-2xl hover:border-aurora-pink/50 transition-colors group">
+                    <div class="w-14 h-14 bg-aurora-pink/20 rounded-full flex items-center justify-center text-aurora-pink text-2xl mb-6">
+                        <i class="fas fa-feather-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Creative Warmth</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Ask ChatGPT to write a story, and it gives you clichés. Claude is known for "steerability"—it adopts personas better and writes fiction that feels less... generated.
+                    </p>
+                    <a href="/aesthetic-hub.html" class="text-xs text-white font-bold border-b border-aurora-pink pb-1">
+                        Explore Creative Aesthetics &rarr;
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="py-24 px-6 bg-black border-t border-white/5">
+            <div class="max-w-4xl mx-auto text-center">
+                <span class="text-aurora-orange font-mono text-xs tracking-widest uppercase mb-4 block">The Verdict</span>
+                <h2 class="text-3xl md:text-5xl font-bold text-white mb-8">Should you switch?</h2>
+                
+                <p class="text-gray-400 text-lg leading-relaxed mb-12">
+                    If you are a casual user who needs to generate an image or check the weather, stay with ChatGPT or Grok. But if you are a <strong>builder</strong>, a writer, or someone who needs to process massive amounts of information without hallucinations, Claude 3.5 Sonnet is the current apex predator.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <div class="p-6 rounded-xl border border-white/10 bg-white/5">
+                        <h4 class="text-white font-bold mb-2">Use Claude For:</h4>
+                        <ul class="text-xs text-gray-400 space-y-2 list-disc list-inside">
+                            <li>Coding (React, Python, HTML)</li>
+                            <li>Summarizing 100+ page PDFs</li>
+                            <li>Creative Writing & Roleplay</li>
+                            <li>Complex Logical Puzzles</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 rounded-xl border border-white/10 bg-white/5">
+                        <h4 class="text-white font-bold mb-2">Avoid Claude For:</h4>
+                        <ul class="text-xs text-gray-400 space-y-2 list-disc list-inside">
+                            <li>Image Generation (No native support yet)</li>
+                            <li>Real-time Web Browsing (Limited compared to Perplexity)</li>
+                            <li>Voice Conversation Mode</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-12 space-y-4">
+                    <a href="/mode.html?category=programming" class="cta-button px-8 py-4 bg-white text-black font-bold rounded-full inline-block">
+                        Take the Developer Logic Quiz
+                    </a>
+                    <div class="block">
+                        <a href="/the-acceleration-of-trends.html" class="text-sm text-gray-500 hover:text-white transition-colors underline">
+                            Read: How fast will Claude 4 arrive?
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-24 px-6 bg-gradient-to-t from-aurora-purple/10 to-transparent">
+            <div class="max-w-5xl mx-auto">
+                <div class="glass-panel p-10 rounded-3xl text-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('/assets/noise.png')] opacity-10 mix-blend-overlay"></div>
+                    
+                    <h2 class="text-4xl font-bold text-white mb-6 font-display relative z-10">
+                        Is AI causing you burnout?
+                    </h2>
+                    <p class="text-gray-300 mb-10 max-w-2xl mx-auto relative z-10">
+                        Tools like Claude are supposed to save us time, but often they just increase the expected output. If you feel like you are competing with the machine, it might be time to check your battery.
+                    </p>
+
+                    <div class="flex flex-wrap justify-center gap-4 relative z-10">
+                        <a href="/burnout-test.html" class="px-8 py-4 bg-aurora-purple hover:bg-aurora-purple/80 text-white font-bold rounded-lg transition-all shadow-lg shadow-aurora-purple/20">
+                            <i class="fas fa-battery-quarter mr-2"></i> Take Burnout Test
+                        </a>
+                        <a href="/social-battery-test.html" class="px-8 py-4 bg-black border border-white/20 hover:bg-white/10 text-white font-bold rounded-lg transition-all">
+                            <i class="fas fa-user-clock mr-2"></i> Social Battery Check
+                        </a>
+                        <a href="/lifestyle-blog.html" class="px-8 py-4 bg-black border border-white/20 hover:bg-white/10 text-white font-bold rounded-lg transition-all">
+                            <i class="fas fa-book-open mr-2"></i> Read The Neuro-Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 px-6 bg-black border-t border-white/10">
+            <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+                
+                <div class="space-y-4">
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs">Tech Audits</h4>
+                    <a href="/grok-aurora.html" class="block text-gray-500 hover:text-aurora-cyan transition-colors">Grok Aurora Review</a>
+                    <a href="/tech-encyclopedia.html" class="block text-gray-500 hover:text-aurora-cyan transition-colors">Tech Encyclopedia</a>
+                    <a href="/the-acceleration-of-trends.html" class="block text-gray-500 hover:text-aurora-cyan transition-colors">Trend Acceleration</a>
+                    <a href="/archive-reviews.html" class="block text-gray-500 hover:text-aurora-cyan transition-colors">Full Archive</a>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs">Self Discovery</h4>
+                    <a href="/identity-lab.html" class="block text-gray-500 hover:text-aurora-purple transition-colors">Identity Lab</a>
+                    <a href="/apology-test.html" class="block text-gray-500 hover:text-aurora-purple transition-colors">Apology Style</a>
+                    <a href="/social-battery-test.html" class="block text-gray-500 hover:text-aurora-purple transition-colors">Social Battery</a>
+                    <a href="/funnel-arcade-zen.html" class="block text-gray-500 hover:text-aurora-purple transition-colors">Zen Logic</a>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs">Lifestyle</h4>
+                    <a href="/career-quiet-quit.html" class="block text-gray-500 hover:text-aurora-pink transition-colors">Quiet Quitting</a>
+                    <a href="/lifestyle-blog.html" class="block text-gray-500 hover:text-aurora-pink transition-colors">The Neuro-Edit</a>
+                    <a href="/encyclopedia.html" class="block text-gray-500 hover:text-aurora-pink transition-colors">Encyclopedia</a>
+                    <a href="/family-origins.html" class="block text-gray-500 hover:text-aurora-pink transition-colors">Origins</a>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs">Connect</h4>
+                    <p class="text-gray-600">
+                        QuizRealm is a digital sociology experiment.
+                        <br>Antwerp, Belgium.
+                    </p>
+                    <a href="/index.html" class="text-white underline hover:text-aurora-cyan">Return Home</a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <quiz-footer></quiz-footer>
+</body>
+</html>
