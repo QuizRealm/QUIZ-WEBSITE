@@ -6416,15 +6416,7 @@ const CATEGORY_CONFIG = {
     desc: "Rock, Pop, Jazz, and Classical. A future quiz covering music history, albums, and artists.",
     longDesc: "Coming soon: Turn up the volume! This category will cover the history of sound. Whether you are a fan of classical symphonies, 70s rock, 90s hip hop, or modern pop, we will have questions for you. We will test knowledge on album sales, band members, music theory, and the cultural impact of legendary artists. Get ready to face the music."
   },
-  animals: { 
-    label: "Animals", 
-    icon: "🐾", 
-    pill: "Past", 
-    group: "general", 
-    img: "assets/animals.webp",
-    desc: "Wild and wonderful. Get ready for trivia about species, habitats, and animal behavior.",
-    longDesc: "Coming soon: A safari in quiz form. This category will focus entirely on the animal kingdom. We will ask about endangered species, bizarre animal behaviors, and the habitats they live in. From the depths of the ocean to the highest birds of prey, this section is dedicated to the zoologists at heart. Prepare to learn fascinating facts about our furry, scaly, and feathered friends."
-  },
+ 
 
 
   iphone17: { 
@@ -6584,7 +6576,6 @@ function recordPictioAnalytics(summary) {
 // 20 Pictionary categories (UI labels + icons)
 // Renamed to avoid redeclaring the original PICT_CATEGORIES
 const PICT_CATEGORIES_DUPLICATE = {
-  animals:    { label: "Animals",              icon: "🐾" },
   food:       { label: "Food & Drinks",        icon: "🍕" },
   sports:     { label: "Sports",               icon: "🏀" },
   household:  { label: "Household Items",      icon: "🛋️" },
@@ -6663,7 +6654,6 @@ function recordPictioAnalytics(summary) {
 
 // 20 Pictionary categories (UI labels + icons)
 const PICT_CATEGORIES = {
-  animals:    { label: "Animals",              icon: "🐾" },
   food:       { label: "Food & Drinks",        icon: "🍕" },
   sports:     { label: "Sports",               icon: "🏀" },
   household:  { label: "Household Items",      icon: "🛋️" },
