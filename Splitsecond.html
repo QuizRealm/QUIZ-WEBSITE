@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Split Second • QuizRealm Arcade</title>
+  <meta name="theme-color" content="#020617" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Outfit:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script src="components.js" defer></script>
+  <script type="module" src="assets/ux-core.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arcade: ['Rajdhani', 'sans-serif'],
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace']
+          },
+          colors: {
+            baseInk: '#020617', panel: '#0b1224',
+            accentCyan: '#22d3ee', accentBlue: '#60a5fa',
+            accentGreen: '#34d399', accentGold: '#fbbf24', accentRed: '#fb7185',
+            accentPurple: '#a855f7'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --bg: #020617; --stroke: rgba(255,255,255,0.10); }
+    body {
+      background: radial-gradient(circle at 50% 0%, rgba(168,85,247,0.12), transparent 65%), var(--bg);
+      color: white; overflow-x: hidden; touch-action: manipulation;
+      transition: background-color 0.15s ease;
+    }
+    
+    .glass {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--stroke);
+      backdrop-filter: blur(14px);
+    }
+    
+    /* --- START MODAL --- */
+    #start-modal {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      transition: opacity 0.3s ease, visibility 0.3s;
+    }
+    .modal-content {
+      background: linear-gradient(145deg, #0b1224, #060b18);
+      border: 1px solid rgba(168,85,247,0.3); box-shadow: 0 0 50px rgba(168,85,247,0.15);
+      border-radius: 24px; padding: 3rem 2rem; max-width: 420px; width: 90%; text-align: center;
+      transform: scale(1); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #start-modal.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    #start-modal.hidden .modal-content { transform: scale(0.9); }
+
+    /* --- GAME UI --- */
+    .game-container {
+      width: 100%; max-width: 420px; margin: 0 auto;
+      background: linear-gradient(145deg, #10182b, #090e1a);
+      border: 1px solid rgba(255,255,255,0.12); border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      padding: 2rem; position: relative; overflow: hidden;
+    }
+
+    .timer-bar-bg {
+      width: 100%; height: 8px; background: rgba(255,255,255,0.1);
+      border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem;
+    }
+    #timer-fill {
+      height: 100%; width: 100%; background: linear-gradient(90deg, #a855f7, #22d3ee);
+      transform-origin: left; transition: width 0.1s linear, background-color 0.3s;
+    }
+    .timer-warning { background: linear-gradient(90deg, #fbbf24, #fb7185) !important; }
+
+    /* The central word to sort */
+    .word-display-wrapper {
+      position: relative; height: 120px; display: flex; justify-content: center; align-items: center;
+      margin: 1rem 0 2rem 0; overflow: hidden;
+    }
+    .word-item {
+      position: absolute; font-family: 'Rajdhani', sans-serif; font-size: 3rem; font-weight: 800;
+      text-align: center; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.2);
+      line-height: 1.1; width: 100%; transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+    }
+
+    /* Buttons */
+    .grid-answers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .btn-sort {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px; padding: 1.5rem 0.5rem; font-family: 'Rajdhani', sans-serif;
+      font-size: 1.4rem; font-weight: 800; color: #e2e8f0; text-transform: uppercase;
+      cursor: pointer; transition: all 0.1s; user-select: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    }
+    .btn-sort i { font-size: 1rem; color: rgba(255,255,255,0.4); }
+    
+    @media (hover: hover) { .btn-sort:hover { background: rgba(255,255,255,0.1); border-color: #a855f7; } }
+    .btn-sort:active { transform: scale(0.95); background: rgba(168,85,247,0.2); border-color: #a855f7; }
+
+    .btn-start {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 16px; border-radius: 16px;
+      font-family: 'Rajdhani', sans-serif; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; font-size: 1.2rem;
+      color: #020617; background: linear-gradient(90deg, #a855f7, #60a5fa);
+      border: none; cursor: pointer; transition: transform 0.2s, filter 0.2s;
+    }
+    .btn-start:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 10px 25px rgba(168,85,247,0.4); }
+
+    /* Feedback Animations */
+    body.flash-green { background: radial-gradient(circle at 50% 50%, rgba(52,211,153,0.15), var(--bg)); }
+    body.flash-red { background: radial-gradient(circle at 50% 50%, rgba(251,113,133,0.2), var(--bg)); }
+    
+    .floating-points {
+      position: absolute; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 2.5rem;
+      color: #34d399; text-shadow: 0 0 15px rgba(52,211,153,0.8); z-index: 60; pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+    }
+    @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.3); } }
+
+    /* Round Announcer Overlay */
+    #round-announcer {
+      position: absolute; inset: 0; z-index: 40; background: rgba(6, 11, 24, 0.95);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center; opacity: 0; visibility: hidden; transition: opacity 0.2s;
+    }
+    #round-announcer.show { opacity: 1; visibility: visible; }
+    .announce-text { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1.2; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    #round-announcer.show .announce-text { transform: scale(1); }
+
+    /* End Screen */
+    #end-screen {
+      position: absolute; inset: 0; background: rgba(9, 14, 26, 0.95);
+      border-radius: 24px; z-index: 50; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center;
+      opacity: 0; visibility: hidden; transition: opacity 0.3s;
+    }
+    #end-screen.show { opacity: 1; visibility: visible; }
+  </style>
+</head>
+<body>
+  <!-- GTM NoScript -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <!-- START MODAL -->
+  <div id="start-modal">
+    <div class="modal-content">
+      <div class="text-accentPurple text-5xl mb-4"><i class="fas fa-arrows-split-up-and-left"></i></div>
+      <h1 class="font-arcade text-4xl text-white uppercase tracking-wide mb-2">Split Second</h1>
+      <p class="text-slate-300 font-sans mb-6">Categorize the words as fast as you can. Tap the left or right button (or use arrow keys). Categories will shift automatically. You have <strong class="text-white">60 seconds</strong>.</p>
+      <button onclick="startGame()" class="btn-start"><i class="fas fa-play"></i> Start Game</button>
+    </div>
+  </div>
+
+  <main class="flex-grow flex flex-col items-center pt-8 pb-16 px-4 relative max-w-[1200px] mx-auto w-full">
+    
+    <!-- CORE GAME UI -->
+    <div class="game-container" id="game-core" style="opacity: 0; filter: blur(10px); transition: all 0.4s;">
+      
+      <!-- Timer -->
+      <div class="timer-bar-bg"><div id="timer-fill"></div></div>
+
+      <!-- HUD -->
+      <div class="flex justify-between items-end mb-2 px-1">
+        <div>
+          <div class="text-slate-400 text-[10px] font-mono uppercase tracking-widest">Score</div>
+          <div class="font-arcade text-4xl text-accentCyan leading-none" id="score-display">0</div>
+        </div>
+        <div class="text-right">
+          <div class="text-slate-400 text-[10px] font-mono uppercase tracking-widest">Streak</div>
+          <div class="font-arcade text-2xl text-accentGold leading-none" id="streak-display">x1</div>
+        </div>
+      </div>
+
+      <!-- Word Display -->
+      <div class="word-display-wrapper">
+        <div class="word-item" id="current-word">READY?</div>
+      </div>
+
+      <!-- Answers Grid -->
+      <div class="grid-answers">
+        <button class="btn-sort" id="btn-left" onclick="handleAnswer('left')">
+          <i class="fas fa-chevron-left"></i>
+          <span id="label-left">---</span>
+        </button>
+        <button class="btn-sort" id="btn-right" onclick="handleAnswer('right')">
+          <i class="fas fa-chevron-right"></i>
+          <span id="label-right">---</span>
+        </button>
+      </div>
+
+      <!-- Round Announcer -->
+      <div id="round-announcer">
+        <div class="text-accentPurple font-mono text-sm tracking-widest uppercase mb-2">Categories Updated</div>
+        <div class="announce-text" id="announce-text">Marvel<br><span class="text-xl text-slate-400">vs</span><br>DC</div>
+      </div>
+
+      <!-- End Screen -->
+      <div id="end-screen">
+        <div class="text-slate-400 mb-2 font-mono uppercase tracking-widest text-xs">Time's Up</div>
+        <h2 class="font-arcade text-4xl text-white mb-6">Final Score</h2>
+        <div class="text-6xl text-accentCyan font-arcade drop-shadow-[0_0_15px_rgba(34,211,238,0.5)] mb-8" id="final-score">0</div>
+        
+        <div class="flex gap-4 w-full px-6">
+          <div class="flex-1 bg-white/5 border border-white/10 rounded-xl p-3">
+            <div class="text-accentGreen text-xl font-bold font-mono" id="stat-correct">0</div>
+            <div class="text-[10px] text-slate-400 uppercase">Sorted</div>
+          </div>
+          <div class="flex-1 bg-white/5 border border-white/10 rounded-xl p-3">
+            <div class="text-accentRed text-xl font-bold font-mono" id="stat-wrong">0</div>
+            <div class="text-[10px] text-slate-400 uppercase">Errors</div>
+          </div>
+        </div>
+        <button onclick="location.reload()" class="btn-start mt-8 w-[80%]"><i class="fas fa-redo"></i> Play Again</button>
+      </div>
+    </div>
+
+    <!-- SEO / DISCOVERY CONTENT (2 BOXES) -->
+    <section class="w-full max-w-[850px] mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="glass p-8 rounded-3xl border border-white/10">
+        <div class="text-accentCyan text-[10px] font-mono uppercase tracking-widest mb-2"><i class="fas fa-brain"></i> Neural Training</div>
+        <h3 class="font-arcade text-2xl text-white mb-3">The Psychology of Categorization</h3>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+          Split Second trains your brain's semantic memory retrieval under pressure. By forcing you to rapidly group objects, you strengthen cognitive flexibility. The mid-game category shifts force your brain to abandon its current "rule set" and adopt a new one instantly.
+        </p>
+        <p class="text-slate-400 text-xs">Accumulate XP based on your sorting speed and accuracy. Only flawless streaks trigger the 5x multiplier.</p>
+      </div>
+
+      <div class="glass p-8 rounded-3xl border border-white/10">
+        <div class="text-accentGold text-[10px] font-mono uppercase tracking-widest mb-2"><i class="fas fa-bolt"></i> Recommended Modules</div>
+        <h3 class="font-arcade text-2xl text-white mb-4">More Speed Challenges</h3>
+        <div class="space-y-3">
+          <a href="/mathsprint.html" class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-accentCyan/50 transition-colors group">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-accentCyan/20 flex items-center justify-center text-accentCyan group-hover:scale-110 transition-transform">
+              <i class="fas fa-stopwatch"></i>
+            </div>
+            <div>
+              <div class="text-white font-bold text-sm">Math Sprint</div>
+              <div class="text-slate-400 text-[11px]">Solve pure arithmetic before the timer dies.</div>
+            </div>
+          </a>
+          <a href="/rapid.html" class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-accentRed/50 transition-colors group">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-accentRed/20 flex items-center justify-center text-accentRed group-hover:scale-110 transition-transform">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <div>
+              <div class="text-white font-bold text-sm">Rapid Fire</div>
+              <div class="text-slate-400 text-[11px]">General knowledge with a ruthless timer.</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <script>
+    // --- 100 ITEM BANK (5 CATEGORY PAIRS, 20 ITEMS EACH) ---
+    const bank = [
+      {
+        leftLabel: "Marvel", rightLabel: "DC",
+        items: [
+          { name: "Iron Man", ans: "left" }, { name: "Spider-Man", ans: "left" }, { name: "Thor", ans: "left" }, { name: "Hulk", ans: "left" }, { name: "Captain America", ans: "left" },
+          { name: "Black Widow", ans: "left" }, { name: "Wolverine", ans: "left" }, { name: "Daredevil", ans: "left" }, { name: "Black Panther", ans: "left" }, { name: "Doctor Strange", ans: "left" },
+          { name: "Batman", ans: "right" }, { name: "Superman", ans: "right" }, { name: "Wonder Woman", ans: "right" }, { name: "Flash", ans: "right" }, { name: "Aquaman", ans: "right" },
+          { name: "Green Lantern", ans: "right" }, { name: "Green Arrow", ans: "right" }, { name: "Cyborg", ans: "right" }, { name: "Shazam", ans: "right" }, { name: "Nightwing", ans: "right" }
+        ]
+      },
+      {
+        leftLabel: "Mammal", rightLabel: "Reptile",
+        items: [
+          { name: "Lion", ans: "left" }, { name: "Elephant", ans: "left" }, { name: "Dolphin", ans: "left" }, { name: "Kangaroo", ans: "left" }, { name: "Bat", ans: "left" },
+          { name: "Gorilla", ans: "left" }, { name: "Whale", ans: "left" }, { name: "Bear", ans: "left" }, { name: "Zebra", ans: "left" }, { name: "Cheetah", ans: "left" },
+          { name: "Snake", ans: "right" }, { name: "Crocodile", ans: "right" }, { name: "Iguana", ans: "right" }, { name: "Turtle", ans: "right" }, { name: "Chameleon", ans: "right" },
+          { name: "Gecko", ans: "right" }, { name: "Alligator", ans: "right" }, { name: "Komodo Dragon", ans: "right" }, { name: "Tortoise", ans: "right" }, { name: "Cobra", ans: "right" }
+        ]
+      },
+      {
+        leftLabel: "Europe", rightLabel: "Asia",
+        items: [
+          { name: "France", ans: "left" }, { name: "Germany", ans: "left" }, { name: "Italy", ans: "left" }, { name: "Spain", ans: "left" }, { name: "Poland", ans: "left" },
+          { name: "Sweden", ans: "left" }, { name: "Greece", ans: "left" }, { name: "Portugal", ans: "left" }, { name: "Norway", ans: "left" }, { name: "Ukraine", ans: "left" },
+          { name: "Japan", ans: "right" }, { name: "China", ans: "right" }, { name: "India", ans: "right" }, { name: "Thailand", ans: "right" }, { name: "Vietnam", ans: "right" },
+          { name: "South Korea", ans: "right" }, { name: "Iran", ans: "right" }, { name: "Indonesia", ans: "right" }, { name: "Pakistan", ans: "right" }, { name: "Mongolia", ans: "right" }
+        ]
+      },
+      {
+        leftLabel: "80s Movie", rightLabel: "90s Movie",
+        items: [
+          { name: "The Terminator", ans: "left" }, { name: "Back to the Future", ans: "left" }, { name: "Ghostbusters", ans: "left" }, { name: "Die Hard", ans: "left" }, { name: "E.T.", ans: "left" },
+          { name: "The Breakfast Club", ans: "left" }, { name: "Blade Runner", ans: "left" }, { name: "Top Gun", ans: "left" }, { name: "Aliens", ans: "left" }, { name: "The Shining", ans: "left" },
+          { name: "The Matrix", ans: "right" }, { name: "Jurassic Park", ans: "right" }, { name: "Titanic", ans: "right" }, { name: "Pulp Fiction", ans: "right" }, { name: "Fight Club", ans: "right" },
+          { name: "The Lion King", ans: "right" }, { name: "Forrest Gump", ans: "right" }, { name: "Goodfellas", ans: "right" }, { name: "Seven", ans: "right" }, { name: "Toy Story", ans: "right" }
+        ]
+      },
+      {
+        leftLabel: "Instrument", rightLabel: "Tool",
+        items: [
+          { name: "Guitar", ans: "left" }, { name: "Piano", ans: "left" }, { name: "Violin", ans: "left" }, { name: "Flute", ans: "left" }, { name: "Drum", ans: "left" },
+          { name: "Saxophone", ans: "left" }, { name: "Trumpet", ans: "left" }, { name: "Cello", ans: "left" }, { name: "Clarinet", ans: "left" }, { name: "Harp", ans: "left" },
+          { name: "Hammer", ans: "right" }, { name: "Wrench", ans: "right" }, { name: "Screwdriver", ans: "right" }, { name: "Saw", ans: "right" }, { name: "Pliers", ans: "right" },
+          { name: "Drill", ans: "right" }, { name: "Chisel", ans: "right" }, { name: "Tape Measure", ans: "right" }, { name: "Level", ans: "right" }, { name: "Mallet", ans: "right" }
+        ]
+      }
+    ];
+
+    // --- GAME STATE ---
+    const TOTAL_TIME = 60;
+    let timeLeft = TOTAL_TIME;
+    let score = 0, streak = 0, multiplier = 1;
+    let correctCount = 0, wrongCount = 0;
+    let isPlaying = false, isTransitioning = false;
+    let timerInterval = null;
+    
+    // Arrays for logic
+    let playOrder = []; // Shuffled pairs
+    let currentPairIndex = 0;
+    let currentItems = []; // Shuffled items for the current pair
+    let currentItemIndex = 0;
+
+    // --- DOM ---
+    const uiCore = document.getElementById('game-core');
+    const uiScore = document.getElementById('score-display');
+    const uiStreak = document.getElementById('streak-display');
+    const uiTimerFill = document.getElementById('timer-fill');
+    const uiWord = document.getElementById('current-word');
+    const lblLeft = document.getElementById('label-left');
+    const lblRight = document.getElementById('label-right');
+    const announcer = document.getElementById('round-announcer');
+    const announceText = document.getElementById('announce-text');
+    const endScreen = document.getElementById('end-screen');
+
+    // Setup and shuffle data
+    function prepareData() {
+      // Shuffle the order of the 5 category pairs
+      playOrder = [...bank].sort(() => Math.random() - 0.5);
+    }
+
+    function startGame() {
+      document.getElementById('start-modal').classList.add('hidden');
+      uiCore.style.opacity = '1'; uiCore.style.filter = 'none';
+      
+      prepareData();
+      timeLeft = TOTAL_TIME; score = 0; streak = 0; multiplier = 1;
+      correctCount = 0; wrongCount = 0; currentPairIndex = 0;
+      
+      updateHUD();
+      loadPair(currentPairIndex);
+      
+      isPlaying = true;
+      timerInterval = setInterval(gameLoop, 100);
+    }
+
+    function gameLoop() {
+      if (!isPlaying || isTransitioning) return;
+      timeLeft -= 0.1;
+      const pct = (timeLeft / TOTAL_TIME) * 100;
+      uiTimerFill.style.width = `${Math.max(0, pct)}%`;
+      if (timeLeft <= 10 && !uiTimerFill.classList.contains('timer-warning')) {
+        uiTimerFill.classList.add('timer-warning');
+      }
+      if (timeLeft <= 0) endGame();
+    }
+
+    function loadPair(index) {
+      if (index >= playOrder.length) {
+        // If they beat all 100 items before time runs out, loop back or end!
+        prepareData(); // Loop data seamlessly
+        currentPairIndex = 0;
+        index = 0;
+      }
+      
+      const pair = playOrder[index];
+      lblLeft.innerText = pair.leftLabel;
+      lblRight.innerText = pair.rightLabel;
+      
+      currentItems = [...pair.items].sort(() => Math.random() - 0.5);
+      currentItemIndex = 0;
+
+      // Show announcer
+      isTransitioning = true;
+      announceText.innerHTML = `${pair.leftLabel}<br><span class="text-xl text-slate-400">vs</span><br>${pair.rightLabel}`;
+      announcer.classList.add('show');
+      uiWord.style.opacity = '0'; // Hide word temporarily
+
+      setTimeout(() => {
+        announcer.classList.remove('show');
+        isTransitioning = false;
+        showNextItem();
+      }, 1500); // 1.5 second pause for category switch
+    }
+
+    function showNextItem() {
+      if (currentItemIndex >= currentItems.length) {
+        currentPairIndex++;
+        loadPair(currentPairIndex);
+        return;
+      }
+      // Reset animation state
+      uiWord.style.transform = 'translateX(0) scale(1)';
+      uiWord.innerText = currentItems[currentItemIndex].name;
+      uiWord.style.opacity = '1';
+    }
+
+    window.handleAnswer = function(direction) {
+      if (!isPlaying || isTransitioning) return;
+      
+      const item = currentItems[currentItemIndex];
+      const isCorrect = (item.ans === direction);
+
+      // Animate word swipe out
+      uiWord.style.transform = `translateX(${direction === 'left' ? -150 : 150}px) scale(0.8)`;
+      uiWord.style.opacity = '0';
+
+      if (isCorrect) {
+        correctCount++; streak++;
+        multiplier = Math.min(5, Math.floor(streak / 10) + 1); // 10 streak for next multiplier
+        const pts = 50 * multiplier;
+        score += pts;
+        spawnFloatingScore(pts);
+        triggerFlash('flash-green');
+        if (navigator.vibrate) navigator.vibrate(30);
+      } else {
+        wrongCount++; streak = 0; multiplier = 1;
+        triggerFlash('flash-red');
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      }
+
+      updateHUD();
+      currentItemIndex++;
+      
+      // Delay next item slightly to allow swipe animation to finish
+      setTimeout(() => showNextItem(), 150);
+    };
+
+    // Keyboard support for desktop users
+    document.addEventListener('keydown', (e) => {
+      if (!isPlaying || isTransitioning) return;
+      if (e.key === 'ArrowLeft') handleAnswer('left');
+      if (e.key === 'ArrowRight') handleAnswer('right');
+    });
+
+    function updateHUD() {
+      uiScore.innerText = score;
+      uiStreak.innerText = `x${multiplier}`;
+      if (multiplier >= 5) uiStreak.style.color = '#fb7185';
+      else if (multiplier >= 3) uiStreak.style.color = '#34d399';
+      else uiStreak.style.color = '#fbbf24';
+    }
+
+    function spawnFloatingScore(amount) {
+      const fl = document.createElement('div');
+      fl.className = 'floating-points';
+      fl.innerText = `+${amount}`;
+      fl.style.left = `50%`; fl.style.top = `30%`;
+      fl.style.transform = `translateX(-50%)`;
+      document.body.appendChild(fl);
+      setTimeout(() => fl.remove(), 800);
+    }
+
+    function triggerFlash(className) {
+      document.body.classList.add(className);
+      setTimeout(() => document.body.classList.remove(className), 150);
+    }
+
+    function endGame() {
+      isPlaying = false;
+      clearInterval(timerInterval);
+      
+      document.getElementById('final-score').innerText = score;
+      document.getElementById('stat-correct').innerText = correctCount;
+      document.getElementById('stat-wrong').innerText = wrongCount;
+      endScreen.classList.add('show');
+
+      const totalItems = correctCount + wrongCount;
+      if (totalItems > 0) {
+        document.dispatchEvent(new CustomEvent('qr-xp-gain', { 
+          detail: { amount: Math.floor(score / 10), source: 'SplitSecond' } 
+        }));
+      }
+    }
+  </script>
+</body>
+</html>

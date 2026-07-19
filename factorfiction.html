@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Fact or Fiction • QuizRealm Arcade</title>
+  <meta name="theme-color" content="#020617" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Outfit:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script src="components.js" defer></script>
+  <script type="module" src="assets/ux-core.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arcade: ['Rajdhani', 'sans-serif'],
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace']
+          },
+          colors: {
+            baseInk: '#020617', panel: '#0b1224',
+            accentCyan: '#22d3ee', accentBlue: '#60a5fa',
+            accentGreen: '#34d399', accentGold: '#fbbf24', accentRed: '#fb7185'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --bg: #020617; --stroke: rgba(255,255,255,0.10); }
+    body {
+      background: radial-gradient(circle at 50% 0%, rgba(34,211,238,0.15), transparent 60%), var(--bg);
+      color: white; overflow-x: hidden; touch-action: pan-y;
+      transition: background-color 0.3s ease;
+    }
+    
+    .glass {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--stroke);
+      backdrop-filter: blur(14px);
+    }
+    
+    /* --- START MODAL --- */
+    #start-modal {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      transition: opacity 0.4s ease, visibility 0.4s;
+    }
+    .modal-content {
+      background: linear-gradient(145deg, #0b1224, #060b18);
+      border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 0 50px rgba(34,211,238,0.15);
+      border-radius: 24px; padding: 3rem 2rem; max-width: 400px; width: 90%; text-align: center;
+      transform: scale(1); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #start-modal.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    #start-modal.hidden .modal-content { transform: scale(0.9); }
+
+    /* --- GAME UI --- */
+    .progress-bar-container { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 1rem; }
+    #progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #22d3ee, #60a5fa); transition: width 0.3s ease; }
+
+    .game-viewport { position: relative; width: 100%; max-width: 380px; height: 480px; margin: 0 auto; perspective: 1000px; }
+    #card-container { position: absolute; inset: 0; }
+    
+    .swipe-card {
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg, #10182b, #090e1a);
+      border: 1px solid rgba(255,255,255,0.12); border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 2.5rem; text-align: center; cursor: grab; user-select: none;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease, box-shadow 0.3s; 
+      transform-origin: 50% 100%;
+    }
+    .swipe-card:hover { box-shadow: 0 20px 45px rgba(34,211,238,0.1); }
+    .swipe-card.dragging { transition: none; cursor: grabbing; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
+    
+    .stamp {
+      position: absolute; top: 40px; font-family: 'Rajdhani', sans-serif;
+      font-size: 3.5rem; font-weight: 900; text-transform: uppercase;
+      padding: 0.25rem 1.5rem; border: 5px solid; border-radius: 12px;
+      opacity: 0; transition: opacity 0.15s; z-index: 10; pointer-events: none;
+    }
+    .stamp-nope { color: #fb7185; border-color: #fb7185; right: 20px; transform: rotate(15deg); text-shadow: 0 0 20px rgba(251,113,133,0.4); box-shadow: inset 0 0 20px rgba(251,113,133,0.2), 0 0 20px rgba(251,113,133,0.2); }
+    .stamp-yep { color: #34d399; border-color: #34d399; left: 20px; transform: rotate(-15deg); text-shadow: 0 0 20px rgba(52,211,153,0.4); box-shadow: inset 0 0 20px rgba(52,211,153,0.2), 0 0 20px rgba(52,211,153,0.2); }
+
+    /* --- FEEDBACK PAUSE OVERLAY --- */
+    #feedback-overlay {
+      position: absolute; inset: -5px; z-index: 999; /* Fixed Z-index so it stays above new cards */
+      background: rgba(6, 11, 24, 0.98); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 28px; box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 2.5rem; text-align: center;
+      opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s;
+    }
+    #feedback-overlay.show { opacity: 1; visibility: visible; }
+    
+    .overlay-green { box-shadow: inset 0 0 80px rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3) !important; }
+    .overlay-red { box-shadow: inset 0 0 80px rgba(251,113,133,0.1); border-color: rgba(251,113,133,0.3) !important; }
+
+    /* Timer Animation */
+    .timer-track { width: 80%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 2rem; }
+    .timer-fill { height: 100%; width: 100%; transform-origin: left; }
+    @keyframes shrink-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+    .animate-timer { animation: shrink-timer 3.5s linear forwards; }
+
+    /* --- BUTTONS --- */
+    .btn-start {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 16px; border-radius: 16px;
+      font-family: 'Rajdhani', sans-serif; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; font-size: 1.2rem;
+      color: #020617; background: linear-gradient(90deg, #22d3ee, #60a5fa);
+      border: none; cursor: pointer; transition: transform 0.2s, filter 0.2s;
+    }
+    .btn-start:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 10px 25px rgba(34,211,238,0.4); }
+    
+    .btn-action { transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), filter 0.15s, opacity 0.2s; }
+    .btn-action:active { transform: scale(0.85); }
+    .btn-action:disabled { opacity: 0.3; cursor: not-allowed; transform: scale(1); filter: grayscale(1); }
+
+    /* Flash Effects & Floating text */
+    body.flash-green { background: radial-gradient(circle at 50% 50%, rgba(52,211,153,0.15), var(--bg)); }
+    body.flash-red { background: radial-gradient(circle at 50% 50%, rgba(251,113,133,0.15), var(--bg)); }
+    .floating-points {
+      position: absolute; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 2.5rem;
+      color: #34d399; text-shadow: 0 0 15px rgba(52,211,153,0.8); z-index: 60; pointer-events: none;
+      animation: floatUp 1s ease-out forwards;
+    }
+    @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
+  </style>
+</head>
+<body>
+  <!-- GTM NoScript -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <quiz-header></quiz-header>
+
+  <!-- START MODAL -->
+  <div id="start-modal">
+    <div class="modal-content">
+      <div class="text-accentCyan text-5xl mb-4"><i class="fas fa-layer-group"></i></div>
+      <h1 class="font-arcade text-4xl text-white uppercase tracking-wide mb-2">Fact or Fiction</h1>
+      <p class="text-slate-300 font-sans mb-6">Swipe <strong class="text-accentRed">LEFT</strong> if the statement is fiction. Swipe <strong class="text-accentGreen">RIGHT</strong> if it is a fact. Build your streak by answering correctly, but be careful—one wrong move resets your multiplier!</p>
+      <button onclick="startGame()" class="btn-start"><i class="fas fa-play"></i> Start Game</button>
+    </div>
+  </div>
+
+  <main class="flex-grow flex flex-col items-center pt-8 pb-16 px-4 relative max-w-[1200px] mx-auto w-full">
+    
+    <div class="w-full max-w-[380px] relative z-10" id="game-core" style="opacity: 0; filter: blur(10px); transition: all 0.5s;">
+      
+      <!-- HUD -->
+      <div class="progress-bar-container">
+        <div id="progress-fill"></div>
+      </div>
+      <div class="flex justify-between items-end mb-4 px-2">
+        <div>
+          <div class="text-slate-400 text-[10px] font-mono uppercase tracking-widest">Score</div>
+          <div class="font-arcade text-4xl text-accentCyan leading-none" id="score-display">0</div>
+        </div>
+        <div class="text-right">
+          <div class="text-slate-400 text-[10px] font-mono uppercase tracking-widest">Streak</div>
+          <div class="font-arcade text-2xl text-accentGold leading-none" id="streak-display">x0</div>
+        </div>
+      </div>
+
+      <!-- Game Viewport (Cards + Feedback Overlay) -->
+      <div class="game-viewport">
+        <!-- Stack -->
+        <div id="card-container"></div>
+        
+        <!-- Pause Feedback Overlay -->
+        <div id="feedback-overlay">
+          <div id="feedback-icon" class="text-7xl mb-4 drop-shadow-2xl"></div>
+          <h2 id="feedback-title" class="font-arcade text-4xl mb-3 uppercase tracking-wider"></h2>
+          <p id="feedback-desc" class="text-slate-300 font-sans text-[15px] leading-relaxed"></p>
+          <div class="timer-track">
+            <div id="feedback-timer" class="timer-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex justify-center gap-8 mt-8">
+        <button id="btn-left" onclick="simulateSwipe('left')" class="btn-action w-16 h-16 rounded-full bg-[#0b1224] border-2 border-accentRed/50 text-accentRed flex items-center justify-center text-2xl shadow-[0_0_25px_rgba(251,113,133,0.2)]">
+          <i class="fas fa-times"></i>
+        </button>
+        <button id="btn-right" onclick="simulateSwipe('right')" class="btn-action w-16 h-16 rounded-full bg-[#0b1224] border-2 border-accentGreen/50 text-accentGreen flex items-center justify-center text-2xl shadow-[0_0_25px_rgba(52,211,153,0.2)]">
+          <i class="fas fa-check"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- BOTTOM CONTENT SECTION -->
+    <section class="w-full max-w-[800px] mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 opacity-90 hover:opacity-100 transition-opacity">
+      <div class="glass p-8 rounded-3xl border border-white/10">
+        <div class="text-accentCyan text-[10px] font-mono uppercase tracking-widest mb-2"><i class="fas fa-brain"></i> Game Details</div>
+        <h3 class="font-arcade text-2xl text-white mb-3">Why Play Fact or Fiction?</h3>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">This game mode is designed to test your rapid recall and intuition. By forcing a binary choice, you bypass second-guessing and tap directly into your deeper memory reserves.</p>
+        <p class="text-slate-400 text-xs">Every successful swipe contributes Experience Points to your QuizRealm profile. Maintain streaks to trigger high-score multipliers.</p>
+      </div>
+
+      <div class="glass p-8 rounded-3xl border border-white/10">
+        <div class="text-accentGold text-[10px] font-mono uppercase tracking-widest mb-2"><i class="fas fa-gamepad"></i> Recommended Modules</div>
+        <h3 class="font-arcade text-2xl text-white mb-4">Keep the Streak Alive</h3>
+        <div class="space-y-3">
+          <a href="/timeline-history.html" class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-accentCyan/50 transition-colors">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-accentCyan/20 flex items-center justify-center text-accentCyan"><i class="fas fa-hourglass-half"></i></div>
+            <div>
+              <div class="text-white font-bold text-sm">History Timeline</div>
+              <div class="text-slate-400 text-[11px]">Order events chronologically under pressure.</div>
+            </div>
+          </a>
+          <a href="/rapid.html" class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-accentRed/50 transition-colors">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-accentRed/20 flex items-center justify-center text-accentRed"><i class="fas fa-bolt"></i></div>
+            <div>
+              <div class="text-white font-bold text-sm">Rapid Fire</div>
+              <div class="text-slate-400 text-[11px]">Pure, fast-paced trivia with a strict timer.</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <script>
+    // --- 100 QUESTION BANK ---
+    const rawData = [
+      ["Honey never spoils.", true, "Archaeologists found pots of honey in 3000-year-old Egyptian tombs that are still entirely edible."],
+      ["Humans use only 10% of their brains.", false, "Brain imaging shows we use virtually every part of the brain, and most parts are active almost all the time."],
+      ["Octopuses have three hearts.", true, "Two pump blood to the gills, while the third pumps it to the rest of the body."],
+      ["Bananas grow on trees.", false, "They actually grow on large herbaceous plants; the 'trunk' is just tightly packed leaves."],
+      ["Water makes up about 71% of Earth's surface.", true, "The vast majority of it is in the oceans, holding about 96.5% of all Earth's water."],
+      ["Bats are completely blind.", false, "All bats can see, and some species even have excellent vision, especially in the dark."],
+      ["Venus is the hottest planet in our solar system.", true, "Even though Mercury is closer to the sun, Venus's thick atmosphere traps heat (runaway greenhouse effect)."],
+      ["Napoleon Bonaparte was extremely short.", false, "He was about 5'6\" (1.68m), which was actually average height for a Frenchman at the time."],
+      ["A jiffy is an actual unit of measurement.", true, "In physics, a 'jiffy' is the time it takes for light to travel one centimeter in a vacuum."],
+      ["Bulls get angry when they see the color red.", false, "Bulls are nearly colorblind to red. It's the movement of the cape that provokes them."],
+      ["The Great Wall of China is visible from space.", false, "It is very long but too narrow to be seen from low Earth orbit without magnification."],
+      ["Wombat poop is cube-shaped.", true, "Their intestines shape the feces into cubes to prevent them from rolling away, using them to mark territory."],
+      ["Lightning never strikes the same place twice.", false, "Tall objects like the Empire State Building are struck dozens of times a year."],
+      ["Peanuts are not nuts.", true, "They are legumes, growing underground like lentils and peas, rather than on trees."],
+      ["Goldfish have a three-second memory.", false, "Studies prove goldfish can remember things for months and can even be trained."],
+      ["Strawberries are berries.", false, "Botanically, they are 'aggregate accessory fruits'. Bananas and eggplants are actual berries."],
+      ["Sharks are mammals.", false, "Sharks are a type of cartilaginous fish. Whales and dolphins are marine mammals."],
+      ["Mount Everest is the tallest mountain on Earth.", true, "It has the highest elevation above sea level, though Mauna Kea is taller base-to-peak."],
+      ["Cracking knuckles causes arthritis.", false, "The pop is just gas bubbles bursting in the synovial fluid. It does not lead to arthritis."],
+      ["A day on Venus is longer than its year.", true, "Venus rotates so slowly that it takes 243 Earth days to spin once, but orbits the sun in 225 days."],
+      ["Vikings wore horned helmets.", false, "There is no historical evidence of this; the image was created by 19th-century opera costume designers."],
+      ["The unicorn is the national animal of Scotland.", true, "Chosen in the 12th century, it represented purity, power, and chivalry in Celtic mythology."],
+      ["Frankenstein was the monster.", false, "Victor Frankenstein was the scientist who created the unnamed creature."],
+      ["Oxford University is older than the Aztec Empire.", true, "Teaching at Oxford started around 1096, while the Aztec city of Tenochtitlán was founded in 1325."],
+      ["Chameleons change color to blend in.", false, "They change color mainly to regulate their temperature or communicate with other chameleons."],
+      ["Sloths hold their breath longer than dolphins.", true, "By slowing their heart rate, sloths can hold their breath for up to 40 minutes under water."],
+      ["Humans have exactly 5 senses.", false, "We have many more, including proprioception (body awareness), thermoception (temperature), and balance."],
+      ["Nintendo was founded in 1889.", true, "Long before video games, Nintendo was founded in Kyoto to produce playing cards (Hanafuda)."],
+      ["Dogs sweat exclusively through their paws.", false, "While paw pads sweat, dogs primarily regulate their body temperature by panting."],
+      ["Carrots improve night vision.", false, "This was a WWII British propaganda myth to hide their invention of radar from the Germans."],
+      ["More stars than grains of sand.", true, "Estimates suggest there are 10,000 stars for every grain of sand on Earth's beaches."],
+      ["Adult humans have 206 bones.", true, "We are born with around 270, but some fuse together as we grow up."],
+      ["Hair/nails grow after death.", false, "The skin retracts as it dehydrates, creating the optical illusion that nails and hair have grown."],
+      ["The Eiffel Tower shrinks in winter.", true, "Due to thermal expansion of the iron, it can be up to 15 cm shorter in cold weather."],
+      ["Ostriches bury heads in sand.", false, "They lower their heads to tend to their nests or hide from predators, but they don't bury them."],
+      ["Pineapples take two years to grow.", true, "From planting to harvest, a single pineapple plant can take 18 to 24 months to produce fruit."],
+      ["Penguins live at both poles.", false, "Penguins live almost exclusively in the Southern Hemisphere (Antarctica). Polar bears are in the North."],
+      ["'J' is not on the periodic table.", true, "It is the only letter in the English alphabet that does not appear in any element's symbol or name."],
+      ["Tongue taste zones.", false, "The 'taste map' is a myth; all taste buds can detect all five basic tastes."],
+      ["Spider silk is thinner than hair.", true, "Despite being thinner, spider silk is proportionally stronger than steel."],
+      ["Toilets flush backwards in Australia.", false, "The Coriolis effect doesn't dictate toilet water; the bowl's shape and jets determine the spin."],
+      ["A shrimp's heart is in its head.", true, "Actually, it's located in its thorax, which is covered by the same shell as the head."],
+      ["Blue blood in veins.", false, "Human blood is always red. Veins look blue due to how light penetrates and reflects through the skin."],
+      ["Avocados are fruits.", true, "Botanically, an avocado is a large berry containing a single seed."],
+      ["Pacific is the largest ocean.", true, "It covers more than 30% of the Earth's surface and is larger than all of Earth's land area combined."],
+      ["Einstein failed math.", false, "He was a math prodigy. The rumor was fabricated by a newspaper; Einstein found it amusing."],
+      ["Cows have four stomachs.", true, "They have one stomach with four distinct compartments to help digest tough plant matter."],
+      ["Elephants can't jump.", true, "They are the only mammals physically incapable of jumping, as they have no 'spring' in their legs."],
+      ["Light speed is 300,000 km/s.", true, "In a vacuum, light travels at exactly 299,792,458 meters per second."],
+      ["Sugar causes hyperactivity.", false, "Numerous double-blind studies have proven that sugar does not cause hyperactivity in children."],
+      ["Cats can't taste sweet.", true, "A genetic mutation prevents all felines from tasting sweetness; they lack the necessary receptor."],
+      ["Diamonds are compressed coal.", false, "Most diamonds date back much older than Earth's first land plants (which formed coal)."],
+      ["Octopus blood is blue.", true, "Their blood uses a copper-rich protein called hemocyanin to transport oxygen, which turns blue."],
+      ["Gum takes 7 years to digest.", false, "While the gum base is indigestible, it passes through your digestive system in a few days."],
+      ["Oxygen atomic number is 8.", true, "An oxygen atom has 8 protons in its nucleus."],
+      ["Kilimanjaro is highest in Africa.", true, "Located in Tanzania, it is the highest peak on the African continent at 5,895 meters."],
+      ["Less DNA than cabbage.", false, "Humans have about 3.2 billion base pairs, while cabbage has around 600 million."],
+      ["Cleopatra & iPhone.", true, "She lived closer to the invention of the iPhone (2007) than the building of the Great Pyramid (c. 2560 BC)."],
+      ["Chameleons native to Madagascar/Africa.", true, "The vast majority of chameleon species are found exclusively on the island of Madagascar and mainland Africa."],
+      ["Washington's wooden teeth.", false, "His dentures were actually made of ivory, gold, lead, and human/animal teeth."],
+      ["Flea acceleration.", true, "A flea jumps with an acceleration of about 100 Gs, much faster than a space shuttle launch."],
+      ["Sydney is Australia's capital.", false, "The capital city of Australia is Canberra, chosen as a compromise between Sydney and Melbourne."],
+      ["No sound in space.", true, "Space is a vacuum, meaning there are no molecules for sound waves to travel through."],
+      ["Fortune cookies invented in China.", false, "They were invented in the early 20th century in California, USA, mostly by Japanese immigrants."],
+      ["Russia is largest country.", true, "It spans 11 time zones and is nearly twice as large as the second-largest country, Canada."],
+      ["Body heat through head.", false, "You lose heat evenly; the head just seems like more because it's usually the only part uncovered in winter."],
+      ["Apples in rose family.", true, "Apples, pears, plums, cherries, and raspberries all belong to the Rosaceae family."],
+      ["Edison invented light bulb.", false, "He created the first *commercially viable* incandescent bulb, but others (like Joseph Swan) invented earlier versions."],
+      ["Body is 60% water.", true, "Depending on age and gender, the adult human body consists of roughly 60% water."],
+      ["Penny kills from Empire State.", false, "Due to its flat shape and light weight, terminal velocity prevents it from doing lethal damage."],
+      ["Tigers have striped skin.", true, "If you shaved a tiger, you would still see stripes on its skin, and no two patterns are alike."],
+      ["Alcohol kills brain cells.", false, "It damages the dendrites (connections between cells), but rarely kills the cells entirely unless abused heavily."],
+      ["Metals explode in water.", true, "Alkali metals like sodium, potassium, and francium react violently and explosively with water."],
+      ["Camel humps store water.", false, "They store fat, which the camel uses for energy when food is scarce."],
+      ["Amazon is longest river.", false, "The Nile is generally considered the longest, though some scientists argue the Amazon is longer."],
+      ["Only female mosquitoes bite.", true, "Females need the protein in blood to develop their eggs. Males only drink flower nectar."],
+      ["Frogs drink through skin.", true, "They absorb moisture directly through their skin via an area known as the 'drinking patch'."],
+      ["Macadamia toxic to dogs.", true, "They can cause severe weakness, vomiting, and hyperthermia in dogs, even in small amounts."],
+      ["Sahara is largest desert.", false, "A desert is defined by precipitation. Antarctica is technically the largest desert on Earth."],
+      ["Saturn only planet with rings.", false, "Jupiter, Uranus, and Neptune also have ring systems, though they are faint and less visible."],
+      ["Mars is Red Planet.", true, "It gets its reddish color from iron oxide (rust) covering its surface."],
+      ["Snail sleeps 3 years.", true, "If weather conditions aren't favorable, some snails can hibernate for up to three years."],
+      ["Gold most conductive.", false, "Silver is the most electrically conductive element, followed by copper, then gold."],
+      ["Share DNA with banana.", true, "We share about 50-60% of our genes with bananas, as all living things share fundamental cellular functions."],
+      ["Fingernails grow faster.", true, "Fingernails grow about three to four times faster than toenails."],
+      ["Statue of Liberty from Spain.", false, "It was a gift from France to the United States to commemorate their alliance during the American Revolution."],
+      ["Sound faster in water.", true, "Sound travels about 4.3 times faster in water than it does in air because water is denser."],
+      ["Ant weight = human weight.", false, "Biologists estimate humans outweigh ants globally by a significant margin now, though it used to be closer."],
+      ["Hippo red sunscreen.", true, "They secrete 'blood sweat', a red, oily fluid that acts as a sunblock and an antibiotic."],
+      ["Polar bear skin is black.", true, "Their fur is translucent and hollow, which allows sunlight to hit their black skin, absorbing heat."],
+      ["Bats capable of flight.", true, "They are the only mammals that can sustain true flight; flying squirrels merely glide."],
+      ["Sneeze eyes open.", false, "It is technically possible, but our natural reflex is to tightly shut our eyes when sneezing."],
+      ["Paperclip creates heat.", true, "Bending the metal causes friction at the molecular level, generating noticeable heat."],
+      ["Rabbits see behind.", true, "Their eyes are positioned on the sides of their skull, giving them nearly 360-degree vision."],
+      ["Twins identical fingerprints.", false, "Fingerprints are formed by environmental factors in the womb, so even identical twins have unique prints."],
+      ["Shortest war 38 min.", true, "The Anglo-Zanzibar War of 1896 lasted between 38 and 45 minutes before Zanzibar surrendered."],
+      ["Ketchup as medicine.", true, "In the 1830s, tomato ketchup was sold as a cure for diarrhea and indigestion."],
+      ["Turtles breathe through butts.", true, "Some species, like the Fitzroy River turtle, use cloacal respiration to stay underwater for months."],
+      ["Earthworm halves.", false, "The half with the head might survive and regenerate a tail, but the tail half will die."],
+      ["Deepest ocean trench.", true, "The Mariana Trench in the western Pacific Ocean reaches a depth of nearly 11,000 meters."]
+    ];
+
+    const questions = rawData.map(item => ({ q: item[0], a: item[1], exp: item[2] }))
+                             .sort(() => Math.random() - 0.5);
+    
+    let currentCardIndex = 0;
+    let score = 0;
+    let streak = 0;
+    let isPaused = false;
+
+    const container = document.getElementById('card-container');
+    const scoreDisplay = document.getElementById('score-display');
+    const streakDisplay = document.getElementById('streak-display');
+    const progressFill = document.getElementById('progress-fill');
+    
+    const overlay = document.getElementById('feedback-overlay');
+    const btnLeft = document.getElementById('btn-left');
+    const btnRight = document.getElementById('btn-right');
+
+    function startGame() {
+      document.getElementById('start-modal').classList.add('hidden');
+      const core = document.getElementById('game-core');
+      core.style.opacity = '1';
+      core.style.filter = 'none';
+      renderCards();
+      updateProgress();
+    }
+
+    function renderCards() {
+      container.innerHTML = '';
+      for (let i = Math.min(currentCardIndex + 1, questions.length - 1); i >= currentCardIndex; i--) {
+        const q = questions[i];
+        const card = document.createElement('div');
+        card.className = 'swipe-card';
+        const depth = i - currentCardIndex;
+        card.style.transform = `scale(${1 - depth * 0.05}) translateY(${depth * -15}px)`;
+        card.style.zIndex = questions.length - i;
+        
+        card.innerHTML = `
+          <div class="stamp stamp-nope">FICTION</div>
+          <div class="stamp stamp-yep">FACT</div>
+          <div class="text-accentCyan/30 text-6xl mb-6"><i class="fas fa-quote-left"></i></div>
+          <p class="font-sans text-2xl font-bold leading-snug">${q.q}</p>
+        `;
+
+        if (i === currentCardIndex) setupSwipe(card);
+        container.appendChild(card);
+      }
+    }
+
+    function setupSwipe(card) {
+      let startX = 0; let currentX = 0; let dragging = false;
+      const nopeStamp = card.querySelector('.stamp-nope');
+      const yepStamp = card.querySelector('.stamp-yep');
+
+      const onPointerDown = (e) => {
+        if (isPaused) return;
+        dragging = true; startX = e.clientX || e.touches[0].clientX;
+        card.classList.add('dragging');
+      };
+
+      const onPointerMove = (e) => {
+        if (!dragging || isPaused) return;
+        const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+        currentX = clientX - startX;
+        card.style.transform = `translateX(${currentX}px) rotate(${currentX * 0.04}deg)`;
+        nopeStamp.style.opacity = currentX < -40 ? Math.min(1, Math.abs(currentX)/100) : 0;
+        yepStamp.style.opacity = currentX > 40 ? Math.min(1, currentX/100) : 0;
+      };
+
+      const onPointerUp = () => {
+        if (!dragging) return;
+        dragging = false; card.classList.remove('dragging');
+
+        if (Math.abs(currentX) > 100) {
+          const dir = currentX > 0 ? 'right' : 'left';
+          card.style.transform = `translateX(${currentX * 5}px) rotate(${currentX * 0.1}deg)`;
+          card.style.opacity = 0;
+          setTimeout(() => processAnswer(dir), 150);
+        } else {
+          card.style.transform = `scale(1) translateY(0px)`;
+          nopeStamp.style.opacity = 0; yepStamp.style.opacity = 0;
+        }
+      };
+
+      card.addEventListener('mousedown', onPointerDown); card.addEventListener('touchstart', onPointerDown, {passive:true});
+      window.addEventListener('mousemove', onPointerMove); window.addEventListener('touchmove', onPointerMove, {passive:true});
+      window.addEventListener('mouseup', onPointerUp); window.addEventListener('touchend', onPointerUp);
+    }
+
+    window.simulateSwipe = (direction) => {
+      if (isPaused) return;
+      const topCard = container.lastElementChild;
+      if (!topCard || topCard.classList.contains('dragging')) return;
+      topCard.style.transition = 'transform 0.3s, opacity 0.3s';
+      topCard.style.transform = `translateX(${direction === 'right' ? 500 : -500}px) rotate(${direction === 'right' ? 20 : -20}deg)`;
+      topCard.style.opacity = 0;
+      setTimeout(() => processAnswer(direction), 150);
+    };
+
+    function processAnswer(direction) {
+      if(isPaused || currentCardIndex >= questions.length) return;
+      isPaused = true;
+      btnLeft.disabled = true; btnRight.disabled = true;
+
+      const q = questions[currentCardIndex];
+      const isCorrect = (direction === 'right') === q.a;
+      
+      if (isCorrect) {
+        let pts = 100 + (streak * 10);
+        score += pts; streak++;
+        spawnFloatingScore(pts);
+        if (navigator.vibrate) navigator.vibrate(50);
+        document.dispatchEvent(new CustomEvent('qr-xp-gain', { detail: { amount: 15, source: 'FactFiction' } }));
+      } else {
+        streak = 0;
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      }
+
+      scoreDisplay.innerText = score;
+      streakDisplay.innerText = `x${streak}`;
+      
+      // Load next card in background while modal is shown
+      currentCardIndex++;
+      updateProgress();
+      if (currentCardIndex < questions.length) {
+        renderCards();
+      }
+
+      showFeedbackModal(isCorrect, q.exp, () => {
+        isPaused = false;
+        btnLeft.disabled = false; btnRight.disabled = false;
+        if (currentCardIndex >= questions.length) {
+          container.innerHTML = `
+            <div class="h-full w-full flex flex-col justify-center items-center text-center p-6 glass rounded-3xl z-20 bg-[#090e1a]">
+              <h2 class="font-arcade text-4xl text-white mb-2">RUN COMPLETE</h2>
+              <div class="text-slate-400 mb-6">Final Score</div>
+              <div class="text-6xl text-accentCyan font-arcade drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">${score}</div>
+              <button onclick="location.reload()" class="btn-start mt-8 w-auto px-8">Play Again</button>
+            </div>
+          `;
+        }
+      });
+    }
+
+    function showFeedbackModal(isCorrect, explanation, callback) {
+      const icon = document.getElementById('feedback-icon');
+      const title = document.getElementById('feedback-title');
+      const desc = document.getElementById('feedback-desc');
+      const timerFill = document.getElementById('feedback-timer');
+
+      // Reset classes
+      overlay.className = 'show';
+      timerFill.classList.remove('animate-timer');
+      void timerFill.offsetWidth; // Trigger reflow
+
+      if(isCorrect) {
+        overlay.classList.add('overlay-green');
+        icon.innerHTML = '<i class="fas fa-check-circle text-accentGreen"></i>';
+        title.innerHTML = '<span class="text-accentGreen">Fact Checked</span>';
+        timerFill.style.background = '#34d399';
+      } else {
+        overlay.classList.add('overlay-red');
+        icon.innerHTML = '<i class="fas fa-times-octagon text-accentRed"></i>';
+        title.innerHTML = '<span class="text-accentRed">Fiction</span>';
+        timerFill.style.background = '#fb7185';
+      }
+      
+      desc.innerText = explanation;
+      timerFill.classList.add('animate-timer');
+
+      // Exactly 3.5 seconds pause
+      setTimeout(() => {
+        overlay.classList.remove('show');
+        setTimeout(callback, 200); // Allow fade-out animation to complete before unpausing controls
+      }, 3500);
+    }
+
+    function spawnFloatingScore(amount) {
+      const fl = document.createElement('div');
+      fl.className = 'floating-points';
+      fl.innerText = `+${amount}`;
+      fl.style.left = `50%`; fl.style.top = `20%`;
+      document.body.appendChild(fl);
+      setTimeout(() => fl.remove(), 1000);
+    }
+
+    function updateProgress() {
+      const pct = (currentCardIndex / questions.length) * 100;
+      progressFill.style.width = `${pct}%`;
+    }
+  </script>
+</body>
+</html>

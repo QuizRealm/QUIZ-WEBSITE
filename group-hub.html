@@ -1,49 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    <!-- End Google Tag Manager -->
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Group Games Hub | Multiplayer Trivia | QuizRealm</title>
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#020617">
+    <meta name="description" content="Host live multiplayer trivia games. Turn your TV into the main board and use phones as controllers. Perfect for parties, pubs, and classrooms.">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="components.js" defer></script>
-    
     <script src="data.js"></script> 
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
-                    colors: { brand: '#6366f1', surface: '#1e293b', background: '#0f172a' },
-                    animation: { 'fade-in': 'fadeIn 0.5s ease-out' },
-                    keyframes: { fadeIn: { '0%': { opacity: 0, transform: 'translateY(10px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } } }
+                    fontFamily: {
+                        arcade: ['Rajdhani', 'sans-serif'],
+                        sans: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        baseInk: '#020617', panel: '#0b1224',
+                        accentCyan: '#22d3ee', accentBlue: '#60a5fa',
+                        accentGreen: '#34d399', accentGold: '#fbbf24', accentRed: '#fb7185',
+                        brand: '#6366f1'
+                    },
+                    animation: { 'fade-in': 'fadeIn 0.6s ease-out forwards' },
+                    keyframes: { fadeIn: { '0%': { opacity: 0, transform: 'translateY(15px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } } }
                 }
             }
         }
     </script>
 
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
-        .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        body { background: radial-gradient(circle at 50% 0%, rgba(99,102,241,0.15), transparent 60%), #020617; color: #f8fafc; overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
         
         /* Premium Card Hover Effects */
         .game-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
-        .game-card:hover { transform: translateY(-5px) scale(1.02); z-index: 10; border-color: rgba(255,255,255,0.2); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-        
-        /* Netflix-style Dropdown Animation */
+        .game-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%); opacity: 0; transition: opacity 0.3s; }
+        .game-card:hover { transform: translateY(-6px); border-color: rgba(99,102,241,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(99,102,241,0.15); }
+        .game-card:hover::before { opacity: 1; }
+
+        /* Smooth Dropdown */
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
         details[open] summary ~ * { animation: sweep .3s ease-in-out; }
-        @keyframes sweep { 0% { opacity: 0; transform: translateY(-10px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes sweep { 0% { opacity: 0, transform: translateY(-10px); } 100% { opacity: 1, transform: translateY(0); } }
         
-        .glow-text { text-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
+        .glow-text { text-shadow: 0 0 25px rgba(99, 102, 241, 0.6); }
     </style>
 </head>
 
@@ -52,123 +64,184 @@
 
     <quiz-header></quiz-header>
 
-    <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10">
+    <main class="flex-grow w-full max-w-[1300px] mx-auto px-4 py-12">
         
-        <div class="text-center mb-12 animate-fade-in">
-            <h1 class="text-5xl md:text-7xl font-black text-white mb-4 drop-shadow-2xl tracking-tight">
-                Group <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-purple-400 glow-text">Hub</span>
+        <!-- HERO -->
+        <div class="text-center mb-14 animate-fade-in">
+            <div class="inline-flex items-center gap-2 text-xs font-arcade uppercase tracking-[0.2em] text-accentCyan mb-3 bg-accentCyan/10 px-4 py-1.5 rounded-full border border-accentCyan/20">
+                <i class="fas fa-satellite-dish animate-pulse"></i> Live Multiplayer
+            </div>
+            <h1 class="text-5xl md:text-7xl font-arcade font-black text-white mb-4 drop-shadow-2xl tracking-tight">
+                GROUP <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-accentCyan glow-text">HUB</span>
             </h1>
-            <p class="text-lg text-slate-400">Select a cartridge. Launch the server. Phones are controllers.</p>
+            <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto font-sans">
+                Turn any screen into the main board. Use your phones as controllers. 
+                Host the ultimate trivia night instantly.
+            </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start opacity-0 animate-fade-in" style="animation-delay: 0.2s;">
             
-            <div class="lg:col-span-4 sticky top-8 z-20">
-                <div class="glass p-8 rounded-3xl border-t-4 border-purple-500 shadow-2xl relative overflow-hidden group">
-                    <div class="absolute -right-10 -top-10 text-9xl text-purple-500/10 rotate-12 group-hover:rotate-45 transition duration-700"><i class="fas fa-gamepad"></i></div>
+            <!-- LEFT COLUMN: JOIN & HOW TO PLAY -->
+            <div class="lg:col-span-4 flex flex-col gap-6 sticky top-6 z-20">
+                
+                <!-- JOIN BOX -->
+                <div class="glass p-8 rounded-3xl border-t-4 border-brand shadow-2xl relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 text-9xl text-brand/5 rotate-12 group-hover:rotate-45 transition duration-700 pointer-events-none"><i class="fas fa-gamepad"></i></div>
                     
-                    <h2 class="text-3xl font-black text-white mb-2 relative z-10">JOIN GAME</h2>
-                    <p class="text-sm text-purple-300 mb-6 font-bold tracking-wider relative z-10">ENTER ROOM CODE</p>
+                    <h2 class="text-3xl font-arcade font-black text-white mb-1 relative z-10">JOIN LOBBY</h2>
+                    <p class="text-xs text-brand mb-6 font-bold tracking-widest uppercase relative z-10">Enter 4-Letter Room Code</p>
                     
                     <div class="relative mb-6 z-10">
-                        <input type="text" id="join-code" maxlength="4" placeholder="A B C D" 
-                            class="w-full bg-black/40 border-2 border-white/10 rounded-2xl px-4 py-6 text-center text-4xl font-black tracking-[0.2em] uppercase outline-none focus:border-purple-500 focus:bg-black/60 transition text-white placeholder-white/5 shadow-inner"
+                        <input type="text" id="join-code" maxlength="4" placeholder="----" 
+                            class="w-full bg-[#050814] border border-white/20 rounded-2xl px-4 py-6 text-center text-5xl font-arcade font-black tracking-[0.3em] uppercase outline-none focus:border-accentCyan focus:ring-2 focus:ring-accentCyan/30 transition text-white placeholder-white/10 shadow-inner"
                             onkeyup="this.value = this.value.toUpperCase()">
                     </div>
                     
-                    <button onclick="joinRoom()" class="w-full py-5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl transition shadow-lg transform hover:scale-[1.02] relative z-10 text-lg tracking-widest border border-white/10">
+                    <button onclick="joinRoom()" class="w-full py-5 bg-gradient-to-r from-brand to-accentCyan hover:brightness-110 text-white font-arcade font-bold rounded-xl transition shadow-[0_0_20px_rgba(99,102,241,0.3)] transform hover:scale-[1.02] relative z-10 text-xl tracking-widest">
                         CONNECT <i class="fas fa-bolt ml-2"></i>
                     </button>
                 </div>
 
-                <div class="mt-8 grid grid-cols-2 gap-4">
-                    <a href="mini-crossword.html" class="glass p-4 rounded-xl flex flex-col items-center justify-center text-center hover:bg-white/5 transition border border-white/5 group">
-                        <i class="fas fa-th text-2xl text-slate-500 group-hover:text-brand mb-2 transition"></i>
-                        <span class="text-xs font-bold text-slate-300">Solo Crossword</span>
-                    </a>
-                    <a href="tango-logic.html" class="glass p-4 rounded-xl flex flex-col items-center justify-center text-center hover:bg-white/5 transition border border-white/5 group">
-                        <i class="fas fa-sun text-2xl text-slate-500 group-hover:text-yellow-400 mb-2 transition"></i>
-                        <span class="text-xs font-bold text-slate-300">Solar Grid</span>
-                    </a>
+                <!-- HOW TO PLAY WIDGET -->
+                <div class="glass p-6 rounded-3xl border border-white/5">
+                    <h3 class="text-sm font-arcade text-slate-400 uppercase tracking-widest mb-4"><i class="fas fa-info-circle mr-2"></i>How It Works</h3>
+                    <div class="space-y-4 font-sans text-sm">
+                        <div class="flex gap-4 items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand/20 text-brand flex items-center justify-center font-bold shrink-0">1</div>
+                            <p class="text-slate-300 mt-1"><strong>Host a Game:</strong> Select a mode from the right. This screen becomes the main display.</p>
+                        </div>
+                        <div class="flex gap-4 items-start">
+                            <div class="w-8 h-8 rounded-full bg-accentCyan/20 text-accentCyan flex items-center justify-center font-bold shrink-0">2</div>
+                            <p class="text-slate-300 mt-1"><strong>Players Join:</strong> Friends scan the QR code or enter the 4-letter code on their phones.</p>
+                        </div>
+                        <div class="flex gap-4 items-start">
+                            <div class="w-8 h-8 rounded-full bg-accentGreen/20 text-accentGreen flex items-center justify-center font-bold shrink-0">3</div>
+                            <p class="text-slate-300 mt-1"><strong>Compete:</strong> Questions appear here. Answer on your phone. Fastest correct answers win.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- RIGHT COLUMN: GAME MODES -->
             <div class="lg:col-span-8 space-y-8">
                 
                 <div>
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="h-px bg-white/10 flex-grow"></div>
-                        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Featured Modes</span>
+                    <div class="flex items-center gap-4 mb-6">
+                        <h2 class="text-2xl font-arcade font-black text-white uppercase tracking-wider">Featured Modules</h2>
                         <div class="h-px bg-white/10 flex-grow"></div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         
-                        <div onclick="hostGame('general_easy')" class="game-card bg-gradient-to-br from-blue-900/40 to-slate-900/40 border border-blue-500/30 p-6 rounded-2xl cursor-pointer group">
+                        <!-- Card 1 -->
+                        <div onclick="hostGame('general_easy')" class="game-card bg-[#0b1224] border border-blue-500/30 p-6 rounded-3xl cursor-pointer group shadow-lg">
                             <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-blue-500 rounded-xl text-white shadow-lg shadow-blue-500/20"><i class="fas fa-smile text-2xl"></i></div>
-                                <span class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-wider border border-blue-500/20">Casual</span>
+                                <div class="w-12 h-12 flex items-center justify-center bg-blue-500/20 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition-colors duration-300"><i class="fas fa-smile-beam text-2xl"></i></div>
+                                <span class="px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 text-[10px] font-bold uppercase tracking-wider border border-blue-500/20">Casual</span>
                             </div>
-                            <h3 class="text-2xl font-black text-white mb-1 group-hover:text-blue-400 transition">General Knowledge</h3>
-                            <p class="text-xs text-blue-200/60 font-bold mb-4">The Classic Pub Quiz</p>
-                            <p class="text-sm text-slate-400 leading-relaxed">Relaxed trivia for everyone. Pop culture, basic science, and fun facts. No stress.</p>
+                            <h3 class="text-2xl font-arcade font-black text-white mb-1 group-hover:text-blue-400 transition">General Knowledge</h3>
+                            <p class="text-xs text-blue-300/80 font-sans mb-3">The Classic Pub Quiz</p>
+                            <p class="text-sm text-slate-400 leading-relaxed font-sans">Relaxed trivia for everyone. Pop culture, basic science, and fun facts. Perfect for mixed crowds.</p>
                         </div>
 
-                        <div onclick="hostGame('general_hard')" class="game-card bg-gradient-to-br from-red-900/40 to-slate-900/40 border border-red-500/30 p-6 rounded-2xl cursor-pointer group">
+                        <!-- Card 2 -->
+                        <div onclick="hostGame('general_hard')" class="game-card bg-[#0b1224] border border-red-500/30 p-6 rounded-3xl cursor-pointer group shadow-lg">
                             <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-red-600 rounded-xl text-white shadow-lg shadow-red-600/20"><i class="fas fa-skull text-2xl"></i></div>
-                                <span class="px-2 py-1 rounded bg-red-500/10 text-red-400 text-[10px] font-black uppercase tracking-wider border border-red-500/20">Expert</span>
+                                <div class="w-12 h-12 flex items-center justify-center bg-red-500/20 text-red-400 rounded-xl group-hover:bg-red-500 group-hover:text-white transition-colors duration-300"><i class="fas fa-skull text-2xl"></i></div>
+                                <span class="px-2 py-1 rounded-md bg-red-500/10 text-red-400 text-[10px] font-bold uppercase tracking-wider border border-red-500/20">Expert</span>
                             </div>
-                            <h3 class="text-2xl font-black text-white mb-1 group-hover:text-red-400 transition">The Gauntlet</h3>
-                            <p class="text-xs text-red-200/60 font-bold mb-4">High-Stakes Trivia</p>
-                            <p class="text-sm text-slate-400 leading-relaxed">For the know-it-alls. Obscure facts, deep cuts, and zero mercy. Only for the brave.</p>
+                            <h3 class="text-2xl font-arcade font-black text-white mb-1 group-hover:text-red-400 transition">The Gauntlet</h3>
+                            <p class="text-xs text-red-300/80 font-sans mb-3">High-Stakes Trivia</p>
+                            <p class="text-sm text-slate-400 leading-relaxed font-sans">For the know-it-alls. Obscure facts, deep cuts, and zero mercy. Fast timers, hard questions.</p>
                         </div>
 
-                        <div onclick="hostGame('geography')" class="game-card bg-gradient-to-br from-teal-900/40 to-slate-900/40 border border-teal-500/30 p-6 rounded-2xl cursor-pointer group">
+                        <!-- Card 3 -->
+                        <div onclick="hostGame('geography')" class="game-card bg-[#0b1224] border border-teal-500/30 p-6 rounded-3xl cursor-pointer group shadow-lg">
                             <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-teal-500 rounded-xl text-white shadow-lg shadow-teal-500/20"><i class="fas fa-globe-americas text-2xl"></i></div>
-                                <span class="px-2 py-1 rounded bg-teal-500/10 text-teal-400 text-[10px] font-black uppercase tracking-wider border border-teal-500/20">Global</span>
+                                <div class="w-12 h-12 flex items-center justify-center bg-teal-500/20 text-teal-400 rounded-xl group-hover:bg-teal-500 group-hover:text-white transition-colors duration-300"><i class="fas fa-globe-americas text-2xl"></i></div>
+                                <span class="px-2 py-1 rounded-md bg-teal-500/10 text-teal-400 text-[10px] font-bold uppercase tracking-wider border border-teal-500/20">Global</span>
                             </div>
-                            <h3 class="text-2xl font-black text-white mb-1 group-hover:text-teal-400 transition">Geography</h3>
-                            <p class="text-xs text-teal-200/60 font-bold mb-4">World Traveller</p>
-                            <p class="text-sm text-slate-400 leading-relaxed">Capitals, flags, and landmarks. Test your mental map of the world.</p>
+                            <h3 class="text-2xl font-arcade font-black text-white mb-1 group-hover:text-teal-400 transition">Geography</h3>
+                            <p class="text-xs text-teal-300/80 font-sans mb-3">World Traveller</p>
+                            <p class="text-sm text-slate-400 leading-relaxed font-sans">Capitals, flags, and natural landmarks. Test the mental map of your entire group.</p>
                         </div>
 
-                        <div onclick="hostGame('history')" class="game-card bg-gradient-to-br from-amber-900/40 to-slate-900/40 border border-amber-500/30 p-6 rounded-2xl cursor-pointer group">
+                        <!-- Card 4 -->
+                        <div onclick="hostGame('history')" class="game-card bg-[#0b1224] border border-amber-500/30 p-6 rounded-3xl cursor-pointer group shadow-lg">
                             <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-amber-600 rounded-xl text-white shadow-lg shadow-amber-600/20"><i class="fas fa-hourglass-half text-2xl"></i></div>
-                                <span class="px-2 py-1 rounded bg-amber-500/10 text-amber-400 text-[10px] font-black uppercase tracking-wider border border-amber-500/20">Time</span>
+                                <div class="w-12 h-12 flex items-center justify-center bg-amber-500/20 text-amber-400 rounded-xl group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300"><i class="fas fa-hourglass-half text-2xl"></i></div>
+                                <span class="px-2 py-1 rounded-md bg-amber-500/10 text-amber-400 text-[10px] font-bold uppercase tracking-wider border border-amber-500/20">Time</span>
                             </div>
-                            <h3 class="text-2xl font-black text-white mb-1 group-hover:text-amber-400 transition">History</h3>
-                            <p class="text-xs text-amber-200/60 font-bold mb-4">Timeline Master</p>
-                            <p class="text-sm text-slate-400 leading-relaxed">Wars, inventions, and empires. From Ancient Rome to the Digital Age.</p>
+                            <h3 class="text-2xl font-arcade font-black text-white mb-1 group-hover:text-amber-400 transition">History</h3>
+                            <p class="text-xs text-amber-300/80 font-sans mb-3">Timeline Master</p>
+                            <p class="text-sm text-slate-400 leading-relaxed font-sans">Wars, inventions, and fallen empires. Spanning from Ancient Rome to the Digital Age.</p>
                         </div>
 
                     </div>
                 </div>
 
+                <!-- FULL LIBRARY DROPDOWN -->
                 <div class="pt-4">
                     <details class="group">
-                        <summary class="flex items-center justify-between p-6 glass rounded-2xl cursor-pointer hover:bg-white/5 border border-white/5 transition-all duration-300 list-none select-none">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-full bg-surface border border-white/10 flex items-center justify-center text-slate-400 group-open:text-brand group-open:border-brand transition">
-                                    <i class="fas fa-layer-group"></i>
+                        <summary class="flex items-center justify-between p-6 glass rounded-3xl cursor-pointer hover:bg-white/5 border border-white/5 transition-all duration-300 list-none select-none">
+                            <div class="flex items-center gap-5">
+                                <div class="w-12 h-12 rounded-xl bg-[#050814] border border-white/10 flex items-center justify-center text-slate-400 group-open:text-brand group-open:border-brand transition shadow-inner">
+                                    <i class="fas fa-layer-group text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-white group-open:text-brand transition">Explore Full Collection</h3>
-                                    <p class="text-xs text-slate-500 uppercase tracking-wider font-bold">More Categories Available</p>
+                                    <h3 class="text-xl font-arcade font-bold text-white group-open:text-brand transition tracking-wide">Explore Full Database</h3>
+                                    <p class="text-xs text-slate-400 font-sans mt-1">Access specific categories and niche topics</p>
                                 </div>
                             </div>
-                            <i class="fas fa-chevron-down text-slate-500 group-open:rotate-180 transition-transform duration-300"></i>
+                            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-open:bg-brand/20 transition-colors">
+                                <i class="fas fa-chevron-down text-slate-300 group-open:text-brand group-open:rotate-180 transition-transform duration-300"></i>
+                            </div>
                         </summary>
                         
-                        <div id="full-lib-grid" class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 p-4 glass rounded-2xl border border-white/5">
-                            </div>
+                        <div id="full-lib-grid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 p-5 glass rounded-3xl border border-white/5 bg-[#0b1224]/50">
+                            <!-- Populated via JS -->
+                        </div>
                     </details>
                 </div>
 
             </div>
         </div>
+
+        <!-- SEO & DISCOVERY CONTENT BOXES (Bottom of page for indexation) -->
+        <section class="mt-20 grid grid-cols-1 md:grid-cols-2 gap-8 opacity-0 animate-fade-in" style="animation-delay: 0.4s;">
+            
+            <!-- SEO Box 1 -->
+            <div class="glass p-8 rounded-3xl border border-white/5 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand/10 blur-3xl rounded-full"></div>
+                <div class="text-brand text-sm font-arcade uppercase tracking-widest mb-3"><i class="fas fa-users"></i> The Multiplayer Experience</div>
+                <h3 class="text-2xl font-arcade text-white mb-4">Why Host Live Trivia?</h3>
+                <p class="text-slate-300 text-sm leading-relaxed font-sans mb-4">
+                    The <strong>QuizRealm Group Hub</strong> transforms passive screen time into a highly interactive social event. Utilizing real-time WebSocket technology, the host screen synchronizes seamlessly with player devices. 
+                </p>
+                <p class="text-slate-300 text-sm leading-relaxed font-sans">
+                    Studies show that gamified learning and competitive trivia trigger dopamine release, enhancing memory retention and social bonding. Whether you're running a virtual pub quiz, engaging students in a classroom, or hosting a family game night, the Group Hub removes the friction of apps and downloads—everything runs instantly in the browser.
+                </p>
+            </div>
+
+            <!-- SEO Box 2 -->
+            <div class="glass p-8 rounded-3xl border border-white/5 relative overflow-hidden">
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-accentCyan/10 blur-3xl rounded-full"></div>
+                <div class="text-accentCyan text-sm font-arcade uppercase tracking-widest mb-3"><i class="fas fa-server"></i> Host Console Features</div>
+                <h3 class="text-2xl font-arcade text-white mb-4">Professional Event Controls</h3>
+                <p class="text-slate-300 text-sm leading-relaxed font-sans mb-4">
+                    Once you select a game mode, you are redirected to the <strong>Host Console</strong>. This dashboard is designed for professional event management. Features include:
+                </p>
+                <ul class="text-slate-300 text-sm font-sans space-y-2 list-none pl-0">
+                    <li><i class="fas fa-qrcode text-accentCyan w-5"></i> <strong>Instant Pairing:</strong> Dynamic QR codes for camera-scanning.</li>
+                    <li><i class="fas fa-user-minus text-accentCyan w-5"></i> <strong>Lobby Management:</strong> Kick uninvited or inappropriate usernames instantly.</li>
+                    <li><i class="fas fa-tachometer-alt text-accentCyan w-5"></i> <strong>Dynamic Scoring:</strong> The engine automatically calculates points based on answer speed and accuracy.</li>
+                    <li><i class="fas fa-trophy text-accentCyan w-5"></i> <strong>Podium Generation:</strong> Cinematic end-game results to celebrate the top 3 players.</li>
+                </ul>
+            </div>
+
+        </section>
+
     </main>
 
     <quiz-footer></quiz-footer>
@@ -178,28 +251,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             const grid = document.getElementById('full-lib-grid');
             
-            // Check if data.js is loaded
             if (typeof CATEGORY_CONFIG === 'undefined' || typeof QUESTION_BANKS === 'undefined') {
-                grid.innerHTML = '<div class="col-span-3 text-center text-red-400 p-4">Error: Data Library Offline</div>';
+                grid.innerHTML = '<div class="col-span-full text-center text-red-400 p-4 font-mono text-sm bg-red-500/10 rounded-xl border border-red-500/20">System Error: Data Library Offline</div>';
                 return;
             }
 
-            // Categories to EXCLUDE from the Dropdown (because they are already Featured above)
             const featuredKeys = ['general_easy', 'general_hard', 'geography', 'history'];
 
             Object.entries(CATEGORY_CONFIG).forEach(([key, config]) => {
-                // Filter: Must exist in Banks, Not be Featured, Not be Locked
                 if (QUESTION_BANKS[key] && !featuredKeys.includes(key) && config.group !== 'locked') {
-                    
                     const card = document.createElement('div');
-                    card.className = "bg-white/5 hover:bg-white/10 border border-white/5 p-4 rounded-xl cursor-pointer transition flex items-center gap-3";
+                    card.className = "bg-[#050814]/80 hover:bg-white/10 border border-white/5 p-4 rounded-2xl cursor-pointer transition flex items-center gap-4 group";
                     card.onclick = () => hostGame(key);
                     
                     card.innerHTML = `
-                        <div class="text-xl w-8 text-center text-brand">${config.icon || '📝'}</div>
+                        <div class="text-2xl w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl text-brand group-hover:scale-110 group-hover:bg-brand group-hover:text-white transition-all shadow-inner">${config.icon || '📝'}</div>
                         <div>
-                            <div class="font-bold text-white text-sm">${config.label}</div>
-                            <div class="text-[10px] text-slate-400 uppercase tracking-wider">${config.group || 'Trivia'}</div>
+                            <div class="font-bold text-white text-sm group-hover:text-brand transition-colors font-sans">${config.label}</div>
+                            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">${config.group || 'Trivia'}</div>
                         </div>
                     `;
                     grid.appendChild(card);
@@ -209,24 +278,33 @@
 
         // --- 2. JOIN LOGIC ---
         function joinRoom() {
-            const code = document.getElementById('join-code').value.trim();
+            const input = document.getElementById('join-code');
+            const code = input.value.trim().toUpperCase();
             if(code.length === 4) {
-                window.location.href = `play.html?code=${code}`;
+                // Button feedback
+                const btn = input.parentElement.nextElementSibling;
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> CONNECTING...';
+                
+                setTimeout(() => {
+                    window.location.href = `play.html?code=${code}`;
+                }, 400); // Tiny delay to show connection state
             } else {
-                const input = document.getElementById('join-code');
-                input.classList.add('border-red-500');
-                setTimeout(() => input.classList.remove('border-red-500'), 500);
+                input.classList.add('border-red-500', 'ring-red-500/50');
+                input.parentElement.classList.add('animate-[shake_0.2s_ease-in-out_0s_2]');
+                setTimeout(() => {
+                    input.classList.remove('border-red-500', 'ring-red-500/50');
+                    input.parentElement.classList.remove('animate-[shake_0.2s_ease-in-out_0s_2]');
+                }, 400);
             }
         }
 
         // --- 3. HOST LOGIC ---
         function hostGame(category) {
-            // Generate Code
             const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ"; 
             let newCode = "";
             for (let i = 0; i < 4; i++) newCode += chars.charAt(Math.floor(Math.random() * chars.length));
 
-            // Save Settings
             const settings = {
                 roomCode: newCode,
                 categoryKey: category,
@@ -242,5 +320,8 @@
             if (e.key === 'Enter') joinRoom();
         });
     </script>
+    <style>
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+    </style>
 </body>
 </html>

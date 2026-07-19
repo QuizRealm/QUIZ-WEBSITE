@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Firebase Core -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+  <script type="module" src="/firebase-config.js"></script>
+
+  <!-- QuizRealm Components -->
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Cabo Verde Geography Guide: The 10 Volcanic Islands | QuizRealm</title>
+  <meta name="description" content="Explore the geography, biomes, and harsh volcanic landscapes of Cabo Verde. Discover how the environment of these 10 Atlantic islands forged a resilient global culture." />
+  <meta name="keywords" content="Cabo Verde geography, Cape Verde islands, Pico do Fogo, Macaronesia, Santiago island, Sal, Boa Vista, volcanic biomes, QuizRealm geography" />
+  <meta name="author" content="QuizRealm Geo-Sciences" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="https://thequizrealm.com/cabo-verde-geography-and-islands-guide.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Cabo Verde Geography Guide: The 10 Volcanic Islands" />
+  <meta property="og:description" content="An exhaustive atlas of the Cabo Verde archipelago. Uncover the environmental psychology of the Blue Sharks." />
+  <meta property="og:image" content="https://thequizrealm.com/assets/caboverde-geo-hero.jpg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://thequizrealm.com/cabo-verde-geography-and-islands-guide.html" />
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Cabo Verde Geography Guide: The 10 Volcanic Islands",
+    "description": "An exhaustive atlas mapping the biomes, climate, and psychological impact of the geography of the Cabo Verde archipelago.",
+    "author": {
+      "@type": "Organization",
+      "name": "QuizRealm Geo-Sciences"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "QuizRealm"
+    },
+    "datePublished": "2026-08-30"
+  }
+  </script>
+
+  <!-- Tailwind & Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Jura:wght@300;500;700&family=Overpass:wght@300;400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            title: ['"Cinzel"', 'serif'],
+            heading: ['"Overpass"', 'sans-serif'],
+            body: ['"Jura"', 'sans-serif']
+          },
+          colors: {
+            obsidian: '#0a0a0c',
+            magma: '#ff4d00',
+            ash: '#4a4a4d',
+            atlanticTeal: '#008080',
+            sandGold: '#e5b962'
+          },
+          backgroundImage: {
+            'magma-glow': 'radial-gradient(circle at center, rgba(255,77,0,0.15) 0%, transparent 70%)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0a0a0c; color: #d1d1d5; overflow-x: hidden; }
+    
+    /* Topographic Map Background */
+    .topo-bg {
+      position: fixed; inset: 0; z-index: -2; opacity: 0.04;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><path d="M50,50 Q100,0 150,50 T250,50 T350,50" fill="none" stroke="%23ffffff" stroke-width="1"/><path d="M50,100 Q120,50 180,100 T300,100 T400,100" fill="none" stroke="%23ffffff" stroke-width="1"/><path d="M0,150 Q80,100 160,150 T280,150 T400,150" fill="none" stroke="%23ffffff" stroke-width="1"/><path d="M50,200 Q100,150 150,200 T250,200 T350,200" fill="none" stroke="%23ffffff" stroke-width="1"/><path d="M0,250 Q80,200 160,250 T280,250 T400,250" fill="none" stroke="%23ffffff" stroke-width="1"/><path d="M50,300 Q120,250 180,300 T300,300 T400,300" fill="none" stroke="%23ffffff" stroke-width="1"/><path d="M0,350 Q100,300 200,350 T350,350 T450,350" fill="none" stroke="%23ffffff" stroke-width="1"/></svg>');
+      background-size: 400px;
+    }
+
+    /* Magma Particle Animation */
+    .magma-particles {
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 50vh; z-index: -1;
+      background: linear-gradient(to top, rgba(255,77,0,0.05), transparent);
+      pointer-events: none;
+    }
+
+    /* Article Formatting */
+    .geo-article p { font-size: 1.15rem; line-height: 1.85; margin-bottom: 2rem; color: #b5b5ba; font-weight: 500; }
+    .geo-article h2 {
+      font-family: 'Cinzel', serif; font-size: 2.75rem; font-weight: 900; color: #fff;
+      margin-top: 4.5rem; margin-bottom: 1.5rem; letter-spacing: 0.05em;
+      border-bottom: 1px solid rgba(255, 77, 0, 0.3); padding-bottom: 0.5rem;
+      position: relative;
+    }
+    .geo-article h2::after { content: ''; position: absolute; left: 0; bottom: -2px; width: 60px; height: 3px; background: #ff4d00; }
+    .geo-article h3 { font-family: 'Overpass', sans-serif; font-size: 1.75rem; font-weight: 700; color: #e5b962; margin-top: 3rem; margin-bottom: 1.25rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    
+    .geo-link {
+      color: #ff4d00; font-weight: 700; text-decoration: none;
+      border-bottom: 1px dotted rgba(255, 77, 0, 0.5); transition: all 0.2s;
+    }
+    .geo-link:hover { color: #fff; border-bottom-style: solid; background: rgba(255, 77, 0, 0.1); }
+
+    /* Glass Panels */
+    .atlas-panel {
+      background: rgba(20, 20, 24, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 2rem; margin: 2rem 0;
+      position: relative; overflow: hidden;
+    }
+    .atlas-panel::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: #008080;
+    }
+
+    /* Scroll Progress */
+    #magma-progress {
+      position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, #ff4d00, #e5b962);
+      box-shadow: 0 0 15px rgba(255, 77, 0, 0.8); z-index: 100; width: 0%; transition: width 0.1s ease-out;
+    }
+  </style>
+</head>
+
+<body class="selection:bg-magma selection:text-white">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <div class="topo-bg"></div>
+  <div class="magma-particles"></div>
+  <div class="bg-magma-glow fixed inset-0 z-[ -1] pointer-events-none"></div>
+  <div id="magma-progress"></div>
+
+  <quiz-header></quiz-header>
+
+  <main class="w-full max-w-[1200px] mx-auto px-6 pt-24 pb-32 relative z-10">
+    
+    <!-- Hero Header -->
+    <header class="text-center mb-24 relative">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded border border-atlanticTeal/30 bg-atlanticTeal/10 text-atlanticTeal font-body text-xs font-bold uppercase tracking-[0.2em] mb-8">
+        <i class="fas fa-map-marked-alt"></i> Macaronesia Ecoregion Data
+      </div>
+      
+      <h1 class="font-title text-5xl md:text-7xl lg:text-8xl text-white mb-6 leading-none drop-shadow-2xl">
+        CABO VERDE: <br> <span class="text-magma">THE VOLCANIC ATLAS</span>
+      </h1>
+      
+      <p class="text-xl text-ash font-body max-w-4xl mx-auto leading-relaxed mt-8 font-bold">
+        Ten islands born from fire and shaped by the relentless Atlantic winds. Discover the biomes, the harsh climates, and the geographical isolation that forged one of the most resilient cultures on Earth.
+      </p>
+
+      <div class="mt-12 flex flex-wrap justify-center gap-6">
+        <a href="#barlavento" class="px-8 py-4 bg-magma text-white font-heading font-bold text-lg uppercase tracking-widest rounded hover:bg-orange-600 transition-colors shadow-[0_0_20px_rgba(255,77,0,0.3)]">
+          Explore The Islands
+        </a>
+        <a href="/geography.html" class="px-8 py-4 bg-transparent border-2 border-sandGold text-sandGold font-heading font-bold text-lg uppercase tracking-widest rounded hover:bg-sandGold/10 transition-colors">
+          Geography Simulator
+        </a>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+      
+      <!-- Article Content -->
+      <article class="geo-article lg:col-span-8">
+        
+        <p class="text-2xl font-heading font-bold text-white mb-10 border-l-4 border-sandGold pl-6 leading-relaxed">
+          When the global spotlight hit Cabo Verde during the 2026 World Cup, millions rushed to maps to locate the tiny nation that had brought global football giants to a standstill. What they found was an archipelago of extreme contrasts, situated 570 kilometers off the western coast of the African continent.
+        </p>
+
+        <p>
+          Understanding Cabo Verde requires more than just knowing its capital or its population. To truly comprehend the nation, you must understand its topography. The spatial geography of the islands is an intense study in adaptation. Much like the cognitive mapping required to excel in our <a href="/orbital-game.html" class="geo-link">Orbital Data Game</a>, navigating the history of Cabo Verde requires an understanding of how isolation breeds innovation. The archipelago is divided into two distinct groups based on the prevailing trade winds: the <strong>Barlavento</strong> (Windward) islands in the north, and the <strong>Sotavento</strong> (Leeward) islands in the south.
+        </p>
+        <p>
+          Before we break down each specific island, it is crucial to recognize how environmental harshness dictates culture. We explore this extensively in our sci-fi equivalents, analyzing how volcanic biomes forge aggressive survival tactics in the <a href="/avatar2025.html" class="geo-link">Fire & Ash Lore Protocol</a> and the <a href="/avatar-movies.html" class="geo-link">Avatar Movies Ecosystems Hub</a>. The real-world equivalent of this resilience is found right here, in the Atlantic Ocean. Let us survey the map.
+        </p>
+
+        <h2 id="barlavento">1. The Barlavento (Windward) Islands</h2>
+        
+        <p>
+          The northern chain of islands faces the harsh, unfiltered trade winds blowing off the Sahara Desert. This constant exposure has created dramatic landscapes, ranging from towering green peaks to flat, lunar-like salt flats.
+        </p>
+
+        <h3>Santo Antão: The Vertical Eden</h3>
+        <p>
+          The westernmost island of Cabo Verde is arguably its most visually spectacular. Santo Antão is defined by massive, jagged mountain ranges split by deep, lush valleys known as <em>ribeiras</em>. The northern side of the island catches moisture from the trade winds, creating a dense, subtropical microclimate. It is a hiker's paradise, characterized by terraced farming that scales near-vertical cliffs. 
+        </p>
+        <p>
+          The physical endurance required to navigate this terrain translates to a profound psychological resilience. In our <a href="/burnout-test.html" class="geo-link">Burnout & Fatigue Diagnostic</a>, we measure how humans handle prolonged, uphill struggles. The people of Santo Antão have mastered this biologically and culturally over centuries.
+        </p>
+
+        <h3>São Vicente: The Cultural Beating Heart</h3>
+        <p>
+          Separated from Santo Antão by a narrow channel, São Vicente is a drier, flatter island, but what it lacks in agriculture, it makes up for in culture. Its capital, Mindelo, is the undeniable musical and artistic capital of the archipelago. Mindelo was the home of the legendary Cesária Évora, the "Barefoot Diva" who introduced the melancholic, soul-stirring genre of <em>Morna</em> to the world. 
+        </p>
+        <p>
+          Music is the primary social interface here. In the <a href="/article-social-science.html" class="geo-link">Social Science Archives</a>, we analyze how artistic expression mitigates the effects of extreme geographical isolation. Mindelo's vibrant Carnival and deep musical roots serve as a collective emotional release for the nation.
+        </p>
+
+        <h3>São Nicolau & Santa Luzia</h3>
+        <p>
+          São Nicolau is an island of dramatic rock formations and quiet, traditional villages. It remains largely untouched by mass tourism, preserving the ancient, unhurried pace of island life. Santa Luzia, conversely, is entirely uninhabited. As a protected nature reserve, it stands as a barren, windswept monument to the raw, untamed forces of the Atlantic Ocean.
+        </p>
+
+        <h3>Sal and Boa Vista: The Desert Pearls</h3>
+        <p>
+          Moving eastward, the elevation drops dramatically. Sal and Boa Vista are fundamentally different from their western siblings. These islands are flat, arid extensions of the Sahara Desert, characterized by endless white sand beaches and shifting dunes. 
+        </p>
+        <p>
+          Sal translates directly to "Salt," named for the massive salt craters (Pedra de Lume) that once drove its economy. Today, these islands are the engine of Cabo Verde's tourism industry. The stark, minimalist aesthetic of these islands appeals directly to those who score highly in the "Desert/Minimalist" category of our <a href="/aesthetic-architect.html" class="geo-link">Aesthetic Architecture Audit</a> and <a href="/aesthetic-curator.html" class="geo-link">Aesthetic Curator Tool</a>.
+        </p>
+
+        <h2 id="sotavento">2. The Sotavento (Leeward) Islands</h2>
+
+        <p>
+          The southern chain of islands is somewhat shielded from the harshest northern winds, though they face their own unique environmental extremes. This chain houses the capital, the majority of the population, and the archipelago's most violent geological feature.
+        </p>
+
+        <h3>Santiago: The Historical Anchor</h3>
+        <p>
+          Santiago is the largest island and houses over half of the nation's population. Its capital, Praia, serves as the economic and political center of Cabo Verde. The island's interior is dominated by jagged mountains and fertile valleys, while its coastline holds deep, often dark historical significance.
+        </p>
+        <p>
+          Cidade Velha, located on Santiago, was the first European colonial settlement in the tropics and served as a major, tragic hub during the transatlantic slave trade. The history here is dense and heavy. Understanding the chronological impact of this era is crucial for anyone studying global history, a skill we test rigorously in the <a href="/timeline-history.html" class="geo-link">History Timeline Protocol</a>. The resilience born from this crucible forged the modern Cabo Verdean identity.
+        </p>
+
+        <h3>Fogo: The Sleeping Giant</h3>
+        <p>
+          Fogo translates to "Fire," and the island lives up to its name. The entire island is essentially a single, massive stratovolcano, Pico do Fogo, which peaks at 2,829 meters (9,281 ft). The volcano is highly active, with its most recent devastating eruption occurring in 2014.
+        </p>
+        <p>
+          Remarkably, entire communities live <em>inside</em> the caldera of the volcano (Chã das Caldeiras), utilizing the incredibly fertile volcanic ash to grow world-renowned coffee and wine. The psychology of choosing to live inside an active volcano is fascinating. It demonstrates a profound risk-tolerance and deep ancestral attachment to the land. We explore the broader ecological impact of volcanic forces in our detailed <a href="/article-volcano.html" class="geo-link">Volcano Topography Dossier</a>. The visual intensity of Fogo also perfectly aligns with the aggressive, passionate profiles analyzed in our <a href="/aesthetic-red.html" class="geo-link">Aesthetic Red Color Psychology</a> hub.
+        </p>
+
+        <h3>Maio and Brava</h3>
+        <p>
+          Maio sits east of Santiago, a quiet, flat island boasting pristine, empty beaches and a slow, tranquil rhythm. It is a refuge from the bustling capital. Brava, the westernmost of the Sotavento group, is known as the "Island of Flowers." It is the smallest inhabited island, frequently shrouded in a dense mist. Its isolation requires a specific type of social endurance, a concept evaluated in our <a href="/social-battery-test.html" class="geo-link">Social Battery Test</a> and our essay on <a href="/article-roommate.html" class="geo-link">The Psychology of Shared Spaces</a>.
+        </p>
+
+        <h2>3. The Psychology of the Diaspora</h2>
+
+        <p>
+          Perhaps the most defining geographical fact of Cabo Verde is that more Cabo Verdeans live outside the country than on the islands themselves. Due to historical droughts, famine, and economic hardship, massive diaspora communities formed in the United States (particularly New England), Portugal, France, and the Netherlands.
+        </p>
+        <p>
+          This global dispersal creates a unique cultural psychology. The concept of <em>Sodade</em>—a profound longing and melancholic yearning for the homeland—permeates their music, art, and daily life. If you want to understand how deep-rooted family history impacts modern identity, our <a href="/family-origins.html" class="geo-link">Family Origins Audit</a> and <a href="/family-trauma-test.html" class="geo-link">Generational Trauma Diagnostic</a> help map out how the migrations of our ancestors shape our current emotional baselines.
+        </p>
+        <p>
+          This diaspora is also the secret weapon of their national football team. The "Blue Sharks" squad that shocked the 2026 World Cup was heavily composed of diaspora players who returned to represent their heritage. As noted in our <a href="/real-player-analysis.html" class="geo-link">Player Analysis Archives</a>, athletes who play for ancestral pride often exhibit higher levels of in-game endurance and stress tolerance.
+        </p>
+
+        <h2>4. Mapping the Mind: Why Geography Matters</h2>
+
+        <p>
+          Why do we obsess over maps? Why does QuizRealm dedicate so much infrastructure to geographic trivia? Because spatial reasoning is one of the most fundamental cognitive skills a human possesses. The ability to visualize the globe, understand trade winds, and recognize how mountain ranges dictate culture requires intense lateral logic.
+        </p>
+        <p>
+          If reading about the jagged peaks of Santo Antão or the volcanic caldera of Fogo has sparked your intellectual curiosity, you must immediately cross-train your brain. Dive into the <a href="/geography.html" class="geo-link">Mapless Geography Simulator</a> to see if you can accurately locate the archipelago off the coast of Senegal. Then, test your ability to spot geographical anomalies in the <a href="/odd-one-out.html" class="geo-link">Odd One Out Protocol</a>.
+        </p>
+        <p>
+          For those who prefer a more social learning experience, compiling facts about Cabo Verde is the perfect excuse to launch a <a href="/group-hub.html" class="geo-link">Multiplayer Watch Party</a>. Connect your friends, initiate the <a href="/rapid.html" class="geo-link">Rapid Fire Quiz</a>, or challenge them to deduce the truth in the <a href="/two-truths-trap.html" class="geo-link">Two Truths Trap</a> regarding global capitals.
+        </p>
+        <p>
+          Cabo Verde is proof that geography is not just dirt and rock; it is destiny. It is the invisible architect of human resilience. The more we understand the map, the more we understand ourselves. To explore further, return to the <a href="/categories.html" class="geo-link">Master Categories Index</a> or browse the full suite of cognitive tools in the <a href="/arcade.html" class="geo-link">QuizRealm Arcade</a>.
+        </p>
+
+      </article>
+
+      <!-- Right Sidebar (Atlas Data & Cross-Links) -->
+      <aside class="lg:col-span-4 space-y-8">
+        
+        <!-- Live Stat Card -->
+        <div class="atlas-panel">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b border-white/10">
+            <h4 class="font-heading text-sandGold text-sm font-bold uppercase tracking-widest"><i class="fas fa-compass mr-2"></i> Atlas Coordinates</h4>
+          </div>
+          <div class="space-y-4">
+            <div class="bg-obsidian p-4 rounded border border-white/5">
+              <div class="text-xs text-ash font-heading uppercase mb-1">Coordinates</div>
+              <div class="text-lg font-mono font-bold text-atlanticTeal">16.5388° N, 23.0418° W</div>
+            </div>
+            <div class="bg-obsidian p-4 rounded border border-white/5">
+              <div class="text-xs text-ash font-heading uppercase mb-1">Highest Peak</div>
+              <div class="text-lg font-mono font-bold text-magma">Pico do Fogo (2,829m)</div>
+            </div>
+            <div class="bg-obsidian p-4 rounded border border-white/5">
+              <div class="text-xs text-ash font-heading uppercase mb-1">Ecoregion</div>
+              <div class="text-lg font-body font-bold text-white">Macaronesia</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cognitive Links -->
+        <div class="atlas-panel">
+          <h4 class="font-heading font-bold text-white mb-4 border-b border-white/10 pb-2">Geographic Intelligence</h4>
+          <p class="text-sm text-ash font-body mb-4 leading-relaxed">
+            Spatial memory degrades without practice. Utilize these cognitive tools to map your understanding of the physical world.
+          </p>
+          <ul class="space-y-3 font-body text-sm font-semibold">
+            <li><a href="/geography.html" class="text-atlanticTeal hover:text-white transition flex items-center"><i class="fas fa-globe-africa mr-2 text-magma"></i> Mapless Geography Protocol</a></li>
+            <li><a href="/orbital-game.html" class="text-atlanticTeal hover:text-white transition flex items-center"><i class="fas fa-satellite mr-2 text-magma"></i> Orbital Spatial Tracker</a></li>
+            <li><a href="/mind-blowers.html" class="text-atlanticTeal hover:text-white transition flex items-center"><i class="fas fa-brain mr-2 text-magma"></i> Lateral Logic Challenges</a></li>
+          </ul>
+        </div>
+
+        <!-- Identity / Psych Tests -->
+        <div class="atlas-panel">
+          <h4 class="font-heading font-bold text-white mb-4 border-b border-white/10 pb-2">Identity & Aesthetics</h4>
+          <p class="text-sm text-ash font-body mb-4 leading-relaxed">
+            How does climate affect human psychology? Explore our behavioral science and aesthetic color mapping databases.
+          </p>
+          <ul class="space-y-3 font-body text-sm font-semibold">
+            <li><a href="/color-hub.html" class="text-sandGold hover:text-white transition flex items-center"><i class="fas fa-palette mr-2"></i> The Color Psychology Hub</a></li>
+            <li><a href="/aesthetic-red.html" class="text-sandGold hover:text-white transition flex items-center"><i class="fas fa-fire mr-2"></i> Magma/Red Aesthetics Analysis</a></li>
+            <li><a href="/career-burnout.html" class="text-sandGold hover:text-white transition flex items-center"><i class="fas fa-chart-line mr-2"></i> Corporate vs Island Burnout</a></li>
+            <li><a href="/identity-lab.html" class="text-sandGold hover:text-white transition flex items-center"><i class="fas fa-fingerprint mr-2"></i> The Master Identity Lab</a></li>
+          </ul>
+        </div>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+  <!-- Scroll Progress Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const progressBar = document.getElementById("magma-progress");
+      window.addEventListener("scroll", () => {
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrollPercentage = (scrollTop / scrollHeight) * 100;
+        progressBar.style.width = scrollPercentage + "%";
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Firebase Core -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+  <script type="module" src="/firebase-config.js"></script>
+
+  <!-- QuizRealm Components -->
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Global Football, World Cup & Real Madrid Trivia Hub | QuizRealm</title>
+  <meta name="description" content="The ultimate encyclopedia for football trivia. Explore World Cup history, Real Madrid's Champions League dominance, stadium lore, and squad-building tactics." />
+  <meta name="keywords" content="football trivia, World Cup quiz, Real Madrid history, Champions League stats, squad builder, sports analytics, football stadiums, QuizRealm sports" />
+  <meta name="author" content="QuizRealm" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="https://thequizrealm.com/global-football-and-world-cup-hub.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="The Global Football & World Cup Trivia Hub" />
+  <meta property="og:description" content="Test your knowledge on the beautiful game. From the World Cup to Real Madrid's legendary history." />
+  <meta property="og:image" content="https://thequizrealm.com/assets/sports-hub-hero.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://thequizrealm.com/global-football-and-world-cup-hub.html" />
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Global Football, World Cup & Real Madrid Trivia Hub",
+    "description": "An exhaustive guide to football trivia, covering international tournaments, club histories, stadium architecture, and the psychology of sports fandom.",
+    "author": {
+      "@type": "Organization",
+      "name": "QuizRealm Sports Data"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "QuizRealm"
+    },
+    "datePublished": "2026-08-15"
+  }
+  </script>
+
+  <!-- Tailwind & Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            headline: ['"Bebas Neue"', 'cursive'],
+            body: ['"Outfit"', 'sans-serif'],
+            stats: ['"Share Tech Mono"', 'monospace']
+          },
+          colors: {
+            pitchDark: '#040b14',
+            pitchPanel: '#0a1526',
+            turfGreen: '#10b981',
+            madridGold: '#fbbf24',
+            madridWhite: '#f8fafc',
+            stadiumBlue: '#1e3a8a',
+            foulRed: '#ef4444'
+          },
+          backgroundImage: {
+            'tactical-grid': 'linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #040b14; color: #e2e8f0; overflow-x: hidden; }
+    
+    /* Tactical Pitch Background */
+    .pitch-bg {
+      position: fixed; inset: 0; z-index: -2;
+      background-color: #040b14;
+      background-image: var(--tactical-grid);
+      background-size: 50px 50px;
+      opacity: 0.5;
+    }
+    
+    .pitch-lines {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 80vw; height: 80vh; border: 2px solid rgba(255,255,255,0.05);
+      border-radius: 20px; z-index: -1; pointer-events: none;
+    }
+    .pitch-circle {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 200px; height: 200px; border: 2px solid rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+
+    /* Scoreboard Ticker */
+    .ticker-wrap {
+      width: 100%; overflow: hidden; background: #000; border-y: 1px solid #1e3a8a;
+      padding: 8px 0; display: flex; white-space: nowrap; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    }
+    .ticker-content {
+      display: inline-block; animation: ticker 30s linear infinite;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: #10b981;
+    }
+    @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+
+    /* Sports Article Formatting */
+    .sports-article p { font-size: 1.15rem; line-height: 1.8; margin-bottom: 2rem; color: #cbd5e1; font-weight: 300; }
+    .sports-article h2 {
+      font-family: 'Bebas Neue', cursive; font-size: 3.5rem; letter-spacing: 0.05em;
+      color: #fff; margin-top: 4rem; margin-bottom: 1.5rem; line-height: 1;
+      border-left: 6px solid #fbbf24; padding-left: 1rem;
+    }
+    .sports-article h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: #10b981; margin-top: 3rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    
+    .sports-article a.stat-link {
+      color: #fbbf24; font-weight: 600; text-decoration: none;
+      border-bottom: 2px solid rgba(251, 191, 36, 0.3); transition: all 0.2s;
+    }
+    .sports-article a.stat-link:hover { color: #fff; border-bottom-color: #fff; background: rgba(251, 191, 36, 0.1); }
+
+    /* Data Panels */
+    .data-panel {
+      background: rgba(10, 21, 38, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(30, 58, 138, 0.5); border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+      position: relative; overflow: hidden;
+    }
+    .data-panel::before {
+      content: ''; position: absolute; top: 0; left: 0; w: 4px; height: 100%; background: #fbbf24;
+    }
+
+    /* Buttons */
+    .btn-stadium {
+      display: inline-flex; align-items: center; justify-content: center; padding: 1.2rem 2.5rem;
+      background: #fbbf24; color: #040b14; font-family: 'Bebas Neue', cursive; font-size: 1.5rem;
+      letter-spacing: 0.1em; border-radius: 8px; transition: all 0.2s;
+      clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    }
+    .btn-stadium:hover { transform: scale(1.05); background: #fff; }
+    
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center; padding: 1.2rem 2.5rem;
+      background: transparent; color: #10b981; font-family: 'Bebas Neue', cursive; font-size: 1.5rem;
+      letter-spacing: 0.1em; border: 2px solid #10b981; transition: all 0.2s;
+      clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    }
+    .btn-outline:hover { background: rgba(16, 185, 129, 0.1); color: #fff; border-color: #fff; }
+
+    /* Scroll Progress */
+    #match-progress {
+      position: fixed; top: 0; left: 0; height: 4px; background: #fbbf24;
+      box-shadow: 0 0 10px #fbbf24; z-index: 100; width: 0%; transition: width 0.1s ease-out;
+    }
+  </style>
+</head>
+
+<body class="selection:bg-madridGold selection:text-black">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <div class="pitch-bg"></div>
+  <div class="pitch-lines"><div class="pitch-circle"></div></div>
+  <div id="match-progress"></div>
+
+  <!-- Live Ticker -->
+  <div class="ticker-wrap fixed top-0 z-[60]">
+    <div class="ticker-content">
+      DATA STREAM // WORLD CUP STATS ACTIVE // REAL MADRID UCL TITLES: 15 // SQUAD BUILDER ONLINE // INITIATING TRIVIA PROTOCOLS // LIVE MULTIPLAYER SERVERS: STABLE //
+      DATA STREAM // WORLD CUP STATS ACTIVE // REAL MADRID UCL TITLES: 15 // SQUAD BUILDER ONLINE // INITIATING TRIVIA PROTOCOLS // LIVE MULTIPLAYER SERVERS: STABLE //
+    </div>
+  </div>
+
+  <quiz-header class="mt-8"></quiz-header>
+
+  <main class="w-full max-w-[1200px] mx-auto px-6 pt-16 pb-32 relative z-10">
+    
+    <!-- Hero Section -->
+    <header class="text-center mb-24 relative">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded bg-stadiumBlue/20 text-blue-400 font-stats text-xs font-bold uppercase tracking-widest border border-stadiumBlue/40 mb-8">
+        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div> Live Data Center
+      </div>
+      
+      <h1 class="font-headline text-7xl md:text-9xl text-madridWhite mb-4 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] tracking-wide">
+        THE BEAUTIFUL <span class="text-madridGold">GAME</span>
+      </h1>
+      
+      <p class="text-xl text-slate-300 font-body max-w-3xl mx-auto leading-relaxed mt-6">
+        Football is not just a sport; it is an encyclopedia of human emotion, geography, and tactical warfare. Explore the deep history of the World Cup, audit your squad-building skills, and master the lore of the greatest clubs on Earth.
+      </p>
+
+      <div class="mt-12 flex flex-wrap justify-center gap-6">
+        <a href="/realmadridhub.html" class="btn-stadium">
+          Enter Bernabéu Archives
+        </a>
+        <a href="/geography.html" class="btn-outline">
+          World Cup Geography
+        </a>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      
+      <!-- Article Content -->
+      <article class="sports-article lg:col-span-8">
+        
+        <p class="text-2xl font-body font-bold text-white mb-8 border-l-4 border-turfGreen pl-6">
+          To truly understand football, you must understand data. The modern fan is no longer just a spectator; they are an analyst, a historian, and a tactician. Welcome to the ultimate sports cognitive testing ground.
+        </p>
+
+        <p>
+          There are 3.5 billion football fans on the planet, making it the undisputed global language. But within this massive population exists a fierce hierarchy of knowledge. Knowing who won the last World Cup makes you a casual observer. Knowing the exact starting XI, the tactical formation, and the minute the winning goal was scored makes you a scholar. At QuizRealm, we have digitized the history of the sport, creating interactive arenas where fans can test their encyclopedic recall against the globe.
+        </p>
+        <p>
+          Whether you are auditing your historical knowledge, mapping international stadiums, or evaluating the psychology of the modern fan, this hub serves as your master directory. 
+        </p>
+
+        <h2>1. The Kings of Europe: Real Madrid</h2>
+        
+        <p>
+          You cannot discuss football history without discussing the white shirts of Madrid. Real Madrid is not just a football club; it is a global institution built on the expectation of absolute dominance. Their relationship with the UEFA Champions League is mythic, defying statistical probability and tactical logic time and time again.
+        </p>
+        <p>
+          We have constructed an expansive, dedicated <a href="/realmadridhub.html" class="stat-link">Real Madrid Knowledge Center</a>. This is where casual fans become experts. To truly grasp the magnitude of their achievements, users must navigate the <a href="/real-timeline.html" class="stat-link">Real Madrid Timeline</a>, placing the eras of Di Stéfano, the Galácticos, and the modern Champions League three-peat in strict chronological order. This utilizes the same temporal-memory mechanics found in our standard <a href="/timeline-history.html" class="stat-link">History Timeline Protocol</a>, but tailored exclusively to Los Blancos.
+        </p>
+        <p>
+          But the club is more than dates and trophies; it is a living, breathing culture. You can test your deep lore in the <a href="/real-madrid-quiz.html" class="stat-link">Ultimate Real Madrid Quiz</a>, explore the evolution of their iconic aesthetics in the <a href="/real-madrid-kits.html" class="stat-link">Kits and Crests Archive</a>, and read our analytical breakdown of their enduring European monopoly in <a href="/real-madrid-The-kings-of-europe.html" class="stat-link">The Kings of Europe Editorial</a>. For those looking forward, our analysts project the next decade of dominance in the <a href="/real-madrid-future.html" class="stat-link">Real Madrid Future Trajectory</a>.
+        </p>
+
+        <h2>2. Tactical Mastery: The Squad Builder</h2>
+
+        <p>
+          Understanding history is only half the battle. Modern football is a game of space, geometry, and synergy. Why did the false-nine revolutionize the 2010s? Why has the inverted full-back become the staple of modern possession systems? 
+        </p>
+        <p>
+          To test your tactical acumen, we developed the <a href="/squad-builder.html" class="stat-link">Squad Builder Simulation</a>. This module goes beyond simple player identification; it requires you to balance chemistry, budget constraints, and tactical viability. Furthermore, the <a href="/real-player-analysis.html" class="stat-link">Player Analysis Tool</a> allows users to break down the specific physiological and statistical traits of legends, utilizing the same deductive reasoning loops found in our <a href="/fusion-core.html" class="stat-link">Fusion Core Logic League</a>. It proves that assembling a winning team is an exercise in high-level problem solving.
+        </p>
+
+        <h2>3. Geography and The World Stage</h2>
+
+        <p>
+          The FIFA World Cup is the greatest geographical lesson on Earth. It teaches us flags, anthems, demographics, and cultural philosophies. A fan's ability to locate a country on a map is often directly correlated with that country's performance in international tournaments.
+        </p>
+        <p>
+          If you consider yourself a true global citizen of the sport, you must subject yourself to our <a href="/geography.html" class="stat-link">Mapless Geography Simulator</a>. Can you pinpoint the exact location of every World Cup host nation since 1930? Can you identify the odd-one-out among South American footballing giants? This cross-trains your spatial awareness, utilizing mechanics from our popular <a href="/odd-one-out.html" class="stat-link">Odd One Out Anomaly Detection</a> module.
+        </p>
+        <p>
+          The architecture of the sport is equally vital. Stadiums are modern coliseums. To truly appreciate the scale of the game, explore our <a href="/Sacred-Ground.html" class="stat-link">Sacred Ground: Stadiums Quiz</a>, where we test your knowledge of iconic venues from the Maracanã to the newly renovated Santiago Bernabéu. Our <a href="/real-madrid-stadium.html" class="stat-link">Bernabéu Architecture Deep Dive</a> specifically highlights how engineering and acoustics are designed to intimidate opposition.
+        </p>
+
+        <h2>4. Match Day Rituals: Hosting the Ultimate Trivia Pub</h2>
+
+        <p>
+          Football is inherently tribal and communal. Watching a massive Champions League or World Cup knockout match is an emotional rollercoaster. But how do you entertain the group in the tense hours <em>before</em> kickoff?
+        </p>
+        <p>
+          This is where modern digital infrastructure shines. Using the <a href="/group-hub.html" class="stat-link">QuizRealm Group Hub</a>, you can transform your living room or local pub into a live, interactive game show. Simply launch the host screen, have your friends connect their phones, and run a customized sports trivia lobby.
+        </p>
+        <p>
+          To raise the stakes, implement different game modes. Use <a href="/rapid.html" class="stat-link">Rapid Fire</a> to test sheer reaction time on simple stat questions. Use <a href="/duel.html" class="stat-link">The Duel</a> to settle 1v1 disputes between rival fans. Or, throw a curveball with the <a href="/two-truths-trap.html" class="stat-link">Two Truths Trap</a>, feeding the lobby insane transfer rumors and forcing them to deduce the fabrication. Gamifying the pre-match anxiety is the ultimate way to build energy in a room.
+        </p>
+
+        <h2>5. The Psychology of the Fan</h2>
+
+        <p>
+          Why do we care so much? Why does the result of 22 men kicking a ball dictate the mood of entire cities for a week? Sports fandom is a fascinating psychological study in tribalism, loyalty, and identity.
+        </p>
+        <p>
+          Are you an analytical "stat nerd" who cares more about Expected Goals (xG) than passion? Are you an ultra, driven entirely by emotion and history? At the <a href="/identity-lab.html" class="stat-link">Identity Lab</a>, we evaluate how you consume sports. Before heading to the pub or the stadium, run yourself through the <a href="/vibe-check-test.html" class="stat-link">Match Day Vibe Check</a> to see if your emotional state is a liability or an asset to the group viewing experience. 
+        </p>
+        <p>
+          If you take losses too personally, you may need to step back into the <a href="/arcade.html" class="stat-link">Main Arcade</a> and play some low-stakes puzzle games to reset your dopamine loops. Alternatively, if you thrive on daily habits, incorporating our <a href="/daily.html" class="stat-link">Daily Trivia Challenges</a> into your morning routine keeps your sports knowledge sharp without the emotional devastation of a weekend loss.
+        </p>
+
+      </article>
+
+      <!-- Right Sidebar (Data Panels) -->
+      <aside class="lg:col-span-4 space-y-8">
+        
+        <div class="data-panel p-8">
+          <div class="flex items-center justify-between mb-6 border-b border-stadiumBlue pb-2">
+            <h4 class="font-stats text-madridGold text-sm font-bold uppercase tracking-widest">/// Live Diagnostics</h4>
+            <i class="fas fa-chart-bar text-slate-400"></i>
+          </div>
+          <div class="space-y-4">
+            <div class="bg-pitchDark p-4 rounded-lg border border-white/5">
+              <div class="text-xs text-slate-500 font-stats uppercase mb-1">Target Subject</div>
+              <div class="text-xl font-headline text-white tracking-widest">Real Madrid C.F.</div>
+            </div>
+            <div class="bg-pitchDark p-4 rounded-lg border border-white/5">
+              <div class="text-xs text-slate-500 font-stats uppercase mb-1">Global Database</div>
+              <div class="text-xl font-headline text-white tracking-widest">World Cup History</div>
+            </div>
+            <a href="/arcade.html" class="block w-full py-3 bg-stadiumBlue text-center font-headline text-xl text-white rounded hover:bg-blue-800 transition shadow-lg">
+              Access Full Arcade
+            </a>
+          </div>
+        </div>
+
+        <div class="data-panel p-8 border-l-4 border-l-foulRed">
+          <h4 class="font-headline text-3xl text-white mb-2">VAR Review Required</h4>
+          <p class="text-slate-300 font-body text-sm mb-6 leading-relaxed">
+            Think you know the rules? Think you know the history? Step into the penalty box.
+          </p>
+          <ul class="space-y-3 font-body text-sm text-slate-300">
+            <li><i class="fas fa-caret-right text-foulRed mr-2"></i><a href="/two-truths-trap.html" class="hover:text-white transition">Identify fake transfer rumors</a></li>
+            <li><i class="fas fa-caret-right text-foulRed mr-2"></i><a href="/odd-one-out.html" class="hover:text-white transition">Spot the anomaly in squad lists</a></li>
+            <li><i class="fas fa-caret-right text-foulRed mr-2"></i><a href="/rapid.html" class="hover:text-white transition">Beat the 10-second shot clock</a></li>
+          </ul>
+        </div>
+
+      </aside>
+    </div>
+
+    <!-- Massive Glossary / SEO Block -->
+    <section class="mt-24 pt-16 border-t border-white/10 relative">
+      <!-- Decorative background for glossary -->
+      <div class="absolute inset-0 bg-stadiumBlue/5 blur-3xl rounded-full z-[-1] translate-y-1/2"></div>
+      
+      <h2 class="font-headline text-5xl text-madridGold mb-10 text-center tracking-widest drop-shadow-md">The Tactical Glossary & Lore Archive</h2>
+      <p class="text-slate-300 font-body text-center max-w-4xl mx-auto mb-16 leading-relaxed">
+        To truly master the <a href="/realmadridhub.html" class="text-turfGreen underline hover:text-white font-bold">Real Madrid Hub</a> and global sports trivia, you must speak the language of the game. Below is the comprehensive encyclopedia of terms, tactics, and historical phenomena that frequently appear in our competitive lobbies.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-body">
+        
+        <div class="data-panel p-8">
+          <h4 class="text-2xl font-bold text-white mb-3 font-headline tracking-wider">The Galácticos Era</h4>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            A revolutionary squad-building philosophy pioneered by Real Madrid president Florentino Pérez in the early 2000s. The strategy involved purchasing at least one global superstar (a "Galáctico") every summer. Signings like Luís Figo, Zinedine Zidane, Ronaldo, and David Beckham transformed the club into a commercial and sporting behemoth. Test your knowledge of these transfers in the <a href="/real-timeline.html" class="text-madridGold underline font-bold">Club Timeline Module</a>.
+          </p>
+        </div>
+
+        <div class="data-panel p-8">
+          <h4 class="text-2xl font-bold text-white mb-3 font-headline tracking-wider">La Décima</h4>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            The obsessive, 12-year quest by Real Madrid to secure their 10th European Cup/Champions League title. Achieved in dramatic fashion in 2014 via a 93rd-minute equalizer by Sergio Ramos, it broke a psychological barrier and ushered in an era of modern dominance. We explore the psychological weight of this victory in <a href="/real-madrid-The-kings-of-europe.html" class="text-madridGold underline font-bold">The Kings of Europe</a>.
+          </p>
+        </div>
+
+        <div class="data-panel p-8">
+          <h4 class="text-2xl font-bold text-white mb-3 font-headline tracking-wider">Expected Goals (xG)</h4>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            The statistical metric that revolutionized modern football analysis. It measures the quality of a goalscoring opportunity by calculating the likelihood that it will be scored, based on historical data (distance, angle, type of pass). If you enjoy crunching these numbers, you will thrive in our <a href="/squad-builder.html" class="text-madridGold underline font-bold">Squad Builder</a> and <a href="/real-player-analysis.html" class="text-madridGold underline font-bold">Player Analysis</a> tools.
+          </p>
+        </div>
+
+        <div class="data-panel p-8">
+          <h4 class="text-2xl font-bold text-white mb-3 font-headline tracking-wider">The False Nine</h4>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            A tactical formation where the traditional center-forward drops deep into midfield, dragging opposition center-backs out of position and creating space for wingers to exploit. It requires immense spatial awareness and technical ability, a logic puzzle mirrored in our <a href="/fusion-core.html" class="text-madridGold underline font-bold">Fusion Core Logic League</a>.
+          </p>
+        </div>
+
+        <div class="data-panel p-8">
+          <h4 class="text-2xl font-bold text-white mb-3 font-headline tracking-wider">The Santiago Bernabéu</h4>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            More than a stadium; a cathedral of the sport. Situated in the heart of Madrid, its steep, vertical stands create an acoustic cauldron designed to intimidate opponents. Its recent renovation added a retractable pitch and 360-degree video board. Explore its blueprints and aura in <a href="/real-madrid-stadium.html" class="text-madridGold underline font-bold">The Bernabéu Deep Dive</a> and <a href="/Sacred-Ground.html" class="text-madridGold underline font-bold">Sacred Grounds</a>.
+          </p>
+        </div>
+
+        <div class="data-panel p-8">
+          <h4 class="text-2xl font-bold text-white mb-3 font-headline tracking-wider">The Group Stage Mathematics</h4>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            During the World Cup or Champions League, advancing often comes down to complex tie-breaking scenarios involving goal difference, goals scored, and head-to-head records. Navigating these permutations requires rapid, high-stakes math—a skill you can hone under pressure in our <a href="/mathsprint.html" class="text-madridGold underline font-bold">Math Sprint Protocol</a> (Note: Check the <a href="/categories.html" class="text-madridGold underline font-bold">Arcade Index</a> for availability).
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Clean Footer -->
+  <quiz-footer></quiz-footer>
+
+  <!-- Scroll Progress Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const progressBar = document.getElementById("match-progress");
+      window.addEventListener("scroll", () => {
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrollPercentage = (scrollTop / scrollHeight) * 100;
+        progressBar.style.width = scrollPercentage + "%";
+      });
+    });
+  </script>
+</body>
+</html>

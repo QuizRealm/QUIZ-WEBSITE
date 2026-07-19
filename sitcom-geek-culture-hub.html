@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Firebase Core -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+  <script type="module" src="/firebase-config.js"></script>
+
+  <!-- QuizRealm Components -->
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <title>The Ultimate Big Bang Theory, Friends & Geek Culture Hub | QuizRealm</title>
+  <meta name="description" content="Explore the ultimate encyclopedia for The Big Bang Theory, Friends, and The Office. Take the personality tests, explore comic book lore, and dive into tech and crypto history." />
+  <meta name="keywords" content="Big Bang Theory trivia, Friends personality test, sitcom encyclopedia, Marvel vs DC quiz, crypto tech lore, Sheldon Cooper, roommate agreement test" />
+  <meta name="author" content="QuizRealm" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="https://thequizrealm.com/sitcom-geek-culture-hub.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="The Ultimate Sitcom & Geek Culture Hub" />
+  <meta property="og:description" content="Dive into the lore of The Big Bang Theory, Friends, Comic Books, and the Tech world." />
+  <meta property="og:image" content="https://thequizrealm.com/assets/geek-hub-hero.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://thequizrealm.com/sitcom-geek-culture-hub.html" />
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "name": "The Ultimate Geek Culture & Sitcom Hub",
+        "url": "https://thequizrealm.com/sitcom-geek-culture-hub.html",
+        "description": "A comprehensive hub connecting sitcom lore (TBBT, Friends), comic book universes (Marvel, DC), and modern tech/crypto trivia.",
+        "mainEntity": {
+          "@type": "ItemList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "TBBT Persona Test", "url": "https://thequizrealm.com/TBBTPERSON.html"},
+            {"@type": "ListItem", "position": 2, "name": "Friends Trivia", "url": "https://thequizrealm.com/friends.html"},
+            {"@type": "ListItem", "position": 3, "name": "Tech & Crypto Lore", "url": "https://thequizrealm.com/tech-encyclopedia.html"}
+          ]
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Tailwind & Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            comic: ['Bangers', 'cursive'],
+            body: ['Nunito', 'sans-serif'],
+            data: ['Space Mono', 'monospace']
+          },
+          colors: {
+            spaceDark: '#0f172a',
+            spaceLight: '#1e293b',
+            comicYellow: '#fde047',
+            bazingaRed: '#ef4444',
+            quantumCyan: '#06b6d4',
+            chalkGreen: '#166534'
+          },
+          boxShadow: {
+            'comic': '6px 6px 0px 0px rgba(0,0,0,1)',
+            'comic-hover': '2px 2px 0px 0px rgba(0,0,0,1)',
+            'neon-cyan': '0 0 15px rgba(6, 182, 212, 0.6)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
+    
+    /* Halftone Comic Background */
+    .halftone-bg {
+      position: fixed; inset: 0; z-index: -2;
+      background: radial-gradient(circle, #1e293b 2px, transparent 2.5px);
+      background-size: 15px 15px;
+      opacity: 0.4;
+    }
+
+    /* Floating Atoms Animation */
+    .atom { position: absolute; border-radius: 50%; border: 2px solid rgba(6, 182, 212, 0.2); animation: orbit 10s linear infinite; pointer-events: none; }
+    .atom-1 { width: 300px; height: 300px; top: -100px; right: -50px; animation-duration: 20s; }
+    .atom-2 { width: 400px; height: 400px; bottom: -150px; left: -100px; animation-duration: 25s; animation-direction: reverse; border-color: rgba(239, 68, 68, 0.1); }
+    @keyframes orbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Comic Book Containers */
+    .comic-panel {
+      background: #1e293b;
+      border: 4px solid #000;
+      border-radius: 12px;
+      box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+      transition: all 0.2s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+    .comic-panel:hover {
+      transform: translate(4px, 4px);
+      box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+    }
+    .comic-panel::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* Chalkboard Elements */
+    .chalkboard {
+      background: #166534;
+      border: 8px solid #451a03;
+      border-radius: 8px;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.5), 6px 6px 0px rgba(0,0,0,1);
+      position: relative;
+    }
+    .chalkboard::before {
+      content: ''; position: absolute; inset: 0;
+      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+') repeat;
+      pointer-events: none;
+    }
+    .chalk-text { font-family: 'Space Mono', monospace; color: rgba(255,255,255,0.85); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+
+    /* Typography Overrides */
+    h1, h2, h3, .comic-font { font-family: 'Bangers', cursive; letter-spacing: 0.05em; }
+    p, li, .body-font { font-family: 'Nunito', sans-serif; }
+
+    .tag-bubble {
+      background: #fde047; color: #000; font-family: 'Bangers', cursive;
+      padding: 4px 12px; border: 2px solid #000; border-radius: 16px;
+      font-size: 1.1rem; letter-spacing: 0.05em; display: inline-block;
+      box-shadow: 2px 2px 0px rgba(0,0,0,1);
+    }
+
+    details summary::-webkit-details-marker { display: none; }
+  </style>
+</head>
+
+<body class="selection:bg-comicYellow selection:text-black">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <div class="halftone-bg"></div>
+  <div class="atom atom-1"></div>
+  <div class="atom atom-2"></div>
+
+  <quiz-header></quiz-header>
+
+  <main class="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 relative z-10">
+    
+    <!-- Hero Section -->
+    <header class="text-center mb-20 pt-10 relative">
+      <div class="inline-block tag-bubble mb-6 transform -rotate-2">
+        <i class="fas fa-bolt text-bazingaRed"></i> Bazinga! Welcome to the Lore
+      </div>
+      
+      <h1 class="text-6xl md:text-8xl text-white mb-6 drop-shadow-[4px_4px_0px_#ef4444] leading-none uppercase">
+        The Ultimate Sitcom <br> & Geek Culture Hub
+      </h1>
+      
+      <p class="text-xl md:text-2xl text-slate-300 body-font font-bold max-w-3xl mx-auto leading-relaxed">
+        From Sheldon's string theory equations to the Central Perk couch, and the explosive rise of Crypto & Web3. This is the master database for nerds, pop-culture addicts, and tech enthusiasts.
+      </p>
+
+      <div class="mt-10 flex flex-wrap justify-center gap-4">
+        <a href="#tbbt" class="px-8 py-4 bg-bazingaRed text-white comic-font text-2xl border-4 border-black shadow-comic hover:shadow-comic-hover hover:translate-x-1 hover:translate-y-1 transition-all rounded-xl">
+          Enter The TBBT Universe
+        </a>
+        <a href="#friends" class="px-8 py-4 bg-comicYellow text-black comic-font text-2xl border-4 border-black shadow-comic hover:shadow-comic-hover hover:translate-x-1 hover:translate-y-1 transition-all rounded-xl">
+          Pivot to Friends & Sitcoms
+        </a>
+        <a href="#tech" class="px-8 py-4 bg-quantumCyan text-black comic-font text-2xl border-4 border-black shadow-comic hover:shadow-comic-hover hover:translate-x-1 hover:translate-y-1 transition-all rounded-xl">
+          Crypto & Tech Lore
+        </a>
+      </div>
+    </header>
+
+    <!-- The Big Bang Theory Section -->
+    <section id="tbbt" class="mb-20">
+      <div class="flex items-center gap-4 mb-8">
+        <h2 class="text-5xl text-comicYellow drop-shadow-[2px_2px_0px_#000]">01. The Big Bang Theory Archives</h2>
+        <div class="h-2 bg-black flex-grow rounded-full border-b border-white/20"></div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="comic-panel p-8 bg-gradient-to-br from-spaceLight to-spaceDark">
+          <div class="tag-bubble bg-quantumCyan mb-4">Physics & Friendship</div>
+          <h3 class="text-4xl text-white mb-4">Why TBBT Changed Geek Culture</h3>
+          <p class="text-lg text-slate-300 leading-relaxed mb-6 font-bold">
+            Before <em>The Big Bang Theory</em>, comic books, string theory, and video game culture were niche subcultures. By bringing Sheldon, Leonard, Penny, Raj, and Howard into the mainstream, the show normalized "geekdom." Suddenly, discussing the intricacies of <a href="/marvel.html" class="text-bazingaRed underline decoration-bazingaRed/50 hover:text-white">Marvel</a> timelines or the moral philosophy of <a href="/dc.html" class="text-quantumCyan underline decoration-quantumCyan/50 hover:text-white">DC Comics</a> wasn't just for conventions—it was prime-time television.
+          </p>
+          <p class="text-lg text-slate-300 leading-relaxed font-bold">
+            Are you a theoretical physicist, an experimental physicist, or just an aspiring actress from Nebraska? Understanding your place in this group dynamic is a science of its own. We’ve meticulously mapped the psychological profiles of the cast into our proprietary algorithm. 
+          </p>
+          
+          <div class="mt-8">
+            <a href="/TBBTPERSON.html" class="block w-full text-center py-4 bg-bazingaRed text-white comic-font text-3xl border-4 border-black rounded-xl hover:bg-red-600 transition-colors">
+              Take the TBBT Persona Test
+            </a>
+          </div>
+        </div>
+
+        <div class="chalkboard p-8 flex flex-col justify-center">
+          <div class="chalk-text text-xl mb-6 border-b border-white/20 pb-4">
+            > EQUATION: LORE + TRIVIA = MASTERY
+          </div>
+          <p class="chalk-text text-lg leading-relaxed mb-6">
+            Think you know the Roommate Agreement by heart? Can you name Howard's aerospace engineering projects, or sing "Soft Kitty" in its entirety? 
+          </p>
+          <p class="chalk-text text-lg leading-relaxed mb-8">
+            Our massive <a href="/tbbt.html" class="text-comicYellow underline hover:text-white">TBBT Trivia Database</a> pulls questions from all 12 seasons. It tests your knowledge of everything from Sheldon's spot on the couch to Penny's blossoming career in pharmaceutical sales.
+          </p>
+          <div class="grid grid-cols-2 gap-4">
+            <a href="/tbbt.html" class="text-center py-3 bg-transparent border-2 border-white text-white font-data hover:bg-white hover:text-chalkGreen transition rounded">Start TBBT Quiz</a>
+            <a href="/roommate.html" class="text-center py-3 bg-transparent border-2 border-comicYellow text-comicYellow font-data hover:bg-comicYellow hover:text-chalkGreen transition rounded">Roommate Test</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sitcoms: Friends & The Office -->
+    <section id="friends" class="mb-20">
+      <div class="flex items-center gap-4 mb-8 flex-row-reverse">
+        <h2 class="text-5xl text-bazingaRed drop-shadow-[2px_2px_0px_#000]">02. The Sitcom Hall of Fame</h2>
+        <div class="h-2 bg-black flex-grow rounded-full border-b border-white/20"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Friends -->
+        <div class="comic-panel p-6 bg-gradient-to-b from-purple-900 to-spaceDark">
+          <div class="flex justify-between items-center mb-4">
+            <div class="tag-bubble bg-[#60a5fa]">Central Perk</div>
+            <i class="fas fa-coffee text-3xl text-white/50"></i>
+          </div>
+          <h3 class="text-3xl text-white mb-3">Friends Universe</h3>
+          <p class="text-slate-300 font-bold mb-4">
+            "We were on a break!" If you know who said it, you belong here. Test your knowledge in our <a href="/friends.html" class="text-comicYellow underline">Friends Trivia</a> or discover if you are a Monica, Rachel, Phoebe, Chandler, Ross, or Joey in the <a href="/friendsperson.html" class="text-comicYellow underline">Friends Personality Audit</a>.
+          </p>
+        </div>
+
+        <!-- The Office -->
+        <div class="comic-panel p-6 bg-gradient-to-b from-slate-700 to-spaceDark border-slate-500">
+          <div class="flex justify-between items-center mb-4">
+            <div class="tag-bubble bg-white text-black border-slate-400">Dunder Mifflin</div>
+            <i class="fas fa-briefcase text-3xl text-white/50"></i>
+          </div>
+          <h3 class="text-3xl text-white mb-3">The Office Lore</h3>
+          <p class="text-slate-300 font-bold mb-4">
+            Bears. Beets. Battlestar Galactica. From Michael's chaotic management to Jim's relentless pranks. Dive into the world's most awkward workplace in our <a href="/theoffice.html" class="text-white underline">The Office Master Quiz</a>.
+          </p>
+        </div>
+
+        <!-- Stranger Things -->
+        <div class="comic-panel p-6 bg-gradient-to-b from-red-900 to-spaceDark border-red-900">
+          <div class="flex justify-between items-center mb-4">
+            <div class="tag-bubble bg-black text-red-500 border-red-500">The Upside Down</div>
+            <i class="fas fa-bicycle text-3xl text-white/50"></i>
+          </div>
+          <h3 class="text-3xl text-white mb-3">Stranger Things</h3>
+          <p class="text-slate-300 font-bold mb-4">
+            D&D, Eggos, and Demogorgons. Are you a Hellfire Club member? Test your 80s survival skills in the <a href="/strangerthings.html" class="text-red-400 underline">Stranger Things Trivia</a> and find your <a href="/STRANGER_PERSONA.html" class="text-red-400 underline">Hawkins Persona</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Crypto, Tech & Geek Lore (The Trendy Stuff) -->
+    <section id="tech" class="mb-20">
+      <div class="flex items-center gap-4 mb-8">
+        <h2 class="text-5xl text-quantumCyan drop-shadow-[2px_2px_0px_#000]">03. Crypto, Tech & The Digital Future</h2>
+        <div class="h-2 bg-black flex-grow rounded-full border-b border-white/20"></div>
+      </div>
+
+      <div class="glass bg-[#050814]/80 border-2 border-quantumCyan/50 rounded-2xl p-8 shadow-neon-cyan relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+          <i class="fab fa-bitcoin text-[15rem] text-quantumCyan"></i>
+        </div>
+
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div>
+            <h3 class="text-4xl text-white mb-4">The Bitcoin Episode & Beyond</h3>
+            <p class="text-lg text-slate-300 font-bold mb-4 leading-relaxed">
+              Remember when the TBBT gang realized they mined Bitcoin years ago on an old laptop? That episode immortalized cryptocurrency in mainstream pop culture. Today, the world of Web3, Blockchain, and AI has exploded into a reality that even Sheldon Cooper would struggle to keep up with.
+            </p>
+            <p class="text-lg text-slate-300 font-bold mb-6 leading-relaxed">
+              For the true digital pioneers, we built the <a href="/tech-encyclopedia.html" class="text-quantumCyan underline hover:text-white">Tech & Crypto Encyclopedia</a>. Here, we track the evolution of decentralized finance, the rise of algorithmic trend acceleration (read our essay on <a href="/the-acceleration-of-trends.html" class="text-quantumCyan underline hover:text-white">The Acceleration of Trends</a>), and the integration of massive AI models.
+            </p>
+            <p class="text-lg text-slate-300 font-bold mb-6 leading-relaxed">
+              Curious about the latest in AI tech? We have a full breakdown of the Grok ecosystem. Read our definitive <a href="/Grok-review.html" class="text-comicYellow underline hover:text-white">Grok Review</a>, explore its unhinged advantages in <a href="/grok-pros.html" class="text-comicYellow underline hover:text-white">Grok Pros & Mechanics</a>, and dive into its visual potential with <a href="/grok-aurora.html" class="text-comicYellow underline hover:text-white">Grok Aurora</a>.
+            </p>
+            <a href="/tech-encyclopedia.html" class="inline-block px-6 py-3 bg-quantumCyan text-black comic-font text-2xl rounded-lg hover:bg-cyan-300 transition-colors">
+              Access the Tech Database
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-4">
+            <h4 class="text-2xl text-comicYellow comic-font tracking-widest mb-2">Test Your Processing Power</h4>
+            <a href="/fusion-core.html" class="flex items-center gap-4 p-4 bg-black/50 border border-white/10 rounded-xl hover:border-quantumCyan transition group">
+              <div class="w-12 h-12 bg-quantumCyan/20 rounded-lg flex items-center justify-center text-quantumCyan text-xl group-hover:scale-110 transition"><i class="fas fa-microchip"></i></div>
+              <div>
+                <div class="text-white font-bold text-lg">Fusion Core Logic</div>
+                <div class="text-slate-400 text-sm">Hardcore deductive algorithms.</div>
+              </div>
+            </a>
+            <a href="/tango-logic.html" class="flex items-center gap-4 p-4 bg-black/50 border border-white/10 rounded-xl hover:border-bazingaRed transition group">
+              <div class="w-12 h-12 bg-bazingaRed/20 rounded-lg flex items-center justify-center text-bazingaRed text-xl group-hover:scale-110 transition"><i class="fas fa-chess-board"></i></div>
+              <div>
+                <div class="text-white font-bold text-lg">Tango Grid</div>
+                <div class="text-slate-400 text-sm">Binary constraints for programmers.</div>
+              </div>
+            </a>
+            <a href="/cryptex.html" class="flex items-center gap-4 p-4 bg-black/50 border border-white/10 rounded-xl hover:border-comicYellow transition group">
+              <div class="w-12 h-12 bg-comicYellow/20 rounded-lg flex items-center justify-center text-comicYellow text-xl group-hover:scale-110 transition"><i class="fas fa-lock"></i></div>
+              <div>
+                <div class="text-white font-bold text-lg">Cryptex Decryption</div>
+                <div class="text-slate-400 text-sm">Crack the digital cipher.</div>
+              </div>
+            </a>
+            <a href="/orbital-game.html" class="flex items-center gap-4 p-4 bg-black/50 border border-white/10 rounded-xl hover:border-chalkGreen transition group">
+              <div class="w-12 h-12 bg-chalkGreen/20 rounded-lg flex items-center justify-center text-green-400 text-xl group-hover:scale-110 transition"><i class="fas fa-globe"></i></div>
+              <div>
+                <div class="text-white font-bold text-lg">Orbital Data Game</div>
+                <div class="text-slate-400 text-sm">Satellite geography and spatial data.</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comic Book Lore (Marvel vs DC) -->
+    <section class="mb-20">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="comic-panel p-8 bg-black border-red-600">
+          <div class="text-4xl text-white comic-font mb-4"><span class="bg-red-600 px-2 py-1">MARVEL</span> MULTIVERSE</div>
+          <p class="text-slate-300 font-bold mb-6">
+            From the streets of Hell's Kitchen to the cosmic reaches of Asgard. The MCU and its comic origins demand encyclopedic recall. Think you know Earth-616? Dive into the <a href="/marvel.html" class="text-red-400 underline">Marvel Lore Hub</a> or test your reflexes in the <a href="/quiz-superhero-visual.html" class="text-red-400 underline">Superhero Visual Quiz</a>.
+          </p>
+        </div>
+        <div class="comic-panel p-8 bg-black border-blue-600">
+          <div class="text-4xl text-white comic-font mb-4"><span class="bg-blue-600 px-2 py-1">DC</span> ARCHIVES</div>
+          <p class="text-slate-300 font-bold mb-6">
+            Gotham's shadows and Metropolis's skies. Dive deep into the Detective Comics lore. Face the Rogues Gallery in our <a href="/quiz-batman-trivia.html" class="text-blue-400 underline">Impossible Batman Trivia</a>, prepare for the new era in the <a href="/quiz-superman-legacy.html" class="text-blue-400 underline">Superman Legacy Guide</a>, or settle the ultimate debate in <a href="/quiz-dc-vs-marvel.html" class="text-yellow-400 underline">DC vs Marvel</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- The Roommate Agreement & Social Psychology -->
+    <section class="mb-20">
+      <div class="chalkboard p-10">
+        <h2 class="text-5xl text-white comic-font mb-6 text-center drop-shadow-md">The Psychology of the Nerd</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <i class="fas fa-file-contract text-5xl text-comicYellow mb-4"></i>
+            <h3 class="text-2xl text-white comic-font mb-2">Roommate Treaties</h3>
+            <p class="text-slate-300 font-data text-sm">
+              Sheldon's Roommate Agreement wasn't just a gag; it was boundary setting. Take our highly popular <a href="/roommate2.html" class="text-comicYellow underline">Roommate Compatibility Test</a> to see if you can survive living with a theoretical physicist.
+            </p>
+          </div>
+          <div class="text-center">
+            <i class="fas fa-battery-quarter text-5xl text-bazingaRed mb-4"></i>
+            <h3 class="text-2xl text-white comic-font mb-2">Social Battery</h3>
+            <p class="text-slate-300 font-data text-sm">
+              Does social interaction drain you like a broken iPhone? Measure your exact introversion threshold using our detailed <a href="/social-battery-test.html" class="text-bazingaRed underline">Social Battery Audit</a>.
+            </p>
+          </div>
+          <div class="text-center">
+            <i class="fas fa-biohazard text-5xl text-quantumCyan mb-4"></i>
+            <h3 class="text-2xl text-white comic-font mb-2">Dating Red Flags</h3>
+            <p class="text-slate-300 font-data text-sm">
+              Navigating relationships is harder than quantum mechanics. Use the <a href="/toxic-radar-test.html" class="text-quantumCyan underline">Toxic Radar Test</a> to audit your romantic blind spots before your next date.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Massive SEO / Glossary Data Block (Like Avatar Hub) -->
+    <section class="border-t-4 border-spaceLight pt-16 pb-10">
+      <div class="bg-spaceLight p-8 rounded-2xl shadow-comic border-2 border-black">
+        <h2 class="text-4xl text-comicYellow comic-font mb-6">The Omnipedia: Internal Routing & FAQ</h2>
+        <p class="text-slate-300 font-bold mb-6 leading-relaxed">
+          Welcome to the basement level of the archives. Here, we index the vast array of trivia, group games, and cognitive assessments available on QuizRealm. Whether you are hosting a digital watch party using our <a href="/group-hub.html" class="text-white underline">Group Hub</a> or just doing your <a href="/daily.html" class="text-white underline">Daily Challenges</a>, this is your map.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-2xl text-white comic-font mb-3 border-b border-white/20 pb-2">Why Do We Love Sitcom Trivia?</h3>
+            <p class="text-slate-400 text-sm font-bold leading-relaxed mb-4">
+              Shows like The Big Bang Theory and Friends created "parasocial relationships." Because we watched these characters evolve over a decade, recalling their specific quotes and habits triggers a powerful nostalgic dopamine response. It feels like remembering facts about our own friends. Testing this knowledge in a multiplayer environment via our <a href="/group-hub.html" class="text-white underline hover:text-quantumCyan">Live Group Host System</a> turns solitary nostalgia into a highly competitive social event.
+            </p>
+            <h3 class="text-2xl text-white comic-font mb-3 border-b border-white/20 pb-2">The Brain on Puzzles</h3>
+            <p class="text-slate-400 text-sm font-bold leading-relaxed mb-4">
+              Classic arcade mechanics aren't just for fun; they keep neuroplasticity high. For vocabulary enhancement, play <a href="/hangman.html" class="text-white underline">Classic Hangman</a>. For lateral thinking, attempt the mind-bending puzzles in <a href="/mind-blowers.html" class="text-white underline">Mind Blowers</a>. To browse the complete list of cognitive workouts, access the <a href="/categories.html" class="text-white underline">Categories Index</a>.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="text-2xl text-white comic-font mb-3 border-b border-white/20 pb-2">Web3, Crypto & AI Integration</h3>
+            <p class="text-slate-400 text-sm font-bold leading-relaxed mb-4">
+              The digital landscape is shifting from Web 2.0 centralization to Web3 decentralization and AI automation. What started as "nerd culture" is now global finance and infrastructure. We track this aggressively. Understanding the linguistic shifts of this era is crucial, which we map out in our analysis of <a href="/article-generational-slang.html" class="text-white underline">Generational Slang & Internet Culture</a>. The trivia of tomorrow is being written in the code of today.
+            </p>
+            <h3 class="text-2xl text-white comic-font mb-3 border-b border-white/20 pb-2">Quick Navigation Links</h3>
+            <ul class="text-slate-400 text-sm font-bold space-y-2 font-data">
+              <li>> <a href="/tbbt.html" class="hover:text-comicYellow">/execute tbbt_trivia.exe</a></li>
+              <li>> <a href="/tech-encyclopedia.html" class="hover:text-quantumCyan">/open tech_lore_database</a></li>
+              <li>> <a href="/marvel.html" class="hover:text-bazingaRed">/load earth_616_files</a></li>
+              <li>> <a href="/social-battery-test.html" class="hover:text-chalkGreen">/run battery_diagnostic</a></li>
+              <li>> <a href="/group-hub.html" class="hover:text-white">/initiate multiplayer_server</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <quiz-footer></quiz-footer>
+
+</body>
+</html>
