@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Core Scripts -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Free Mortgage, Loan & Salary Calculator | Advanced Financial Tools</title>
+  <meta name="description" content="Calculate your monthly mortgage payments, loan amortization, and convert hourly wages to annual salary instantly with our free advanced financial tools." />
+  <meta name="keywords" content="mortgage calculator, loan calculator, salary to hourly calculator, wage converter, amortization schedule, financial tools" />
+  <meta name="author" content="QuizRealm Financial Tools" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://thequizrealm.com/mortgage-loan-and-salary-calculator.html" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            mono: ['"Space Mono"', 'monospace']
+          },
+          colors: {
+            financeGreen: '#10b981',
+            financeDark: '#0f172a',
+            uiGray: '#f8fafc',
+            borderGray: '#e2e8f0',
+            adBlue: '#2563eb'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #f1f5f9; color: #334155; }
+    
+    /* Utility Panels */
+    .tool-panel {
+      background: #ffffff; border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      border: 1px solid #e2e8f0; padding: 2rem; margin-bottom: 2rem;
+    }
+
+    /* Inputs & Results */
+    .calc-input {
+      width: 100%; padding: 0.75rem 1rem; border: 1px solid #cbd5e1;
+      border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 1rem;
+      color: #0f172a; transition: all 0.2s;
+    }
+    .calc-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+    
+    .result-box {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-top: 4px solid #10b981;
+      padding: 1.5rem; border-radius: 8px; text-align: center;
+    }
+    .result-value { font-family: 'Space Mono', monospace; font-size: 2.5rem; font-weight: 700; color: #0f172a; }
+
+    /* Internal "Google-Style" Ads */
+    .native-ad { position: relative; overflow: hidden; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.2s; display: block; text-decoration: none; }
+    .native-ad:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+    .ad-badge { position: absolute; top: 0; right: 0; background: #f1f5f9; color: #64748b; font-size: 0.6rem; padding: 2px 6px; border-bottom-left-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; z-index: 10; border-left: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;}
+    
+    /* Vertical Ad */
+    .ad-vertical { display: flex; flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+    .ad-vertical .ad-img { width: 100%; height: 120px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 6px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #38bdf8; }
+    .ad-vertical h4 { font-weight: 800; color: #0f172a; font-size: 1.25rem; margin-bottom: 0.5rem; line-height: 1.2; }
+    .ad-vertical p { font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; }
+    .ad-vertical .ad-btn { background: #2563eb; color: #fff; padding: 0.75rem 1rem; border-radius: 4px; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; }
+
+    /* Horizontal Ad */
+    .ad-horizontal { display: flex; align-items: center; padding: 1.5rem; background: linear-gradient(to right, #ffffff, #f8fafc); border-left: 4px solid #f59e0b; margin: 2.5rem 0; }
+    .ad-horizontal .ad-icon { font-size: 3rem; color: #f59e0b; margin-right: 1.5rem; }
+    .ad-horizontal .ad-content { flex: 1; }
+    .ad-horizontal h4 { font-weight: 800; color: #0f172a; font-size: 1.1rem; margin-bottom: 0.25rem; }
+    .ad-horizontal p { font-size: 0.9rem; color: #64748b; margin: 0; }
+    .ad-horizontal .ad-btn { background: #f59e0b; color: #fff; padding: 0.5rem 1.5rem; border-radius: 4px; font-weight: 600; margin-left: 1.5rem; white-space: nowrap; }
+
+    /* Sticky Corner Ad */
+    .ad-sticky { position: fixed; bottom: 20px; right: 20px; width: 300px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 50; padding: 1.25rem; display: flex; gap: 1rem; align-items: center; transform: translateY(150%); animation: slideUp 0.5s 3s forwards; }
+    @keyframes slideUp { to { transform: translateY(0); } }
+    .ad-sticky .ad-icon { width: 40px; height: 40px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.2rem; flex-shrink: 0; }
+    .ad-sticky h4 { font-size: 0.9rem; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+    .ad-sticky p { font-size: 0.75rem; color: #64748b; margin: 0; }
+
+    /* SEO Article Formatting */
+    .article-body h2 { font-size: 1.75rem; font-weight: 800; color: #0f172a; margin-top: 2.5rem; margin-bottom: 1rem; }
+    .article-body h3 { font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .article-body p { line-height: 1.8; margin-bottom: 1.25rem; color: #475569; font-size: 1.05rem; }
+  </style>
+</head>
+<body class="selection:bg-financeGreen selection:text-white">
+
+  <!-- Minimal Header -->
+  <header class="bg-white border-b border-borderGray sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 h-14 flex justify-between items-center">
+      <div class="flex items-center gap-2 text-financeDark font-bold tracking-tight">
+        <i class="fas fa-calculator text-financeGreen"></i>
+        QuizRealm Utilities
+      </div>
+      <a href="/index.html" class="text-sm text-slate-500 hover:text-financeDark font-medium transition">
+        Return to Main Network <i class="fas fa-arrow-right ml-1"></i>
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-10 flex flex-col lg:flex-row gap-8">
+    
+    <!-- Left Column: Tools & Article -->
+    <div class="flex-1 max-w-4xl">
+      
+      <div class="mb-10">
+        <h1 class="text-4xl md:text-5xl font-black text-financeDark mb-4 tracking-tight">Financial & Wage Tools</h1>
+        <p class="text-lg text-slate-500">Calculate exact mortgage amortization schedules and convert freelance hourly rates to annual corporate salaries in real-time.</p>
+      </div>
+
+      <!-- TOOL 1: Mortgage Calculator -->
+      <section class="tool-panel">
+        <div class="flex items-center gap-3 mb-6 border-b border-borderGray pb-4">
+          <i class="fas fa-home text-2xl text-financeGreen"></i>
+          <h2 class="text-2xl font-bold text-financeDark m-0">Mortgage & Loan Calculator</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Inputs -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-600 mb-1">Home Price / Loan Amount</label>
+              <div class="relative">
+                <span class="absolute left-3 top-3 text-slate-400 font-mono">$</span>
+                <input type="number" id="mort-principal" class="calc-input pl-8" value="350000" oninput="calculateMortgage()">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1">Down Payment</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-3 text-slate-400 font-mono">$</span>
+                  <input type="number" id="mort-down" class="calc-input pl-8" value="70000" oninput="calculateMortgage()">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1">Interest Rate</label>
+                <div class="relative">
+                  <span class="absolute right-3 top-3 text-slate-400 font-mono">%</span>
+                  <input type="number" id="mort-rate" class="calc-input pr-8" value="6.5" step="0.1" oninput="calculateMortgage()">
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-600 mb-1">Loan Term (Years)</label>
+              <select id="mort-years" class="calc-input bg-white" onchange="calculateMortgage()">
+                <option value="15">15 Years fixed</option>
+                <option value="20">20 Years fixed</option>
+                <option value="30" selected>30 Years fixed</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Outputs -->
+          <div class="result-box flex flex-col justify-center">
+            <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Estimated Monthly Payment</h3>
+            <div class="result-value text-financeGreen" id="mort-monthly">$1,769.83</div>
+            <p class="text-xs text-slate-400 mt-2">*Principal & Interest only. Does not include taxes, insurance, or PMI.</p>
+            
+            <div class="mt-6 border-t border-borderGray pt-4 space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-slate-500">Total Principal:</span>
+                <span class="font-mono font-medium text-financeDark" id="mort-total-prin">$280,000.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Total Interest Paid:</span>
+                <span class="font-mono font-medium text-red-500" id="mort-total-int">$357,138.80</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Horizontal Ad 1 -->
+      <a href="/tango-logic.html" class="native-ad ad-horizontal">
+        <div class="ad-badge">Sponsored</div>
+        <i class="fas fa-border-all ad-icon"></i>
+        <div class="ad-content">
+          <h4>Are you a logical thinker?</h4>
+          <p>Numbers are easy. True spatial logic is hard. Test your IQ with the Tango Logic Grid.</p>
+        </div>
+        <div class="ad-btn hidden md:block">Play Now</div>
+      </a>
+
+      <!-- TOOL 2: Salary Converter -->
+      <section class="tool-panel">
+        <div class="flex items-center gap-3 mb-6 border-b border-borderGray pb-4">
+          <i class="fas fa-wallet text-2xl text-blue-500"></i>
+          <h2 class="text-2xl font-bold text-financeDark m-0">Salary to Hourly Converter</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-600 mb-1">Annual Salary</label>
+              <div class="relative">
+                <span class="absolute left-3 top-3 text-slate-400 font-mono">$</span>
+                <input type="number" id="sal-annual" class="calc-input pl-8" value="75000" oninput="convertSalary('annual')">
+              </div>
+            </div>
+            <div class="text-center text-slate-400 font-bold"><i class="fas fa-arrows-alt-v"></i></div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-600 mb-1">Hourly Rate</label>
+              <div class="relative">
+                <span class="absolute left-3 top-3 text-slate-400 font-mono">$</span>
+                <input type="number" id="sal-hourly" class="calc-input pl-8" value="36.06" step="0.01" oninput="convertSalary('hourly')">
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-uiGray border border-borderGray rounded-lg p-6 space-y-4">
+            <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider border-b border-borderGray pb-2">Assumptions & Metrics</h3>
+            <div class="flex justify-between items-center">
+              <label class="text-sm font-medium text-slate-600">Hours per week:</label>
+              <input type="number" id="sal-hours" class="calc-input w-20 py-1 px-2 text-center" value="40" oninput="convertSalary('annual')">
+            </div>
+            <div class="flex justify-between items-center">
+              <label class="text-sm font-medium text-slate-600">Weeks per year:</label>
+              <input type="number" id="sal-weeks" class="calc-input w-20 py-1 px-2 text-center" value="52" oninput="convertSalary('annual')">
+            </div>
+            <div class="pt-4 mt-2 border-t border-borderGray text-sm">
+              <div class="flex justify-between mb-2">
+                <span class="text-slate-500">Weekly Gross:</span>
+                <span class="font-mono font-bold text-financeDark" id="sal-weekly">$1,442.31</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Monthly Gross:</span>
+                <span class="font-mono font-bold text-financeDark" id="sal-monthly">$6,250.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Massive SEO Article -->
+      <article class="article-body bg-white p-8 rounded-xl border border-borderGray shadow-sm mb-10">
+        <h1 class="text-3xl font-black text-financeDark mb-6">Decoding Debt and Income: The Psychology of Financial Tools</h1>
+        
+        <p>
+          Mathematics is an objective science, but personal finance is highly subjective and deeply psychological. When you input numbers into a mortgage calculator or a salary converter, you are not just executing an algorithm—you are projecting your future, evaluating your worth, and managing your financial anxiety. Understanding the mechanics behind these tools is the first step toward financial literacy and reducing cognitive load.
+        </p>
+
+        <h2>1. The Architecture of a Mortgage</h2>
+        <p>
+          A mortgage is likely the largest financial transaction an individual will make in their lifetime. The calculation is complex because it involves an <strong>amortization schedule</strong>. Amortization is the process of spreading out a loan into a series of fixed payments over time. 
+        </p>
+        <p>
+          While your monthly payment remains the same for the duration of a fixed-rate loan (such as a 30-year fixed mortgage), the composition of that payment changes drastically. In the first few years of the loan, the vast majority of your payment goes toward paying the interest. This is known as "front-loaded interest." As the principal balance slowly decreases, a larger percentage of your monthly payment begins to apply to the principal.
+        </p>
+        
+        <h3>The Hidden Costs: PITI</h3>
+        <p>
+          It is crucial to note that our calculator above provides the <strong>Principal and Interest (P&I)</strong>. However, real-world mortgage payments consist of <strong>PITI</strong>:
+        </p>
+        <ul class="list-disc pl-6 mb-6 text-slate-600 space-y-2">
+          <li><strong>P</strong>rincipal: The actual balance of the loan.</li>
+          <li><strong>I</strong>nterest: The cost of borrowing the money.</li>
+          <li><strong>T</strong>axes: Property taxes assessed by your local municipality, usually held in escrow.</li>
+          <li><strong>I</strong>nsurance: Homeowners insurance, and potentially Private Mortgage Insurance (PMI) if your down payment is less than 20%.</li>
+        </ul>
+
+        <h2>2. The Psychology of Debt and Burnout</h2>
+        <p>
+          Financial stress is a primary contributor to cognitive fatigue. Carrying a 30-year mortgage or massive student loans occupies a significant portion of your mental bandwidth. This constant background stress is precisely what we measure in our <a href="/career-burnout.html" class="text-adBlue font-semibold hover:underline">Corporate Burnout Diagnostic</a>. 
+        </p>
+        <p>
+          When individuals feel trapped by their "monthly nut" (the minimum amount required to survive each month), they are more likely to experience professional stagnation, anxiety, and a depleted <a href="/social-battery-test.html" class="text-adBlue font-semibold hover:underline">Social Battery</a>. Using tools like the mortgage calculator allows you to regain a sense of control by making the abstract numbers concrete and actionable.
+        </p>
+
+        <h2>3. Salary vs. Hourly: The Value of Time</h2>
+        <p>
+          The transition from an hourly wage to an annual salary (or vice versa) represents a significant shift in how you value your time. The standard mathematical assumption is that a full-time employee works 40 hours a week for 52 weeks a year, totaling 2,080 working hours. 
+        </p>
+        <p>
+          Therefore, to find the hourly equivalent of a $75,000 salary, you divide by 2,080, yielding approximately $36.06 per hour. 
+        </p>
+        <p>
+          However, the reality of salaried work—especially in corporate environments—often exceeds 40 hours. If you are earning $75,000 but working 55 hours a week, your true hourly wage drops to $26.22. This mathematical reality is often the catalyst for the "Quiet Quitting" phenomenon, a topic we explore deeply in our <a href="/career-quiet-quit.html" class="text-adBlue font-semibold hover:underline">Career Audits</a>. Understanding the true exchange rate of your time for money is vital for maintaining professional boundaries.
+        </p>
+
+        <h2>4. Cognitive Load and Financial Planning</h2>
+        <p>
+          Managing money requires high-level executive functioning and impulse control. If you spend your day calculating spreadsheets, optimizing tax strategies, and managing debt, your brain experiences "decision fatigue." 
+        </p>
+        <p>
+          To maintain neuroplasticity and prevent this fatigue, psychologists recommend engaging in non-financial, lateral logic exercises. Taking a 10-minute break to play games that require spatial reasoning—like those found in our <a href="/mind-blowers.html" class="text-adBlue font-semibold hover:underline">Mind Blowers Logic Hub</a> or our <a href="/mathsprint.html" class="text-adBlue font-semibold hover:underline">Math Sprint Protocol</a>—can actually reset your cognitive baseline, allowing you to return to your financial planning with a clearer, less stressed perspective.
+        </p>
+      </article>
+
+    </div>
+
+    <!-- Right Column: Sidebar & Ads -->
+    <aside class="w-full lg:w-80 shrink-0 space-y-6">
+      
+      <!-- Vertical Ad 1 -->
+      <a href="/career-burnout.html" class="native-ad ad-vertical">
+        <div class="ad-badge">Ad</div>
+        <div class="ad-img"><i class="fas fa-battery-empty"></i></div>
+        <h4>Corporate Burnout is Real.</h4>
+        <p>Are your finances causing stress? Stop calculating and start auditing. Take the 3-minute Corporate Burnout Test to see where you stand.</p>
+        <div class="ad-btn">Start Audit</div>
+      </a>
+
+      <!-- Quick Links Panel -->
+      <div class="bg-white p-6 rounded-xl border border-borderGray shadow-sm">
+        <h4 class="font-bold text-financeDark mb-4 uppercase tracking-wider text-sm border-b border-borderGray pb-2">Related Utilities</h4>
+        <ul class="space-y-3 text-sm font-medium">
+          <li><a href="/omni-math-and-financial-calculator.html" class="text-slate-600 hover:text-financeGreen transition flex items-center gap-2"><i class="fas fa-percent w-4"></i> Compound Interest Calc</a></li>
+          <li><a href="/omni-math-and-financial-calculator.html" class="text-slate-600 hover:text-financeGreen transition flex items-center gap-2"><i class="fas fa-chart-pie w-4"></i> Std. Deviation Tool</a></li>
+          <li><a href="/mathsprint.html" class="text-slate-600 hover:text-financeGreen transition flex items-center gap-2"><i class="fas fa-stopwatch w-4"></i> Math Sprint Game</a></li>
+        </ul>
+      </div>
+
+      <!-- Vertical Ad 2 -->
+      <a href="/rapid.html" class="native-ad ad-vertical bg-slate-50">
+        <div class="ad-badge">Sponsored</div>
+        <div class="ad-img" style="background: linear-gradient(135deg, #ef4444, #7f1d1d); color: #fca5a5;"><i class="fas fa-bolt"></i></div>
+        <h4>Test Your Reflexes</h4>
+        <p>Crunching numbers is slow. Can your brain handle Rapid Fire trivia? Beat the 10-second shot clock and prove your speed.</p>
+        <div class="ad-btn" style="background: #ef4444;">Play Rapid Fire</div>
+      </a>
+
+    </aside>
+
+  </main>
+
+  <!-- Sticky Bottom Left Ad -->
+  <a href="/group-hub.html" class="native-ad ad-sticky">
+    <div class="ad-badge">Ad</div>
+    <div class="ad-icon"><i class="fas fa-users"></i></div>
+    <div>
+      <h4>Hosting a party?</h4>
+      <p>Turn your TV into a live game show. Get the free Trivia Host toolkit.</p>
+    </div>
+  </a>
+
+  <!-- Calculator Logic -->
+  <script>
+    // Format currency
+    const formatMoney = (amount) => {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    };
+
+    // Mortgage Calculator
+    function calculateMortgage() {
+      const price = parseFloat(document.getElementById('mort-principal').value) || 0;
+      const down = parseFloat(document.getElementById('mort-down').value) || 0;
+      const rateStr = document.getElementById('mort-rate').value;
+      const years = parseFloat(document.getElementById('mort-years').value) || 30;
+
+      const principal = Math.max(0, price - down);
+      const r = (parseFloat(rateStr) || 0) / 100 / 12; // monthly interest rate
+      const n = years * 12; // total number of payments
+
+      const monthlyEl = document.getElementById('mort-monthly');
+      const totalPrinEl = document.getElementById('mort-total-prin');
+      const totalIntEl = document.getElementById('mort-total-int');
+
+      if (principal <= 0) {
+        monthlyEl.textContent = '$0.00';
+        totalPrinEl.textContent = '$0.00';
+        totalIntEl.textContent = '$0.00';
+        return;
+      }
+
+      let monthlyPayment = 0;
+      if (r === 0) {
+        monthlyPayment = principal / n;
+      } else {
+        // M = P [ r(1 + r)^n ] / [ (1 + r)^n - 1 ]
+        monthlyPayment = principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+      }
+
+      const totalPaid = monthlyPayment * n;
+      const totalInterest = Math.max(0, totalPaid - principal);
+
+      monthlyEl.textContent = formatMoney(monthlyPayment);
+      totalPrinEl.textContent = formatMoney(principal);
+      totalIntEl.textContent = formatMoney(totalInterest);
+    }
+
+    // Salary Calculator
+    function convertSalary(source) {
+      const annualInput = document.getElementById('sal-annual');
+      const hourlyInput = document.getElementById('sal-hourly');
+      const hours = parseFloat(document.getElementById('sal-hours').value) || 40;
+      const weeks = parseFloat(document.getElementById('sal-weeks').value) || 52;
+      
+      const weeklyEl = document.getElementById('sal-weekly');
+      const monthlyEl = document.getElementById('sal-monthly');
+
+      const totalHours = hours * weeks;
+
+      if (source === 'annual') {
+        const annual = parseFloat(annualInput.value) || 0;
+        const hourly = annual / totalHours;
+        hourlyInput.value = hourly > 0 ? hourly.toFixed(2) : '';
+        
+        weeklyEl.textContent = formatMoney(annual / weeks);
+        monthlyEl.textContent = formatMoney(annual / 12);
+      } else if (source === 'hourly') {
+        const hourly = parseFloat(hourlyInput.value) || 0;
+        const annual = hourly * totalHours;
+        annualInput.value = annual > 0 ? annual.toFixed(0) : '';
+
+        weeklyEl.textContent = formatMoney(hourly * hours);
+        monthlyEl.textContent = formatMoney(annual / 12);
+      }
+    }
+
+    // Initialize on load
+    window.onload = () => {
+      calculateMortgage();
+      convertSalary('annual');
+    };
+  </script>
+</body>
+</html>

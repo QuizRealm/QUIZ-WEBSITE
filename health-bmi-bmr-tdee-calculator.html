@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Core Scripts -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+      }
+    }
+  </script>
+  <script type="module" src="/firebase-config.js"></script>
+  <script src="/game-engine.js"></script>
+  <script src="/components.js" defer></script>
+  <script src="/ux-core.js" defer></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Free Advanced BMR, TDEE & BMI Calculator | Health Mathematics</title>
+  <meta name="description" content="Calculate your Basal Metabolic Rate (BMR), Total Daily Energy Expenditure (TDEE), and BMI instantly. Discover the mathematics of metabolism and caloric needs." />
+  <meta name="keywords" content="BMR calculator, TDEE calculator, BMI calculator, Mifflin-St Jeor equation, health mathematics, daily caloric needs, metabolic rate tool" />
+  <meta name="author" content="QuizRealm Health & Utilities" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://thequizrealm.com/health-bmi-bmr-tdee-calculator.html" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          colors: {
+            healthMint: '#0d9488',
+            healthTeal: '#0f766e',
+            healthDark: '#0f172a',
+            uiLight: '#f8fafc',
+            borderGray: '#e2e8f0',
+            adPurple: '#7c3aed'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #f1f5f9; color: #334155; }
+    
+    /* Utility Panels */
+    .tool-panel {
+      background: #ffffff; border-radius: 16px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+      border: 1px solid #e2e8f0; padding: 2rem; margin-bottom: 2rem;
+    }
+
+    /* Inputs & Results */
+    .calc-input {
+      width: 100%; padding: 0.85rem 1rem; border: 1px solid #cbd5e1;
+      border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 1rem;
+      color: #0f172a; transition: all 0.2s; background: #f8fafc;
+    }
+    .calc-input:focus { outline: none; border-color: #0d9488; box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2); background: #ffffff; }
+    
+    .toggle-btn {
+      flex: 1; padding: 0.75rem; text-align: center; border: 1px solid #cbd5e1;
+      cursor: pointer; transition: all 0.2s; font-weight: 600; font-size: 0.9rem;
+    }
+    .toggle-btn.active { background: #0d9488; color: #ffffff; border-color: #0d9488; }
+    .toggle-btn:first-child { border-radius: 8px 0 0 8px; }
+    .toggle-btn:last-child { border-radius: 0 8px 8px 0; }
+
+    .result-box {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-top: 4px solid #0d9488;
+      padding: 1.5rem; border-radius: 12px; text-align: center; height: 100%;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .result-value { font-family: 'JetBrains Mono', monospace; font-size: 3rem; font-weight: 800; color: #0f172a; line-height: 1.1; }
+    .result-sub { font-size: 0.85rem; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+
+    /* Internal "Google-Style" Ads */
+    .native-ad { position: relative; overflow: hidden; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: transform 0.2s; display: block; text-decoration: none; }
+    .native-ad:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(0,0,0,0.08); }
+    .ad-badge { position: absolute; top: 0; right: 0; background: #f1f5f9; color: #64748b; font-size: 0.65rem; padding: 3px 8px; border-bottom-left-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; z-index: 10; border-left: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;}
+    
+    /* Vertical Ad */
+    .ad-vertical { display: flex; flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+    .ad-vertical .ad-img { width: 100%; height: 140px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 8px; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #a78bfa; }
+    .ad-vertical h4 { font-weight: 800; color: #0f172a; font-size: 1.35rem; margin-bottom: 0.75rem; line-height: 1.2; }
+    .ad-vertical p { font-size: 0.9rem; color: #475569; margin-bottom: 1.5rem; line-height: 1.5; }
+    .ad-vertical .ad-btn { background: #7c3aed; color: #fff; padding: 0.85rem 1.5rem; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Horizontal Ad */
+    .ad-horizontal { display: flex; align-items: center; padding: 1.75rem; background: linear-gradient(to right, #ffffff, #f8fafc); border-left: 5px solid #ec4899; margin: 3rem 0; }
+    .ad-horizontal .ad-icon { font-size: 3.5rem; color: #ec4899; margin-right: 2rem; }
+    .ad-horizontal .ad-content { flex: 1; }
+    .ad-horizontal h4 { font-weight: 800; color: #0f172a; font-size: 1.25rem; margin-bottom: 0.35rem; }
+    .ad-horizontal p { font-size: 0.95rem; color: #475569; margin: 0; }
+    .ad-horizontal .ad-btn { background: #ec4899; color: #fff; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 700; margin-left: 2rem; white-space: nowrap; text-transform: uppercase; font-size: 0.9rem; }
+
+    /* Sticky Corner Ad */
+    .ad-sticky { position: fixed; bottom: 24px; right: 24px; width: 320px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); z-index: 50; padding: 1.5rem; display: flex; gap: 1.25rem; align-items: center; transform: translateY(150%); animation: slideUp 0.6s 4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes slideUp { to { transform: translateY(0); } }
+    .ad-sticky .ad-icon { width: 48px; height: 48px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.25rem; flex-shrink: 0; }
+    .ad-sticky h4 { font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+    .ad-sticky p { font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.4; }
+    .ad-close { position: absolute; top: 8px; right: 8px; color: #94a3b8; cursor: pointer; font-size: 0.8rem; padding: 4px; }
+    .ad-close:hover { color: #0f172a; }
+
+    /* SEO Article Formatting */
+    .article-body h2 { font-size: 2rem; font-weight: 800; color: #0f172a; margin-top: 3rem; margin-bottom: 1.25rem; letter-spacing: -0.02em; }
+    .article-body h3 { font-size: 1.35rem; font-weight: 700; color: #1e293b; margin-top: 2rem; margin-bottom: 0.75rem; }
+    .article-body p { line-height: 1.85; margin-bottom: 1.5rem; color: #334155; font-size: 1.1rem; }
+    .article-body blockquote { border-left: 4px solid #0d9488; padding-left: 1.5rem; font-style: italic; color: #475569; margin: 2rem 0; font-size: 1.2rem; }
+    .article-link { color: #0d9488; font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(13, 148, 136, 0.3); transition: all 0.2s; }
+    .article-link:hover { color: #0f766e; border-bottom-color: #0f766e; background: rgba(13, 148, 136, 0.05); }
+  </style>
+</head>
+<body class="selection:bg-healthMint selection:text-white">
+
+  <!-- Minimal Header -->
+  <header class="bg-white border-b border-borderGray sticky top-0 z-40 shadow-sm">
+    <div class="max-w-[1400px] mx-auto px-6 h-16 flex justify-between items-center">
+      <div class="flex items-center gap-3 text-healthDark font-bold tracking-tight text-lg">
+        <i class="fas fa-heartbeat text-healthMint text-xl"></i>
+        QuizRealm Health Mathematics
+      </div>
+      <a href="/index.html" class="text-sm text-slate-500 hover:text-healthDark font-semibold transition bg-slate-100 px-4 py-2 rounded-full">
+        Return to Main Network <i class="fas fa-arrow-right ml-1"></i>
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-[1400px] mx-auto px-6 py-12 flex flex-col xl:flex-row gap-12">
+    
+    <!-- Left Column: Tools & Article -->
+    <div class="flex-1 max-w-5xl">
+      
+      <div class="mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-bold uppercase tracking-widest mb-6">
+          <i class="fas fa-bolt"></i> Metabolic Engine Protocol
+        </div>
+        <h1 class="text-5xl md:text-6xl font-black text-healthDark mb-6 tracking-tight leading-tight">Advanced BMR & TDEE Calculator</h1>
+        <p class="text-xl text-slate-500 leading-relaxed max-w-3xl">
+          Instantly compute your Basal Metabolic Rate and Total Daily Energy Expenditure utilizing the highly accurate Mifflin-St Jeor mathematical equation.
+        </p>
+      </div>
+
+      <!-- TOOL: Health Calculator -->
+      <section class="tool-panel">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          <!-- Inputs (Spans 7 cols) -->
+          <div class="lg:col-span-7 space-y-6">
+            <h2 class="text-2xl font-bold text-healthDark m-0 mb-6 flex items-center gap-3">
+              <i class="fas fa-sliders-h text-healthMint"></i> Biological Metrics
+            </h2>
+            
+            <!-- Gender & Imperial/Metric Toggles -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-2">Gender</label>
+                <div class="flex rounded-lg overflow-hidden">
+                  <div class="toggle-btn active" id="btn-male" onclick="setGender('male')">Male</div>
+                  <div class="toggle-btn bg-white text-slate-500" id="btn-female" onclick="setGender('female')">Female</div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-2">Unit System</label>
+                <div class="flex rounded-lg overflow-hidden">
+                  <div class="toggle-btn active" id="btn-imp" onclick="setUnits('imperial')">Imperial</div>
+                  <div class="toggle-btn bg-white text-slate-500" id="btn-met" onclick="setUnits('metric')">Metric</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Age & Weight -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-2">Age (Years)</label>
+                <input type="number" id="h-age" class="calc-input" value="30" oninput="calculateHealth()">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-2" id="lbl-weight">Weight (lbs)</label>
+                <input type="number" id="h-weight" class="calc-input" value="175" oninput="calculateHealth()">
+              </div>
+            </div>
+
+            <!-- Height -->
+            <div id="imp-height" class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-2">Height (Feet)</label>
+                <input type="number" id="h-ft" class="calc-input" value="5" oninput="calculateHealth()">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-2">Height (Inches)</label>
+                <input type="number" id="h-in" class="calc-input" value="10" oninput="calculateHealth()">
+              </div>
+            </div>
+            <div id="met-height" class="hidden">
+              <label class="block text-sm font-semibold text-slate-600 mb-2">Height (cm)</label>
+              <input type="number" id="h-cm" class="calc-input" value="178" oninput="calculateHealth()">
+            </div>
+
+            <!-- Activity Level -->
+            <div>
+              <label class="block text-sm font-semibold text-slate-600 mb-2">Activity Level</label>
+              <select id="h-activity" class="calc-input bg-white appearance-none" onchange="calculateHealth()">
+                <option value="1.2">Sedentary (Office job, little/no exercise)</option>
+                <option value="1.375">Lightly Active (Light exercise 1-3 days/week)</option>
+                <option value="1.55" selected>Moderately Active (Moderate exercise 3-5 days/week)</option>
+                <option value="1.725">Very Active (Hard exercise 6-7 days/week)</option>
+                <option value="1.9">Extra Active (Very hard exercise/physical job)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Outputs (Spans 5 cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            
+            <!-- TDEE -->
+            <div class="result-box shadow-sm border-healthMint/30">
+              <div class="result-sub">Total Daily Energy Expenditure</div>
+              <div class="result-value text-healthMint" id="res-tdee">2,764</div>
+              <div class="text-sm font-medium text-slate-500 mt-2">Calories / Day (Maintenance)</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 h-full">
+              <!-- BMR -->
+              <div class="result-box !border-t-adPurple !p-4">
+                <div class="result-sub !text-[0.7rem]">Basal Metabolic Rate</div>
+                <div class="result-value !text-2xl text-adPurple" id="res-bmr">1,783</div>
+                <div class="text-xs font-medium text-slate-500 mt-1">Calories / Day</div>
+              </div>
+              
+              <!-- BMI -->
+              <div class="result-box !border-t-slate-800 !p-4">
+                <div class="result-sub !text-[0.7rem]">Body Mass Index</div>
+                <div class="result-value !text-2xl text-slate-800" id="res-bmi">25.1</div>
+                <div class="text-xs font-bold mt-1" id="res-bmi-cat">Overweight</div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </section>
+
+      <!-- Horizontal Ad 1 -->
+      <a href="/burnout-test.html" class="native-ad ad-horizontal">
+        <div class="ad-badge">Sponsored</div>
+        <i class="fas fa-fire-extinguisher ad-icon"></i>
+        <div class="ad-content">
+          <h4>Is it physical exhaustion, or mental burnout?</h4>
+          <p>Your BMR tracks physical energy, but what about your cognitive reserves? Take the 3-minute Corporate Burnout Audit.</p>
+        </div>
+        <div class="ad-btn hidden md:block">Check Burnout</div>
+      </a>
+
+      <!-- Massive SEO Article -->
+      <article class="article-body bg-white p-8 md:p-14 rounded-2xl border border-borderGray shadow-sm mb-12">
+        <h1 class="text-4xl font-black text-healthDark mb-8 leading-tight">The Mathematics of Human Metabolism: Decoding BMR, TDEE, and Cognitive Caloric Demand</h1>
+        
+        <p>
+          The human body is an extraordinarily complex thermodynamic engine. While modern fitness culture often reduces weight management to simplistic slogans, the reality is deeply mathematical. When you input your biometric data into a Basal Metabolic Rate (BMR) or Total Daily Energy Expenditure (TDEE) calculator, you are engaging with decades of clinical physiological research. 
+        </p>
+        <p>
+          However, calculating your caloric baseline is merely the first step. Understanding <em>why</em> your body burns these calories—particularly the massive caloric demands of the human brain—provides profound insight into both physical fitness and cognitive endurance. Just as we audit our personalities in the <a href="/identity-lab.html" class="article-link">Master Identity Lab</a>, we must audit our biological metrics to optimize our daily performance.
+        </p>
+
+        <h2>1. The Mechanics of BMR and the Mifflin-St Jeor Equation</h2>
+        <p>
+          Your Basal Metabolic Rate (BMR) represents the absolute minimum number of calories your body requires to perform basic, life-sustaining functions if you were to rest in bed for 24 hours. This includes maintaining your core temperature, pumping blood, inflating your lungs, and powering your neurological system.
+        </p>
+        <p>
+          For decades, the Harris-Benedict equation was the gold standard for this calculation. However, in 1990, the <strong>Mifflin-St Jeor equation</strong> was introduced and has since been proven by clinical studies to be significantly more accurate for modern populations. The calculator tool above utilizes this exact mathematical formula:
+        </p>
+        
+        <blockquote class="bg-slate-50 border border-slate-200 rounded-r-lg">
+          <strong>Men:</strong> BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) + 5<br><br>
+          <strong>Women:</strong> BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) - 161
+        </blockquote>
+
+        <p>
+          This equation reveals several biological truths. First, basal metabolism decreases linearly with age. Second, mass (weight) and surface area (height) are the primary drivers of caloric demand. 
+        </p>
+
+        <h2>2. TDEE: The Multiplier of Movement</h2>
+        <p>
+          While BMR tells you what you burn in a coma, your Total Daily Energy Expenditure (TDEE) tells you what you burn in reality. TDEE is calculated by applying an Activity Multiplier to your BMR. 
+        </p>
+        <p>
+          This is where psychological honesty becomes critical. Many individuals drastically overestimate their activity levels. A 45-minute workout does not automatically classify someone as "Highly Active" if the remaining 23 hours of their day are spent sitting at a desk and lying on a couch. The inability to accurately gauge our own physical output is a cognitive blind spot, similar to the blind spots we expose in our <a href="/delusion-test.html" class="article-link">Delusion Diagnostics</a>.
+        </p>
+
+        <h2>3. The Brain’s Caloric Monopoly</h2>
+        <p>
+          Perhaps the most fascinating aspect of basal metabolism is where the energy goes. Despite accounting for only about 2% of a human's total body weight, the brain consumes a staggering <strong>20% of your resting metabolic calories</strong>. 
+        </p>
+        <p>
+          When you engage in intense cognitive tasks—such as solving complex algorithms in the <a href="/fusion-core.html" class="article-link">Fusion Core Logic League</a> or rapidly recalling historical dates in the <a href="/timeline-history.html" class="article-link">Timeline History Protocol</a>—your brain's demand for glucose spikes. This is why you can feel physically exhausted after a grueling 8-hour strategy meeting, despite never leaving your chair.
+        </p>
+        <p>
+          We refer to this specific type of fatigue as "Mental Burnout," and it requires entirely different recovery protocols than physical exhaustion. If your TDEE is high but you still feel lethargic, you must evaluate your professional stress load via the <a href="/career-burnout.html" class="article-link">Corporate Burnout Test</a>. Replenishing your cognitive reserves often requires active psychological disengagement, which is why we built the <a href="/arcade.html" class="article-link">QuizRealm Arcade</a> as a tool for "productive distraction."
+        </p>
+
+        <h2>4. BMI Limitations and The Social Battery of the Gym</h2>
+        <p>
+          The Body Mass Index (BMI) included in our calculator is a standard epidemiological tool created in the 1830s. It calculates weight relative to height. However, it is a blunt instrument. It cannot differentiate between muscle mass and fat tissue. A heavily muscled athlete will often register as "Obese" on the BMI scale, exposing the limitations of relying purely on generalized mathematical models without localized context.
+        </p>
+        <p>
+          Similarly, achieving physical fitness is rarely just a mathematical challenge; it is a sociological one. The modern gym is a complex social environment. For extroverts, the gym acts as a hub for community and connection. For introverts, the gym can be an overwhelming sensory environment that rapidly depletes their <a href="/social-battery-test.html" class="article-link">Social Battery</a>.
+        </p>
+        <p>
+          If you find yourself skipping workouts, it may not be a lack of physical motivation, but rather social exhaustion. Understanding your personal sociability metrics through our <a href="/vibe-check-test.html" class="article-link">Vibe Check Diagnostic</a> can help you tailor your fitness routine. If your social battery is constantly drained, swapping a crowded commercial gym for a solitary outdoor run or a home workout might be the key to consistency.
+        </p>
+
+        <h2>5. The Gamification of Health Tracking</h2>
+        <p>
+          Why do we love calculators, smartwatches, and fitness tracking apps? Because human beings are biologically wired to respond to <strong>gamification</strong>. When you track your calories against your TDEE, you are essentially turning your metabolism into a video game. You have a "score" (calories) and a "target" (maintenance, surplus, or deficit). 
+        </p>
+        <p>
+          At QuizRealm, we utilize this exact psychological loop to enhance learning and neuroplasticity. We gamify intelligence. When you complete a <a href="/daily.html" class="article-link">Daily Trivia Challenge</a> or unlock badges in your <a href="/profile.html" class="article-link">User Profile</a>, you are triggering the same dopamine pathways that reward you for closing the "activity rings" on your smartwatch. 
+        </p>
+        <p>
+          To explore how gamification can be applied to professional environments to increase productivity and morale, we highly recommend reading our editorial on <a href="/article-gamify-meetings.html" class="article-link">How to Gamify the Corporate Meeting</a>.
+        </p>
+
+        <h2>6. Cross-Training Your Mind and Body</h2>
+        <p>
+          Physical fitness ensures your hardware (the body) can endure stress, but cognitive fitness ensures your software (the mind) operates efficiently. You cannot optimize one while ignoring the other. 
+        </p>
+        <p>
+          If you are tracking your physical macros, you should also be tracking your mental acuity. Are you a visual thinker, or a text-based processor? Audit your cognitive style in the <a href="/article-visual-vs-text-brain.html" class="article-link">Visual vs. Text Processing Assessment</a>. Do you thrive under the pressure of a ticking clock? Test your baseline reaction speeds in the <a href="/rapid.html" class="article-link">Rapid Fire Arena</a>. Or perhaps you prefer lateral, untimed deduction? Spend 15 minutes exploring the <a href="/mind-blowers.html" class="article-link">Mind Blowers Logic Hub</a>.
+        </p>
+        <p>
+          Metabolism is the math of survival. Trivia, logic, and cognitive play are the math of thriving. Calculate your baselines, understand your deficits, and continually push the boundaries of both your physical and mental arenas. For those who demand the ultimate cognitive cross-training regimen, <a href="/premium.html" class="article-link">QuizRealm Premium</a> offers unrestricted access to advanced tracking metrics and elite-tier logic puzzles.
+        </p>
+
+      </article>
+
+    </div>
+
+    <!-- Right Column: Sidebar & Ads -->
+    <aside class="w-full xl:w-[350px] shrink-0 space-y-8">
+      
+      <!-- Vertical Ad 1 -->
+      <a href="/mathsprint.html" class="native-ad ad-vertical">
+        <div class="ad-badge">Ad</div>
+        <div class="ad-img" style="background: linear-gradient(135deg, #1e3a8a, #172554); color: #60a5fa;"><i class="fas fa-stopwatch"></i></div>
+        <h4>Cardio for your Brain</h4>
+        <p>Rest days are for the body, not the mind. Keep your synaptic firing rates high with a quick round of Math Sprint.</p>
+        <div class="ad-btn" style="background: #2563eb;">Play Math Sprint</div>
+      </a>
+
+      <!-- Quick Links Panel -->
+      <div class="bg-white p-7 rounded-2xl border border-borderGray shadow-sm">
+        <h4 class="font-bold text-healthDark mb-5 uppercase tracking-wider text-sm border-b border-borderGray pb-3">Cognitive Health Tools</h4>
+        <ul class="space-y-4 text-sm font-medium">
+          <li><a href="/article-brain-schedule.html" class="text-slate-600 hover:text-healthMint transition flex items-center gap-3"><i class="fas fa-calendar-alt w-5 text-center text-slate-400"></i> The 7-Day Brain Schedule</a></li>
+          <li><a href="/article-science-of-speed.html" class="text-slate-600 hover:text-healthMint transition flex items-center gap-3"><i class="fas fa-tachometer-alt w-5 text-center text-slate-400"></i> The Science of Speed</a></li>
+          <li><a href="/article-intelligence-audit.html" class="text-slate-600 hover:text-healthMint transition flex items-center gap-3"><i class="fas fa-brain w-5 text-center text-slate-400"></i> Intelligence Audit Guide</a></li>
+          <li><a href="/social-battery-test.html" class="text-slate-600 hover:text-healthMint transition flex items-center gap-3"><i class="fas fa-battery-half w-5 text-center text-slate-400"></i> Social Battery Diagnostic</a></li>
+        </ul>
+      </div>
+
+      <!-- Vertical Ad 2 -->
+      <a href="/toxic-radar-test.html" class="native-ad ad-vertical bg-slate-50">
+        <div class="ad-badge">Sponsored</div>
+        <div class="ad-img" style="background: linear-gradient(135deg, #4c1d95, #2e1065); color: #c4b5fd;"><i class="fas fa-biohazard"></i></div>
+        <h4>Audit your environment.</h4>
+        <p>Physical health is irrelevant if your social environment is highly toxic. Take the Toxic Radar Assessment and protect your peace.</p>
+        <div class="ad-btn" style="background: #7c3aed;">Launch Radar</div>
+      </a>
+
+    </aside>
+
+  </main>
+
+  <!-- Sticky Bottom Right Ad -->
+  <div class="ad-sticky" id="sticky-ad">
+    <div class="ad-close" onclick="document.getElementById('sticky-ad').style.display='none'"><i class="fas fa-times"></i></div>
+    <div class="ad-badge" style="background: transparent; border: none; right: 15px;">Ad</div>
+    <div class="ad-icon"><i class="fas fa-trophy"></i></div>
+    <div class="flex-1 pr-2">
+      <h4>Daily Cognitive Challenge</h4>
+      <p>Test your general knowledge against the global database. Earn your daily badge.</p>
+    </div>
+    <a href="/daily.html" class="text-xs font-bold bg-amber-500 text-white px-3 py-2 rounded uppercase tracking-wide hover:bg-amber-600 transition">Play</a>
+  </div>
+
+  <!-- Calculator Logic -->
+  <script>
+    // State variables
+    let currentGender = 'male';
+    let currentSystem = 'imperial';
+
+    // Toggle Handlers
+    function setGender(gender) {
+      currentGender = gender;
+      document.getElementById('btn-male').className = `toggle-btn ${gender === 'male' ? 'active' : 'bg-white text-slate-500'}`;
+      document.getElementById('btn-female').className = `toggle-btn ${gender === 'female' ? 'active' : 'bg-white text-slate-500'}`;
+      calculateHealth();
+    }
+
+    function setUnits(system) {
+      currentSystem = system;
+      document.getElementById('btn-imp').className = `toggle-btn ${system === 'imperial' ? 'active' : 'bg-white text-slate-500'}`;
+      document.getElementById('btn-met').className = `toggle-btn ${system === 'metric' ? 'active' : 'bg-white text-slate-500'}`;
+      
+      if(system === 'imperial') {
+        document.getElementById('imp-height').classList.remove('hidden');
+        document.getElementById('imp-height').classList.add('grid');
+        document.getElementById('met-height').classList.add('hidden');
+        document.getElementById('lbl-weight').textContent = 'Weight (lbs)';
+      } else {
+        document.getElementById('imp-height').classList.add('hidden');
+        document.getElementById('imp-height').classList.remove('grid');
+        document.getElementById('met-height').classList.remove('hidden');
+        document.getElementById('lbl-weight').textContent = 'Weight (kg)';
+      }
+      calculateHealth();
+    }
+
+    // Main Calculator
+    function calculateHealth() {
+      // 1. Gather Inputs
+      const age = parseFloat(document.getElementById('h-age').value) || 0;
+      let weight = parseFloat(document.getElementById('h-weight').value) || 0;
+      const activity = parseFloat(document.getElementById('h-activity').value) || 1.2;
+
+      let heightCm = 0;
+      let weightKg = 0;
+
+      if (currentSystem === 'imperial') {
+        const ft = parseFloat(document.getElementById('h-ft').value) || 0;
+        const inc = parseFloat(document.getElementById('h-in').value) || 0;
+        const totalInches = (ft * 12) + inc;
+        heightCm = totalInches * 2.54;
+        weightKg = weight * 0.453592;
+      } else {
+        heightCm = parseFloat(document.getElementById('h-cm').value) || 0;
+        weightKg = weight;
+      }
+
+      const resBmr = document.getElementById('res-bmr');
+      const resTdee = document.getElementById('res-tdee');
+      const resBmi = document.getElementById('res-bmi');
+      const resBmiCat = document.getElementById('res-bmi-cat');
+
+      if (age <= 0 || weightKg <= 0 || heightCm <= 0) {
+        resBmr.textContent = '0';
+        resTdee.textContent = '0';
+        resBmi.textContent = '0.0';
+        resBmiCat.textContent = '-';
+        return;
+      }
+
+      // 2. Calculate BMR (Mifflin-St Jeor)
+      let bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age);
+      bmr = currentGender === 'male' ? bmr + 5 : bmr - 161;
+
+      // 3. Calculate TDEE
+      const tdee = bmr * activity;
+
+      // 4. Calculate BMI (kg / m^2)
+      const heightM = heightCm / 100;
+      const bmi = weightKg / (heightM * heightM);
+
+      // BMI Categories
+      let cat = '';
+      let color = '';
+      if (bmi < 18.5) { cat = 'Underweight'; color = 'text-blue-500'; }
+      else if (bmi < 25) { cat = 'Normal Weight'; color = 'text-green-600'; }
+      else if (bmi < 30) { cat = 'Overweight'; color = 'text-amber-500'; }
+      else { cat = 'Obese'; color = 'text-red-500'; }
+
+      // 5. Update UI
+      resBmr.textContent = Math.round(bmr).toLocaleString();
+      resTdee.textContent = Math.round(tdee).toLocaleString();
+      resBmi.textContent = bmi.toFixed(1);
+      resBmiCat.textContent = cat;
+      resBmiCat.className = `text-xs font-bold mt-1 uppercase tracking-widest ${color}`;
+    }
+
+    // Initialize
+    window.onload = () => {
+      calculateHealth();
+    };
+  </script>
+</body>
+</html>
