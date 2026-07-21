@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Historian's Decree — QuizRealm</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Cinzel for regal titles, Inter for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <!-- Custom Tailwind config for QuizRealm dark mode + Historical Premium palette -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'cinzel': ['Cinzel', 'serif'],
+                        'inter': ['Inter', 'system-ui', 'sans-serif'],
+                        'crimson': ['Crimson Text', 'Georgia', 'serif'],
+                    },
+                    colors: {
+                        'royal-gold': '#c9a84c',
+                        'royal-gold-light': '#e0c878',
+                        'royal-gold-dark': '#a0802a',
+                        'crimson': '#9b2d30',
+                        'crimson-dark': '#6b1a1c',
+                        'midnight': '#0a0a14',
+                        'slate-royal': '#141420',
+                        'parchment': '#2a2520',
+                        'emerald-royal': '#1a6b3c',
+                    },
+                    animation: {
+                        'float-up': 'floatUp 8s ease-in-out infinite',
+                        'float-up-delayed': 'floatUp 10s ease-in-out 3s infinite',
+                        'float-up-slow': 'floatUp 12s ease-in-out 6s infinite',
+                        'pulse-gold': 'pulseGold 2s ease-in-out infinite',
+                        'shake': 'shake 0.5s ease-in-out',
+                        'score-pop': 'scorePop 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+                        'fade-in-up': 'fadeInUp 0.5s cubic-bezier(0.25, 1, 0.5, 1)',
+                        'glow-breathe': 'glowBreathe 3s ease-in-out infinite',
+                        'card-enter': 'cardEnter 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+                        'seal-pulse': 'sealPulse 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        floatUp: {
+                            '0%, 100%': { transform: 'translateY(0) translateX(0)', opacity: '0.3' },
+                            '25%': { transform: 'translateY(-20px) translateX(10px)', opacity: '0.6' },
+                            '50%': { transform: 'translateY(-40px) translateX(-5px)', opacity: '0.4' },
+                            '75%': { transform: 'translateY(-15px) translateX(-15px)', opacity: '0.7' },
+                        },
+                        pulseGold: {
+                            '0%, 100%': { boxShadow: '0 0 12px rgba(201, 168, 76, 0.3)' },
+                            '50%': { boxShadow: '0 0 28px rgba(201, 168, 76, 0.7)' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '15%': { transform: 'translateX(-8px)' },
+                            '30%': { transform: 'translateX(8px)' },
+                            '45%': { transform: 'translateX(-6px)' },
+                            '60%': { transform: 'translateX(5px)' },
+                            '75%': { transform: 'translateX(-3px)' },
+                            '90%': { transform: 'translateX(2px)' },
+                        },
+                        scorePop: {
+                            '0%': { transform: 'scale(1)' },
+                            '40%': { transform: 'scale(1.25)', color: '#e0c878' },
+                            '100%': { transform: 'scale(1)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        glowBreathe: {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(201, 168, 76, 0.15)' },
+                            '50%': { boxShadow: '0 0 40px rgba(201, 168, 76, 0.35)' },
+                        },
+                        cardEnter: {
+                            '0%': { opacity: '0', transform: 'translateY(30px) scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                        },
+                        sealPulse: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '0.8' },
+                            '50%': { transform: 'scale(1.08)', opacity: '1' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        /* ── Base & Scrollbar ──────────────────────────── */
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #0a0a14;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        /* Custom scrollbar for royal feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a14; }
+        ::-webkit-scrollbar-thumb { background: #2a2520; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3a3530; }
+
+        /* ── Atmospheric Background ────────────────────── */
+        .bg-atmosphere {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(201, 168, 76, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 60%, rgba(155, 45, 48, 0.03) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 80%, rgba(201, 168, 76, 0.02) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a14 0%, #12121e 50%, #0a0a14 100%);
+        }
+
+        /* Floating particles (ancient dust motes) */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: rgba(201, 168, 76, 0.5);
+            animation: floatUp 8s ease-in-out infinite;
+        }
+        .particle:nth-child(odd)  { animation-duration: 10s; animation-delay: 1s; }
+        .particle:nth-child(3n)   { animation-duration: 12s; animation-delay: 4s; }
+        .particle:nth-child(5n+2) { animation-duration: 9s;  animation-delay: 7s; }
+        .particle:nth-child(7n)   { animation-duration: 11s; animation-delay: 2s; }
+
+        /* ── 3D Scroll Card Flip ──────────────────────── */
+        .scroll-card-container {
+            perspective: 800px;
+            width: 100%;
+            max-width: 200px;
+            aspect-ratio: 3 / 4;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .scroll-card-container:hover {
+            transform: translateY(-4px);
+        }
+        .scroll-card-container:active {
+            transform: scale(0.96);
+        }
+        .scroll-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .scroll-card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+        .scroll-card-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Front = face-down (ornate scroll back design) */
+        .scroll-card-front {
+            background: linear-gradient(145deg, #1a1a28 0%, #141420 100%);
+            border: 2px solid rgba(201, 168, 76, 0.25);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .scroll-card-front::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid rgba(201, 168, 76, 0.5);
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.15) 0%, transparent 70%);
+        }
+        /* Back = face-up (evidence text) */
+        .scroll-card-back {
+            background: linear-gradient(145deg, #2a2520 0%, #1e1a16 100%);
+            border: 2px solid rgba(201, 168, 76, 0.4);
+            transform: rotateY(180deg);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            overflow-y: auto;
+        }
+        .scroll-card-back p {
+            font-family: 'Crimson Text', Georgia, serif;
+            color: #d4c5a0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* ── Score Counter Animation ──────────────────── */
+        .score-pop {
+            animation: scorePop 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* ── Particle Burst (confetti-like on perfect answer) ── */
+        .spark {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: sparkBurst 1.2s cubic-bezier(0, 0.7, 0.3, 1) forwards;
+        }
+        @keyframes sparkBurst {
+            0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
+        }
+
+        /* ── Card Reveal Glow ────────────────────────── */
+        .glow-correct {
+            box-shadow: 0 0 30px rgba(26, 107, 60, 0.6), 0 0 60px rgba(26, 107, 60, 0.2) !important;
+            border-color: rgba(26, 107, 60, 0.7) !important;
+        }
+        .glow-wrong {
+            box-shadow: 0 0 30px rgba(155, 45, 48, 0.6), 0 0 60px rgba(155, 45, 48, 0.2) !important;
+            border-color: rgba(155, 45, 48, 0.7) !important;
+        }
+
+        /* ── Responsive adjustments ──────────────────── */
+        @media (max-width: 640px) {
+            .scroll-card-container {
+                max-width: 140px;
+            }
+            .scroll-card-back p {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- ATMOSPHERIC BACKGROUND LAYER                   -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="bg-atmosphere"></div>
+    <!-- Floating particles -->
+    <div id="particles-container"></div>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- MAIN GAME CONTAINER                           -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <main id="game-container"
+          class="relative z-10 w-full max-w-2xl mx-auto transition-all duration-500 ease-out"
+          style="min-height: 600px;">
+
+        <!-- ── START SCREEN ──────────────────────────── -->
+        <div id="screen-start"
+             class="flex flex-col items-center justify-center text-center gap-8 py-12 px-6">
+
+            <!-- Royal Crest / Icon -->
+            <div class="relative mb-2">
+                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-royal-gold/20 to-royal-gold/5
+                            border-2 border-royal-gold/40 flex items-center justify-center
+                            shadow-[0_0_40px_rgba(201,168,76,0.2)] animate-glow-breathe">
+                    <span class="text-5xl">🏰</span>
+                </div>
+                <!-- Decorative ring -->
+                <div class="absolute -inset-3 rounded-full border border-royal-gold/20 animate-seal-pulse"></div>
+            </div>
+
+            <!-- Title -->
+            <h1 class="font-cinzel text-4xl sm:text-5xl font-bold tracking-wider"
+                style="background: linear-gradient(180deg, #e0c878 0%, #c9a84c 40%, #8a6a20 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                THE HISTORIAN'S<br>DECREE
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="text-white/50 font-inter text-sm sm:text-base max-w-md leading-relaxed">
+                Test your knowledge of European history.<br>
+                Weigh the evidence. Trust your instincts.<br>
+                <span class="text-royal-gold/70">Fewer clues revealed = greater reward.</span>
+            </p>
+
+            <!-- Rules card -->
+            <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 max-w-md w-full text-left space-y-3">
+                <h3 class="font-cinzel text-royal-gold text-lg text-center mb-2">📜 The Rules</h3>
+                <div class="space-y-2 text-white/70 text-sm">
+                    <div class="flex gap-3 items-start">
+                        <span class="text-royal-gold flex-shrink-0">①</span>
+                        <span>A <strong class="text-white/90">historical claim</strong> will be presented. Decide if it's <span class="text-emerald-400">TRUE</span> or <span class="text-red-400">FALSE</span>.</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-royal-gold flex-shrink-0">②</span>
+                        <span>You may flip up to <strong class="text-white/90">3 evidence scrolls</strong> for clues — but each flip <strong class="text-royal-gold">reduces your potential score</strong>.</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-royal-gold flex-shrink-0">③</span>
+                        <span>Use your <strong class="text-royal-gold">Royal Decree</strong> once per game to reveal a scroll <em>for free</em> — it won't hurt your score.</span>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <span class="text-royal-gold flex-shrink-0">④</span>
+                        <span>Scoring: <strong class="text-white/90">500 pts</strong> (0 scrolls) → <strong class="text-white/90">350</strong> (1) → <strong class="text-white/90">200</strong> (2) → <strong class="text-white/90">100</strong> (3). Wrong answer: 0 pts.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Begin button -->
+            <button id="btn-start"
+                    class="font-cinzel text-lg font-bold px-10 py-4 rounded-xl
+                           bg-gradient-to-b from-royal-gold to-royal-gold-dark
+                           text-midnight tracking-widest
+                           shadow-[0_0_30px_rgba(201,168,76,0.3)]
+                           hover:shadow-[0_0_50px_rgba(201,168,76,0.5)]
+                           active:scale-95 transition-all duration-300 ease-out
+                           border border-royal-gold-light/30">
+                BEGIN YOUR REIGN
+            </button>
+        </div>
+
+        <!-- ── ACTIVE GAME SCREEN ────────────────────── -->
+        <div id="screen-active" class="hidden flex-col gap-6 px-4 sm:px-6">
+
+            <!-- Top Bar: Score + Round + Royal Decree -->
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <!-- Score -->
+                <div class="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl px-4 py-2">
+                    <span class="text-xl">👑</span>
+                    <span class="text-white/50 font-inter text-xs uppercase tracking-wider">Crown Pts</span>
+                    <span id="score-display"
+                          class="font-inter font-bold text-2xl tabular-nums text-royal-gold transition-all duration-500 ease-out"
+                          style="font-variant-numeric: tabular-nums;">0</span>
+                </div>
+
+                <!-- Round Indicator -->
+                <div id="round-indicator" class="flex items-center gap-2">
+                    <!-- Filled dynamically -->
+                </div>
+
+                <!-- Royal Decree Button -->
+                <button id="btn-royal-decree"
+                        class="relative font-cinzel text-sm font-bold px-5 py-2.5 rounded-xl
+                               bg-gradient-to-b from-royal-gold/30 to-royal-gold/10
+                               text-royal-gold border border-royal-gold/40
+                               hover:from-royal-gold/50 hover:to-royal-gold/20
+                               hover:shadow-[0_0_25px_rgba(201,168,76,0.4)]
+                               active:scale-95 transition-all duration-300 ease-out
+                               disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:shadow-none">
+                    <span class="mr-1">📜</span> Royal Decree
+                    <span id="decree-badge" class="absolute -top-2 -right-2 w-5 h-5 bg-royal-gold text-midnight text-xs font-bold rounded-full flex items-center justify-center">1</span>
+                </button>
+            </div>
+
+            <!-- Claim Card -->
+            <div id="claim-card"
+                 class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-8
+                        shadow-[0_8px_40px_rgba(0,0,0,0.4)] transition-all duration-500 ease-out
+                        animate-card-enter">
+                <!-- Era badge -->
+                <span id="era-badge"
+                      class="inline-block text-xs font-inter uppercase tracking-widest text-royal-gold/80
+                             bg-royal-gold/10 border border-royal-gold/20 rounded-full px-3 py-1 mb-4">
+                </span>
+                <!-- Claim text -->
+                <blockquote id="claim-text"
+                            class="font-crimson text-xl sm:text-2xl leading-relaxed text-white/90 italic
+                                   border-l-4 border-royal-gold/40 pl-4 sm:pl-6">
+                </blockquote>
+                <p class="text-white/40 text-sm mt-4 font-inter">Is this historical claim <strong class="text-white/60">TRUE</strong> or <strong class="text-white/60">FALSE</strong>?</p>
+            </div>
+
+            <!-- Scroll Cards Row -->
+            <div id="scrolls-row" class="flex justify-center gap-3 sm:gap-5 flex-wrap">
+                <!-- 3 scroll cards generated dynamically -->
+            </div>
+            <p class="text-center text-white/30 text-xs font-inter -mt-2">Tap a scroll to reveal evidence <span class="text-royal-gold/50">(optional)</span></p>
+
+            <!-- True / False Buttons -->
+            <div class="flex justify-center gap-4 sm:gap-6">
+                <button id="btn-true"
+                        class="font-cinzel text-lg font-bold px-8 sm:px-12 py-4 rounded-xl
+                               bg-gradient-to-b from-emerald-700/40 to-emerald-900/30
+                               text-emerald-300 border-2 border-emerald-600/40
+                               hover:from-emerald-600/50 hover:to-emerald-800/40
+                               hover:border-emerald-500/60
+                               hover:shadow-[0_0_30px_rgba(26,107,60,0.4)]
+                               active:scale-95 transition-all duration-300 ease-out
+                               disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                        disabled>
+                    ✓ TRUE
+                </button>
+                <button id="btn-false"
+                        class="font-cinzel text-lg font-bold px-8 sm:px-12 py-4 rounded-xl
+                               bg-gradient-to-b from-red-800/40 to-red-950/30
+                               text-red-300 border-2 border-red-700/40
+                               hover:from-red-700/50 hover:to-red-900/40
+                               hover:border-red-600/60
+                               hover:shadow-[0_0_30px_rgba(155,45,48,0.4)]
+                               active:scale-95 transition-all duration-300 ease-out
+                               disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                        disabled>
+                    ✗ FALSE
+                </button>
+            </div>
+        </div>
+
+        <!-- ── REVEAL OVERLAY ────────────────────────── -->
+        <div id="reveal-overlay"
+             class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
+             style="background: rgba(10, 10, 20, 0.85); backdrop-filter: blur(8px);">
+            <div id="reveal-card"
+                 class="bg-slate-royal border border-white/10 rounded-2xl p-6 sm:p-8 max-w-lg w-full
+                        shadow-[0_20px_60px_rgba(0,0,0,0.6)] text-center
+                        transition-all duration-500 ease-out transform scale-95 opacity-0">
+                <!-- Filled dynamically -->
+            </div>
+        </div>
+
+        <!-- ── GAME OVER SCREEN ──────────────────────── -->
+        <div id="screen-gameover"
+             class="hidden flex-col items-center justify-center text-center gap-6 py-12 px-6">
+
+            <!-- Crown icon -->
+            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-royal-gold/30 to-royal-gold/10
+                        border-2 border-royal-gold/50 flex items-center justify-center
+                        shadow-[0_0_50px_rgba(201,168,76,0.3)]">
+                <span class="text-4xl">👑</span>
+            </div>
+
+            <!-- Title based on performance -->
+            <h2 id="final-title" class="font-cinzel text-3xl sm:text-4xl font-bold text-royal-gold"></h2>
+            <p id="final-subtitle" class="text-white/50 font-inter text-sm"></p>
+
+            <!-- Final Score -->
+            <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-8 py-6">
+                <span class="text-white/40 font-inter text-xs uppercase tracking-widest block mb-1">Final Score</span>
+                <span id="final-score" class="font-inter font-bold text-5xl tabular-nums text-royal-gold"></span>
+                <span class="text-white/40 font-inter text-sm block mt-1">Crown Points</span>
+            </div>
+
+            <!-- Stats -->
+            <div id="final-stats" class="flex gap-4 flex-wrap justify-center text-sm text-white/50 font-inter">
+                <!-- Filled dynamically -->
+            </div>
+
+            <!-- Play Again -->
+            <button id="btn-restart"
+                    class="font-cinzel text-lg font-bold px-10 py-4 rounded-xl
+                           bg-gradient-to-b from-royal-gold to-royal-gold-dark
+                           text-midnight tracking-widest
+                           shadow-[0_0_30px_rgba(201,168,76,0.3)]
+                           hover:shadow-[0_0_50px_rgba(201,168,76,0.5)]
+                           active:scale-95 transition-all duration-300 ease-out
+                           border border-royal-gold-light/30">
+                PLAY AGAIN
+            </button>
+        </div>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- GAME ENGINE (Vanilla JS, ES6+)                -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <script>
+        (function() {
+            // ──────────────────────────────────────────────
+            // SCENARIO DATA BANK
+            // 5 high-quality European history scenarios
+            // Each with 3 evidence scrolls + answer + explanation
+            // ──────────────────────────────────────────────
+            const SCENARIOS = [{
+                id: 1,
+                era: 'Early 20th Century',
+                claim: 'The Treaty of Versailles was signed in the Hall of Mirrors at the Palace of Versailles on June 28, 1919.',
+                answer: true,
+                scrolls: [
+                    'The treaty formally ended World War I between Germany and the Allied Powers after six months of negotiations.',
+                    'The signing date marked exactly five years since the assassination of Archduke Franz Ferdinand in Sarajevo.',
+                    'French officials deliberately chose this location — the German Empire had been proclaimed in the very same hall in 1871.',
+                ],
+                explanation: 'This is TRUE. The Treaty of Versailles was indeed signed in the Hall of Mirrors on June 28, 1919 — the fifth anniversary of the Archduke\'s assassination. The location was a symbolic reversal of the 1871 German unification ceremony held in the same hall.',
+            }, {
+                id: 2,
+                era: 'Napoleonic Era',
+                claim: 'Napoleon Bonaparte died on the island of Elba, his first place of exile, in 1821.',
+                answer: false,
+                scrolls: [
+                    'Napoleon was exiled twice — first in 1814 after abdicating, and again in 1815 after his final defeat.',
+                    'His first exile lasted only about 300 days; he escaped in February 1815 and reclaimed power for the Hundred Days.',
+                    'His final place of captivity was a volcanic island over 1,900 kilometres from the nearest continental landmass.',
+                ],
+                explanation: 'This is FALSE. Napoleon died on Saint Helena — a remote South Atlantic island — in 1821. Elba (in the Mediterranean) was his first, relatively lenient exile from which he famously escaped. After Waterloo, the British sent him to the far more isolated Saint Helena.',
+            }, {
+                id: 3,
+                era: 'Age of Exploration',
+                claim: 'The Spanish Armada of 1588 was destroyed primarily by the English navy in direct naval combat.',
+                answer: false,
+                scrolls: [
+                    'King Philip II assembled roughly 130 ships with the aim of invading England and overthrowing Elizabeth I.',
+                    'English fireships scattered the Spanish formation at Calais, but the English sank relatively few vessels in direct combat.',
+                    'Severe Atlantic storms — sometimes called the "Protestant Wind" — wrecked many Spanish ships off Scotland and Ireland.',
+                ],
+                explanation: 'This is FALSE. While the English navy (led by Drake and Howard) harassed and disrupted the Armada, storms and navigational disasters caused the majority of Spanish losses. The English fireships broke their formation at Gravelines, but most ships that were lost fell victim to the North Atlantic weather.',
+            }, {
+                id: 4,
+                era: 'Medieval Era',
+                claim: 'The Black Death first arrived in Europe through the Sicilian port of Messina in October 1347.',
+                answer: true,
+                scrolls: [
+                    'The plague bacterium Yersinia pestis is believed to have originated in the steppes of Central Asia.',
+                    'Genoese trading ships fleeing the Mongol siege of Caffa (in Crimea) carried infected rats and fleas westward.',
+                    'Within months of reaching Sicily, the plague had raced through Italy and reached as far as Paris by the summer of 1348.',
+                ],
+                explanation: 'This is TRUE. The Black Death entered Europe via Genoese trading ships that docked at Messina, Sicily, in October 1347. The ships had sailed from Caffa (modern-day Feodosia, Crimea), where the Golden Horde had been besieging Genoese merchants. From Sicily, the plague spread rapidly across the continent.',
+            }, {
+                id: 5,
+                era: '19th Century Diplomacy',
+                claim: 'The Congress of Vienna convened and largely concluded before Napoleon\'s final defeat at the Battle of Waterloo.',
+                answer: true,
+                scrolls: [
+                    'The great powers of Europe convened the Congress to redraw the continent\'s borders after over two decades of Napoleonic wars.',
+                    'Napoleon\'s dramatic escape from Elba in March 1815 disrupted the negotiations but did not halt them entirely.',
+                    'The Final Act of the Congress was signed on June 9, 1815 — just nine days before Wellington faced Napoleon at Waterloo.',
+                ],
+                explanation: 'This is TRUE. The Congress of Vienna opened in September 1814 (after Napoleon\'s first abdication) and its Final Act was signed on June 9, 1815. The Battle of Waterloo occurred on June 18, 1815. So the Congress both began and was substantively completed before Napoleon\'s final defeat.',
+            }];
+
+            // ──────────────────────────────────────────────
+            // GAME STATE (Single source of truth)
+            // ──────────────────────────────────────────────
+            const gameState = {
+                phase: 'START', // 'START' | 'ACTIVE' | 'REVEAL' | 'GAME_OVER'
+                currentRoundIndex: 0,
+                totalRounds: SCENARIOS.length,
+                score: 0,
+                scrollsRevealed: 0, // Count of MANUALLY revealed scrolls this round (0-3)
+                royalDecreeUsed: false, // Once per GAME
+                isAnimating: false, // Lock during scroll flips
+                isAnswerLocked: false, // Lock after True/False clicked
+                scrollRevealedFlags: [false, false, false], // Which scrolls are revealed this round
+                roundResults: [], // Track each round's outcome for game-over stats
+            };
+
+            // ──────────────────────────────────────────────
+            // DOM REFERENCE CACHE
+            // ──────────────────────────────────────────────
+            const DOM = {
+                // Screens
+                screenStart: document.getElementById('screen-start'),
+                screenActive: document.getElementById('screen-active'),
+                screenGameOver: document.getElementById('screen-gameover'),
+                revealOverlay: document.getElementById('reveal-overlay'),
+                revealCard: document.getElementById('reveal-card'),
+
+                // Active screen elements
+                scoreDisplay: document.getElementById('score-display'),
+                roundIndicator: document.getElementById('round-indicator'),
+                claimCard: document.getElementById('claim-card'),
+                claimText: document.getElementById('claim-text'),
+                eraBadge: document.getElementById('era-badge'),
+                scrollsRow: document.getElementById('scrolls-row'),
+                btnTrue: document.getElementById('btn-true'),
+                btnFalse: document.getElementById('btn-false'),
+                btnRoyalDecree: document.getElementById('btn-royal-decree'),
+                decreeBadge: document.getElementById('decree-badge'),
+
+                // Game over elements
+                finalTitle: document.getElementById('final-title'),
+                finalSubtitle: document.getElementById('final-subtitle'),
+                finalScore: document.getElementById('final-score'),
+                finalStats: document.getElementById('final-stats'),
+
+                // Buttons
+                btnStart: document.getElementById('btn-start'),
+                btnRestart: document.getElementById('btn-restart'),
+            };
+
+            // ──────────────────────────────────────────────
+            // UTILITY: Create floating background particles
+            // ──────────────────────────────────────────────
+            function createParticles() {
+                const container = document.getElementById('particles-container');
+                const count = 18;
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    const size = Math.random() * 3 + 1.5; // 1.5-4.5px
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.opacity = Math.random() * 0.5 + 0.15;
+                    particle.style.animationDelay = Math.random() * 8 + 's';
+                    particle.style.animationDuration = (Math.random() * 8 + 6) + 's';
+                    container.appendChild(particle);
+                }
+            }
+
+            // ──────────────────────────────────────────────
+            // UTILITY: Spawn spark particles (confetti-like)
+            // ──────────────────────────────────────────────
+            function spawnSparks(x, y, count = 25, color = '#c9a84c') {
+                for (let i = 0; i < count; i++) {
+                    const spark = document.createElement('div');
+                    spark.classList.add('spark');
+                    spark.style.left = x + 'px';
+                    spark.style.top = y + 'px';
+                    spark.style.background = color;
+                    spark.style.width = (Math.random() * 5 + 3) + 'px';
+                    spark.style.height = spark.style.width;
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * 80 + 40;
+                    spark.style.setProperty('--sx', Math.cos(angle) * distance + 'px');
+                    spark.style.setProperty('--sy', Math.sin(angle) * distance + 'px');
+                    spark.style.animationDuration = (Math.random() * 0.8 + 0.8) + 's';
+                    document.body.appendChild(spark);
+                    // Clean up after animation
+                    spark.addEventListener('animationend', () => spark.remove());
+                }
+            }
+
+            // ──────────────────────────────────────────────
+            // UTILITY: Smooth score counter animation
+            // ──────────────────────────────────────────────
+            function animateScore(from, to, duration = 600) {
+                const start = performance.now();
+
+                function step(timestamp) {
+                    const elapsed = timestamp - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    // Ease-out cubic
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.round(from + (to - from) * eased);
+                    DOM.scoreDisplay.textContent = current.toLocaleString();
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    } else {
+                        DOM.scoreDisplay.textContent = to.toLocaleString();
+                        // Trigger a subtle pop animation
+                        DOM.scoreDisplay.classList.remove('score-pop');
+                        void DOM.scoreDisplay.offsetWidth; // Force reflow
+                        DOM.scoreDisplay.classList.add('score-pop');
+                    }
+                }
+                requestAnimationFrame(step);
+            }
+
+            // ──────────────────────────────────────────────
+            // UTILITY: Shake an element
+            // ──────────────────────────────────────────────
+            function shakeElement(el) {
+                el.classList.remove('animate-shake');
+                void el.offsetWidth;
+                el.classList.add('animate-shake');
+                el.addEventListener('animationend', () => el.classList.remove('animate-shake'), { once: true });
+            }
+
+            // ──────────────────────────────────────────────
+            // RENDER: Round indicator (royal seal dots)
+            // ──────────────────────────────────────────────
+            function renderRoundIndicator() {
+                const { currentRoundIndex, totalRounds } = gameState;
+                DOM.roundIndicator.innerHTML = '';
+                for (let i = 0; i < totalRounds; i++) {
+                    const dot = document.createElement('div');
+                    dot.className =
+                        'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ease-out';
+                    if (i < currentRoundIndex) {
+                        // Completed rounds
+                        dot.className +=
+                            ' bg-emerald-royal/40 border border-emerald-royal/60 text-emerald-300 shadow-[0_0_8px_rgba(26,107,60,0.4)]';
+                        dot.textContent = '✓';
+                    } else if (i === currentRoundIndex) {
+                        // Current round
+                        dot.className +=
+                            ' bg-royal-gold/30 border-2 border-royal-gold text-royal-gold shadow-[0_0_12px_rgba(201,168,76,0.5)] animate-pulse-gold';
+                        dot.textContent = i + 1;
+                    } else {
+                        // Future rounds
+                        dot.className += ' bg-white/5 border border-white/15 text-white/30';
+                        dot.textContent = i + 1;
+                    }
+                    DOM.roundIndicator.appendChild(dot);
+                }
+            }
+
+            // ──────────────────────────────────────────────
+            // RENDER: Scroll cards for current round
+            // ──────────────────────────────────────────────
+            function renderScrollCards() {
+                const scenario = SCENARIOS[gameState.currentRoundIndex];
+                DOM.scrollsRow.innerHTML = '';
+
+                scenario.scrolls.forEach((evidenceText, index) => {
+                    const container = document.createElement('div');
+                    container.className = 'scroll-card-container';
+                    container.setAttribute('data-scroll-index', index);
+
+                    const inner = document.createElement('div');
+                    inner.className = 'scroll-card-inner';
+                    // If already revealed (e.g., from royal decree), add flipped class
+                    if (gameState.scrollRevealedFlags[index]) {
+                        inner.classList.add('flipped');
+                    }
+
+                    // Front face (face-down — ornate design)
+                    const front = document.createElement('div');
+                    front.className = 'scroll-card-face scroll-card-front';
+                    front.innerHTML = `
+                        <span class="text-3xl mb-1">📜</span>
+                        <span class="font-cinzel text-xs text-royal-gold/60 tracking-widest uppercase">Evidence</span>
+                        <span class="font-inter text-2xl font-bold text-royal-gold/40 mt-1">${index + 1}</span>
+                    `;
+
+                    // Back face (face-up — evidence text)
+                    const back = document.createElement('div');
+                    back.className = 'scroll-card-face scroll-card-back';
+                    back.innerHTML = `<p>"${evidenceText}"</p>`;
+
+                    inner.appendChild(front);
+                    inner.appendChild(back);
+                    container.appendChild(inner);
+
+                    // Click handler
+                    container.addEventListener('click', () => handleScrollClick(index, container, inner));
+
+                    DOM.scrollsRow.appendChild(container);
+                });
+            }
+
+            // ──────────────────────────────────────────────
+            // HANDLER: Scroll card click (reveal evidence)
+            // ──────────────────────────────────────────────
+            function handleScrollClick(index, container, inner) {
+                // Guard: already revealed?
+                if (gameState.scrollRevealedFlags[index]) return;
+                // Guard: animation in progress?
+                if (gameState.isAnimating) return;
+                // Guard: answer already locked in?
+                if (gameState.isAnswerLocked) return;
+                // Guard: wrong phase?
+                if (gameState.phase !== 'ACTIVE') return;
+
+                // Lock animations briefly
+                gameState.isAnimating = true;
+
+                // Flip the card
+                inner.classList.add('flipped');
+                gameState.scrollRevealedFlags[index] = true;
+                gameState.scrollsRevealed++;
+
+                // Add a subtle haptic-like visual feedback
+                container.style.transform = 'scale(0.96)';
+                setTimeout(() => {
+                    container.style.transform = '';
+                }, 150);
+
+                // After flip animation completes
+                setTimeout(() => {
+                    gameState.isAnimating = false;
+                    // Update Royal Decree button state
+                    updateRoyalDecreeButton();
+                    // Enable answer buttons (they become enabled after first interaction or immediately)
+                    updateAnswerButtons();
+                }, 620); // Slightly longer than CSS transition (600ms)
+            }
+
+            // ──────────────────────────────────────────────
+            // ROYAL DECREE: Reveal one scroll for free
+            // ──────────────────────────────────────────────
+            function useRoyalDecree() {
+                // Guards
+                if (gameState.royalDecreeUsed) return;
+                if (gameState.phase !== 'ACTIVE') return;
+                if (gameState.isAnswerLocked) return;
+                if (gameState.isAnimating) return;
+
+                // Find unrevealed scrolls
+                const unrevealed = [];
+                gameState.scrollRevealedFlags.forEach((revealed, i) => {
+                    if (!revealed) unrevealed.push(i);
+                });
+
+                if (unrevealed.length === 0) return; // All already revealed
+
+                // Pick a random unrevealed scroll
+                const pickIndex = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+
+                // Mark as used
+                gameState.royalDecreeUsed = true;
+                updateRoyalDecreeButton();
+
+                // Reveal the scroll WITHOUT incrementing scrollsRevealed
+                gameState.isAnimating = true;
+                gameState.scrollRevealedFlags[pickIndex] = true;
+                // Note: scrollsRevealed is NOT incremented — Royal Decree is "free"
+
+                // Find the DOM element and flip it
+                const scrollContainers = DOM.scrollsRow.querySelectorAll('.scroll-card-container');
+                const targetContainer = scrollContainers[pickIndex];
+                const targetInner = targetContainer.querySelector('.scroll-card-inner');
+
+                if (targetInner && !targetInner.classList.contains('flipped')) {
+                    targetInner.classList.add('flipped');
+                    targetContainer.style.transform = 'scale(0.96)';
+                    setTimeout(() => { targetContainer.style.transform = ''; }, 150);
+                }
+
+                // Visual feedback on the button
+                DOM.btnRoyalDecree.style.transform = 'scale(0.9)';
+                setTimeout(() => { DOM.btnRoyalDecree.style.transform = ''; }, 200);
+
+                // Spawn a small golden spark at the button
+                const rect = DOM.btnRoyalDecree.getBoundingClientRect();
+                spawnSparks(rect.left + rect.width / 2, rect.top + rect.height / 2, 12, '#c9a84c');
+
+                setTimeout(() => {
+                    gameState.isAnimating = false;
+                    updateAnswerButtons();
+                }, 620);
+            }
+
+            function updateRoyalDecreeButton() {
+                if (gameState.royalDecreeUsed) {
+                    DOM.btnRoyalDecree.disabled = true;
+                    DOM.btnRoyalDecree.classList.add('opacity-30', 'cursor-not-allowed');
+                    DOM.btnRoyalDecree.querySelector('span:first-child').textContent = '✓';
+                    if (DOM.decreeBadge) DOM.decreeBadge.textContent = '0';
+                } else {
+                    // Check if all scrolls already revealed
+                    const allRevealed = gameState.scrollRevealedFlags.every(f => f);
+                    if (allRevealed) {
+                        DOM.btnRoyalDecree.disabled = true;
+                        DOM.btnRoyalDecree.classList.add('opacity-30', 'cursor-not-allowed');
+                    } else {
+                        DOM.btnRoyalDecree.disabled = false;
+                        DOM.btnRoyalDecree.classList.remove('opacity-30', 'cursor-not-allowed');
+                    }
+                }
+            }
+
+            function updateAnswerButtons() {
+                // Answer buttons are always enabled during ACTIVE phase
+                // (player can answer at any time, even with 0 scrolls revealed)
+                if (gameState.phase === 'ACTIVE' && !gameState.isAnswerLocked) {
+                    DOM.btnTrue.disabled = false;
+                    DOM.btnFalse.disabled = false;
+                }
+            }
+
+            // ──────────────────────────────────────────────
+            // HANDLER: Player submits True or False answer
+            // ──────────────────────────────────────────────
+            function handleAnswer(playerAnswer) {
+                // Guards
+                if (gameState.phase !== 'ACTIVE') return;
+                if (gameState.isAnswerLocked) return;
+                if (gameState.isAnimating) {
+                    // Small grace: wait briefly then retry once
+                    setTimeout(() => handleAnswer(playerAnswer), 100);
+                    return;
+                }
+
+                // Lock answer to prevent double-submission
+                gameState.isAnswerLocked = true;
+                DOM.btnTrue.disabled = true;
+                DOM.btnFalse.disabled = true;
+                DOM.btnRoyalDecree.disabled = true;
+
+                const scenario = SCENARIOS[gameState.currentRoundIndex];
+                const isCorrect = (playerAnswer === scenario.answer);
+
+                // Calculate points based on manually revealed scrolls
+                const scrollsUsed = gameState.scrollsRevealed; // Royal Decree scrolls NOT counted
+                let pointsEarned = 0;
+                if (isCorrect) {
+                    switch (scrollsUsed) {
+                        case 0:
+                            pointsEarned = 500;
+                            break;
+                        case 1:
+                            pointsEarned = 350;
+                            break;
+                        case 2:
+                            pointsEarned = 200;
+                            break;
+                        case 3:
+                            pointsEarned = 100;
+                            break;
+                        default:
+                            pointsEarned = 500; // Fallback (shouldn't happen)
+                    }
+                }
+
+                const oldScore = gameState.score;
+                gameState.score += pointsEarned;
+                gameState.roundResults.push({
+                    round: gameState.currentRoundIndex + 1,
+                    correct: isCorrect,
+                    scrollsUsed: scrollsUsed,
+                    pointsEarned: pointsEarned,
+                    royalDecreeUsedThisRound: gameState.scrollRevealedFlags.some(
+                        (f, i) => f && !gameState._manualReveals?.includes(i)
+                    ),
+                });
+
+                // Visual feedback on the claim card
+                if (isCorrect) {
+                    DOM.claimCard.classList.add('glow-correct');
+                } else {
+                    DOM.claimCard.classList.add('glow-wrong');
+                    shakeElement(DOM.claimCard);
+                }
+
+                // Show reveal overlay after a short delay
+                setTimeout(() => {
+                    showRevealOverlay(scenario, isCorrect, pointsEarned, oldScore);
+                }, isCorrect ? 400 : 600);
+            }
+
+            // ──────────────────────────────────────────────
+            // REVEAL OVERLAY
+            // ──────────────────────────────────────────────
+            function showRevealOverlay(scenario, isCorrect, pointsEarned, oldScore) {
+                gameState.phase = 'REVEAL';
+
+                const resultEmoji = isCorrect ? '🎉' : '😔';
+                const resultTitle = isCorrect ? 'Correct!' : 'Not Quite...';
+                const resultColor = isCorrect ? 'text-emerald-400' : 'text-red-400';
+                const resultBorder = isCorrect ? 'border-emerald-600/50' : 'border-red-600/50';
+                const resultGlow = isCorrect ?
+                    'shadow-[0_0_40px_rgba(26,107,60,0.4)]' :
+                    'shadow-[0_0_40px_rgba(155,45,48,0.4)]';
+
+                DOM.revealCard.className =
+                    `bg-slate-royal border ${resultBorder} rounded-2xl p-6 sm:p-8 max-w-lg w-full
+                     ${resultGlow} text-center transition-all duration-500 ease-out`;
+
+                DOM.revealCard.innerHTML = `
+                    <span class="text-5xl block mb-4">${resultEmoji}</span>
+                    <h3 class="font-cinzel text-2xl font-bold ${resultColor} mb-3">${resultTitle}</h3>
+                    <p class="text-white/60 font-inter text-sm mb-2">The claim was <strong class="${isCorrect ? 'text-emerald-400' : 'text-red-400'}">${scenario.answer ? 'TRUE' : 'FALSE'}</strong>.</p>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-4 my-4 text-left">
+                        <p class="font-crimson text-white/80 text-sm leading-relaxed italic">${scenario.explanation}</p>
+                    </div>
+                    <div class="flex items-center justify-center gap-4 my-4">
+                        <div class="text-center">
+                            <span class="text-white/40 text-xs uppercase tracking-wider block">Scrolls Used</span>
+                            <span class="font-inter font-bold text-xl text-white/70">${gameState.scrollsRevealed} / 3</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-white/40 text-xs uppercase tracking-wider block">Points Earned</span>
+                            <span class="font-inter font-bold text-2xl ${isCorrect ? 'text-royal-gold' : 'text-red-400'}">${isCorrect ? '+' + pointsEarned : '0'}</span>
+                        </div>
+                    </div>
+                    <button id="btn-continue"
+                            class="font-cinzel text-base font-bold px-8 py-3 rounded-xl
+                                   bg-gradient-to-b from-royal-gold to-royal-gold-dark
+                                   text-midnight tracking-wider
+                                   hover:shadow-[0_0_30px_rgba(201,168,76,0.5)]
+                                   active:scale-95 transition-all duration-300 ease-out
+                                   border border-royal-gold-light/30 mt-2">
+                        ${gameState.currentRoundIndex + 1 >= gameState.totalRounds ? 'SEE RESULTS' : 'NEXT SCENARIO'}
+                    </button>
+                `;
+
+                // Show overlay with entrance animation
+                DOM.revealOverlay.classList.remove('hidden');
+                DOM.revealOverlay.style.opacity = '0';
+                DOM.revealCard.style.opacity = '0';
+                DOM.revealCard.style.transform = 'scale(0.9) translateY(20px)';
+
+                requestAnimationFrame(() => {
+                    DOM.revealOverlay.style.transition = 'opacity 0.3s ease-out';
+                    DOM.revealOverlay.style.opacity = '1';
+                    DOM.revealCard.style.transition = 'all 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+                    DOM.revealCard.style.opacity = '1';
+                    DOM.revealCard.style.transform = 'scale(1) translateY(0)';
+                });
+
+                // Animate score
+                setTimeout(() => {
+                    animateScore(oldScore, gameState.score, 800);
+                }, 300);
+
+                // Spawn sparks if correct
+                if (isCorrect && pointsEarned >= 350) {
+                    const rect = DOM.revealCard.getBoundingClientRect();
+                    const cx = rect.left + rect.width / 2;
+                    const cy = rect.top + rect.height / 3;
+                    const sparkColor = pointsEarned === 500 ? '#c9a84c' : '#e0c878';
+                    setTimeout(() => spawnSparks(cx, cy, pointsEarned === 500 ? 40 : 20, sparkColor), 500);
+                }
+
+                // Attach continue handler
+                const btnContinue = document.getElementById('btn-continue');
+                if (btnContinue) {
+                    btnContinue.addEventListener('click', handleContinue, { once: true });
+                }
+            }
+
+            // ──────────────────────────────────────────────
+            // HANDLER: Continue to next round or game over
+            // ──────────────────────────────────────────────
+            function handleContinue() {
+                // Guard against rapid clicks
+                if (gameState.phase !== 'REVEAL') return;
+
+                // Hide overlay with exit animation
+                DOM.revealOverlay.style.opacity = '0';
+                DOM.revealCard.style.transform = 'scale(0.95) translateY(-10px)';
+                DOM.revealCard.style.opacity = '0';
+
+                setTimeout(() => {
+                    DOM.revealOverlay.classList.add('hidden');
+                    DOM.revealOverlay.style.opacity = '';
+                    DOM.revealCard.style.opacity = '';
+                    DOM.revealCard.style.transform = '';
+
+                    // Remove glow classes from claim card
+                    DOM.claimCard.classList.remove('glow-correct', 'glow-wrong');
+
+                    // Advance round
+                    gameState.currentRoundIndex++;
+
+                    if (gameState.currentRoundIndex >= gameState.totalRounds) {
+                        // Game over
+                        showGameOver();
+                    } else {
+                        // Reset for next round
+                        resetRoundState();
+                        // Animate claim card out and in
+                        animateCardTransition(() => {
+                            loadRound();
+                            gameState.phase = 'ACTIVE';
+                            updateAnswerButtons();
+                        });
+                    }
+                }, 400);
+            }
+
+            function resetRoundState() {
+                gameState.scrollsRevealed = 0;
+                gameState.isAnimating = false;
+                gameState.isAnswerLocked = false;
+                gameState.scrollRevealedFlags = [false, false, false];
+                gameState._manualReveals = [];
+            }
+
+            function animateCardTransition(callback) {
+                // Fade out claim card
+                DOM.claimCard.style.opacity = '0';
+                DOM.claimCard.style.transform = 'translateY(-15px) scale(0.97)';
+                DOM.scrollsRow.style.opacity = '0';
+                DOM.scrollsRow.style.transform = 'translateY(-10px)';
+
+                setTimeout(() => {
+                    callback();
+                    // Fade in
+                    DOM.claimCard.style.opacity = '1';
+                    DOM.claimCard.style.transform = 'translateY(0) scale(1)';
+                    DOM.scrollsRow.style.opacity = '1';
+                    DOM.scrollsRow.style.transform = 'translateY(0)';
+                }, 350);
+            }
+
+            // ──────────────────────────────────────────────
+            // LOAD: Populate the UI for the current round
+            // ──────────────────────────────────────────────
+            function loadRound() {
+                const scenario = SCENARIOS[gameState.currentRoundIndex];
+                DOM.eraBadge.textContent = scenario.era;
+                DOM.claimText.textContent = `"${scenario.claim}"`;
+                DOM.claimCard.style.opacity = '1';
+                DOM.claimCard.style.transform = 'translateY(0) scale(1)';
+                DOM.claimCard.classList.remove('glow-correct', 'glow-wrong');
+                DOM.scrollsRow.style.opacity = '1';
+                DOM.scrollsRow.style.transform = 'translateY(0)';
+                renderScrollCards();
+                renderRoundIndicator();
+                updateRoyalDecreeButton();
+                updateAnswerButtons();
+                // Ensure buttons reflect current state
+                DOM.btnTrue.disabled = false;
+                DOM.btnFalse.disabled = false;
+            }
+
+            // ──────────────────────────────────────────────
+            // GAME OVER SCREEN
+            // ──────────────────────────────────────────────
+            function showGameOver() {
+                gameState.phase = 'GAME_OVER';
+
+                // Hide active screen, show game over
+                DOM.screenActive.classList.add('hidden');
+                DOM.screenGameOver.classList.remove('hidden');
+                DOM.screenGameOver.style.opacity = '0';
+                DOM.screenGameOver.style.transform = 'translateY(20px)';
+                requestAnimationFrame(() => {
+                    DOM.screenGameOver.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+                    DOM.screenGameOver.style.opacity = '1';
+                    DOM.screenGameOver.style.transform = 'translateY(0)';
+                });
+
+                // Determine title based on score
+                const maxScore = gameState.totalRounds * 500; // 2500
+                const pct = gameState.score / maxScore;
+                let title, subtitle;
+                if (pct >= 0.85) { title = 'Royal Historian';
+                    subtitle = 'Your knowledge rivals the scholars of the great courts.'; } else if (pct >= 0.65) { title = 'Court Scholar';
+                    subtitle = 'A formidable mind — the king would be wise to retain you.'; } else if (pct >= 0.4) { title = 'Apprentice Chronicler';
+                    subtitle = 'You show promise. More study in the archives is needed.'; } else if (pct >= 0.2) { title = 'Village Scribe';
+                    subtitle = 'The basics are there, but the grand tapestry eludes you.'; } else { title = 'Court Jester';
+                    subtitle = 'Entertaining, certainly — but perhaps leave the history to others.'; }
+
+                DOM.finalTitle.textContent = title;
+                DOM.finalSubtitle.textContent = subtitle;
+                DOM.finalScore.textContent = gameState.score.toLocaleString();
+
+                // Stats
+                const correctCount = gameState.roundResults.filter(r => r.correct).length;
+                const perfectRounds = gameState.roundResults.filter(r => r.correct && r.scrollsUsed === 0).length;
+                const totalScrollsUsed = gameState.roundResults.reduce((sum, r) => sum + r.scrollsUsed, 0);
+                const decreeUsed = gameState.royalDecreeUsed ? 'Yes' : 'No';
+
+                DOM.finalStats.innerHTML = `
+                    <div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-center min-w-[80px]">
+                        <span class="text-2xl block text-white/80">${correctCount}/${gameState.totalRounds}</span>
+                        <span class="text-xs text-white/40">Correct</span>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-center min-w-[80px]">
+                        <span class="text-2xl block text-royal-gold">${perfectRounds}</span>
+                        <span class="text-xs text-white/40">Perfect Rounds</span>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-center min-w-[80px]">
+                        <span class="text-2xl block text-white/70">${totalScrollsUsed}</span>
+                        <span class="text-xs text-white/40">Scrolls Used</span>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-center min-w-[80px]">
+                        <span class="text-2xl block ${gameState.royalDecreeUsed ? 'text-royal-gold' : 'text-white/50'}">${decreeUsed}</span>
+                        <span class="text-xs text-white/40">Royal Decree</span>
+                    </div>
+                `;
+
+                // Animate final score
+                setTimeout(() => {
+                    const finalScoreEl = DOM.finalScore;
+                    finalScoreEl.classList.remove('score-pop');
+                    void finalScoreEl.offsetWidth;
+                    finalScoreEl.classList.add('score-pop');
+                }, 400);
+
+                // Spawn celebration sparks for good scores
+                if (pct >= 0.4) {
+                    const rect = DOM.screenGameOver.getBoundingClientRect();
+                    setTimeout(() => {
+                        spawnSparks(
+                            rect.left + rect.width / 2,
+                            rect.top + rect.height / 3,
+                            pct >= 0.85 ? 50 : 25,
+                            pct >= 0.85 ? '#c9a84c' : '#e0c878'
+                        );
+                    }, 600);
+                }
+            }
+
+            // ──────────────────────────────────────────────
+            // GAME INITIALIZATION
+            // ──────────────────────────────────────────────
+            function startGame() {
+                // Reset full game state
+                gameState.phase = 'ACTIVE';
+                gameState.currentRoundIndex = 0;
+                gameState.score = 0;
+                gameState.scrollsRevealed = 0;
+                gameState.royalDecreeUsed = false;
+                gameState.isAnimating = false;
+                gameState.isAnswerLocked = false;
+                gameState.scrollRevealedFlags = [false, false, false];
+                gameState.roundResults = [];
+                gameState._manualReveals = [];
+
+                // Update DOM
+                DOM.scoreDisplay.textContent = '0';
+                DOM.screenStart.classList.add('hidden');
+                DOM.screenGameOver.classList.add('hidden');
+                DOM.screenActive.classList.remove('hidden');
+                DOM.screenActive.style.opacity = '0';
+                DOM.screenActive.style.transform = 'translateY(15px)';
+                requestAnimationFrame(() => {
+                    DOM.screenActive.style.transition = 'all 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+                    DOM.screenActive.style.opacity = '1';
+                    DOM.screenActive.style.transform = 'translateY(0)';
+                });
+
+                // Hide reveal overlay if visible
+                DOM.revealOverlay.classList.add('hidden');
+
+                // Reset Royal Decree button
+                DOM.btnRoyalDecree.disabled = false;
+                DOM.btnRoyalDecree.classList.remove('opacity-30', 'cursor-not-allowed');
+                if (DOM.decreeBadge) DOM.decreeBadge.textContent = '1';
+                const decreeSpan = DOM.btnRoyalDecree.querySelector('span:first-child');
+                if (decreeSpan) decreeSpan.textContent = '📜';
+
+                // Load first round
+                loadRound();
+                updateAnswerButtons();
+                DOM.btnTrue.disabled = false;
+                DOM.btnFalse.disabled = false;
+            }
+
+            function restartGame() {
+                DOM.screenGameOver.style.opacity = '0';
+                DOM.screenGameOver.style.transform = 'translateY(15px)';
+                setTimeout(() => {
+                    DOM.screenGameOver.classList.add('hidden');
+                    startGame();
+                }, 300);
+            }
+
+            // ──────────────────────────────────────────────
+            // EVENT LISTENER WIRING
+            // ──────────────────────────────────────────────
+            DOM.btnStart.addEventListener('click', startGame);
+            DOM.btnRestart.addEventListener('click', restartGame);
+            DOM.btnTrue.addEventListener('click', () => handleAnswer(true));
+            DOM.btnFalse.addEventListener('click', () => handleAnswer(false));
+            DOM.btnRoyalDecree.addEventListener('click', useRoyalDecree);
+
+            // Keyboard shortcuts for power users
+            document.addEventListener('keydown', (e) => {
+                if (gameState.phase === 'ACTIVE' && !gameState.isAnswerLocked) {
+                    if (e.key === 't' || e.key === 'T' || e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        handleAnswer(true);
+                    } else if (e.key === 'f' || e.key === 'F' || e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        handleAnswer(false);
+                    } else if (e.key === 'd' || e.key === 'D') {
+                        e.preventDefault();
+                        useRoyalDecree();
+                    } else if (e.key >= '1' && e.key <= '3') {
+                        e.preventDefault();
+                        const idx = parseInt(e.key) - 1;
+                        const containers = DOM.scrollsRow.querySelectorAll('.scroll-card-container');
+                        if (containers[idx]) {
+                            const inner = containers[idx].querySelector('.scroll-card-inner');
+                            handleScrollClick(idx, containers[idx], inner);
+                        }
+                    }
+                }
+                // Space or Enter to continue on reveal screen
+                if (gameState.phase === 'REVEAL' && (e.key === ' ' || e.key === 'Enter')) {
+                    e.preventDefault();
+                    handleContinue();
+                }
+                // Enter to start on start screen
+                if (gameState.phase === 'START' && e.key === 'Enter') {
+                    e.preventDefault();
+                    startGame();
+                }
+            });
+
+            // ──────────────────────────────────────────────
+            // INITIAL SETUP
+            // ──────────────────────────────────────────────
+            function init() {
+                createParticles();
+                // Ensure correct initial screen visibility
+                DOM.screenStart.classList.remove('hidden');
+                DOM.screenActive.classList.add('hidden');
+                DOM.screenGameOver.classList.add('hidden');
+                DOM.revealOverlay.classList.add('hidden');
+                // Set initial score display
+                DOM.scoreDisplay.textContent = '0';
+                // Render initial round indicator (all future dots)
+                gameState.currentRoundIndex = 0;
+                renderRoundIndicator();
+            }
+
+            // Boot the game
+            init();
+
+            console.log('%c🏰 The Historian\'s Decree %cready.',
+                'font-family:Cinzel,serif;font-size:18px;color:#c9a84c;',
+                'color:#888;');
+            console.log('%c5 scenarios • Evidence scrolls • Royal Decree power-up • Keyboard shortcuts (T/F/1-3/D)',
+                'color:#666;font-size:11px;');
+            console.log('%cQuizRealm • European History Edition', 'color:#555;font-style:italic;');
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <!-- Premium SEO Metadata -->
+  <title>Resonance | Premium Analog Waveform Puzzle</title>
+  <meta name="description" content="Master the oscilloscope. Play Resonance, a premium analog synthesizer puzzle. Calibrate amplitude, frequency, and phase to match the target audio signals." />
+  <meta name="keywords" content="waveform puzzle, synthesizer game, audio frequency puzzle, oscilloscope game, logic puzzle, interactive sound wave, premium web game" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://thequizrealm.com/resonance.html" />
+
+  <!-- Structured Data for Google Rich Results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Resonance",
+    "description": "An interactive puzzle game based on matching analog audio waveforms.",
+    "applicationCategory": "GameApplication",
+    "genre": "Logic Puzzle",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <!-- Tailwind CSS & Premium Typography -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Outfit"', 'sans-serif'],
+            mono: ['"Space Mono"', 'monospace']
+          },
+          colors: {
+            synth: {
+              950: '#0a0a0c',
+              900: '#121216',
+              800: '#1c1c21',
+              700: '#2d2d35',
+              400: '#8b8b9e',
+            },
+            amber: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              glow: 'rgba(245, 158, 11, 0.4)'
+            },
+            cyan: {
+              400: '#22d3ee',
+              glow: 'rgba(34, 211, 238, 0.4)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #0a0a0c;
+      color: #e2e8f0;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Premium Hardware Styling */
+    .hardware-panel {
+      background: linear-gradient(145deg, #16161a, #0e0e11);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+      border: 1px solid #2d2d35;
+    }
+
+    .screen-bezel {
+      background: #000000;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.1);
+      border: 2px solid #1c1c21;
+      border-bottom-color: #2d2d35;
+    }
+
+    canvas {
+      image-rendering: high-quality;
+    }
+
+    /* Custom Analog Faders (Sliders) */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    
+    /* The Track */
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: #0a0a0c;
+      border-radius: 4px;
+      border: 1px solid #2d2d35;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+    }
+    
+    /* The Fader Cap */
+    input[type=range]::-webkit-slider-thumb {
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.2);
+      border: 1px solid #000;
+      height: 28px;
+      width: 16px;
+      border-radius: 3px;
+      background: linear-gradient(to bottom, #4a4a55, #2d2d35);
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -11px;
+      position: relative;
+      transition: transform 0.1s;
+    }
+    
+    /* Fader indicator line */
+    input[type=range]::-webkit-slider-thumb::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 10%; right: 10%;
+      height: 2px;
+      background: #f59e0b;
+      transform: translateY(-50%);
+    }
+
+    input[type=range]:active::-webkit-slider-thumb {
+      transform: scale(0.95);
+    }
+
+    /* Grid Overlay for Screen */
+    .screen-grid {
+      background-size: 20px 20px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+
+    /* Smooth Transitions */
+    .fade-ui { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-black">
+
+  <!-- Minimalist Header -->
+  <header class="w-full max-w-6xl mx-auto px-6 py-8 flex justify-between items-center z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded bg-synth-800 border border-synth-700 flex items-center justify-center shadow-lg">
+        <i class="fas fa-wave-square text-amber-500"></i>
+      </div>
+      <div>
+        <h1 class="font-mono text-xl font-bold tracking-widest uppercase text-white">Resonance</h1>
+      </div>
+    </div>
+    <div class="flex gap-4">
+      <div class="bg-synth-900 border border-synth-700 px-4 py-2 rounded flex items-center gap-2 shadow-inner">
+        <div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+        <span class="font-mono text-xs text-synth-400 uppercase tracking-widest">Signal <span id="level-display" class="text-white">1/5</span></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full max-w-6xl mx-auto px-4 lg:px-6 flex flex-col lg:flex-row gap-10 items-start pb-16">
+    
+    <!-- THE HARDWARE: Interactive Game Interface -->
+    <div class="w-full lg:w-[650px] shrink-0 hardware-panel rounded-2xl p-6 lg:p-8 relative">
+      
+      <!-- Oscilloscope Screen -->
+      <div class="screen-bezel rounded-xl overflow-hidden relative w-full aspect-[16/9] mb-8">
+        <div class="absolute inset-0 screen-grid z-0"></div>
+        <canvas id="wave-canvas" class="w-full h-full relative z-10"></canvas>
+        
+        <!-- Live Data Readout -->
+        <div class="absolute top-4 left-4 z-20 pointer-events-none">
+          <div class="font-mono text-[10px] text-synth-400 uppercase tracking-widest mb-1">Target Output</div>
+          <div id="match-readout" class="font-mono text-2xl font-bold text-amber-500 fade-ui">0.0% Match</div>
+        </div>
+        <div class="absolute bottom-4 right-4 z-20 pointer-events-none text-right">
+          <div class="font-mono text-[10px] text-synth-400 uppercase tracking-widest">Status</div>
+          <div id="status-text" class="font-mono text-xs text-synth-400 uppercase tracking-widest fade-ui">Calibrating...</div>
+        </div>
+      </div>
+
+      <!-- Physical Fader Controls -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Amplitude Control -->
+        <div class="flex flex-col items-center">
+          <div class="w-full flex justify-between font-mono text-[10px] text-synth-400 uppercase tracking-widest mb-3">
+            <span>Min</span><span>Max</span>
+          </div>
+          <input type="range" id="slider-amp" min="10" max="100" value="50" class="w-full mb-4">
+          <label class="font-bold text-sm tracking-wider uppercase text-white">Amplitude</label>
+        </div>
+
+        <!-- Frequency Control -->
+        <div class="flex flex-col items-center">
+          <div class="w-full flex justify-between font-mono text-[10px] text-synth-400 uppercase tracking-widest mb-3">
+            <span>Low</span><span>High</span>
+          </div>
+          <input type="range" id="slider-freq" min="1" max="10" value="3" step="0.1" class="w-full mb-4">
+          <label class="font-bold text-sm tracking-wider uppercase text-white">Frequency</label>
+        </div>
+
+        <!-- Phase Control -->
+        <div class="flex flex-col items-center relative group">
+          <div id="phase-lock" class="absolute inset-0 bg-synth-900/80 backdrop-blur-sm z-10 flex items-center justify-center rounded transition-opacity">
+            <span class="font-mono text-xs text-synth-400 uppercase tracking-widest"><i class="fas fa-lock mr-2"></i>Locked</span>
+          </div>
+          <div class="w-full flex justify-between font-mono text-[10px] text-synth-400 uppercase tracking-widest mb-3">
+            <span>0°</span><span>360°</span>
+          </div>
+          <input type="range" id="slider-phase" min="0" max="6.28" value="0" step="0.1" class="w-full mb-4">
+          <label class="font-bold text-sm tracking-wider uppercase text-white">Phase</label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SEO & Educational Context Area -->
+    <div class="flex-1 bg-synth-900 border border-synth-800 rounded-2xl p-8 shadow-xl text-synth-400">
+      <div class="flex items-center gap-2 text-xs font-mono text-amber-500 uppercase tracking-widest mb-6 border-b border-synth-800 pb-2">
+        <i class="fas fa-book text-synth-700"></i> Operator's Manual
+      </div>
+
+      <h2 class="text-2xl font-bold text-white mb-4">The Science of Sound Waves</h2>
+      <p class="leading-relaxed text-sm mb-6">
+        Resonance is a spatial and logic puzzle that challenges you to perfectly calibrate analog audio signals. To succeed, you must manipulate the three core properties of trigonometric waveforms.
+      </p>
+
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-white font-bold mb-1 flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div> Amplitude (Height)
+          </h3>
+          <p class="text-sm leading-relaxed">
+            Amplitude measures the energy of the wave. Visually, it dictates how tall the peaks and valleys are. In audio terms, increasing the amplitude increases the sheer volume of the sound.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-white font-bold mb-1 flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div> Frequency (Speed)
+          </h3>
+          <p class="text-sm leading-relaxed">
+            Frequency measures how many wave cycles occur over a period of time. Higher frequencies compress the waves closer together. Sonically, increasing the frequency raises the pitch of the note.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-white font-bold mb-1 flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div> Phase (Position)
+          </h3>
+          <p class="text-sm leading-relaxed">
+            Phase determines where the wave cycle begins. Adjusting the phase will not change the shape or height of the wave, but will physically slide it left or right along the timeline axis.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Level Complete / Victory Modal -->
+  <div id="victory-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center opacity-0 pointer-events-none fade-ui px-4">
+    <div id="victory-card" class="hardware-panel p-10 rounded-2xl max-w-sm w-full text-center transform scale-95 fade-ui">
+      <div class="w-20 h-20 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
+        <i class="fas fa-check text-4xl text-cyan-400"></i>
+      </div>
+      <h2 class="font-mono text-2xl font-bold text-white mb-2 uppercase tracking-widest">Signal Locked</h2>
+      <p class="text-synth-400 text-sm mb-8">Calibration complete. Frequencies are perfectly synchronized.</p>
+      
+      <button onclick="nextLevel()" class="w-full py-4 bg-cyan-400 text-black font-bold uppercase tracking-widest rounded hover:bg-cyan-300 active:scale-95 transition-all">
+        Proceed to Next Signal
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // --- GAME ARCHITECTURE ---
+    
+    // Level Configurations
+    const LEVELS = [
+      { amp: 80, freq: 2.0, phase: 0, phaseLocked: true },
+      { amp: 40, freq: 5.5, phase: 0, phaseLocked: true },
+      { amp: 60, freq: 3.0, phase: 1.5, phaseLocked: false },
+      { amp: 30, freq: 8.0, phase: 4.2, phaseLocked: false },
+      { amp: 90, freq: 1.5, phase: 3.14, phaseLocked: false }
+    ];
+
+    let currentLevelIndex = 0;
+    let isLevelComplete = false;
+    let matchPercentage = 0;
+
+    // Canvas Setup
+    const canvas = document.getElementById('wave-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // UI Elements
+    const sliderAmp = document.getElementById('slider-amp');
+    const sliderFreq = document.getElementById('slider-freq');
+    const sliderPhase = document.getElementById('slider-phase');
+    const phaseLock = document.getElementById('phase-lock');
+    const readout = document.getElementById('match-readout');
+    const statusText = document.getElementById('status-text');
+    const modal = document.getElementById('victory-modal');
+    const modalCard = document.getElementById('victory-card');
+    const levelDisplay = document.getElementById('level-display');
+
+    // Engine Variables
+    let cWidth, cHeight, centerY;
+
+    function initEngine() {
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      // Bind Input Listeners for real-time updating
+      sliderAmp.addEventListener('input', updateEngine);
+      sliderFreq.addEventListener('input', updateEngine);
+      sliderPhase.addEventListener('input', updateEngine);
+
+      loadLevel(0);
+      requestAnimationFrame(renderLoop);
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.parentNode.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      cWidth = rect.width;
+      cHeight = rect.height;
+      centerY = cHeight / 2;
+    }
+
+    function loadLevel(index) {
+      if (index >= LEVELS.length) {
+        alert("All signals synchronized. Master calibration complete.");
+        index = 0;
+      }
+
+      currentLevelIndex = index;
+      isLevelComplete = false;
+      levelDisplay.textContent = `${index + 1}/${LEVELS.length}`;
+      
+      const level = LEVELS[index];
+
+      // Unlock or Lock Phase controls based on level design
+      if (level.phaseLocked) {
+        phaseLock.classList.remove('opacity-0', 'pointer-events-none');
+        sliderPhase.value = 0;
+        sliderPhase.disabled = true;
+      } else {
+        phaseLock.classList.add('opacity-0', 'pointer-events-none');
+        sliderPhase.disabled = false;
+      }
+
+      // Randomize starting positions so the player has to actually solve it
+      sliderAmp.value = Math.floor(Math.random() * 40) + 20;
+      sliderFreq.value = (Math.random() * 4 + 1).toFixed(1);
+      if (!level.phaseLocked) {
+        sliderPhase.value = (Math.random() * 3).toFixed(1);
+      }
+
+      // Reset UI Styling
+      readout.className = "font-mono text-2xl font-bold text-amber-500 fade-ui";
+      statusText.textContent = "Calibrating...";
+      statusText.className = "font-mono text-xs text-synth-400 uppercase tracking-widest fade-ui";
+
+      updateEngine();
+    }
+
+    function updateEngine() {
+      if (isLevelComplete) return;
+
+      const target = LEVELS[currentLevelIndex];
+      
+      const cAmp = parseFloat(sliderAmp.value);
+      const cFreq = parseFloat(sliderFreq.value);
+      const cPhase = parseFloat(sliderPhase.value);
+
+      // Calculate Difference (Normalize inputs based on slider ranges to get a clean %)
+      // Amp Range: 90. Freq Range: 9.0. Phase Range: 6.28.
+      const ampDiff = Math.abs(cAmp - target.amp) / 90;
+      const freqDiff = Math.abs(cFreq - target.freq) / 9.0;
+      const phaseDiff = Math.abs(cPhase - target.phase) / 6.28;
+
+      // Weighted average (Frequency is most noticeable, Phase is trickiest)
+      const totalDiff = (ampDiff * 0.3) + (freqDiff * 0.4) + (phaseDiff * 0.3);
+      
+      matchPercentage = Math.max(0, 100 - (totalDiff * 100));
+
+      // Snap to 100% if extremely close (tolerance threshold)
+      if (matchPercentage > 98.5) {
+        matchPercentage = 100;
+        triggerVictory();
+      }
+
+      readout.textContent = `${matchPercentage.toFixed(1)}% Match`;
+    }
+
+    function triggerVictory() {
+      isLevelComplete = true;
+      readout.textContent = "100.0% Match";
+      readout.className = "font-mono text-2xl font-bold text-cyan-400 fade-ui";
+      statusText.textContent = "Synchronized";
+      statusText.className = "font-mono text-xs text-cyan-400 uppercase tracking-widest fade-ui font-bold shadow-[0_0_10px_rgba(34,211,238,0.5)]";
+      
+      // Snap sliders to perfect values visually
+      const target = LEVELS[currentLevelIndex];
+      sliderAmp.value = target.amp;
+      sliderFreq.value = target.freq;
+      sliderPhase.value = target.phase;
+
+      setTimeout(() => {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modalCard.classList.remove('scale-95');
+      }, 1000); // 1 second delay to enjoy the blue success state
+    }
+
+    function nextLevel() {
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modalCard.classList.add('scale-95');
+      setTimeout(() => {
+        loadLevel(currentLevelIndex + 1);
+      }, 400);
+    }
+
+    // --- RENDER LOOP ---
+    function renderLoop(time) {
+      ctx.clearRect(0, 0, cWidth, cHeight);
+
+      const target = LEVELS[currentLevelIndex];
+      
+      // Live current values
+      const cAmp = parseFloat(sliderAmp.value);
+      const cFreq = parseFloat(sliderFreq.value);
+      const cPhase = parseFloat(sliderPhase.value);
+
+      // Time-based wave animation
+      const timeOffset = time * 0.002; 
+
+      // 1. Draw Target Wave (Ghosted / Dashed)
+      ctx.beginPath();
+      for(let x = 0; x < cWidth; x += 2) {
+        // Map x to a reasonable sine frequency multiplier
+        const mathX = (x / cWidth) * 20;
+        const y = centerY + Math.sin((mathX * target.freq) + target.phase - timeOffset) * target.amp;
+        
+        if(x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = isLevelComplete ? 'rgba(34, 211, 238, 0.2)' : 'rgba(245, 158, 11, 0.2)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 8]);
+      ctx.stroke();
+      ctx.setLineDash([]); // Reset dash
+
+      // 2. Draw Current Wave (Solid / Glowing)
+      ctx.beginPath();
+      for(let x = 0; x < cWidth; x += 2) {
+        const mathX = (x / cWidth) * 20;
+        const y = centerY + Math.sin((mathX * cFreq) + cPhase - timeOffset) * cAmp;
+        
+        if(x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      
+      if (isLevelComplete) {
+        ctx.strokeStyle = '#22d3ee'; // Cyan Success
+        ctx.shadowColor = '#22d3ee';
+      } else {
+        ctx.strokeStyle = '#f59e0b'; // Amber Play
+        ctx.shadowColor = '#f59e0b';
+      }
+      
+      ctx.lineWidth = 3;
+      ctx.shadowBlur = 15;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      
+      // Internal bright core for the glow effect
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.shadowBlur = 0;
+      ctx.stroke();
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    // Boot
+    window.onload = initEngine;
+  </script>
+</body>
+</html>

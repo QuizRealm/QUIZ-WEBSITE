@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truth or Treason: The Royal Interrogation | QuizRealm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Cinzel', 'serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        realm: {
+                            dark: '#0B0D17',
+                            card: 'rgba(255, 255, 255, 0.03)',
+                            gold: '#D4AF37',
+                            crimson: '#8B0000',
+                            emerald: '#097969'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'stamp': 'stamp 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        stamp: {
+                            '0%': { transform: 'scale(3) rotate(-15deg)', opacity: '0' },
+                            '50%': { transform: 'scale(0.8) rotate(-15deg)', opacity: '1' },
+                            '100%': { transform: 'scale(1) rotate(-15deg)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0B0D17;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 0, 0, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(212, 175, 55, 0.05), transparent 25%);
+            background-attachment: fixed;
+            color: #ffffff;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .glass-panel {
+            background: rgba(20, 22, 35, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-interact {
+            transition: all 300ms cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        .btn-interact:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 20px -10px currentColor;
+        }
+        
+        .btn-interact:active {
+            transform: translateY(1px) scale(0.95);
+        }
+
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 600ms cubic-bezier(0.25, 1, 0.5, 1), transform 600ms cubic-bezier(0.25, 1, 0.5, 1);
+            transform: scale(0.95);
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        .life-icon {
+            transition: all 400ms ease;
+        }
+        .life-lost {
+            filter: grayscale(100%) opacity(20%);
+            transform: scale(0.8);
+        }
+
+        /* Custom Scrollbar for the facts modal */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-body antialiased min-h-screen relative overflow-hidden">
+
+    <!-- Start Screen -->
+    <main id="screen-start" class="screen active p-6 text-center">
+        <div class="glass-panel p-8 md:p-12 rounded-3xl max-w-2xl w-full flex flex-col items-center animate-float">
+            <div class="w-16 h-16 mb-6 text-realm-gold animate-pulse-slow">
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 22H22V20H2V22ZM12 2C7.58 2 4 5.58 4 10V18H20V10C20 5.58 16.42 2 12 2ZM10.5 13H8.5V11H10.5V13ZM15.5 13H13.5V11H15.5V13ZM12 4C14.76 4 17 6.24 17 9H7C7 6.24 9.24 4 12 4Z"/>
+                </svg>
+            </div>
+            <h3 class="text-realm-gold tracking-[0.2em] text-sm md:text-base uppercase font-semibold mb-2">QuizRealm Presents</h3>
+            <h1 class="font-heading text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+                Truth <span class="text-gray-500 text-3xl italic font-normal px-2">or</span> Treason
+            </h1>
+            <div class="h-px w-32 bg-gradient-to-r from-transparent via-realm-gold to-transparent mb-6"></div>
+            <p class="text-gray-400 text-base md:text-lg mb-8 leading-relaxed max-w-lg">
+                You are the newly appointed Master of Whispers for a paranoid monarch. Determine if these bizarre historical reports are undeniable <span class="text-emerald-400">Truth</span> or fabricated <span class="text-realm-crimson">Treason</span>. 
+                <br><br>Three strikes, and you face the guillotine.
+            </p>
+            <button onclick="startGame()" class="btn-interact bg-realm-gold/10 border border-realm-gold text-realm-gold px-8 py-4 rounded-full font-heading font-semibold text-lg hover:bg-realm-gold hover:text-black">
+                Assume Your Post
+            </button>
+        </div>
+    </main>
+
+    <!-- Game Screen -->
+    <main id="screen-game" class="screen p-4 md:p-6 flex-col">
+        <!-- Header / HUD -->
+        <header class="w-full max-w-3xl flex justify-between items-center mb-8 glass-panel px-6 py-4 rounded-2xl">
+            <div class="flex flex-col">
+                <span class="text-xs uppercase tracking-widest text-gray-500 font-bold mb-1">Archive Entry</span>
+                <span id="progress-text" class="font-heading text-xl font-bold text-realm-gold">I / X</span>
+            </div>
+            <div class="flex flex-col items-end">
+                <span class="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2">Monarch's Favor</span>
+                <div id="lives-container" class="flex gap-2">
+                    <!-- Lives injected via JS -->
+                </div>
+            </div>
+        </header>
+
+        <!-- The Report Card -->
+        <div id="report-card" class="glass-panel p-8 md:p-12 rounded-3xl max-w-3xl w-full text-center relative transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
+            
+            <!-- Stamp Overlay (Hidden by default) -->
+            <div id="stamp-overlay" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 z-20">
+                <span id="stamp-text" class="font-heading text-6xl md:text-8xl font-bold uppercase border-4 md:border-8 p-4 rounded-xl opacity-80 backdrop-blur-sm"></span>
+            </div>
+
+            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-realm-dark border border-white/10 px-4 py-1 rounded-full text-xs tracking-widest text-gray-400">CLASSIFIED REPORT</div>
+            
+            <p id="claim-text" class="font-heading text-2xl md:text-4xl leading-tight md:leading-snug text-white mt-4 mb-10 min-h-[160px] flex items-center justify-center">
+                <!-- Claim injected here -->
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-8">
+                <button onclick="handleChoice(true)" class="btn-interact group relative bg-emerald-900/20 border border-emerald-500/30 p-6 rounded-2xl overflow-hidden text-emerald-400">
+                    <div class="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <span class="font-heading font-bold text-xl uppercase tracking-wider">Swear it is Truth</span>
+                    <span class="block text-xs mt-2 text-emerald-400/60 font-body">Historical Fact</span>
+                </button>
+                <button onclick="handleChoice(false)" class="btn-interact group relative bg-red-900/20 border border-red-500/30 p-6 rounded-2xl overflow-hidden text-red-400">
+                    <div class="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <span class="font-heading font-bold text-xl uppercase tracking-wider">Condemn as Treason</span>
+                    <span class="block text-xs mt-2 text-red-400/60 font-body">Fabrication & Lies</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Feedback Modal / Sheet -->
+    <div id="modal-feedback" class="fixed inset-0 z-50 flex items-end justify-center pointer-events-none opacity-0 transition-opacity duration-500 bg-black/60 backdrop-blur-sm">
+        <div id="modal-content" class="glass-panel w-full max-w-3xl rounded-t-3xl p-8 transform translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
+            <h2 id="feedback-title" class="font-heading text-3xl font-bold mb-2"></h2>
+            <p id="feedback-subtitle" class="text-sm uppercase tracking-widest font-bold mb-6"></p>
+            <div class="h-px w-full bg-white/10 mb-6"></div>
+            <p id="feedback-explanation" class="text-gray-300 text-lg leading-relaxed mb-8 max-h-[40vh] overflow-y-auto pr-2"></p>
+            <button onclick="nextRound()" class="btn-interact w-full bg-white text-black py-4 rounded-xl font-heading font-bold text-lg hover:bg-gray-200">
+                Continue Interrogation
+            </button>
+        </div>
+    </div>
+
+    <!-- End Screen -->
+    <main id="screen-end" class="screen p-6 text-center">
+        <div class="glass-panel p-8 md:p-12 rounded-3xl max-w-2xl w-full flex flex-col items-center">
+            <div id="end-icon" class="w-20 h-20 mb-6"></div>
+            <h3 class="text-realm-gold tracking-[0.2em] text-sm md:text-base uppercase font-semibold mb-2">Final Judgement</h3>
+            <h1 id="end-title" class="font-heading text-5xl md:text-6xl font-bold mb-4 text-white"></h1>
+            <p id="end-score" class="font-heading text-2xl text-gray-400 mb-6"></p>
+            <div class="h-px w-32 bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6"></div>
+            <p id="end-desc" class="text-gray-300 text-lg mb-8 leading-relaxed max-w-md"></p>
+            <button onclick="initGame()" class="btn-interact bg-transparent border border-white/30 text-white px-8 py-4 rounded-full font-heading font-semibold text-lg hover:bg-white/10">
+                Begin a New Era
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // --- CONTENT: The Bizarre Facts ---
+        const royalArchives = [
+            {
+                claim: "In 1386, a pig in France was arrested, dressed in human clothing, provided a defense lawyer, and ultimately executed by hanging for the crime of murder.",
+                truth: true,
+                explanation: "It is absolute Truth. In Falaise, France, a pig that mauled a child was subjected to the same judicial processes as a human. Animal trials were bizarrely common in medieval Europe, complete with judges, lawyers, and formal sentences."
+            },
+            {
+                claim: "The Eiffel Tower was originally commissioned in 1889 as a gigantic, functional guillotine to commemorate the centennial of the French Revolution in a gruesome display of architectural terror.",
+                truth: false,
+                explanation: "Treasonous lies! While built for the 1889 World's Fair (which did mark the centennial of the Revolution), Gustave Eiffel's tower was always intended as a marvel of modern engineering and an observation tower, never an instrument of execution."
+            },
+            {
+                claim: "To assert absolute dominance, King Henry VIII employed a royal 'Groom of the Stool' whose highly coveted and intimate job was to wipe the monarch's bottom and monitor his bowels.",
+                truth: true,
+                explanation: "Disgustingly True. The 'Groom of the Stool' was actually one of the most powerful positions in the Tudor court. Because this servant had private, unguarded time with the King every day, they often became his most trusted advisor."
+            },
+            {
+                claim: "In 1518, a mysterious plague struck Strasbourg where hundreds of people danced uncontrollably in the streets for days, with many dying of strokes and sheer exhaustion.",
+                truth: true,
+                explanation: "Undeniable Truth. The 'Dancing Plague of 1518' was a mass psychogenic illness. Authorities bizarrely believed the cure was 'more dancing' and even hired musicians to keep the afflicted moving until they collapsed."
+            },
+            {
+                claim: "Seeking to strike fear into his enemies, King Louis XIV of France had his front teeth extracted and replaced with carved diamonds to blind and intimidate foreign diplomats.",
+                truth: false,
+                explanation: "Treasonous fabrication! The 'Sun King' did have terrible dental issues (he lost most of his teeth and had part of his palate removed), but he never replaced them with diamonds. He preferred to intimidate through lavish displays of wealth at Versailles, not dental jewelry."
+            },
+            {
+                claim: "In 1471, a rooster in Basel, Switzerland, was put on trial and burned at the stake for the 'heinous and unnatural crime' of laying an egg.",
+                truth: true,
+                explanation: "Absolute Truth. The superstitious locals believed that an egg laid by a rooster would hatch a basilisk or cockatrice—a mythical beast that could kill with a glance. The poor bird was executed without mercy."
+            },
+            {
+                claim: "Pope Gregory IX declared a holy war on cats, claiming they were instruments of Satan, which led to a massive feline massacre that inadvertently accelerated the spread of the Black Death.",
+                truth: true,
+                explanation: "Tragically True. In his 1233 papal bull 'Vox in Rama', he linked cats (especially black ones) to devil worship. The resulting decimation of the cat population allowed plague-carrying rat populations to explode across Europe."
+            },
+            {
+                claim: "During the Victorian era, wealthy British socialites regularly hosted lavish dinner parties where the evening's main entertainment was unwrapping an ancient Egyptian mummy in the drawing room.",
+                truth: true,
+                explanation: "Morbidly True. 'Mummy unwrapping parties' were a real fad in 19th-century England. Fuelled by Egyptomania and imperialism, aristocrats would buy mummies from grave robbers and unroll them in front of cheering, champagne-drinking guests."
+            },
+            {
+                claim: "To halt the devastating spread of cholera, Queen Victoria ordered London's Thames river to be permanently paved over, creating the vast subterranean tunnels we now know as the 'Underground'.",
+                truth: false,
+                explanation: "A Treasonous myth! The Thames was never paved over. While the 'Great Stink' of 1858 did prompt massive action, it was engineer Joseph Bazalgette who built an extensive sewer system *alongside* the river, saving countless lives. The Underground was built for transport, not sewage."
+            },
+            {
+                claim: "Peter the Great of Russia instituted a 'Beard Tax,' forcing any man who wished to keep his facial hair to pay a steep fee and carry a copper token proving his right to be bearded.",
+                truth: true,
+                explanation: "Completely True. In an effort to modernize and 'Westernize' Russian society in 1698, Peter the Great decreed that beards were a useless burden. Nobles and merchants who refused to shave had to pay up to 100 rubles and carry a token inscribed with 'the beard is a superfluous burden'."
+            }
+        ];
+
+        // --- GAME STATE ---
+        let gameState = {
+            questions: [],
+            currentIndex: 0,
+            score: 0,
+            lives: 3,
+            maxLives: 3
+        };
+
+        // --- DOM ELEMENTS ---
+        const screens = {
+            start: document.getElementById('screen-start'),
+            game: document.getElementById('screen-game'),
+            end: document.getElementById('screen-end')
+        };
+        const dom = {
+            claimText: document.getElementById('claim-text'),
+            progressText: document.getElementById('progress-text'),
+            livesContainer: document.getElementById('lives-container'),
+            modalFeedback: document.getElementById('modal-feedback'),
+            modalContent: document.getElementById('modal-content'),
+            feedbackTitle: document.getElementById('feedback-title'),
+            feedbackSubtitle: document.getElementById('feedback-subtitle'),
+            feedbackExplanation: document.getElementById('feedback-explanation'),
+            stampOverlay: document.getElementById('stamp-overlay'),
+            stampText: document.getElementById('stamp-text'),
+            reportCard: document.getElementById('report-card'),
+            endTitle: document.getElementById('end-title'),
+            endScore: document.getElementById('end-score'),
+            endDesc: document.getElementById('end-desc'),
+            endIcon: document.getElementById('end-icon')
+        };
+
+        // --- SVGs ---
+        const svgs = {
+            crown: `<svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M12 2L15 8H21L16 12L18 19L12 15L6 19L8 12L3 8H9L12 2Z"/></svg>`,
+            skull: `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C7.58 2 4 5.58 4 10C4 12.28 4.96 14.34 6.44 15.79L6.5 21C6.5 21.55 6.95 22 7.5 22H9C9.55 22 10 21.55 10 21V19H14V21C14 21.55 14.45 22 15 22H16.5C17.05 22 17.5 21.55 17.5 21L17.56 15.79C19.04 14.34 20 12.28 20 10C20 5.58 16.42 2 12 2ZM9 12C7.9 12 7 11.1 7 10C7 8.9 7.9 8 9 8C10.1 8 11 8.9 11 10C11 11.1 10.1 12 9 12ZM15 12C13.9 12 13 11.1 13 10C13 8.9 13.9 8 15 8C16.1 8 17 8.9 17 10C17 11.1 16.1 12 15 12ZM14 16H10V14H14V16Z"/></svg>`,
+            victory: `<svg viewBox="0 0 24 24" fill="currentColor" class="text-realm-gold w-full h-full"><path d="M12 22L10 16H2L7 12L5 6L12 9L19 6L17 12L22 16H14L12 22Z"/></svg>`,
+            defeat: `<svg viewBox="0 0 24 24" fill="currentColor" class="text-gray-600 w-full h-full"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 19H11V17H13V19ZM15.07 11.25L14.17 12.17C13.45 12.9 13 13.5 13 15H11V14.5C11 13.4 11.45 12.4 12.17 11.67L13.41 10.41C13.78 10.05 14 9.55 14 9C14 7.9 13.1 7 12 7C10.9 7 10 7.9 10 9H8C8 6.79 9.79 5 12 5C14.21 5 16 6.79 16 9C16 9.88 15.64 10.68 15.07 11.25Z"/></svg>`
+        };
+
+        // --- CORE LOGIC ---
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function switchScreen(screenKey) {
+            Object.values(screens).forEach(s => s.classList.remove('active'));
+            screens[screenKey].classList.add('active');
+        }
+
+        function initGame() {
+            gameState.questions = shuffle([...royalArchives]);
+            gameState.currentIndex = 0;
+            gameState.score = 0;
+            gameState.lives = gameState.maxLives;
+            
+            switchScreen('start');
+        }
+
+        function startGame() {
+            switchScreen('game');
+            updateLivesHUD();
+            loadQuestion();
+        }
+
+        function updateLivesHUD() {
+            dom.livesContainer.innerHTML = '';
+            for (let i = 0; i < gameState.maxLives; i++) {
+                const icon = document.createElement('div');
+                icon.className = `w-8 h-8 ${i < gameState.lives ? 'text-realm-gold drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]' : 'text-gray-700 life-lost'}`;
+                icon.innerHTML = i < gameState.lives ? svgs.crown : svgs.skull;
+                icon.id = `life-${i}`;
+                dom.livesContainer.appendChild(icon);
+            }
+        }
+
+        function loseLife() {
+            gameState.lives--;
+            const lifeIcon = document.getElementById(`life-${gameState.lives}`);
+            if (lifeIcon) {
+                lifeIcon.classList.remove('text-realm-gold', 'drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]');
+                lifeIcon.classList.add('text-gray-700', 'life-lost');
+                lifeIcon.innerHTML = svgs.skull;
+            }
+        }
+
+        function loadQuestion() {
+            const currentQ = gameState.questions[gameState.currentIndex];
+            dom.progressText.innerText = `${gameState.currentIndex + 1} / ${gameState.questions.length}`;
+            
+            // Animate card entrance
+            dom.reportCard.style.opacity = '0';
+            dom.reportCard.style.transform = 'scale(0.95) translateY(20px)';
+            
+            setTimeout(() => {
+                dom.claimText.innerText = `"${currentQ.claim}"`;
+                dom.reportCard.style.opacity = '1';
+                dom.reportCard.style.transform = 'scale(1) translateY(0)';
+            }, 300);
+        }
+
+        function handleChoice(userThinksItsTrue) {
+            const currentQ = gameState.questions[gameState.currentIndex];
+            const isCorrect = userThinksItsTrue === currentQ.truth;
+
+            if (isCorrect) {
+                gameState.score++;
+            } else {
+                loseLife();
+            }
+
+            triggerStampEffect(userThinksItsTrue, isCorrect, currentQ);
+        }
+
+        function triggerStampEffect(userThinksItsTrue, isCorrect, currentQ) {
+            // Setup Stamp
+            dom.stampOverlay.classList.remove('hidden');
+            const stampColor = userThinksItsTrue ? 'text-emerald-500 border-emerald-500' : 'text-red-600 border-red-600';
+            const stampTextString = userThinksItsTrue ? 'DECLARED TRUTH' : 'CONDEMNED TREASON';
+            
+            dom.stampText.className = `font-heading text-4xl md:text-6xl font-bold uppercase border-4 md:border-8 p-4 rounded-xl opacity-80 backdrop-blur-sm shadow-2xl ${stampColor}`;
+            dom.stampText.innerText = stampTextString;
+            
+            // Trigger Animation
+            dom.stampOverlay.style.animation = 'none';
+            dom.stampOverlay.offsetHeight; // trigger reflow
+            dom.stampOverlay.style.animation = 'stamp 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards';
+
+            // Show feedback after stamp hits
+            setTimeout(() => {
+                showFeedback(isCorrect, currentQ.explanation);
+            }, 800);
+        }
+
+        function showFeedback(isCorrect, explanationText) {
+            // Configure Modal Text
+            if (isCorrect) {
+                dom.feedbackTitle.innerText = "Excellent Deduction.";
+                dom.feedbackTitle.className = "font-heading text-3xl font-bold mb-1 text-emerald-400";
+                dom.feedbackSubtitle.innerText = "The monarch is pleased.";
+                dom.feedbackSubtitle.className = "text-sm uppercase tracking-widest font-bold mb-6 text-emerald-400/60";
+            } else {
+                dom.feedbackTitle.innerText = "A Fatal Misjudgment!";
+                dom.feedbackTitle.className = "font-heading text-3xl font-bold mb-1 text-red-500";
+                dom.feedbackSubtitle.innerText = "The monarch's paranoia grows.";
+                dom.feedbackSubtitle.className = "text-sm uppercase tracking-widest font-bold mb-6 text-red-500/60";
+            }
+
+            dom.feedbackExplanation.innerHTML = `<strong>The Reality:</strong> ${explanationText}`;
+
+            // Show Modal
+            dom.modalFeedback.classList.remove('pointer-events-none');
+            dom.modalFeedback.style.opacity = '1';
+            setTimeout(() => {
+                dom.modalContent.style.transform = 'translateY(0)';
+            }, 50);
+        }
+
+        function nextRound() {
+            // Hide Modal
+            dom.modalContent.style.transform = 'translateY(100%)';
+            dom.modalFeedback.style.opacity = '0';
+            
+            setTimeout(() => {
+                dom.modalFeedback.classList.add('pointer-events-none');
+                dom.stampOverlay.style.animation = 'none'; // reset stamp
+                dom.stampOverlay.style.opacity = '0';
+                
+                // Check win/loss
+                if (gameState.lives <= 0) {
+                    triggerEndGame(false);
+                } else if (gameState.currentIndex >= gameState.questions.length - 1) {
+                    triggerEndGame(true);
+                } else {
+                    gameState.currentIndex++;
+                    loadQuestion();
+                }
+            }, 500);
+        }
+
+        function triggerEndGame(survived) {
+            switchScreen('end');
+            
+            const totalQ = gameState.questions.length;
+            dom.endScore.innerText = `Final Score: ${gameState.score} / ${totalQ}`;
+            
+            if (!survived) {
+                dom.endIcon.innerHTML = svgs.defeat;
+                dom.endTitle.innerText = "To the Guillotine!";
+                dom.endTitle.className = "font-heading text-4xl md:text-5xl font-bold mb-4 text-red-500 drop-shadow-[0_0_15px_rgba(220,38,38,0.5)]";
+                dom.endDesc.innerText = "You have failed the monarch three times. Your head will adorn the castle gates as a warning to future Masters of Whispers.";
+            } else {
+                dom.endIcon.innerHTML = svgs.victory;
+                dom.endTitle.className = "font-heading text-4xl md:text-5xl font-bold mb-4 text-realm-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]";
+                
+                if (gameState.score === totalQ) {
+                    dom.endTitle.innerText = "The Omniscient Oracle";
+                    dom.endDesc.innerText = "Flawless! You possess a terrifying knowledge of history's darkest truths. The monarch fears you, and thus, respects you.";
+                } else if (gameState.score >= totalQ - 2) {
+                    dom.endTitle.innerText = "Master of Whispers";
+                    dom.endDesc.innerText = "A brilliant display of historical deduction. You have secured your place at the right hand of the throne.";
+                } else {
+                    dom.endTitle.innerText = "Lucky Survivor";
+                    dom.endDesc.innerText = "You barely survived the interrogation. The court whispers of your incompetence, but you keep your head... for now.";
+                }
+            }
+        }
+
+        // Initialize on load
+        window.onload = initGame;
+
+    </script>
+</body>
+</html>

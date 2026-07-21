@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <title>Lumina Valley | Premium Sunlight Puzzle Game</title>
+  <meta name="description" content="Guide the morning sunlight through the ancient village of Lumina Valley. Rotate bronze mirrors to solve beautifully crafted, cozy logic puzzles." />
+  <meta name="keywords" content="lumina valley, puzzle game, cozy web game, sunlight puzzle, logic game, premium browser games" />
+  <meta name="robots" content="index, follow" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Outfit"', 'sans-serif'],
+            serif: ['"Lora"', 'serif']
+          },
+          colors: {
+            village: {
+              50: '#FDFBF7',
+              100: '#F4EFE6',
+              200: '#E6DCC8',
+              300: '#D4C3A3',
+              400: '#BFA477',
+              500: '#A68446',
+              800: '#4A3B22',
+              900: '#2A2113'
+            },
+            sunlight: '#FBBF24',
+            bronze: '#B45309',
+            flora: '#10B981'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FDFBF7;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+      color: #4A3B22;
+    }
+    
+    /* Premium Shadows & Glass */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 10px 40px -10px rgba(74, 59, 34, 0.08), 0 1px 3px rgba(74, 59, 34, 0.05);
+    }
+    
+    .canvas-container {
+      background: #FFFFFF;
+      box-shadow: inset 0 0 40px rgba(244, 239, 230, 0.5), 0 20px 40px -15px rgba(74, 59, 34, 0.1);
+      border: 1px solid #F4EFE6;
+    }
+
+    /* Ambient Sun Glows */
+    .sun-glow-1 {
+      position: absolute; top: -10%; left: -10%; width: 50vw; height: 50vw;
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+    .sun-glow-2 {
+      position: absolute; bottom: 10%; right: -10%; width: 40vw; height: 40vw;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .smooth-transition {
+      transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    canvas {
+      image-rendering: high-quality;
+      touch-action: none; /* Prevents scrolling while tapping */
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col relative antialiased selection:bg-sunlight selection:text-white">
+
+  <!-- Ambient Light Effects -->
+  <div class="sun-glow-1"></div>
+  <div class="sun-glow-2"></div>
+
+  <!-- Minimal Header -->
+  <header class="w-full max-w-6xl mx-auto px-6 pt-8 pb-4 flex justify-between items-center z-10 relative">
+    <div class="flex items-center gap-3">
+      <div class="h-10 w-10 rounded-full bg-white shadow-sm flex items-center justify-center border border-village-100">
+        <i class="fas fa-sun text-sunlight text-lg animate-[spin_10s_linear_infinite]"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-serif font-semibold text-village-900 leading-tight">Lumina Valley</h1>
+        <p class="text-xs font-medium text-village-500 uppercase tracking-widest">The Sun Garden</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-4">
+      <div class="hidden sm:flex flex-col text-right mr-2">
+        <span class="text-xs font-bold text-village-400 uppercase tracking-widest">Chapter</span>
+        <span class="font-serif font-semibold text-village-900 text-lg leading-none">Level <span id="level-display">1</span>/5</span>
+      </div>
+      <button onclick="resetLevel()" class="h-10 px-5 rounded-full bg-white border border-village-200 text-village-800 text-sm font-semibold hover:bg-village-50 hover:shadow-md active:scale-95 smooth-transition">
+        <i class="fas fa-redo-alt mr-2 text-village-400"></i> Reset
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Game Area -->
+  <main class="flex-1 w-full max-w-6xl mx-auto px-4 lg:px-6 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 z-10 relative pb-10">
+    
+    <!-- Canvas Frame -->
+    <div class="w-full max-w-[500px] lg:max-w-[600px] aspect-square rounded-[2.5rem] canvas-container p-4 relative overflow-hidden group">
+      <!-- Decorative corner accents -->
+      <div class="absolute top-8 left-8 w-2 h-2 rounded-full bg-village-200"></div>
+      <div class="absolute top-8 right-8 w-2 h-2 rounded-full bg-village-200"></div>
+      <div class="absolute bottom-8 left-8 w-2 h-2 rounded-full bg-village-200"></div>
+      <div class="absolute bottom-8 right-8 w-2 h-2 rounded-full bg-village-200"></div>
+      
+      <canvas id="gameCanvas" class="w-full h-full rounded-[1.5rem] cursor-pointer relative z-10"></canvas>
+    </div>
+
+    <!-- Instruction & Lore Panel -->
+    <div class="w-full lg:w-80 flex flex-col gap-6">
+      
+      <div class="glass-card p-8 rounded-3xl">
+        <h2 class="font-serif text-2xl font-semibold text-village-900 mb-3">Awaken the Flora</h2>
+        <p class="text-village-800 text-sm leading-relaxed mb-6">
+          The village relies on the ancient Sun Lotus for warmth. Tap the <strong class="text-bronze">bronze reflectors</strong> to gently rotate them and guide the morning sunlight into the dormant buds.
+        </p>
+
+        <div class="space-y-4 pt-4 border-t border-village-200">
+          <div class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-sunlight shadow-sm">
+              <i class="fas fa-certificate"></i>
+            </div>
+            <span class="text-sm font-medium text-village-900">Sunlight Source</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded-md bg-orange-100 flex items-center justify-center text-bronze shadow-sm">
+              <i class="fas fa-slash"></i>
+            </div>
+            <span class="text-sm font-medium text-village-900">Bronze Reflector</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-flora shadow-sm">
+              <i class="fas fa-leaf"></i>
+            </div>
+            <span class="text-sm font-medium text-village-900">Dormant Sun Lotus</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-6 rounded-3xl flex justify-between items-center">
+        <div>
+          <div class="text-[10px] font-bold uppercase tracking-widest text-village-400 mb-1">Mirror Shifts</div>
+          <div id="moves-counter" class="font-serif text-2xl font-semibold text-village-900">0</div>
+        </div>
+        <div class="text-right">
+          <div class="text-[10px] font-bold uppercase tracking-widest text-village-400 mb-1">Garden Status</div>
+          <div id="status-text" class="text-sm font-semibold text-village-500 bg-village-100 px-3 py-1 rounded-full">Dormant</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Level Complete Modal -->
+  <div id="victoryModal" class="fixed inset-0 bg-village-900/40 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none smooth-transition px-4">
+    <div class="bg-white p-10 rounded-[2.5rem] max-w-sm w-full text-center shadow-2xl transform scale-95 smooth-transition border border-village-100" id="victoryCard">
+      <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+        <i class="fas fa-spa text-4xl text-flora"></i>
+      </div>
+      <h2 class="text-3xl font-serif font-semibold text-village-900 mb-2">Lotus Bloomed!</h2>
+      <p class="text-village-500 text-sm mb-8">The sunlight has successfully reached the core. The village warms up.</p>
+      
+      <button id="nextLevelBtn" class="w-full py-4 bg-village-900 text-white font-semibold rounded-2xl hover:bg-village-800 active:scale-95 smooth-transition text-lg shadow-xl shadow-village-900/20">
+        Next Garden <i class="fas fa-arrow-right ml-2 text-sm opacity-80"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Game Architecture
+    const GRID_SIZE = 6;
+    let cellSize = 0;
+    
+    let currentLevel = 0;
+    let moves = 0;
+    let isComplete = false;
+    let mirrors = {};
+    let laserPath = [];
+    let animatedPathLength = 0; // For smooth beam drawing
+    let targetGlow = 0; // For pulsing target
+    
+    // Smooth Animation Loop
+    let lastTime = 0;
+
+    // 5 Carefully Crafted Levels
+    const LEVELS = [
+      {
+        emitter: { x: 0, y: 2, dir: { x: 1, y: 0 } },
+        target: { x: 4, y: 4 },
+        mirrors: { '4,2': { type: '\\' } }
+      },
+      {
+        emitter: { x: 1, y: 0, dir: { x: 0, y: 1 } },
+        target: { x: 4, y: 4 },
+        mirrors: { '1,3': { type: '/' }, '4,3': { type: '/' } }
+      },
+      {
+        emitter: { x: 0, y: 1, dir: { x: 1, y: 0 } },
+        target: { x: 3, y: 5 },
+        mirrors: { '2,1': { type: '/' }, '2,4': { type: '/' }, '5,4': { type: '/' }, '5,5': { type: '\\' } }
+      },
+      {
+        emitter: { x: 5, y: 0, dir: { x: -1, y: 0 } },
+        target: { x: 0, y: 5 },
+        mirrors: { '1,0': { type: '\\' }, '1,2': { type: '/' }, '4,2': { type: '\\' }, '4,4': { type: '/' }, '0,4': { type: '\\' } }
+      },
+      {
+        emitter: { x: 0, y: 0, dir: { x: 1, y: 0 } },
+        target: { x: 2, y: 3 },
+        mirrors: { '4,0': { type: '/' }, '4,5': { type: '\\' }, '1,5': { type: '/' }, '1,1': { type: '\\' }, '5,1': { type: '/' }, '5,3': { type: '\\' } }
+      }
+    ];
+
+    function init() {
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      loadLevel(0);
+      requestAnimationFrame(gameLoop);
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.parentNode.getBoundingClientRect();
+      // Increase internal resolution for retina/high-DPI displays
+      const dpr = window.devicePixelRatio || 2;
+      
+      // We subtract padding to fit nicely inside the container
+      const padding = 32; 
+      const usableWidth = rect.width - padding;
+      
+      canvas.width = usableWidth * dpr;
+      canvas.height = usableWidth * dpr;
+      
+      // Fix visual scaling
+      canvas.style.width = `${usableWidth}px`;
+      canvas.style.height = `${usableWidth}px`;
+      
+      ctx.scale(dpr, dpr);
+      cellSize = usableWidth / GRID_SIZE;
+    }
+
+    function loadLevel(index) {
+      if (index >= LEVELS.length) {
+        alert("You have brought eternal light to Lumina Valley. Thank you for playing.");
+        index = 0;
+      }
+      
+      currentLevel = index;
+      isComplete = false;
+      moves = 0;
+      animatedPathLength = 0;
+      targetGlow = 0;
+      
+      document.getElementById('level-display').textContent = currentLevel + 1;
+      document.getElementById('moves-counter').textContent = moves;
+      
+      const statusBadge = document.getElementById('status-text');
+      statusBadge.textContent = "Dormant";
+      statusBadge.className = "text-sm font-semibold text-village-500 bg-village-100 px-3 py-1 rounded-full smooth-transition";
+
+      // Initialize mirrors with target and current angles for buttery smooth rotation
+      mirrors = {};
+      const levelMirrors = LEVELS[currentLevel].mirrors;
+      for (const key in levelMirrors) {
+        const type = levelMirrors[key].type;
+        // '/' represents an angle from bottom-left to top-right -> -45 degrees (-Math.PI/4)
+        // '\' represents an angle from top-left to bottom-right -> 45 degrees (Math.PI/4)
+        const angle = type === '/' ? -Math.PI/4 : Math.PI/4;
+        mirrors[key] = {
+          type: type,
+          currentAngle: angle,
+          targetAngle: angle
+        };
+      }
+      
+      calculateLogic();
+    }
+
+    function calculateLogic() {
+      const lvl = LEVELS[currentLevel];
+      let pos = { x: lvl.emitter.x, y: lvl.emitter.y };
+      let dir = { x: lvl.emitter.dir.x, y: lvl.emitter.dir.y };
+      
+      laserPath = [{ x: pos.x, y: pos.y }];
+      let safety = 0;
+      isComplete = false;
+
+      while (safety < 100) {
+        let nextPos = { x: pos.x + dir.x, y: pos.y + dir.y };
+        
+        if (nextPos.x < 0 || nextPos.x >= GRID_SIZE || nextPos.y < 0 || nextPos.y >= GRID_SIZE) {
+          // Calculate exact wall intersection for beautiful beam ending
+          laserPath.push({
+            x: pos.x + (dir.x * 0.5), 
+            y: pos.y + (dir.y * 0.5), 
+            isWall: true
+          });
+          break;
+        }
+
+        laserPath.push({ x: nextPos.x, y: nextPos.y });
+        pos = { x: nextPos.x, y: nextPos.y };
+
+        if (pos.x === lvl.target.x && pos.y === lvl.target.y) {
+          isComplete = true;
+          break;
+        }
+
+        const mirrorKey = `${pos.x},${pos.y}`;
+        if (mirrors[mirrorKey]) {
+          const type = mirrors[mirrorKey].type;
+          
+          if (type === '/') {
+            const dx = dir.x;
+            dir.x = -dir.y;
+            dir.y = -dx;
+          } else if (type === '\\') {
+            const dx = dir.x;
+            dir.x = dir.y;
+            dir.y = dx;
+          }
+        }
+        safety++;
+      }
+
+      if (isComplete) {
+        const statusBadge = document.getElementById('status-text');
+        statusBadge.textContent = "Blooming";
+        statusBadge.className = "text-sm font-semibold text-flora bg-emerald-100 px-3 py-1 rounded-full smooth-transition";
+        setTimeout(showVictory, 800);
+      }
+    }
+
+    // Main Render Loop (60fps)
+    function gameLoop(timestamp) {
+      const dt = timestamp - lastTime;
+      lastTime = timestamp;
+
+      updateAnimations();
+      drawScene(timestamp);
+      
+      requestAnimationFrame(gameLoop);
+    }
+
+    function updateAnimations() {
+      // 1. Smoothly interpolate mirror angles
+      for (const key in mirrors) {
+        const m = mirrors[key];
+        m.currentAngle += (m.targetAngle - m.currentAngle) * 0.15; // Spring easing
+      }
+
+      // 2. Animate the light beam tracing out
+      const totalSegments = laserPath.length - 1;
+      if (!isComplete) {
+        // If not complete, constantly reflow the beam quickly
+        animatedPathLength += (totalSegments - animatedPathLength) * 0.2;
+      } else {
+        // If complete, fill it completely
+        animatedPathLength = totalSegments;
+      }
+
+      // 3. Pulse the target flower if complete
+      if (isComplete) {
+        targetGlow += (1 - targetGlow) * 0.1;
+      } else {
+        targetGlow += (0 - targetGlow) * 0.1;
+      }
+    }
+
+    function drawScene(time) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const lvl = LEVELS[currentLevel];
+
+      // A. Draw Subtle Grid Dots
+      ctx.fillStyle = '#E6DCC8';
+      for (let i = 0; i <= GRID_SIZE; i++) {
+        for (let j = 0; j <= GRID_SIZE; j++) {
+          ctx.beginPath();
+          ctx.arc(i * cellSize, j * cellSize, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // B. Draw The Target (Sun Lotus)
+      const tX = lvl.target.x * cellSize + cellSize / 2;
+      const tY = lvl.target.y * cellSize + cellSize / 2;
+      
+      // Inner glowing aura if hit
+      if (targetGlow > 0.01) {
+        ctx.globalAlpha = targetGlow * 0.4;
+        ctx.fillStyle = '#FBBF24';
+        ctx.beginPath();
+        ctx.arc(tX, tY, cellSize * 0.4 + Math.sin(time / 200) * 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      }
+
+      // Flower petals
+      ctx.fillStyle = isComplete ? '#FBBF24' : '#10B981';
+      ctx.beginPath();
+      // Draw a specialized diamond/leaf shape
+      ctx.moveTo(tX, tY - 12);
+      ctx.quadraticCurveTo(tX + 12, tY - 12, tX + 12, tY);
+      ctx.quadraticCurveTo(tX + 12, tY + 12, tX, tY + 12);
+      ctx.quadraticCurveTo(tX - 12, tY + 12, tX - 12, tY);
+      ctx.quadraticCurveTo(tX - 12, tY - 12, tX, tY - 12);
+      ctx.fill();
+
+      // C. Draw Sunlight Beam (The Path)
+      if (laserPath.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(lvl.emitter.x * cellSize + cellSize / 2, lvl.emitter.y * cellSize + cellSize / 2);
+        
+        let segmentsDrawn = 0;
+        for (let i = 1; i < laserPath.length; i++) {
+          if (segmentsDrawn >= Math.floor(animatedPathLength)) {
+            // Draw partial final segment for smooth extension
+            const p1 = laserPath[i-1];
+            const p2 = laserPath[i];
+            const remainder = animatedPathLength - Math.floor(animatedPathLength);
+            
+            let ex = p1.x + (p2.x - p1.x) * remainder;
+            let ey = p1.y + (p2.y - p1.y) * remainder;
+            
+            // Adjust to center of cells
+            ex = ex * cellSize + cellSize / 2;
+            ey = ey * cellSize + cellSize / 2;
+            
+            ctx.lineTo(ex, ey);
+            break;
+          }
+          
+          let pX = laserPath[i].x * cellSize + cellSize / 2;
+          let pY = laserPath[i].y * cellSize + cellSize / 2;
+          ctx.lineTo(pX, pY);
+          segmentsDrawn++;
+        }
+        
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)'; // Amber/Gold
+        ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+        
+        // Inner hot core of the sunbeam
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      // D. Draw the Emitter (Sun Spring)
+      const eX = lvl.emitter.x * cellSize + cellSize / 2;
+      const eY = lvl.emitter.y * cellSize + cellSize / 2;
+      
+      ctx.fillStyle = '#FBBF24';
+      ctx.beginPath();
+      ctx.arc(eX, eY, 14, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Pulsing rings around emitter
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(eX, eY, 18 + Math.sin(time / 300) * 3, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // E. Draw Bronze Mirrors
+      Object.keys(mirrors).forEach(key => {
+        const [x, y] = key.split(',').map(Number);
+        const mirror = mirrors[key];
+        const mX = x * cellSize + cellSize / 2;
+        const mY = y * cellSize + cellSize / 2;
+        
+        ctx.save();
+        ctx.translate(mX, mY);
+        ctx.rotate(mirror.currentAngle);
+        
+        // Draw bronze rounded plank
+        const length = cellSize * 0.7;
+        const thickness = 8;
+        
+        ctx.fillStyle = '#A68446'; // Base bronze
+        ctx.beginPath();
+        ctx.roundRect(-thickness/2, -length/2, thickness, length, 4);
+        ctx.fill();
+        
+        // Specular highlight for premium 3D feel
+        ctx.fillStyle = '#D4C3A3';
+        ctx.beginPath();
+        ctx.roundRect(-thickness/2 + 1, -length/2 + 1, thickness - 2, length - 2, 3);
+        ctx.fill();
+        
+        // Darker edge
+        ctx.fillStyle = '#4A3B22';
+        ctx.beginPath();
+        ctx.roundRect(thickness/2 - 2, -length/2 + 1, 1, length - 2, 1);
+        ctx.fill();
+
+        ctx.restore();
+      });
+    }
+
+    // Interaction Handling
+    canvas.addEventListener('click', (e) => {
+      if (isComplete) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      // Adjust for padding and grid mapping
+      const cellX = Math.floor(clickX / cellSize);
+      const cellY = Math.floor(clickY / cellSize);
+      const key = `${cellX},${cellY}`;
+
+      if (mirrors[key]) {
+        moves++;
+        document.getElementById('moves-counter').textContent = moves;
+        
+        // Change Type and update Target Angle for animation
+        if (mirrors[key].type === '/') {
+          mirrors[key].type = '\\';
+          mirrors[key].targetAngle += Math.PI / 2; // Rotate 90 degrees smoothly
+        } else {
+          mirrors[key].type = '/';
+          mirrors[key].targetAngle += Math.PI / 2;
+        }
+        
+        // Reset beam animation to flow out again
+        animatedPathLength = 0;
+        calculateLogic();
+      }
+    });
+
+    // UI Modals
+    function showVictory() {
+      const modal = document.getElementById('victoryModal');
+      const card = document.getElementById('victoryCard');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      card.classList.remove('scale-95');
+    }
+
+    function hideVictory() {
+      const modal = document.getElementById('victoryModal');
+      const card = document.getElementById('victoryCard');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      card.classList.add('scale-95');
+    }
+
+    document.getElementById('nextLevelBtn').addEventListener('click', () => {
+      hideVictory();
+      setTimeout(() => loadLevel(currentLevel + 1), 300); // Wait for modal animation
+    });
+
+    function resetLevel() {
+      loadLevel(currentLevel);
+    }
+
+    // Boot
+    window.onload = init;
+  </script>
+</body>
+</html>

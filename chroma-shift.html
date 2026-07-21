@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chroma Shift | Premium Logic Puzzle</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #080c14;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Premium Glow Effects */
+    .glow-cyan {
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), inset 0 0 10px rgba(6, 182, 212, 0.2);
+    }
+    .glow-magenta {
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.4), inset 0 0 10px rgba(236, 72, 153, 0.2);
+    }
+    .glow-dark {
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    /* Custom Bezier Transitions for that Apple-like fluid feel */
+    .tile-transition {
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .ripple-active {
+      transform: scale(0.92);
+    }
+
+    /* Subtle background grid pattern */
+    .bg-pattern {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+<body class="font-sans text-slate-200 min-h-screen flex flex-col justify-between bg-pattern">
+
+  <!-- Top Status bar -->
+  <header class="w-full max-w-md mx-auto px-6 pt-6 flex justify-between items-center z-10">
+    <div class="flex items-center gap-2">
+      <div class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></div>
+      <span class="text-xs font-bold tracking-widest uppercase text-slate-400">Chroma Shift</span>
+    </div>
+    <button onclick="resetLevel()" class="text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full backdrop-blur-md transition-all">
+      Reset Level
+    </button>
+  </header>
+
+  <!-- Main Game Container -->
+  <main class="w-full max-w-md mx-auto px-4 flex flex-col items-center justify-center my-auto">
+    
+    <!-- Scoreboard / Details Card -->
+    <div class="w-full bg-slate-900/60 border border-white/5 rounded-2xl p-4 mb-6 backdrop-blur-xl flex justify-between items-center shadow-2xl">
+      <div>
+        <div class="text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-0.5">Current Target</div>
+        <div class="flex items-center gap-2">
+          <div id="target-indicator" class="w-4 h-4 rounded-md tile-transition glow-cyan bg-cyan-500"></div>
+          <span id="target-text" class="text-sm font-bold text-white">Match All</span>
+        </div>
+      </div>
+      
+      <div class="text-center">
+        <div class="text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-0.5">Level</div>
+        <div id="level-display" class="font-mono text-xl font-bold text-white">01/05</div>
+      </div>
+
+      <div class="text-right">
+        <div class="text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-0.5">Moves Remaining</div>
+        <div id="moves-display" class="font-mono text-xl font-bold text-cyan-400">12</div>
+      </div>
+    </div>
+
+    <!-- Move Energy Bar -->
+    <div class="w-full h-1 bg-slate-800 rounded-full mb-6 overflow-hidden">
+      <div id="energy-bar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 w-full transition-all duration-300"></div>
+    </div>
+
+    <!-- The Grid Frame -->
+    <div class="w-full aspect-square bg-slate-950/80 p-4 rounded-3xl border border-white/10 shadow-2xl relative">
+      <div id="grid-container" class="grid grid-cols-4 grid-rows-4 gap-3 h-full w-full">
+        <!-- Generated Dynamically via JS -->
+      </div>
+    </div>
+
+    <!-- Quick Hint text -->
+    <p class="text-xs text-center text-slate-500 mt-4 max-w-xs">
+      Clicking a tile flips its color and shifts its direct neighbors. Clear the board to advance.
+    </p>
+  </main>
+
+  <!-- Modals (Win / Lose / Welcome) -->
+  <div id="modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 px-4">
+    <div id="modal-card" class="bg-slate-900 border border-white/10 p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl transform scale-90 transition-all duration-300">
+      <h2 id="modal-title" class="text-2xl font-black text-white mb-2">Chroma Shift</h2>
+      <p id="modal-desc" class="text-sm text-slate-400 mb-6">Can you fix the system alignment?</p>
+      <button id="modal-btn" class="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-slate-100 active:scale-95 transition-all text-sm tracking-wide uppercase">
+        Start Level 1
+      </button>
+    </div>
+  </div>
+
+  <footer class="w-full text-center py-6 text-[10px] tracking-widest uppercase text-slate-600">
+    QuizRealm Premium Interactive Engine
+  </footer>
+
+  <!-- Game Logic -->
+  <script>
+    // System Configurations
+    const STATES = {
+      0: { bg: 'bg-slate-800/40', glow: 'glow-dark', border: 'border-white/5' },       // Off / Empty
+      1: { bg: 'bg-cyan-500', glow: 'glow-cyan', border: 'border-cyan-400/30' },       // Cyan Glow
+      2: { bg: 'bg-pink-500', glow: 'glow-magenta', border: 'border-pink-400/30' }     // Magenta Glow
+    };
+
+    // Pre-baked puzzles calibrated for increasing difficulty
+    const LEVELS = [
+      {
+        target: 1, maxMoves: 4,
+        grid: [
+          [1,0,0,1],
+          [0,0,0,0],
+          [0,0,0,0],
+          [1,0,0,1]
+        ]
+      },
+      {
+        target: 2, maxMoves: 6,
+        grid: [
+          [0,2,2,0],
+          [2,0,0,2],
+          [2,0,0,2],
+          [0,2,2,0]
+        ]
+      },
+      {
+        target: 1, maxMoves: 8,
+        grid: [
+          [1,1,1,1],
+          [1,0,0,1],
+          [1,0,0,1],
+          [1,1,1,1]
+        ]
+      },
+      {
+        target: 2, maxMoves: 10,
+        grid: [
+          [2,1,1,2],
+          [1,2,2,1],
+          [1,2,2,1],
+          [2,1,1,2]
+        ]
+      },
+      {
+        target: 1, maxMoves: 12,
+        grid: [
+          [0,1,0,1],
+          [1,0,1,0],
+          [0,1,0,1],
+          [1,0,1,0]
+        ]
+      }
+    ];
+
+    let currentLevelIndex = 0;
+    let gridState = [];
+    let movesRemaining = 0;
+    let totalLevelMoves = 0;
+    let isTransitioning = false;
+
+    // Element Selectors
+    const gridContainer = document.getElementById('grid-container');
+    const targetIndicator = document.getElementById('target-indicator');
+    const levelDisplay = document.getElementById('level-display');
+    const movesDisplay = document.getElementById('moves-display');
+    const energyBar = document.getElementById('energy-bar');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalCard = document.getElementById('modal-card');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalBtn = document.getElementById('modal-btn');
+
+    // Initialize UI
+    window.onload = () => {
+      showModal('Welcome to Chroma Shift', 'Shift the entire board into a single solid color grid. Mind your energy limits.', 'Begin System', () => loadLevel(0));
+    };
+
+    function showModal(title, desc, btnText, callback) {
+      modalTitle.textContent = title;
+      modalDesc.textContent = desc;
+      modalBtn.textContent = btnText;
+      
+      modalOverlay.classList.remove('opacity-0', 'pointer-events-none');
+      modalCard.classList.remove('scale-90');
+      
+      modalBtn.onclick = () => {
+        modalOverlay.classList.add('opacity-0', 'pointer-events-none');
+        modalCard.classList.add('scale-90');
+        if(callback) callback();
+      };
+    }
+
+    function loadLevel(index) {
+      if(index >= LEVELS.length) {
+        showModal('System Aligned', 'You have dominated every single node array successfully.', 'Replay Engine', () => loadLevel(0));
+        return;
+      }
+
+      currentLevelIndex = index;
+      const data = LEVELS[index];
+      
+      // Deep clone configuration state
+      gridState = JSON.parse(JSON.stringify(data.grid));
+      movesRemaining = data.maxMoves;
+      totalLevelMoves = data.maxMoves;
+      isTransitioning = false;
+
+      // Render details
+      levelDisplay.textContent = `${String(index + 1).padStart(2, '0')}/${String(LEVELS.length).padStart(2, '0')}`;
+      targetIndicator.className = `w-4 h-4 rounded-md tile-transition ${STATES[data.target].bg} ${STATES[data.target].glow}`;
+      
+      updateStatusUI();
+      buildGridDOM();
+    }
+
+    function buildGridDOM() {
+      gridContainer.innerHTML = '';
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          const stateValue = gridState[r][c];
+          const tile = document.createElement('button');
+          tile.id = `tile-${r}-${c}`;
+          tile.className = `w-full h-full rounded-2xl border tile-transition ${STATES[stateValue].bg} ${STATES[stateValue].glow} ${STATES[stateValue].border}`;
+          
+          // Desktop pointer/Mobile touch unification
+          tile.addEventListener('click', () => handleTileClick(r, c));
+          gridContainer.appendChild(tile);
+        }
+      }
+    }
+
+    function handleTileClick(row, col) {
+      if (movesRemaining <= 0 || isTransitioning) return;
+
+      movesRemaining--;
+      updateStatusUI();
+      
+      // Dynamic cascading waves using subtle layout delays
+      triggerShift(row, col, 0);                 // Origin node instant shifts
+      triggerShift(row - 1, col, 80);            // Up neighbor
+      triggerShift(row + 1, col, 80);            // Down neighbor
+      triggerShift(row, col - 1, 80);            // Left neighbor
+      triggerShift(row, col + 1, 80);            // Right neighbor
+
+      // Evaluate system alignment check post ripple execution
+      setTimeout(() => {
+        checkBoardState();
+      }, 300);
+    }
+
+    function triggerShift(r, c, delay) {
+      if (r < 0 || r >= 4 || c < 0 || c >= 4) return;
+
+      setTimeout(() => {
+        const currentVal = gridState[r][c];
+        // Rotate through available state indexes (0 -> 1 -> 2 -> 0)
+        const nextVal = (currentVal + 1) % 3;
+        gridState[r][c] = nextVal;
+
+        const tileDOM = document.getElementById(`tile-${r}-${c}`);
+        if (tileDOM) {
+          tileDOM.className = `w-full h-full rounded-2xl border tile-transition ripple-active ${STATES[nextVal].bg} ${STATES[nextVal].glow} ${STATES[nextVal].border}`;
+          
+          // Restore native sizing post bounce execution
+          setTimeout(() => {
+            tileDOM.classList.remove('ripple-active');
+          }, 150);
+        }
+      }, delay);
+    }
+
+    function updateStatusUI() {
+      movesDisplay.textContent = movesRemaining;
+      
+      // Calculate dynamic bar percentage
+      const percent = (movesRemaining / totalLevelMoves) * 100;
+      energyBar.style.width = `${percent}%`;
+
+      // Color profile tracking for critical exhaustion
+      if (percent <= 25) {
+        movesDisplay.className = "font-mono text-xl font-bold text-red-500 animate-pulse";
+        energyBar.className = "h-full bg-gradient-to-r from-red-500 to-pink-600 w-full transition-all duration-300";
+      } else {
+        movesDisplay.className = "font-mono text-xl font-bold text-cyan-400";
+        energyBar.className = "h-full bg-gradient-to-r from-cyan-500 to-blue-500 w-full transition-all duration-300";
+      }
+    }
+
+    function checkBoardState() {
+      const targetColor = LEVELS[currentLevelIndex].target;
+      let matchesTarget = true;
+
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          if (gridState[r][c] !== targetColor) {
+            matchesTarget = false;
+            break;
+          }
+        }
+      }
+
+      if (matchesTarget) {
+        isTransitioning = true;
+        setTimeout(() => {
+          showModal('Array Synchronized', `Superb calculation. Node setup ${currentLevelIndex + 1} cleared perfectly.`, 'Next Phase', () => {
+            loadLevel(currentLevelIndex + 1);
+          });
+        }, 200);
+        return;
+      }
+
+      if (movesRemaining === 0) {
+        isTransitioning = true;
+        setTimeout(() => {
+          showModal('Exhaustion State', 'System processing capacities depleted before absolute synchronization occurred.', 'Retry Module', () => {
+            loadLevel(currentLevelIndex);
+          });
+        }, 200);
+      }
+    }
+
+    function resetLevel() {
+      loadLevel(currentLevelIndex);
+    }
+  </script>
+</body>
+</html>

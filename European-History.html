@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizRealm: The Forger's Dilemma</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display (Historical/Premium) & Inter (Clean UI) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        quizrealm: {
+                            bg: '#0a0a0c', // Deep midnight black
+                            panel: 'rgba(255, 255, 255, 0.03)',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            gold: '#d97706', // amber-600
+                            goldLight: '#fcd34d', // amber-300
+                            crimson: '#9f1239', // rose-800
+                        }
+                    },
+                    animation: {
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a0c;
+            background-image: radial-gradient(circle at 50% 0%, #1f1f26 0%, #0a0a0c 60%);
+            background-attachment: fixed;
+            color: #f8fafc;
+        }
+        
+        /* Premium Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Hide scrollbar but keep functionality */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased overflow-x-hidden selection:bg-amber-600/30">
+
+    <!-- Navbar -->
+    <nav class="w-full p-6 flex justify-between items-center relative z-10">
+        <div class="font-serif text-2xl font-bold tracking-wider text-white">
+            Quiz<span class="text-quizrealm-gold">Realm</span>
+        </div>
+        <div id="score-display" class="hidden glass-panel px-6 py-2 rounded-full text-quizrealm-goldLight font-bold tracking-widest transition-all duration-500 ease-out">
+            ARCHIVE RATING: <span id="current-score">1000</span>
+        </div>
+    </nav>
+
+    <!-- Main Game Container -->
+    <main id="app-container" class="flex-grow flex items-center justify-center p-4 sm:p-8 w-full max-w-4xl mx-auto transition-opacity duration-500 ease-out opacity-0">
+        <!-- Content injected via JS -->
+    </main>
+
+    <script>
+        /**
+         * GAME DATA: The 5 Difficult Scenarios
+         * Mechanic: Two Truths and a Lie.
+         */
+        const scenarios = [
+            {
+                category: "The Borgia Papacy",
+                era: "Renaissance Italy (1492–1503)",
+                statements: [
+                    { text: "Pope Alexander VI hosted the infamous 'Banquet of Chestnuts' in the Vatican, featuring fifty courtesans.", isLie: false },
+                    { text: "Cesare Borgia briefly employed Leonardo da Vinci as his chief military architect and engineer.", isLie: false },
+                    { text: "Lucrezia Borgia assassinated her second husband using 'cantarella' poison hidden within a hollow ring.", isLie: true, explanation: "A sensational historical myth. Her second husband, Alfonso of Aragon, was murdered by Cesare's thugs. There is no historical evidence Lucrezia ever poisoned anyone." }
+                ]
+            },
+            {
+                category: "Defenestrations of Prague",
+                era: "Bohemia (1419 & 1618)",
+                statements: [
+                    { text: "The victims of the 1618 defenestration survived a 70-foot fall, allegedly saved by landing in a massive pile of dung.", isLie: false },
+                    { text: "The first major defenestration in 1419 directly sparked the Hussite Wars, which raged for over 15 years.", isLie: false },
+                    { text: "The perpetrators of the 1618 defenestration were immediately captured and executed by the Holy Roman Emperor.", isLie: true, explanation: "False. They were not immediately executed; instead, their actions successfully sparked the Bohemian Revolt and the devastating Thirty Years' War." }
+                ]
+            },
+            {
+                category: "The Reign of Terror",
+                era: "French Revolution (1793–1794)",
+                statements: [
+                    { text: "Maximilien Robespierre attempted suicide by shooting himself in the jaw the night before his execution.", isLie: false },
+                    { text: "The revolutionary government introduced a new calendar featuring 10-day weeks specifically to eliminate Sundays.", isLie: false },
+                    { text: "Marie Antoinette's final words before the guillotine were the defiant phrase: 'Let them eat cake.'", isLie: true, explanation: "A total fabrication. The phrase predates her reign. Her actual last words were an apology to the executioner after accidentally stepping on his foot: 'Pardon me, sir, I meant not to do it.'" }
+                ]
+            },
+            {
+                category: "The Fall of Constantinople",
+                era: "Byzantine Empire (1453)",
+                statements: [
+                    { text: "To bypass the defensive chain blocking the Golden Horn, the Ottomans rolled their warships overland on greased logs.", isLie: false },
+                    { text: "The final Emperor, Constantine XI, discarded his imperial regalia and charged into hand-to-hand combat; his body was never found.", isLie: false },
+                    { text: "The city's massive Theodosian Walls were ultimately breached via a Trojan Horse-style wooden siege tower.", isLie: true, explanation: "False. The walls were pulverized by massive cannons (like Orban's bombard), and the fatal breach occurred when Ottomans found a small, unsecured postern gate called the Kerkoporta." }
+                ]
+            },
+            {
+                category: "The Varangian Guard",
+                era: "Byzantine Empire (10th–14th Century)",
+                statements: [
+                    { text: "The Varangian Guard served as the elite, fiercely loyal personal bodyguards of the Byzantine Emperors.", isLie: false },
+                    { text: "Harald Hardrada, a future King of Norway, amassed immense wealth serving as a commander of the Guard.", isLie: false },
+                    { text: "To ensure loyalty, the Guard was exclusively composed of ethnic Swedes until the empire's collapse.", isLie: true, explanation: "False. While originally Rus and Scandinavian, the Guard became heavily Anglo-Saxon after the Norman Conquest of England in 1066." }
+                ]
+            }
+        ];
+
+        /**
+         * ROBUST STATE MANAGEMENT
+         */
+        const gameState = {
+            currentScreen: 'intro', // intro, wager, play, result, end
+            currentRound: 0,
+            score: 1000,
+            currentWager: 0,
+            isAnimating: false,
+            activeStatements: [] // Shuffled statements for the current round
+        };
+
+        // Utility: Fisher-Yates Shuffle
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // DOM Elements
+        const appContainer = document.getElementById('app-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const currentScoreEl = document.getElementById('current-score');
+
+        /**
+         * ENGINE: Screen Transition & Rendering
+         */
+        function transitionTo(screenName) {
+            if (gameState.isAnimating) return;
+            gameState.isAnimating = true;
+
+            // Fade out
+            appContainer.classList.remove('opacity-100');
+            appContainer.classList.add('opacity-0');
+
+            setTimeout(() => {
+                gameState.currentScreen = screenName;
+                renderScreen();
+                
+                // Fade in
+                appContainer.classList.remove('opacity-0');
+                appContainer.classList.add('opacity-100');
+                gameState.isAnimating = false;
+            }, 500); // matches transition-opacity duration
+        }
+
+        function updateScore(amount) {
+            const startScore = gameState.score;
+            gameState.score += amount;
+            
+            // Counter Animation
+            let current = startScore;
+            const increment = amount > 0 ? Math.ceil(amount / 20) : Math.floor(amount / 20);
+            const timer = setInterval(() => {
+                current += increment;
+                if ((amount > 0 && current >= gameState.score) || (amount < 0 && current <= gameState.score)) {
+                    current = gameState.score;
+                    clearInterval(timer);
+                }
+                currentScoreEl.innerText = current;
+            }, 25);
+
+            // Pulse effect
+            scoreDisplay.classList.add('scale-110', amount > 0 ? 'text-green-400' : 'text-quizrealm-crimson');
+            setTimeout(() => {
+                scoreDisplay.classList.remove('scale-110', 'text-green-400', 'text-quizrealm-crimson');
+            }, 500);
+        }
+
+        /**
+         * VIEWS
+         */
+        function renderScreen() {
+            let html = '';
+
+            switch (gameState.currentScreen) {
+                case 'intro':
+                    scoreDisplay.classList.add('hidden');
+                    html = `
+                        <div class="glass-panel p-10 md:p-14 rounded-3xl w-full max-w-2xl text-center relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-gradient-to-br from-quizrealm-gold/5 to-transparent opacity-50"></div>
+                            <h1 class="font-serif text-4xl md:text-5xl font-bold mb-4 text-white relative z-10">The Forger's Dilemma</h1>
+                            <p class="text-gray-400 mb-8 text-lg leading-relaxed relative z-10">
+                                You are the Royal Archivist. History is being rewritten by forgers. 
+                                In each dossier, you will face three historical statements. Two are absolute truth. <strong class="text-quizrealm-goldLight">One is a lie.</strong>
+                                Wager your reputation (points), deduce the forgery, and protect the QuizRealm archives.
+                            </p>
+                            <button onclick="startGame()" class="relative z-10 w-full md:w-auto bg-gradient-to-r from-amber-700 to-amber-500 text-white font-bold py-4 px-12 rounded-xl text-lg shadow-[0_4px_20px_rgba(217,119,6,0.3)] hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] transition-all duration-500 ease-out hover:-translate-y-1 active:scale-95 border border-amber-400/30">
+                                Enter the Archives
+                            </button>
+                        </div>
+                    `;
+                    break;
+
+                case 'wager':
+                    scoreDisplay.classList.remove('hidden');
+                    currentScoreEl.innerText = gameState.score;
+                    const scenario = scenarios[gameState.currentRound];
+                    const w10 = Math.floor(gameState.score * 0.1);
+                    const w50 = Math.floor(gameState.score * 0.5);
+                    const w100 = gameState.score;
+
+                    html = `
+                        <div class="w-full max-w-2xl animate-fade-in-up">
+                            <div class="text-quizrealm-gold text-sm font-bold tracking-widest mb-2 uppercase">Dossier ${gameState.currentRound + 1} of ${scenarios.length}</div>
+                            <h2 class="font-serif text-3xl md:text-4xl font-bold mb-2">${scenario.category}</h2>
+                            <p class="text-gray-400 italic mb-10 border-b border-quizrealm-border pb-6">${scenario.era}</p>
+                            
+                            <h3 class="text-xl mb-6 font-medium">How confident are you in this era? Wager your points:</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <button onclick="setWager(${w10})" class="glass-panel p-6 rounded-xl hover:bg-white/5 hover:border-quizrealm-gold/50 transition-all duration-300 active:scale-95 group">
+                                    <div class="text-gray-400 text-sm mb-1">Cautious (10%)</div>
+                                    <div class="text-2xl font-bold text-white group-hover:text-quizrealm-gold transition-colors duration-300">${w10} pts</div>
+                                </button>
+                                <button onclick="setWager(${w50})" class="glass-panel p-6 rounded-xl hover:bg-white/5 hover:border-quizrealm-gold/50 transition-all duration-300 active:scale-95 group">
+                                    <div class="text-gray-400 text-sm mb-1">Confident (50%)</div>
+                                    <div class="text-2xl font-bold text-white group-hover:text-quizrealm-gold transition-colors duration-300">${w50} pts</div>
+                                </button>
+                                <button onclick="setWager(${w100})" class="glass-panel p-6 rounded-xl hover:bg-quizrealm-crimson/20 hover:border-quizrealm-crimson/50 transition-all duration-300 active:scale-95 group">
+                                    <div class="text-gray-400 text-sm mb-1">All In (100%)</div>
+                                    <div class="text-2xl font-bold text-quizrealm-crimson group-hover:text-red-400 transition-colors duration-300">${w100} pts</div>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'play':
+                    const playScenario = scenarios[gameState.currentRound];
+                    
+                    html = `
+                        <div class="w-full max-w-3xl animate-fade-in-up">
+                            <div class="flex justify-between items-end mb-8 border-b border-quizrealm-border pb-4">
+                                <div>
+                                    <div class="text-quizrealm-gold text-sm font-bold tracking-widest uppercase">${playScenario.category}</div>
+                                    <h2 class="font-serif text-2xl mt-1">Identify the Forgery</h2>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-gray-500 text-xs uppercase tracking-wider">Current Wager</div>
+                                    <div class="text-xl font-bold text-quizrealm-goldLight">${gameState.currentWager} pts</div>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                ${gameState.activeStatements.map((stmt, index) => `
+                                    <div onclick="selectStatement(${index})" id="stmt-${index}" class="glass-panel p-5 md:p-6 rounded-xl cursor-pointer transition-all duration-500 hover:bg-white/10 hover:border-quizrealm-gold/40 hover:-translate-y-1 active:scale-[0.98] relative overflow-hidden group">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-transparent group-hover:bg-quizrealm-gold transition-colors duration-300"></div>
+                                        <p class="text-lg text-gray-200 leading-relaxed pr-6">${stmt.text}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'result':
+                    const resultScenario = scenarios[gameState.currentRound];
+                    const selectedStmt = gameState.activeStatements[gameState.selectedAnswer];
+                    const isWin = selectedStmt.isLie;
+                    const lieStmt = gameState.activeStatements.find(s => s.isLie);
+
+                    html = `
+                        <div class="w-full max-w-2xl glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden animate-fade-in-up border ${isWin ? 'border-green-500/30' : 'border-quizrealm-crimson/30'}">
+                            <div class="absolute inset-0 bg-gradient-to-b ${isWin ? 'from-green-500/10' : 'from-quizrealm-crimson/10'} to-transparent"></div>
+                            
+                            <div class="relative z-10 text-center">
+                                <h2 class="font-serif text-4xl mb-2 ${isWin ? 'text-green-400' : 'text-quizrealm-crimson'}">
+                                    ${isWin ? 'Forgery Detected' : 'Deceived'}
+                                </h2>
+                                <div class="text-xl font-bold mb-8">
+                                    ${isWin ? `+${gameState.currentWager} Points` : `-${gameState.currentWager} Points`}
+                                </div>
+                                
+                                <div class="bg-black/30 rounded-xl p-6 text-left mb-8 border border-white/5">
+                                    <p class="text-sm text-gray-400 mb-2 uppercase tracking-wider">The Historical Truth:</p>
+                                    <p class="text-lg text-white leading-relaxed font-serif italic">"${lieStmt.explanation}"</p>
+                                </div>
+                                
+                                <button onclick="nextRound()" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold py-3 px-10 rounded-xl transition-all duration-300 active:scale-95">
+                                    ${gameState.currentRound < scenarios.length - 1 && gameState.score > 0 ? 'Next Dossier' : 'View Final Assessment'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'end':
+                    let rank = "Gullible Peasant";
+                    let rankColor = "text-gray-500";
+                    if (gameState.score >= 3000) { rank = "Master Archivist"; rankColor = "text-quizrealm-goldLight"; }
+                    else if (gameState.score >= 1500) { rank = "Senior Scholar"; rankColor = "text-blue-400"; }
+                    else if (gameState.score > 0) { rank = "Apprentice Historian"; rankColor = "text-green-400"; }
+                    else { rankColor = "text-quizrealm-crimson"; }
+
+                    html = `
+                        <div class="glass-panel p-10 md:p-14 rounded-3xl w-full max-w-2xl text-center relative overflow-hidden animate-fade-in-up">
+                            <div class="text-gray-400 uppercase tracking-widest mb-2">Final Evaluation</div>
+                            <h2 class="font-serif text-5xl font-bold mb-6 text-white">Archive Sealed</h2>
+                            
+                            <div class="my-10">
+                                <div class="text-sm text-gray-500 uppercase mb-1">Final Score</div>
+                                <div class="text-6xl font-bold text-white mb-4 tracking-tight">${gameState.score}</div>
+                                <div class="text-sm text-gray-500 uppercase mb-1">Title Granted</div>
+                                <div class="text-2xl font-serif italic ${rankColor}">${rank}</div>
+                            </div>
+                            
+                            <button onclick="resetGame()" class="bg-gradient-to-r from-gray-700 to-gray-600 hover:from-quizrealm-gold hover:to-amber-600 text-white font-bold py-3 px-10 rounded-xl transition-all duration-500 active:scale-95 shadow-lg">
+                                Re-enter the Archives
+                            </button>
+                        </div>
+                    `;
+                    break;
+            }
+
+            appContainer.innerHTML = html;
+        }
+
+        /**
+         * ACTIONS
+         */
+        window.startGame = () => {
+            gameState.currentRound = 0;
+            gameState.score = 1000;
+            transitionTo('wager');
+        };
+
+        window.setWager = (amount) => {
+            if (gameState.isAnimating) return;
+            gameState.currentWager = amount;
+            
+            // Prepare and shuffle statements for the play screen
+            gameState.activeStatements = shuffleArray(scenarios[gameState.currentRound].statements);
+            
+            transitionTo('play');
+        };
+
+        window.selectStatement = (index) => {
+            if (gameState.isAnimating) return;
+            gameState.isAnimating = true; // Lock input
+            gameState.selectedAnswer = index;
+            
+            const selectedEl = document.getElementById(`stmt-${index}`);
+            const isWin = gameState.activeStatements[index].isLie;
+
+            // Visual feedback before transition
+            if (isWin) {
+                selectedEl.classList.remove('border-white/10', 'hover:border-quizrealm-gold/40');
+                selectedEl.classList.add('border-green-500', 'bg-green-500/20', 'shadow-[0_0_20px_rgba(34,197,94,0.3)]');
+            } else {
+                selectedEl.classList.remove('border-white/10', 'hover:border-quizrealm-gold/40');
+                selectedEl.classList.add('border-quizrealm-crimson', 'bg-quizrealm-crimson/20', 'animate-shake');
+                
+                // Highlight the actual correct answer (the lie)
+                const correctIndex = gameState.activeStatements.findIndex(s => s.isLie);
+                const correctEl = document.getElementById(`stmt-${correctIndex}`);
+                if(correctEl) {
+                    correctEl.classList.add('border-green-500/50', 'bg-green-500/10');
+                }
+            }
+
+            // Wait for user to process visual feedback before moving to result screen
+            setTimeout(() => {
+                gameState.isAnimating = false;
+                if (isWin) {
+                    updateScore(gameState.currentWager);
+                } else {
+                    updateScore(-gameState.currentWager);
+                }
+                transitionTo('result');
+            }, 1200);
+        };
+
+        window.nextRound = () => {
+            if (gameState.score <= 0) {
+                transitionTo('end');
+                return;
+            }
+            
+            gameState.currentRound++;
+            if (gameState.currentRound >= scenarios.length) {
+                transitionTo('end');
+            } else {
+                transitionTo('wager');
+            }
+        };
+
+        window.resetGame = () => {
+            gameState.currentRound = 0;
+            gameState.score = 1000;
+            transitionTo('intro');
+        };
+
+        // Initialize
+        renderScreen();
+        setTimeout(() => {
+            appContainer.classList.remove('opacity-0');
+            appContainer.classList.add('opacity-100');
+        }, 100);
+
+    </script>
+</body>
+</html>
