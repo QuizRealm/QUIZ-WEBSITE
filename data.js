@@ -5624,6 +5624,76 @@ const rickandmortyBank = {
     { question: "What is the name of the planet where Rick uses the bathroom?", options: ["The Shy Pooper planet", "Toilet World", "Privacy Planet", "Restroom Realm"], correctIndex: 0 }
   ]
 };
+const syrianHistoryBank = {
+  easy: [
+    { question: "What is the capital city of Syria?", options: ["Damascus", "Aleppo", "Homs", "Latakia"], correctIndex: 0 },
+    { question: "The ancient city of Palmyra, a UNESCO World Heritage site, is located in which modern country?", options: ["Syria", "Egypt", "Greece", "Iraq"], correctIndex: 0 },
+    { question: "Which major empire, with its capital at Damascus, ruled Syria in the 7th and 8th centuries?", options: ["Umayyad Caliphate", "Roman Empire", "Ottoman Empire", "Persian Empire"], correctIndex: 0 },
+    { question: "The city of Aleppo is famous for its ancient covered market, also known as a what?", options: ["Souk", "Agora", "Forum", "Bazaar"], correctIndex: 0 },
+    { question: "Which European power controlled Syria under a mandate after World War I?", options: ["France", "Great Britain", "Italy", "Germany"], correctIndex: 0 },
+    { question: "The Great Mosque of Damascus is also known by what name?", options: ["Umayyad Mosque", "Al-Azhar Mosque", "Blue Mosque", "Hagia Sophia"], correctIndex: 0 },
+    { question: "Which sea borders Syria to the west?", options: ["Mediterranean Sea", "Red Sea", "Black Sea", "Caspian Sea"], correctIndex: 0 },
+    { question: "The ancient city of Ugarit, located on the Syrian coast, is famous for developing one of the first known what?", options: ["Alphabets", "Currencies", "Legal codes", "Wheeled vehicles"], correctIndex: 0 },
+    { question: "Which famous Crusader castle is a major historical site in Syria?", options: ["Krak des Chevaliers", "Neuschwanstein", "Edinburgh Castle", "The Tower of London"], correctIndex: 0 },
+    { question: "What is the name of the river that flows through Damascus?", options: ["Barada", "Euphrates", "Tigris", "Nile"], correctIndex: 0 },
+    { question: "Which empire ruled Syria for 400 years until the end of World War I?", options: ["Ottoman Empire", "Byzantine Empire", "Mongol Empire", "British Empire"], correctIndex: 0 },
+    { question: "The historical region that includes Syria, Lebanon, and Israel is often called what?", options: ["The Levant", "Mesopotamia", "Anatolia", "The Maghreb"], correctIndex: 0 },
+    { question: "Which famous queen ruled the Palmyrene Empire from Syria?", options: ["Zenobia", "Cleopatra", "Boudica", "Nefertiti"], correctIndex: 0 },
+    { question: "In which decade did Syria gain full independence?", options: ["1940s", "1920s", "1960s", "1980s"], correctIndex: 0 },
+    { question: "What is the largest city in Syria by pre-war population?", options: ["Aleppo", "Damascus", "Homs", "Hama"], correctIndex: 0 },
+    { question: "The Euphrates River flows through Syria and which other major country?", options: ["Iraq", "Egypt", "Iran", "Saudi Arabia"], correctIndex: 0 },
+    { question: "Which biblical figure is said to have converted to Christianity on the road to Damascus?", options: ["Saint Paul", "Saint Peter", "John the Baptist", "Moses"], correctIndex: 0 },
+    { question: "What is the dominant religion in Syria?", options: ["Islam", "Christianity", "Judaism", "Zoroastrianism"], correctIndex: 0 },
+    { question: "The Citadel of Aleppo is an example of what type of structure?", options: ["A medieval fortress", "A modern skyscraper", "An ancient temple", "A Roman aqueduct"], correctIndex: 0 },
+    { question: "Which currency is used in Syria?", options: ["Syrian Pound", "Dinar", "Lira", "Riyal"], correctIndex: 0 }
+  ],
+  medium: [
+    { question: "Which ancient civilization, centered in Syria, is known for its extensive archive of cuneiform tablets?", options: ["Ebla", "Sumer", "Akkad", "Babylon"], correctIndex: 0 },
+    { question: "Who was the first president of an independent Syria in 1946?", options: ["Shukri al-Quwatli", "Hafez al-Assad", "Adib Shishakli", "Hashim al-Atassi"], correctIndex: 0 },
+    { question: "The 'Street Called Straight' is a famous historical road in which Syrian city?", options: ["Damascus", "Palmyra", "Bosra", "Aleppo"], correctIndex: 0 },
+    { question: "Which Ayyubid sultan, famous for leading the Muslim opposition to European Crusaders, is buried in Damascus?", options: ["Saladin", "Baibars", "Nur al-Din", "Qalawun"], correctIndex: 0 },
+    { question: "Syria briefly united with which other country to form the United Arab Republic from 1958 to 1961?", options: ["Egypt", "Iraq", "Jordan", "Lebanon"], correctIndex: 0 },
+    { question: "The political ideology of the ruling Ba'ath Party in Syria is best described as a form of what?", options: ["Arab nationalism and socialism", "Monarchism", "Liberal democracy", "Theocracy"], correctIndex: 0 },
+    { question: "Which Roman emperor was born in Syria and known for his religious reforms?", options: ["Elagabalus", "Trajan", "Hadrian", "Septimius Severus"], correctIndex: 0 },
+    { question: "What was the name of the 1973 conflict in which Syria and Egypt fought against Israel?", options: ["Yom Kippur War", "Six-Day War", "Suez Crisis", "War of Independence"], correctIndex: 0 },
+    { question: "The city of Bosra in southern Syria is famous for its well-preserved what?", options: ["Roman theatre", "Pyramid", "Ziggurat", "Gothic cathedral"], correctIndex: 0 },
+    { question: "Which political party came to power in Syria following the 1963 coup d'état?", options: ["The Ba'ath Party", "The Syrian Social Nationalist Party", "The Communist Party", "The Muslim Brotherhood"], correctIndex: 0 },
+    { question: "The Dead Cities of northern Syria are a collection of abandoned settlements from which era?", options: ["Late Roman and Byzantine", "Early Islamic", "Ottoman", "Crusader"], correctIndex: 0 },
+    { question: "Who led the Great Syrian Revolt against the French Mandate from 1925 to 1927?", options: ["Sultan al-Atrash", "Ibrahim Hananu", "Yusuf al-'Azma", "Fawzi al-Qawuqji"], correctIndex: 0 },
+    { question: "What is the name of the water-lifting wheels, a famous landmark in the city of Hama?", options: ["Norias", "Aqueducts", "Shadufs", "Sakias"], correctIndex: 0 },
+    { question: "Which country did Syria gain the Golan Heights from in 1946, before losing it in 1967?", options: ["It was part of the French Mandate of Syria", "Jordan", "Lebanon", "Turkey"], correctIndex: 0 },
+    { question: "The ancient language of Aramaic, spoken by Jesus, is still spoken today in which Syrian village?", options: ["Maaloula", "Saydnaya", "Ebla", "Dura-Europos"], correctIndex: 0 },
+    { question: "Who became president of Syria in 1971 and ruled until his death in 2000?", options: ["Hafez al-Assad", "Salah Jadid", "Amin al-Hafiz", "Bashar al-Assad"], correctIndex: 0 },
+    { question: "The Battle of Maysalun in 1920 was fought between Syrian forces and which country?", options: ["France", "Great Britain", "The Ottoman Empire", "Saudi Arabia"], correctIndex: 0 },
+    { question: "Which religious minority, an offshoot of Shia Islam, is the Assad family a part of?", options: ["Alawite", "Druze", "Ismaili", "Sunni"], correctIndex: 0 },
+    { question: "What is the name of the desert that covers a large portion of eastern Syria?", options: ["Syrian Desert", "Arabian Desert", "Sinai Desert", "Negev Desert"], correctIndex: 0 },
+    { question: "The Temple of Bel, a major ancient religious site, was located in which Syrian city?", options: ["Palmyra", "Damascus", "Apamea", "Dura-Europos"], correctIndex: 0 }
+  ],
+  hard: [
+    { question: "Which treaty in 1920 between Britain and France established the boundaries for the Mandate for Syria and the Lebanon?", options: ["The San Remo conference resolution", "The Sykes-Picot Agreement", "The Treaty of Sèvres", "The Balfour Declaration"], correctIndex: 0 },
+    { question: "What was the name of the short-lived Arab Kingdom of Syria established in 1920?", options: ["Arab Kingdom of Syria", "The Hashemite Kingdom", "Greater Syria", "The Damascus Emirate"], correctIndex: 0 },
+    { question: "The Ugaritic alphabet is considered 'cuneiform'. What does this mean?", options: ["It was written using wedge-shaped marks", "It was written from right to left", "It had no vowels", "It was pictographic"], correctIndex: 0 },
+    { question: "Which Mamluk sultan is credited with finally expelling the last Crusaders from Syria in the late 13th century?", options: ["Al-Ashraf Khalil", "Baibars", "Qalawun", "An-Nasir Muhammad"], correctIndex: 0 },
+    { question: "The 'Corrective Movement' of 1970 brought which leader to undisputed power in Syria?", options: ["Hafez al-Assad", "Salah Jadid", "Nureddin al-Atassi", "Michel Aflaq"], correctIndex: 0 },
+    { question: "Which Hellenistic dynasty, founded by one of Alexander the Great's generals, ruled Syria for centuries?", options: ["The Seleucid Empire", "The Ptolemaic Kingdom", "The Antigonid Dynasty", "The Attalid Dynasty"], correctIndex: 0 },
+    { question: "What was the name of the 1982 military operation in Hama, ordered by the Syrian government?", options: ["The Hama massacre", "Operation Litani", "The Battle of Hama", "The Hama uprising"], correctIndex: 0 },
+    { question: "The National Bloc was the leading political party in Syria during which period?", options: ["The French Mandate", "The Ottoman Era", "The United Arab Republic", "The Hafez al-Assad presidency"], correctIndex: 0 },
+    { question: "Which Roman general conquered Syria and made it a Roman province in 64 BC?", options: ["Pompey the Great", "Julius Caesar", "Mark Antony", "Augustus"], correctIndex: 0 },
+    { question: "The Ghassanids were an Arab Christian kingdom that served as a vassal state for which empire on Syria's frontier?", options: ["The Byzantine Empire", "The Sasanian Empire", "The Roman Empire", "The Rashidun Caliphate"], correctIndex: 0 },
+    { question: "What is the name of the founder of the Ba'ath Party, along with Salah al-Din al-Bitar?", options: ["Michel Aflaq", "Zaki al-Arsuzi", "Antun Saadeh", "Sami al-Jundi"], correctIndex: 0 },
+    { question: "Dura-Europos, an ancient city on the Euphrates, is notable for having the world's oldest preserved what?", options: ["Christian house church", "Synagogue with figurative paintings", "Both of these", "Roman legionary fort"], correctIndex: 2 },
+    { question: "Which Ottoman governor of Syria undertook major modernization projects in the 19th century?", options: ["Midhat Pasha", "Ibrahim Pasha of Egypt", "Ahmed Pasha al-Jazzar", "Suleiman Pasha"], correctIndex: 0 },
+    { question: "The 'Damascus Affair' of 1840 was an accusation of ritual murder against which community?", options: ["The Jewish community", "The Christian community", "The Druze community", "The Alawite community"], correctIndex: 0 },
+    { question: "Which battle in 636 AD was decisive in the Muslim conquest of Syria from the Byzantines?", options: ["Battle of Yarmouk", "Battle of Ajnadayn", "Battle of the Iron Bridge", "Battle of Qadisiyyah"], correctIndex: 0 },
+    { question: "What is the name of the political and military conflict between Ba'athist factions in the 1960s?", options: ["The 1966 Syrian coup d'état", "The Corrective Movement", "The 8th March Revolution", "The Ramadan Revolution"], correctIndex: 0 },
+    { question: "The Mari tablets, an important source for ancient Near East history, were written in which language?", options: ["Akkadian", "Sumerian", "Eblaite", "Ugaritic"], correctIndex: 0 },
+    { question: "Which son of Hafez al-Assad was the original heir apparent before his death in a car crash?", options: ["Bassel al-Assad", "Maher al-Assad", "Majd al-Assad", "Bashar al-Assad"], correctIndex: 0 },
+    { question: "The 'Damascus Spring' refers to a brief period of political and social debate following whose death?", options: ["Hafez al-Assad", "King Hussein of Jordan", "Yasser Arafat", "Gamal Abdel Nasser"], correctIndex: 0 },
+    { question: "Which 14th-century conqueror sacked both Aleppo and Damascus, causing massive destruction?", options: ["Timur (Tamerlane)", "Genghis Khan", "Hulagu Khan", "Bayezid I"], correctIndex: 0 }
+  ]
+};
+
+
 
 const syriBank = {
   easy: [
@@ -6044,7 +6114,7 @@ const CATEGORY_CONFIG = {
     label: "Syrian History",
     icon: "🇸🇾",
     pill: "History",
-    group: "history",
+    group: "general",
     img: "assets/syrianHistory.png",
     desc: "Explore the rich and ancient history of Syria, from Palmyra to the Umayyad Caliphate.",
     longDesc: "Journey through millennia of civilization at the crossroads of empires. This category covers the ancient history of Syria, including the kingdoms of Ebla and Ugarit, the Roman and Byzantine eras, and the pivotal role of Damascus as the capital of the Umayyad Caliphate. Test your knowledge on famous landmarks, historical figures like Queen Zenobia and Saladin, and the complex path to modern Syria."
