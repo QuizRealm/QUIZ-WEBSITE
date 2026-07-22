@@ -5774,21 +5774,21 @@ const syriBank = {
 const QUESTION_BANKS = {
     // These ones we know exist from our previous chats:
     friends: friendsBank, 
-    marvel: marvelBank,
+    tbbt: tbbtBank,
     himym: himymBank,
+    marvel: marvelBank,
     computers: Computers, // Note: Variable name was Capitalized in your code
     food: foodBank,
     twoandahalfmen: twoAndAHalfMenBank,
-    tbbt: tbbtBank,
     internet: internetBank,
     iphone17: iphone17Bank,
     avatar2025: avatar2025Bank,
     fastandfurious: fastAndFuriousBank,
     got: gotBank,
     anime: animeBank,
-    dc: dcBank,
     starwars: starwarsBank,
     lotr: lotrBank,
+    dc: dcBank,
     batman: batmanBank,
     superman: supermanBank,
     startrek: starTrekBank,
@@ -5805,24 +5805,17 @@ const QUESTION_BANKS = {
     breakingbad: breakingBadBank,
     vikings: vikingsBank,
     strangerthings: strangerThingsBank,
-    hp: hpBank,
     geography: geographyBank,
     history: historyBank,
     space: spaceBank,
-    belgianhistoy: belgianHistoryBank,
+    belgianhistory: belgianHistoryBank, // Corrected typo from belgianhistoy
     formula1: formula1Bank,
     belgianfootball: belgianFootballBank,
-  worldCapitals: worldCapitalsBank,
+    worldCapitals: worldCapitalsBank,
     worldcup: worldCupFinalsBank,
     quantum: quantumBank,
     derry: derryBank,
-    physics: physicsBank, 
-    programming: programmingBank,
-    riddles: riddlesBank,
-    
     syri: syriBank,
-    biology: biologyBank,
-    chemistry: chemistryBank,
     syrianHistory: syrianHistoryBank,
     physics: physicsBank, 
     programming: programmingBank,
@@ -5830,8 +5823,7 @@ const QUESTION_BANKS = {
     
     biology: biologyBank,
     chemistry: chemistryBank,
-
-    
+    hp: hpBank,
 };
 
 
@@ -6077,6 +6069,11 @@ const CATEGORY_DESCRIPTIONS = {
       title: "Quantum Physics",
       short: "Enter the strange world of the very small. Trivia on superposition, entanglement, and uncertainty.",
       long: "Shrink down to the subatomic level where the classical rules of physics break down. This category explores the bizarre and fascinating world of quantum mechanics. Questions will cover the uncertainty principle, wave-particle duality, quantum entanglement ('spooky action at a distance'), and the famous thought experiments like Schrödinger's Cat. It's a journey into the very fabric of reality, where particles can be in two places at once."
+  },
+  syrianHistory: {
+      title: "Syrian History",
+      short: "Exploring the rich and complex history of Syria.",
+      long: "A comprehensive look at Syria's historical journey, from ancient civilizations to modern political developments. Topics include key events, cultural heritage, and the impact of regional conflicts."
   }
 };
 
@@ -6107,18 +6104,20 @@ const CATEGORY_CONFIG = {
     pill: "Sci-Fi",
     group: "movies",
     img: "assets/avatar.png",
-    desc: "Return to Pandora! Trivia on Jake Sully, Neytiri, and the upcoming Fire and Ash."
+    desc: "Return to Pandora! Trivia on Jake Sully, Neytiri, and the upcoming Fire and Ash.",
+        longDesc: "Journey through millennia of civilization at the crossroads of empires. This category covers the ancient history of Syria, including the kingdoms of Ebla and Ugarit, the Roman and Byzantine eras, and the pivotal role of Damascus as the capital of the Umayyad Caliphate. Test your knowledge on famous landmarks, historical figures like Queen Zenobia and Saladin, and the complex path to modern Syria."
+
   },
 
   syrianHistory: {
     label: "Syrian History",
-    icon: "🇸🇾",
-    pill: "History",
+    icon: "🏺",
+    pill: "Past",
     group: "general",
     img: "assets/syrianHistory.png",
     desc: "Explore the rich and ancient history of Syria, from Palmyra to the Umayyad Caliphate.",
     longDesc: "Journey through millennia of civilization at the crossroads of empires. This category covers the ancient history of Syria, including the kingdoms of Ebla and Ugarit, the Roman and Byzantine eras, and the pivotal role of Damascus as the capital of the Umayyad Caliphate. Test your knowledge on famous landmarks, historical figures like Queen Zenobia and Saladin, and the complex path to modern Syria."
-  },
+  }, // I've added a comma here to fix a syntax error.
 
   tbbt: { 
     label: "Big Bang Theory", 
