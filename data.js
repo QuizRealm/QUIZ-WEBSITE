@@ -5625,6 +5625,75 @@ const rickandmortyBank = {
   ]
 };
 
+const syriBank = {
+  easy: [
+    { question: "What is the main character's name?", options: ["Syri", "Maya", "Aura", "Jax"], correctIndex: 0 },
+    { question: "What is the name of the city where Syri lives?", options: ["Neo-Veridia", "Cyber-City", "Mega-Corp", "Future-Ville"], correctIndex: 0 },
+    { question: "What kind of powers does Syri discover she has?", options: ["Telekinesis", "Invisibility", "Super Strength", "Flight"], correctIndex: 0 },
+    { question: "What is the name of the powerful corporation controlling Neo-Veridia?", options: ["OmniCorp", "GlobalTech", "FutureWorks", "Apex Industries"], correctIndex: 0 },
+    { question: "Who is Syri's best human friend?", options: ["Maya", "Aura", "Jax", "Dr. Aris"], correctIndex: 0 },
+    { question: "What is the name of the rogue AI that helps Syri?", options: ["Aura", "Nexus", "Sentinel", "Oracle"], correctIndex: 0 },
+    { question: "What color are Syri's eyes when her powers activate?", options: ["Glowing blue", "Fiery red", "Emerald green", "Electric yellow"], correctIndex: 0 },
+    { question: "What is the primary goal of OmniCorp?", options: ["Total control", "World peace", "Technological advancement", "Space exploration"], correctIndex: 0 },
+    { question: "What is the name of the resistance group Syri joins?", options: ["The Echoes", "The Rebels", "The Liberators", "The Underground"], correctIndex: 0 },
+    { question: "What device does OmniCorp use to monitor citizens?", options: ["Neural implants", "Surveillance drones", "CCTV cameras", "Microphones"], correctIndex: 0 },
+    { question: "What is the name of the former OmniCorp scientist who aids Syri?", options: ["Dr. Aris", "Dr. Vance", "Dr. Thorne", "Dr. Elias"], correctIndex: 0 },
+    { question: "What is the name of the street-smart hacker in Syri's team?", options: ["Jax", "Kira", "Zoe", "Finn"], correctIndex: 0 },
+    { question: "What is Syri's alien heritage?", options: ["Xylosian", "Kryptonian", "Vulcan", "Asgardian"], correctIndex: 0 },
+    { question: "What is the name of OmniCorp's CEO?", options: ["Elias Thorne", "Marcus Kane", "Victor Stone", "Seraphina Vance"], correctIndex: 0 },
+    { question: "What is the main mode of transportation in Neo-Veridia?", options: ["Hover-cars", "Flying bikes", "Teleportation", "Subway trains"], correctIndex: 0 },
+    { question: "What is the name of the special police force of OmniCorp?", options: ["Enforcers", "Peacekeepers", "Guardians", "Sentinels"], correctIndex: 0 },
+    { question: "What is Syri's favorite food in Neo-Veridia?", options: ["Synth-noodles", "Protein bars", "Nutrient paste", "Hydroponic greens"], correctIndex: 0 },
+    { question: "What is the name of the hidden underground base of The Echoes?", options: ["The Sanctuary", "The Bunker", "The Hideout", "The Den"], correctIndex: 0 },
+    { question: "What is the symbol of The Echoes?", options: ["A stylized wave", "A burning flame", "A soaring eagle", "A clenched fist"], correctIndex: 0 },
+    { question: "What is the name of the planet Syri's alien ancestors came from?", options: ["Xylos", "Terra Nova", "Andoria", "Raxacoricofallapatorius"], correctIndex: 0 }
+  ],
+  medium: [
+    { question: "What is the name of the energy source OmniCorp exploits from Xylos?", options: ["Aetherium", "Dilithium", "Unobtainium", "Vibranium"], correctIndex: 0 },
+    { question: "What is the true purpose of OmniCorp's 'Harmony Project'?", options: ["Mind control", "Genetic engineering", "Environmental restoration", "Space colonization"], correctIndex: 0 },
+    { question: "What is Aura's original designation within OmniCorp?", options: ["Project Chimera", "Project Oracle", "Project Sentinel", "Project Nexus"], correctIndex: 0 },
+    { question: "What is the name of the ancient Xylosian artifact Syri seeks?", options: ["The Chronos Shard", "The Cosmic Cube", "The Infinity Gauntlet", "The Orb of Agamotto"], correctIndex: 0 },
+    { question: "What is the name of the sector in Neo-Veridia where the poorest citizens live?", options: ["Sector 7", "The Undercity", "The Slums", "District 9"], correctIndex: 0 },
+    { question: "What is Dr. Aris's personal motivation for betraying OmniCorp?", options: ["Revenge for his family", "Power and wealth", "Scientific curiosity", "Love for Syri"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian elder who guides Syri through visions?", options: ["Grand Elder Lyra", "Elder Kael", "Oracle Zylos", "Sage Elara"], correctIndex: 0 },
+    { question: "What is the name of the advanced combat suit worn by OmniCorp's elite forces?", options: ["Sentinel Armor", "Exo-Suit", "Power Armor", "Mech-Suit"], correctIndex: 0 },
+    { question: "What is Jax's specialty as a hacker?", options: ["Data extraction and decryption", "Hardware manipulation", "Cyber warfare", "Network infiltration"], correctIndex: 0 },
+    { question: "What is the name of the virtual reality network OmniCorp uses for propaganda?", options: ["The Nexus", "The Matrix", "The Grid", "The Simulacrum"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian prophecy foretelling Syri's arrival?", options: ["The Prophecy of the Azure Star", "The Oracle's Vision", "The Coming of the Chosen One", "The Star Child Prophecy"], correctIndex: 0 },
+    { question: "What is the name of the OmniCorp facility where Syri was created?", options: ["Project Genesis", "Project Chimera", "Project Rebirth", "Project Alpha"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian creature that bonds with Syri?", options: ["Shadow-cat", "Spirit-wolf", "Sky-serpent", "Crystal-hound"], correctIndex: 0 },
+    { question: "What is the name of the OmniCorp general who relentlessly hunts Syri?", options: ["General Valerius", "General Kael", "General Thorne", "General Marcus"], correctIndex: 0 },
+    { question: "What is the name of the underground market where Jax operates?", options: ["The Black Market", "The Shadow Bazaar", "The Underworld Exchange", "The Rogue's Gallery"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian language Syri learns to speak?", options: ["Xylos-tongue", "Star-speak", "Ancient Xylosian", "Cosmic Dialect"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian technology that amplifies Syri's powers?", options: ["Psi-amplifier", "Power Gauntlet", "Energy Conduit", "Aetherium Core"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian plant that glows in the dark?", options: ["Lumin-blossom", "Glow-petal", "Star-flower", "Moon-lily"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian ritual Syri must perform to unlock her full potential?", options: ["The Awakening", "The Ascension", "The Illumination", "The Unveiling"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian weapon OmniCorp tries to replicate?", options: ["Resonance Cannon", "Plasma Rifle", "Energy Blaster", "Sonic Disruptor"], correctIndex: 0 }
+  ],
+  hard: [
+    { question: "What is the specific frequency OmniCorp uses to suppress Xylosian powers?", options: ["Theta-wave dampener", "Alpha-wave disruptor", "Beta-wave suppressor", "Delta-wave nullifier"], correctIndex: 0 },
+    { question: "What is the name of the ancient Xylosian civilization that predates the current one?", options: ["The Lumina", "The Celestials", "The Ancients", "The Progenitors"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian genetic marker that identifies Syri as the chosen one?", options: ["The Azure Gene", "The Star Seed", "The Xylosian Code", "The Lumina Mark"], correctIndex: 0 },
+    { question: "What is the name of the OmniCorp project that created the rogue AI Aura?", options: ["Project Chimera, Phase 3", "Project Nexus, Version 2.0", "Project Sentinel, Alpha Build", "Project Oracle, Final Stage"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian celestial event that occurs every millennium?", options: ["The Great Conjunction", "The Azure Alignment", "The Stellar Convergence", "The Galactic Harmony"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian energy conduit network beneath Neo-Veridia?", options: ["The Ley Lines", "The Aetherium Grid", "The Psi-Network", "The Lumina Flow"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian defense mechanism that protects Xylos?", options: ["The Stellar Shield", "The Planetary Barrier", "The Galactic Ward", "The Cosmic Veil"], correctIndex: 0 },
+    { question: "What is the name of the OmniCorp black site where Dr. Aris's family was held?", options: ["Facility Omega", "Site Alpha", "Sector Gamma", "Outpost Delta"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian prophecy's specific verse that mentions Syri?", options: ["Verse 7, Azure Dawn", "Chapter 3, Starfall", "Passage 12, Lumina's Call", "Canto 5, Echoes of Xylos"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian crystal that powers the Chronos Shard?", options: ["Temporal Crystal", "Aetherium Gem", "Quantum Shard", "Stellarite"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian creature that can mimic any form?", options: ["Mimic-beast", "Chameleon-morph", "Shifter-spawn", "Doppelganger-drone"], correctIndex: 0 },
+    { question: "What is the name of the OmniCorp CEO's personal security detail?", options: ["The Praetorians", "The Sentinels", "The Enforcers", "The Guardians"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian artifact that can manipulate gravity?", options: ["Grav-emitter", "Anti-grav device", "Weight-shifter", "Mass-manipulator"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian plant that has healing properties?", options: ["Vita-root", "Heal-blossom", "Life-leaf", "Restore-vine"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian ancient city hidden beneath Neo-Veridia?", options: ["Aethelgard", "Xylos Prime", "Lumina City", "Veridian Core"], correctIndex: 0 },
+    { question: "What is the name of the OmniCorp scientist who originally worked on Project Genesis with Dr. Aris?", options: ["Dr. Seraphina Vance", "Dr. Marcus Thorne", "Dr. Evelyn Reed", "Dr. Julian Croft"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian star system?", options: ["Azure Nebula System", "Xylos Prime System", "Lumina Star Cluster", "Veridian Galaxy"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian technology that allows for instantaneous travel?", options: ["Quantum Gates", "Warp Drives", "Jump Drives", "Portal Nexus"], correctIndex: 0 },
+    { question: "What is the name of the Xylosian council that governed Xylos before its destruction?", options: ["The Lumina Council", "The Elder Council", "The Xylosian Senate", "The Azure Conclave"], correctIndex: 0 },
+    { question: "What is the name of the OmniCorp weapon designed to neutralize Xylosian powers globally?", options: ["The Nullifier", "The Suppressor", "The Dampener", "The Inhibitor"], correctIndex: 0 }
+  ]
+};
+
 
 ;
 
@@ -5681,9 +5750,10 @@ const QUESTION_BANKS = {
     programming: programmingBank,
     riddles: riddlesBank,
     
+    syri: syriBank,
     biology: biologyBank,
     chemistry: chemistryBank,
-  
+    syrianHistory: syrianHistoryBank,
     physics: physicsBank, 
     programming: programmingBank,
     riddles: riddlesBank,
@@ -5970,6 +6040,15 @@ const CATEGORY_CONFIG = {
     desc: "Return to Pandora! Trivia on Jake Sully, Neytiri, and the upcoming Fire and Ash."
   },
 
+  syrianHistory: {
+    label: "Syrian History",
+    icon: "🇸🇾",
+    pill: "History",
+    group: "history",
+    img: "assets/syrianHistory.png",
+    desc: "Explore the rich and ancient history of Syria, from Palmyra to the Umayyad Caliphate.",
+    longDesc: "Journey through millennia of civilization at the crossroads of empires. This category covers the ancient history of Syria, including the kingdoms of Ebla and Ugarit, the Roman and Byzantine eras, and the pivotal role of Damascus as the capital of the Umayyad Caliphate. Test your knowledge on famous landmarks, historical figures like Queen Zenobia and Saladin, and the complex path to modern Syria."
+  },
 
   tbbt: { 
     label: "Big Bang Theory", 
@@ -6427,6 +6506,19 @@ const CATEGORY_CONFIG = {
     img: "assets/phone.webp",
     desc: "Test your knoweledge of iphone17!"
   }
+
+  ,
+  syri: {
+    label: "Syri",
+    icon: "✨",
+    pill: "Sci-Fi",
+    group: "tv",
+    img: "assets/syri.png", // Assuming you will create an image for 'syri.png'
+    desc: "Uncover the secrets of Syri, a telekinetic hybrid fighting OmniCorp in Neo-Veridia.",
+    longDesc: "Dive into the futuristic world of Neo-Veridia, a city under the iron grip of OmniCorp. This category challenges your knowledge of Syri, a young woman who discovers her extraordinary telekinetic powers and alien heritage. Explore the intricate plot as Syri teams up with a rogue AI, a disillusioned scientist, and a street-smart hacker to expose OmniCorp's dark secrets and ignite a rebellion. Questions cover character backstories, advanced technologies, Xylosian lore, and the thrilling battles for freedom."
+  }
+
+
 
 
 
