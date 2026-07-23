@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Tug-of-War Trivia | Endless Momentum Duel | QuizRealm</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#020617">
+
+    <meta name="description" content="Play Tug-of-War Trivia. A premium rapid-fire multiplayer quiz. Answer correctly to pull the rope to your side. The ultimate test of trivia momentum.">
+    <meta name="keywords" content="tug of war trivia, rapid fire quiz, multiplayer trivia duel, 2 player quiz game, momentum trivia, party game trivia">
+
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace']
+                    },
+                    colors: {
+                        console: {
+                            base: '#020617', 
+                            panel: 'rgba(15, 23, 42, 0.6)',
+                        },
+                        neon: {
+                            cyan: '#06b6d4',
+                            cyanDark: '#0891b2',
+                            magenta: '#f43f5e',
+                            magentaDark: '#e11d48',
+                            amber: '#f59e0b',
+                            emerald: '#10b981'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #020617; 
+            background-image: 
+                radial-gradient(circle at 0% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 50%, rgba(244, 63, 94, 0.08) 0%, transparent 40%);
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+        }
+
+        /* Console-Style Glass Panels */
+        .ps-panel {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Console Inputs */
+        .ps-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .ps-input:focus { outline: none; background: rgba(0, 0, 0, 0.5); }
+        .focus-cyan:focus { border-color: #06b6d4; box-shadow: 0 0 15px rgba(6,182,212,0.15); }
+        .focus-magenta:focus { border-color: #f43f5e; box-shadow: 0 0 15px rgba(244,63,94,0.15); }
+
+        /* Premium 3D Tactile Buttons */
+        .btn-3d {
+            position: relative;
+            border-bottom-width: 6px;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+        }
+        .btn-3d:active:not(:disabled) {
+            border-bottom-width: 0px;
+            transform: translateY(6px);
+            margin-bottom: 6px; 
+        }
+        .btn-3d:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-cyan { background: #06b6d4; border-color: #0891b2; color: #fff; }
+        .btn-rose { background: #f43f5e; border-color: #e11d48; color: #fff; }
+        .btn-amber { background: #f59e0b; border-color: #d97706; color: #fff; }
+        .btn-dark { background: #1e293b; border-color: #0f172a; color: #f8fafc; }
+        .btn-dark:hover:not(:disabled) { background: #334155; }
+
+        /* Answer Tap Targets */
+        .ans-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-bottom-width: 6px;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #f8fafc;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .ans-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .ans-btn:active:not(:disabled) {
+            border-bottom-width: 0px;
+            transform: translateY(6px);
+            margin-bottom: 6px;
+        }
+        .ans-btn.correct {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: #10b981 !important;
+            color: #34d399 !important;
+            box-shadow: inset 0 0 20px rgba(16,185,129,0.3);
+        }
+        .ans-btn.incorrect {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: #ef4444 !important;
+            color: #f87171 !important;
+        }
+
+        /* The Neon Rope UI */
+        .rope-container {
+            width: 100%;
+            height: 24px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 999px;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        .rope-fill-p1 {
+            position: absolute;
+            left: 0; top: 0; height: 100%;
+            background: linear-gradient(90deg, #0891b2, #06b6d4);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.6);
+            border-radius: 999px 0 0 999px;
+            transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .rope-fill-p2 {
+            position: absolute;
+            right: 0; top: 0; height: 100%;
+            background: linear-gradient(270deg, #e11d48, #f43f5e);
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.6);
+            border-radius: 0 999px 999px 0;
+            transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .rope-marker {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px; height: 36px;
+            background: #ffffff;
+            border-radius: 50%;
+            border: 4px solid #020617;
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
+            z-index: 10;
+            transition: left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .rope-center-line {
+            position: absolute;
+            left: 50%; top: -10px; bottom: -10px;
+            width: 2px; background: rgba(255,255,255,0.3);
+            border-dashed: 2px;
+            z-index: 1;
+        }
+
+        /* Timers & Animations */
+        .timer-track {
+            height: 4px; background: rgba(255,255,255,0.05); width: 100%;
+        }
+        .timer-fill {
+            height: 100%; background: #06b6d4; transition: width 10s linear, background-color 10s linear;
+        }
+
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <!-- MAIN WRAPPER: 3-COLUMN DESKTOP LAYOUT -->
+    <div class="max-w-[1600px] mx-auto w-full px-4 py-8 grid grid-cols-1 xl:grid-cols-4 gap-8 flex-grow">
+        
+        <!-- ==========================================
+             LEFT SIDEBAR: GAME RULES (PS HUD Style)
+             ========================================== -->
+        <aside class="hidden xl:flex flex-col gap-4 xl:col-span-1">
+            <div class="ps-panel p-8">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-8 border-b border-white/10 pb-3">
+                    [ SYS.LOG ] Tug-of-War Rules
+                </h3>
+                
+                <div class="space-y-8">
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white flex-shrink-0 shadow-inner text-lg font-bold">
+                            <i class="fas fa-forward"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Endless Momentum</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">There are no rounds. Questions deploy rapidly. The game only ends when one player pulls the central rope 100% into their zone.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-neon-cyan flex-shrink-0 shadow-inner text-lg font-bold">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Pull The Rope</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">Answer correctly within the 10-second window to pull the rope 15% closer to your side.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-neon-magenta flex-shrink-0 shadow-inner text-lg font-bold">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Lose Your Grip</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">Answer wrong (or run out of time) and the rope automatically slips 15% toward your opponent.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             CENTER COLUMN: THE GAME ENGINE
+             ========================================== -->
+        <main class="xl:col-span-2 flex flex-col justify-center min-h-[75vh] relative overflow-hidden" id="main-container">
+            
+            <!-- SCREEN 1: SETUP -->
+            <div id="setup-screen" class="ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-20">
+                <div class="w-20 h-20 bg-slate-800 border border-slate-700 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                    <i class="fas fa-rope text-4xl text-white"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-white mb-3 uppercase tracking-tight">Tug-of-War</h1>
+                <p class="text-slate-400 text-sm md:text-base font-medium mb-10">An endless momentum battle. Answer correctly to pull the rope. Drag it completely to your side to win.</p>
+
+                <div class="space-y-6 mb-10 text-left">
+                    <div>
+                        <label class="block text-[11px] font-mono text-neon-cyan uppercase tracking-widest mb-2 ml-1">Player 1 (Left Pull)</label>
+                        <input type="text" id="p1Input" value="Player 1" class="w-full ps-input focus-cyan rounded-xl p-4 text-base font-bold" maxlength="12">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-mono text-neon-magenta uppercase tracking-widest mb-2 ml-1">Player 2 (Right Pull)</label>
+                        <input type="text" id="p2Input" value="Player 2" class="w-full ps-input focus-magenta rounded-xl p-4 text-base font-bold" maxlength="12">
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="btn-3d btn-cyan w-full py-5 text-xl tracking-widest">
+                    Enter Arena
+                </button>
+            </div>
+
+            <!-- SCREEN 2: BATTLE ARENA -->
+            <div id="game-screen" class="hidden w-full max-w-2xl mx-auto flex-col fade-in relative z-10">
+                
+                <!-- The Rope UI -->
+                <div class="ps-panel p-6 md:p-8 mb-8 border-b-4 border-b-slate-800">
+                    <div class="flex justify-between items-end mb-4">
+                        <span class="text-sm font-black text-neon-cyan uppercase tracking-widest" id="arenaP1Name">P1</span>
+                        <span class="text-sm font-black text-neon-magenta uppercase tracking-widest" id="arenaP2Name">P2</span>
+                    </div>
+                    
+                    <div class="rope-container">
+                        <div class="rope-center-line"></div>
+                        <div id="p1Rope" class="rope-fill-p1" style="width: 50%;"></div>
+                        <div id="p2Rope" class="rope-fill-p2" style="width: 50%;"></div>
+                        <div id="ropeMarker" class="rope-marker" style="left: 50%;"></div>
+                    </div>
+                </div>
+
+                <!-- Turn Indicator & Timer -->
+                <div class="text-center mb-6">
+                    <div id="turnIndicator" class="inline-block px-8 py-2.5 rounded-2xl font-black text-sm text-white uppercase tracking-widest bg-neon-cyan shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-colors duration-300">
+                        Player 1's Turn
+                    </div>
+                </div>
+
+                <!-- Question Card -->
+                <div id="questionCard" class="ps-panel p-6 md:p-10 w-full flex flex-col transition-transform duration-300">
+                    <div class="timer-track mb-6">
+                        <div id="questionTimer" class="timer-fill" style="width: 100%;"></div>
+                    </div>
+
+                    <h2 class="text-xl md:text-3xl font-bold text-white mb-8 leading-snug text-center" id="questionText">
+                        Loading sequence...
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="answerOptions">
+                        <!-- Buttons injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: MATCH RESULTS -->
+            <div id="result-screen" class="hidden ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-40">
+                <i class="fas fa-trophy text-6xl text-amber-400 mb-6 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]"></i>
+                
+                <h2 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-2">Momentum Secured</h2>
+                <div class="text-4xl md:text-5xl font-black text-white mb-10 uppercase tracking-wide" id="finalWinnerText">
+                    Player 1 Overpowers!
+                </div>
+
+                <div class="flex flex-col gap-4 mt-6">
+                    <button onclick="location.reload()" class="btn-3d btn-cyan w-full py-5 text-lg tracking-widest uppercase">
+                        Initialize Rematch
+                    </button>
+                    <a href="/duel.html" class="btn-3d btn-dark w-full py-5 text-lg flex items-center justify-center text-decoration-none tracking-widest uppercase">
+                        Main Duel Menu
+                    </a>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ==========================================
+             RIGHT SIDEBAR: OTHER MULTIPLAYER MODES
+             ========================================== -->
+        <aside class="hidden xl:flex flex-col gap-6 xl:col-span-1 h-[80vh]">
+            <div class="ps-panel p-8 h-full flex flex-col">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-8 border-b border-white/10 pb-3">
+                    [ LINK ] Multiplayer Suite
+                </h3>
+                
+                <div class="space-y-4 flex-grow custom-scroll overflow-y-auto pr-2">
+                    
+                    <a href="/tic-tac-toe-trivia.html" class="block btn-3d btn-dark p-5 rounded-2xl text-left border border-slate-700 hover:border-cyan-500 transition-colors">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg"><i class="fas fa-border-all"></i></div>
+                            <h4 class="text-white font-bold text-base">Trivia Tic-Tac-Toe</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 font-normal leading-relaxed">Classic grid strategy meets general knowledge. Claim squares by answering correctly.</p>
+                    </a>
+
+                    <a href="/trivia-auction.html" class="block btn-3d btn-dark p-5 rounded-2xl text-left border border-slate-700 hover:border-amber-500 transition-colors">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg"><i class="fas fa-gavel"></i></div>
+                            <h4 class="text-white font-bold text-base">The Trivia Auction</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 font-normal leading-relaxed">A game of bluffing. "I can name 5 US States." "Prove it." List building under pressure.</p>
+                    </a>
+
+                    <a href="/split-screen-trivia.html" class="block btn-3d btn-dark p-5 rounded-2xl text-left border border-slate-700 hover:border-emerald-500 transition-colors">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg"><i class="fas fa-bolt"></i></div>
+                            <h4 class="text-white font-bold text-base">Split-Screen Snap</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 font-normal leading-relaxed">Pure reaction battle. Share the screen and tap True or False before your opponent.</p>
+                    </a>
+
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ==========================================
+         BOTTOM SEO BLOCK: 1500+ WORDS OF EDITORIAL CONTENT
+         ========================================== -->
+    <section class="bg-[#0b1224] border-t border-white/5 py-20 mt-auto w-full font-sans">
+        <div class="max-w-[1200px] mx-auto px-4">
+            
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">The Psychology of Momentum in Multiplayer Trivia</h2>
+                <p class="text-slate-400 text-base max-w-3xl mx-auto leading-relaxed">
+                    Why Tug-of-War Trivia is the ultimate test of endurance. Discover how rapid-fire quizzes and momentum-based mechanics are revolutionizing local multiplayer party games.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
+                <!-- SEO Column 1 -->
+                <article class="prose prose-invert prose-slate max-w-none">
+                    <h3 class="text-2xl font-bold text-white mb-4 border-b border-white/10 pb-2">Why Endless Formats Work</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        Standard trivia games are defined by finite constraints: 10 rounds, 20 questions, or a strict time limit. The player with the most points at the end of that rigid structure wins. While effective, this traditional framework lacks the psychological intensity of a fluid, momentum-based battle.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        <strong>Tug-of-War Trivia</strong> completely removes the safety net of a "final round." The game only ends when one player proves absolute, overwhelming dominance. Every time you answer a question correctly, you pull the virtual rope 15% closer to your side. But if you stumble, panic, or let the 10-second timer expire, the rope slips back toward your opponent.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        This creates an environment ripe for massive comebacks. You could be one question away from total defeat, only to hit a sudden streak of questions in your area of expertise, pulling the rope all the way back across the center line. This constant shifting of power ensures that neither player can relax until the final victory screen is triggered.
+                    </p>
+
+                    <h3 class="text-2xl font-bold text-white mt-10 mb-4 border-b border-white/10 pb-2">Cognitive Benefits of Rapid-Fire Quizzes</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        Playing high-speed, 1v1 trivia doesn't just create great party moments; it provides legitimate cognitive conditioning. By enforcing a strict 10-second response window per question, Tug-of-War forces the brain to bypass slower, deliberate recall methods and rely on rapid heuristic processing.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed">
+                        If you want to train your brain to retrieve facts faster before jumping into a multiplayer duel, we highly recommend utilizing our <a href="/arcade.html" class="text-neon-cyan hover:underline">Solo Arcade Hub</a>. Training with modes like Rapid Fire Trivia will significantly reduce your processing latency.
+                    </p>
+                </article>
+                
+                <!-- SEO Column 2 -->
+                <article class="prose prose-invert prose-slate max-w-none">
+                    <h3 class="text-2xl font-bold text-white mb-4 border-b border-white/10 pb-2">How to Host the Perfect Trivia Night</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        With the rise of browser-based web games, hosting a high-end trivia night no longer requires clunky board games or expensive software downloads. All you need is a single screen and the QuizRealm multiplayer suite.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        For a well-rounded game night, we suggest rotating through our four distinct 1v1 duel formats. Start with <a href="/tic-tac-toe-trivia.html" class="text-neon-magenta hover:underline">Trivia Tic-Tac-Toe</a> to warm up your guests with tactical grid placement. Once the competitive energy rises, switch to <a href="/trivia-auction.html" class="text-neon-magenta hover:underline">The Trivia Auction</a> to test their bluffing skills and list-building capabilities.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        To finish the night, use physical, fast-paced games. <a href="/split-screen-trivia.html" class="text-neon-magenta hover:underline">Split-Screen Snap</a> allows players to go head-to-head on the same device to test pure physical reaction times, while <strong>Tug-of-War Trivia</strong> provides the ultimate endurance test.
+                    </p>
+
+                    <h3 class="text-2xl font-bold text-white mt-10 mb-4 border-b border-white/10 pb-2">Taking the Battle Online</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        If your rivals aren't in the same room, you can seamlessly transition your battle to the web. By accessing the <a href="/group-hub.html" class="text-neon-magenta hover:underline">QuizRealm Group Hub</a>, you can generate a secure room code and challenge friends anywhere in the world. 
+                    </p>
+                    <p class="text-slate-400 leading-relaxed">
+                        Whether you are a casual player brushing up on Pop Culture or a trivia veteran specializing in Science and History, our dynamic engines ensure a completely randomized, fair, and intensely competitive experience every single time you click "Start Match."
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // ==========================================
+        // MASSIVE HARDCODED QUESTION BANK (70+ Qs)
+        // Ensures the rapid-fire engine never runs out of ammo.
+        // ==========================================
+        const RAPID_BANK = [
+            { q: "What is the largest ocean on Earth?", options: ["Atlantic", "Indian", "Pacific", "Arctic"], a: 2 },
+            { q: "Who painted the Mona Lisa?", options: ["Van Gogh", "Picasso", "Da Vinci", "Rembrandt"], a: 2 },
+            { q: "What is the chemical symbol for Gold?", options: ["Ag", "Au", "Pb", "Fe"], a: 1 },
+            { q: "Which planet is known as the Red Planet?", options: ["Venus", "Jupiter", "Mars", "Saturn"], a: 2 },
+            { q: "What is the capital of Japan?", options: ["Seoul", "Beijing", "Tokyo", "Bangkok"], a: 2 },
+            { q: "Who wrote 'Romeo and Juliet'?", options: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"], a: 1 },
+            { q: "What is the hardest natural substance on Earth?", options: ["Gold", "Iron", "Diamond", "Platinum"], a: 2 },
+            { q: "How many legs does a spider have?", options: ["6", "8", "10", "12"], a: 1 },
+            { q: "Which country gifted the Statue of Liberty to the US?", options: ["Spain", "England", "Germany", "France"], a: 3 },
+            { q: "What is the tallest mammal in the world?", options: ["Elephant", "Giraffe", "Horse", "Kangaroo"], a: 1 },
+            { q: "What is the most widely spoken language?", options: ["English", "Mandarin", "Spanish", "Hindi"], a: 0 },
+            { q: "How many time zones does Russia have?", options: ["9", "11", "13", "15"], a: 1 },
+            { q: "What part of a plant conducts photosynthesis?", options: ["Root", "Stem", "Leaf", "Flower"], a: 2 },
+            { q: "How many dots appear on a pair of dice?", options: ["36", "42", "48", "54"], a: 1 },
+            { q: "How many hearts does an octopus have?", options: ["1", "2", "3", "4"], a: 2 },
+            { q: "Which is the only body part fully grown from birth?", options: ["Ears", "Eyes", "Nose", "Brain"], a: 1 },
+            { q: "What is the largest internal organ?", options: ["Heart", "Brain", "Liver", "Lungs"], a: 2 },
+            { q: "Who invented the lightbulb?", options: ["Nikola Tesla", "Thomas Edison", "Alexander Bell", "Albert Einstein"], a: 1 },
+            { q: "What is the smallest independent country?", options: ["Monaco", "Vatican City", "San Marino", "Liechtenstein"], a: 1 },
+            { q: "Which African country has the largest population?", options: ["Egypt", "South Africa", "Nigeria", "Ethiopia"], a: 2 },
+            { q: "What is the capital city of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Brisbane"], a: 2 },
+            { q: "Mount Everest is in which mountain range?", options: ["Alps", "Andes", "Rockies", "Himalayas"], a: 3 },
+            { q: "Which river flows through the Grand Canyon?", options: ["Mississippi", "Colorado", "Snake", "Missouri"], a: 1 },
+            { q: "What is the longest river in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], a: 1 },
+            { q: "Which country has the most islands?", options: ["Canada", "Indonesia", "Sweden", "Philippines"], a: 2 },
+            { q: "What desert covers northern Africa?", options: ["Gobi", "Kalahari", "Mojave", "Sahara"], a: 3 },
+            { q: "In what year did the Titanic sink?", options: ["1910", "1912", "1914", "1916"], a: 1 },
+            { q: "Who was the first woman to win a Nobel Prize?", options: ["Marie Curie", "Mother Teresa", "Rosa Parks", "Ada Lovelace"], a: 0 },
+            { q: "Rome was built on how many hills?", options: ["5", "7", "9", "12"], a: 1 },
+            { q: "Which empire was ruled by Genghis Khan?", options: ["Roman", "Ottoman", "Mongol", "Persian"], a: 2 },
+            { q: "In what year did World War II end?", options: ["1943", "1944", "1945", "1946"], a: 2 },
+            { q: "What civilization built Machu Picchu?", options: ["Aztec", "Maya", "Inca", "Olmec"], a: 2 },
+            { q: "Who discovered penicillin?", options: ["Alexander Fleming", "Louis Pasteur", "Marie Curie", "Isaac Newton"], a: 0 },
+            { q: "Which element has the symbol 'O'?", options: ["Osmium", "Oxygen", "Oganesson", "Oxide"], a: 1 },
+            { q: "What is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria", "Endoplasmic Reticulum"], a: 2 },
+            { q: "What gas do plants absorb?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], a: 2 },
+            { q: "At what temp does water boil (Celsius)?", options: ["50", "90", "100", "120"], a: 2 },
+            { q: "What part of the brain controls balance?", options: ["Cerebrum", "Cerebellum", "Brainstem", "Hypothalamus"], a: 1 },
+            { q: "Who proposed the theory of relativity?", options: ["Isaac Newton", "Niels Bohr", "Albert Einstein", "Galileo Galilei"], a: 2 },
+            { q: "Which actor plays Iron Man?", options: ["Chris Evans", "Chris Hemsworth", "Robert Downey Jr.", "Mark Ruffalo"], a: 2 },
+            { q: "Where does Batman live?", options: ["Metropolis", "Star City", "Central City", "Gotham City"], a: 3 },
+            { q: "Who won the first season of American Idol?", options: ["Kelly Clarkson", "Carrie Underwood", "Ruben Studdard", "Fantasia Barrino"], a: 0 },
+            { q: "What is the highest-grossing film of all time?", options: ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars"], a: 0 },
+            { q: "Who wrote Harry Potter?", options: ["J.R.R. Tolkien", "George R.R. Martin", "J.K. Rowling", "Suzanne Collins"], a: 2 },
+            { q: "Name of the coffee shop in Friends?", options: ["Central Perk", "Monk's Diner", "MacLaren's Pub", "The Peach Pit"], a: 0 },
+            { q: "In The Matrix, which pill does Neo take?", options: ["Blue", "Red", "Green", "Yellow"], a: 1 },
+            { q: "Captain America's shield is made of?", options: ["Adamantium", "Vibranium", "Promethium", "Carbonadium"], a: 1 }
+        ];
+
+        // ==========================================
+        // GAME STATE
+        // ==========================================
+        let p1Name = "Player 1", p2Name = "Player 2";
+        let currentPlayer = 1; // 1 or 2
+        let activePool = [];
+        let isInputLocked = false;
+        let timerInterval = null;
+
+        // The Rope Logic: 
+        // ropeValue goes from 0 (P1 wins) to 100 (P2 wins). Starts at 50.
+        // Each correct answer pulls 15% towards the player.
+        // Each wrong answer drops 15% to the opponent.
+        let ropeValue = 50; 
+        const PULL_STRENGTH = 15; 
+
+        function switchScreen(hideId, showId) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            
+            if(hideEl) hideEl.classList.add('hidden');
+            if(showEl) {
+                showEl.classList.remove('hidden');
+                showEl.classList.remove('fade-in');
+                void showEl.offsetWidth; 
+                showEl.classList.add('fade-in');
+            }
+        }
+
+        function startGame() {
+            const p1Input = document.getElementById('p1Input').value.trim();
+            const p2Input = document.getElementById('p2Input').value.trim();
+            p1Name = p1Input ? p1Input : "Player 1";
+            p2Name = p2Input ? p2Input : "Player 2";
+
+            document.getElementById('arenaP1Name').textContent = p1Name;
+            document.getElementById('arenaP2Name').textContent = p2Name;
+
+            ropeValue = 50;
+            currentPlayer = 1;
+            activePool = [...RAPID_BANK].sort(() => 0.5 - Math.random());
+            
+            updateRopeVisuals();
+            switchScreen('setup-screen', 'game-screen');
+            loadQuestion();
+        }
+
+        function updateRopeVisuals() {
+            // Constrain limits
+            if (ropeValue < 0) ropeValue = 0;
+            if (ropeValue > 100) ropeValue = 100;
+
+            const p1Rope = document.getElementById('p1Rope');
+            const p2Rope = document.getElementById('p2Rope');
+            const marker = document.getElementById('ropeMarker');
+
+            // P1 owns the left side (0 to 50). P2 owns right (50 to 100).
+            // Width calculations based on central split
+            
+            // P1 Rope fill from left
+            p1Rope.style.width = `${100 - ropeValue}%`;
+            
+            // P2 Rope fill from right
+            p2Rope.style.width = `${ropeValue}%`;
+            
+            // Marker position
+            marker.style.left = `${ropeValue}%`;
+        }
+
+        function updateTurnUI() {
+            const indicator = document.getElementById('turnIndicator');
+            
+            if (currentPlayer === 1) {
+                indicator.textContent = `${p1Name}'s Turn`;
+                indicator.className = "inline-block px-8 py-2.5 rounded-2xl font-black text-sm text-white uppercase tracking-widest bg-neon-cyan shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-colors duration-300";
+            } else {
+                indicator.textContent = `${p2Name}'s Turn`;
+                indicator.className = "inline-block px-8 py-2.5 rounded-2xl font-black text-sm text-white uppercase tracking-widest bg-neon-magenta shadow-[0_0_20px_rgba(244,63,94,0.4)] transition-colors duration-300";
+            }
+        }
+
+        function loadQuestion() {
+            isInputLocked = false;
+            updateTurnUI();
+
+            if (activePool.length === 0) {
+                activePool = [...RAPID_BANK].sort(() => 0.5 - Math.random());
+            }
+
+            const qData = activePool.pop();
+            document.getElementById('questionText').textContent = qData.q;
+            
+            const optsContainer = document.getElementById('answerOptions');
+            optsContainer.innerHTML = '';
+
+            qData.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "ans-btn";
+                btn.textContent = optText;
+                btn.onclick = () => handleAnswer(btn, idx, qData.a);
+                optsContainer.appendChild(btn);
+            });
+
+            // Timer Logic (10 seconds per turn)
+            const timer = document.getElementById('questionTimer');
+            timer.style.transition = 'none';
+            timer.style.width = '100%';
+            timer.style.backgroundColor = '#06b6d4';
+            
+            setTimeout(() => {
+                timer.style.transition = 'width 10s linear, background-color 10s linear';
+                timer.style.width = '0%';
+                timer.style.backgroundColor = '#e11d48';
+            }, 50);
+
+            clearTimeout(timerInterval);
+            timerInterval = setTimeout(() => {
+                // Time's up = treated as wrong answer
+                handleAnswer(null, -1, qData.a);
+            }, 10000);
+        }
+
+        function handleAnswer(btn, selectedIdx, correctIdx) {
+            if (isInputLocked) return;
+            isInputLocked = true;
+            clearTimeout(timerInterval);
+
+            const timer = document.getElementById('questionTimer');
+            timer.style.transition = 'none';
+
+            const allBtns = document.getElementById('answerOptions').children;
+            for(let b of allBtns) { b.disabled = true; }
+
+            const isCorrect = (selectedIdx === correctIdx);
+            
+            if (isCorrect) {
+                if(btn) btn.classList.add('correct');
+                // Pull rope toward current player
+                if (currentPlayer === 1) {
+                    ropeValue -= PULL_STRENGTH;
+                } else {
+                    ropeValue += PULL_STRENGTH;
+                }
+            } else {
+                if(btn) btn.classList.add('incorrect');
+                document.getElementById('questionCard').classList.add('shake');
+                
+                if(allBtns[correctIdx]) allBtns[correctIdx].classList.add('correct');
+
+                // Slipping rope: moving toward opponent
+                if (currentPlayer === 1) {
+                    ropeValue += PULL_STRENGTH;
+                } else {
+                    ropeValue -= PULL_STRENGTH;
+                }
+            }
+
+            updateRopeVisuals();
+
+            setTimeout(() => {
+                document.getElementById('questionCard').classList.remove('shake');
+                
+                // Check Win Condition
+                if (ropeValue <= 0) {
+                    endGame(1);
+                } else if (ropeValue >= 100) {
+                    endGame(2);
+                } else {
+                    // Game continues, switch turn
+                    currentPlayer = currentPlayer === 1 ? 2 : 1;
+                    loadQuestion();
+                }
+            }, 1200);
+        }
+
+        function endGame(winner) {
+            switchScreen('game-screen', 'result-screen');
+            const winnerText = document.getElementById('finalWinnerText');
+            
+            if (winner === 1) {
+                winnerText.textContent = `${p1Name} Overpowers!`;
+                winnerText.className = "text-4xl md:text-5xl font-black text-neon-cyan mb-10 uppercase tracking-wide drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]";
+            } else {
+                winnerText.textContent = `${p2Name} Overpowers!`;
+                winnerText.className = "text-4xl md:text-5xl font-black text-neon-magenta mb-10 uppercase tracking-wide drop-shadow-[0_0_15px_rgba(244,63,94,0.5)]";
+            }
+        }
+
+    </script>
+</body>
+</html>

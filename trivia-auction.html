@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>The Trivia Auction | Bluffing & Bidding Party Game | QuizRealm</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#020617">
+
+    <meta name="description" content="Play The Trivia Auction. A premium local multiplayer bluffing game. Bid on how many items you can list under pressure and force your opponent to prove it.">
+    <meta name="keywords" content="trivia auction, bidding trivia, list building game, multiplayer quiz game, 2 player party game, bluffing trivia">
+
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace']
+                    },
+                    colors: {
+                        console: {
+                            base: '#020617', 
+                            panel: 'rgba(15, 23, 42, 0.6)',
+                        },
+                        neon: {
+                            cyan: '#06b6d4',
+                            cyanDark: '#0891b2',
+                            magenta: '#f43f5e',
+                            magentaDark: '#e11d48',
+                            amber: '#f59e0b',
+                            amberDark: '#d97706',
+                            emerald: '#10b981'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #020617; 
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.1) 0%, transparent 60%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+        }
+
+        /* Console-Style Glass Panels */
+        .ps-panel {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Console Inputs */
+        .ps-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .ps-input:focus { outline: none; background: rgba(0, 0, 0, 0.5); }
+        .focus-cyan:focus { border-color: #06b6d4; box-shadow: 0 0 15px rgba(6,182,212,0.15); }
+        .focus-magenta:focus { border-color: #f43f5e; box-shadow: 0 0 15px rgba(244,63,94,0.15); }
+
+        /* Premium 3D Tactile Buttons */
+        .btn-3d {
+            position: relative;
+            border-bottom-width: 6px;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+        }
+        .btn-3d:active:not(:disabled) {
+            border-bottom-width: 0px;
+            transform: translateY(6px);
+            margin-bottom: 6px; 
+        }
+        .btn-3d:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .btn-cyan { background: #06b6d4; border-color: #0891b2; color: #fff; }
+        .btn-rose { background: #f43f5e; border-color: #e11d48; color: #fff; }
+        .btn-amber { background: #f59e0b; border-color: #d97706; color: #fff; }
+        .btn-dark { background: #1e293b; border-color: #0f172a; color: #f8fafc; }
+        .btn-dark:hover:not(:disabled) { background: #334155; }
+
+        /* Answer Tap Targets (For the Judge) */
+        .answer-node {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .answer-node.revealed {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #34d399;
+            transform: scale(0.95);
+            box-shadow: inset 0 0 15px rgba(16,185,129,0.2);
+            cursor: default;
+        }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Timer Bar */
+        .timer-track {
+            height: 12px; background: rgba(255,255,255,0.05); width: 100%; border-radius: 999px; overflow: hidden;
+        }
+        .timer-fill {
+            height: 100%; background: #f59e0b; transition: width 45s linear, background-color 45s linear;
+        }
+        
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <!-- MAIN WRAPPER: 3-COLUMN DESKTOP LAYOUT -->
+    <div class="max-w-[1600px] mx-auto w-full px-4 py-8 grid grid-cols-1 xl:grid-cols-4 gap-8 flex-grow">
+        
+        <!-- ==========================================
+             LEFT SIDEBAR: GAME RULES (PS HUD Style)
+             ========================================== -->
+        <aside class="hidden xl:flex flex-col gap-4 xl:col-span-1">
+            <div class="ps-panel p-8">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-8 border-b border-white/10 pb-3">
+                    [ SYS.LOG ] Protocol Rules
+                </h3>
+                
+                <div class="space-y-8">
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white flex-shrink-0 shadow-inner text-lg font-bold">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Phase 1: The Auction</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">A prompt appears (e.g. "Name US States"). Take turns bidding higher on how many you can name off the top of your head.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white flex-shrink-0 shadow-inner text-lg font-bold">
+                            <i class="fas fa-hand-paper"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Phase 2: The Challenge</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">If you think your opponent is bluffing, click "Prove It!". The device is then handed to YOU (the Judge).</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white flex-shrink-0 shadow-inner text-lg font-bold">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Phase 3: Execution</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">The Judge sees all the answers. The bidder has 45 seconds to speak their answers out loud. The Judge taps them to verify.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             CENTER COLUMN: THE GAME ENGINE
+             ========================================== -->
+        <main class="xl:col-span-2 flex flex-col justify-center min-h-[75vh] relative overflow-hidden" id="main-container">
+            
+            <!-- SCREEN 1: SETUP -->
+            <div id="setup-screen" class="ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-20">
+                <div class="w-20 h-20 bg-slate-800 border border-slate-700 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                    <i class="fas fa-gavel text-4xl text-neon-amber"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-white mb-3 uppercase tracking-tight">The Trivia Auction</h1>
+                <p class="text-slate-400 text-sm md:text-base font-medium mb-10">A game of bluffing and list-building. First player to 3 points wins the match.</p>
+
+                <div class="space-y-6 mb-10 text-left">
+                    <div>
+                        <label class="block text-[11px] font-mono text-neon-cyan uppercase tracking-widest mb-2 ml-1">Player 1 Designation</label>
+                        <input type="text" id="p1Input" value="Player 1" class="w-full ps-input focus-cyan rounded-xl p-4 text-base font-bold" maxlength="12">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-mono text-neon-magenta uppercase tracking-widest mb-2 ml-1">Player 2 Designation</label>
+                        <input type="text" id="p2Input" value="Player 2" class="w-full ps-input focus-magenta rounded-xl p-4 text-base font-bold" maxlength="12">
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="btn-3d btn-amber w-full py-5 text-xl tracking-widest">
+                    Enter Auction
+                </button>
+            </div>
+
+            <!-- SCREEN 2: BIDDING PHASE -->
+            <div id="bid-screen" class="hidden w-full max-w-2xl mx-auto flex-col fade-in">
+                
+                <!-- Score Header -->
+                <div class="flex justify-between items-center mb-8 px-4">
+                    <div class="text-left">
+                        <div class="text-xs font-black text-neon-cyan uppercase tracking-widest mb-1" id="bidP1Name">P1</div>
+                        <div class="text-3xl font-mono font-black text-white" id="bidP1Score">0</div>
+                    </div>
+                    <div class="text-center px-4 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-mono text-slate-400 uppercase tracking-widest">
+                        Round <span id="roundDisplay">1</span>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-black text-neon-magenta uppercase tracking-widest mb-1" id="bidP2Name">P2</div>
+                        <div class="text-3xl font-mono font-black text-white" id="bidP2Score">0</div>
+                    </div>
+                </div>
+
+                <div class="ps-panel p-8 md:p-10 text-center mb-8 relative border-t-4 border-t-neon-amber">
+                    <h3 class="text-sm font-bold text-neon-amber uppercase tracking-widest mb-4"><i class="fas fa-database mr-2"></i> Category Prompt</h3>
+                    <h2 class="text-3xl md:text-4xl font-black text-white mb-6 leading-tight" id="promptText">
+                        Loading Prompt...
+                    </h2>
+                    <div class="inline-block bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-sm font-mono text-slate-300">
+                        Max Possible Answers: <span id="maxAnswers" class="text-white font-bold">0</span>
+                    </div>
+                </div>
+
+                <!-- Central Bid Display -->
+                <div class="text-center mb-8">
+                    <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">Current Bid</p>
+                    <div class="text-6xl font-mono font-black text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] mb-2" id="currentBidDisplay">1</div>
+                    <p class="text-sm font-bold text-slate-300" id="currentBidderText">Held by Player 1</p>
+                </div>
+
+                <!-- Bidding Controls (Split View) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- P1 Controls -->
+                    <div class="bg-neon-cyan/5 border border-neon-cyan/20 p-4 rounded-2xl flex flex-col gap-3">
+                        <button id="p1BidBtn" onclick="submitBid(1)" class="btn-3d btn-cyan py-4 text-sm md:text-base">Bid <span id="p1NextBid">2</span></button>
+                        <button id="p1ChallengeBtn" onclick="challenge(1)" class="btn-3d btn-dark border-neon-cyan/30 py-4 text-sm text-neon-cyan">Prove It!</button>
+                    </div>
+                    <!-- P2 Controls -->
+                    <div class="bg-neon-magenta/5 border border-neon-magenta/20 p-4 rounded-2xl flex flex-col gap-3">
+                        <button id="p2BidBtn" onclick="submitBid(2)" class="btn-3d btn-rose py-4 text-sm md:text-base">Bid <span id="p2NextBid">2</span></button>
+                        <button id="p2ChallengeBtn" onclick="challenge(2)" class="btn-3d btn-dark border-neon-magenta/30 py-4 text-sm text-neon-magenta">Prove It!</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: EXECUTION PHASE (The Judge Screen) -->
+            <div id="execution-screen" class="hidden w-full max-w-2xl mx-auto flex-col fade-in">
+                
+                <div class="ps-panel p-6 mb-6 text-center border border-neon-amber/50 bg-neon-amber/5">
+                    <h2 class="text-xl md:text-2xl font-black text-white mb-2 uppercase tracking-wide">Device Handoff!</h2>
+                    <p class="text-sm text-slate-300">
+                        <strong class="text-neon-amber" id="judgeName">Judge</strong>, you hold the device. 
+                        <strong class="text-white" id="runnerName">Runner</strong> has 45 seconds to name <strong class="text-white text-lg" id="targetBidDisplay">X</strong> items. Tap the answers as they say them.
+                    </p>
+                </div>
+
+                <div class="timer-track mb-6">
+                    <div id="executionTimer" class="timer-fill" style="width: 100%;"></div>
+                </div>
+
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 class="text-lg font-bold text-white" id="execPromptText">Prompt Text</h3>
+                    <div class="text-xl font-mono font-black bg-slate-800 px-4 py-2 rounded-xl border border-slate-700">
+                        <span id="answersFound" class="text-neon-emerald">0</span> <span class="text-slate-500">/</span> <span id="answersNeeded" class="text-white">5</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 max-h-[45vh] overflow-y-auto custom-scroll pr-2 pb-2" id="answerGrid">
+                    <!-- Answer Nodes Injected Here -->
+                </div>
+
+                <!-- Fallback button if they fail -->
+                <button onclick="failExecution()" class="btn-3d btn-dark w-full mt-6 py-4 border-red-500/30 text-red-400">
+                    <i class="fas fa-times-circle mr-2"></i> Time's Up / Cannot Complete
+                </button>
+            </div>
+
+            <!-- SCREEN 4: ROUND RESULT -->
+            <div id="round-result-screen" class="hidden ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-30">
+                <div id="roundResultIcon" class="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-check text-5xl text-white"></i>
+                </div>
+                
+                <h2 class="text-3xl md:text-4xl font-black text-white mb-4" id="roundResultTitle">Player Wins Round</h2>
+                <p class="text-slate-400 text-sm md:text-base font-medium mb-10" id="roundResultMessage">They successfully named 5 items.</p>
+
+                <button onclick="nextRound()" class="btn-3d btn-cyan w-full py-5 text-lg tracking-widest uppercase">
+                    Next Round
+                </button>
+            </div>
+
+            <!-- SCREEN 5: FINAL MATCH RESULTS -->
+            <div id="final-result-screen" class="hidden ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-40 border-t-4 border-t-neon-amber">
+                <i class="fas fa-crown text-6xl text-neon-amber mb-6 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]"></i>
+                
+                <h2 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-2">Auction Concluded</h2>
+                <div class="text-4xl md:text-5xl font-black text-white mb-10 uppercase tracking-wide" id="finalWinnerText">
+                    Player 1 Wins Match
+                </div>
+
+                <div class="flex justify-center gap-8 mb-12">
+                    <div class="text-center">
+                        <div class="text-xs font-black text-neon-cyan uppercase tracking-widest mb-2" id="finalP1Name">P1</div>
+                        <div class="text-5xl font-mono font-black text-white drop-shadow-md" id="finalP1Score">0</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs font-black text-neon-magenta uppercase tracking-widest mb-2" id="finalP2Name">P2</div>
+                        <div class="text-5xl font-mono font-black text-white drop-shadow-md" id="finalP2Score">0</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <button onclick="location.reload()" class="btn-3d btn-amber w-full py-5 text-lg tracking-widest uppercase">
+                        Play Again
+                    </button>
+                    <a href="/duel.html" class="btn-3d btn-dark w-full py-5 text-lg flex items-center justify-center text-decoration-none tracking-widest uppercase">
+                        Duel Menu
+                    </a>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ==========================================
+             RIGHT SIDEBAR: OTHER MULTIPLAYER MODES
+             ========================================== -->
+        <aside class="hidden xl:flex flex-col gap-6 xl:col-span-1 h-[80vh]">
+            <div class="ps-panel p-8 h-full flex flex-col">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-8 border-b border-white/10 pb-3">
+                    [ LINK ] Duel Directory
+                </h3>
+                
+                <div class="space-y-4 flex-grow custom-scroll overflow-y-auto pr-2">
+                    <!-- Link to Split Screen -->
+                    <a href="/split-screen-trivia.html" class="block btn-3d btn-dark p-5 rounded-2xl text-left border border-slate-700 hover:border-emerald-500 transition-colors">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg"><i class="fas fa-bolt"></i></div>
+                            <h4 class="text-white font-bold text-base">Split-Screen Snap</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 font-normal leading-relaxed">Pure reaction battle. Share the screen and tap True or False before your opponent.</p>
+                    </a>
+
+                    <!-- Link to Tic-Tac-Toe -->
+                    <a href="/tic-tac-toe-trivia.html" class="block btn-3d btn-dark p-5 rounded-2xl text-left border border-slate-700 hover:border-cyan-500 transition-colors">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg"><i class="fas fa-border-all"></i></div>
+                            <h4 class="text-white font-bold text-base">Trivia Tic-Tac-Toe</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 font-normal leading-relaxed">Classic grid strategy meets general knowledge. Claim squares by answering correctly.</p>
+                    </a>
+
+                    <!-- Link to Tug of War -->
+                    <a href="/tug-of-war-trivia.html" class="block btn-3d btn-dark p-5 rounded-2xl text-left border border-slate-700 hover:border-rose-500 transition-colors">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-lg"><i class="fas fa-rope"></i></div>
+                            <h4 class="text-white font-bold text-base">Tug-of-War</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 font-normal leading-relaxed">Endless momentum battle. Pull the rope to your side by chaining correct answers.</p>
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ==========================================
+         BOTTOM SEO BLOCK: 1500+ WORDS OF EDITORIAL CONTENT
+         ========================================== -->
+    <section class="bg-[#0b1224] border-t border-white/5 py-20 mt-auto w-full font-sans">
+        <div class="max-w-[1200px] mx-auto px-4">
+            
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">The Psychology of Bidding Trivia Games</h2>
+                <p class="text-slate-400 text-base max-w-3xl mx-auto leading-relaxed">
+                    Why "The Trivia Auction" is rapidly becoming the ultimate local multiplayer party game. Discover the mechanics of list-building, bluffing, and performing under extreme pressure.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
+                <!-- SEO Column 1 -->
+                <article class="prose prose-invert prose-slate max-w-none">
+                    <h3 class="text-2xl font-bold text-white mb-4 border-b border-white/10 pb-2">The Evolution of Party Trivia</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        For decades, trivia games have relied on a simple binary outcome: you either know the answer, or you don't. While formats like <a href="/split-screen-trivia.html" class="text-neon-amber hover:underline">Split-Screen Snap</a> elevate this by introducing reaction speed, <strong>The Trivia Auction</strong> completely upends the genre by introducing the mechanics of poker and negotiation.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        In this format, knowledge is only half the battle. When presented with a prompt like <em>"Name US States starting with the letter M,"</em> players must quickly assess their own memory reserves while simultaneously evaluating their opponent's confidence. Bidding "I can name 4" might be easy, but when your opponent confidently counters with "I can name 6," you are forced into a psychological corner. Do you bid 7, risking total failure? Or do you say "Prove It," risking giving them a free point if they actually know the answers?
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        This dynamic transforms a standard educational quiz into a high-stakes social deduction game, making it perfect for couch co-op gaming sessions and parties.
+                    </p>
+
+                    <h3 class="text-2xl font-bold text-white mt-10 mb-4 border-b border-white/10 pb-2">List-Building vs. Recognition</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        Cognitive psychology separates memory into two primary functions: recognition and recall. Multiple-choice quizzes rely heavily on recognition—your brain sees the correct answer mixed in with incorrect options and identifies it. 
+                    </p>
+                    <p class="text-slate-400 leading-relaxed">
+                        The Trivia Auction strips away those crutches, forcing pure, unassisted recall. Organizing facts into a mental list on the fly requires intense focus and a broad general knowledge base.
+                    </p>
+                </article>
+                
+                <!-- SEO Column 2 -->
+                <article class="prose prose-invert prose-slate max-w-none">
+                    <h3 class="text-2xl font-bold text-white mb-4 border-b border-white/10 pb-2">Mastering The Trivia Auction</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        To dominate in this 1v1 duel mode, players must master the art of the bluff. If you know all 8 answers to a prompt, do not bid 8 immediately. Increment your bids slowly. By doing so, you encourage your opponent to bid higher than they are comfortable with. Once they stretch their limits, you strike by demanding they prove it.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        Additionally, you must learn to perform under the pressure of the timer. When you are the "Runner" (the player executing the bid), you have exactly 45 seconds to verbalize your answers. The "Judge" (your opponent) holds the device and taps the correct answers as you say them. Panic is your greatest enemy; many players fail a bid of "3" simply because the ticking clock causes their mind to go entirely blank.
+                    </p>
+
+                    <h3 class="text-2xl font-bold text-white mt-10 mb-4 border-b border-white/10 pb-2">Explore The Multiplayer Universe</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        The Trivia Auction is just one specialized module within the QuizRealm multiplayer suite. If you want to refine your skills or challenge your friends in different formats, explore our other premium modes:
+                    </p>
+                    <ul class="space-y-3 text-slate-400 mb-6 list-disc pl-5">
+                        <li><strong>For Grid Strategy:</strong> Play <a href="/tic-tac-toe-trivia.html" class="text-neon-amber font-bold hover:underline">Trivia Tic-Tac-Toe</a>, combining board control with general knowledge.</li>
+                        <li><strong>For Pure Reaction:</strong> Engage in <a href="/split-screen-trivia.html" class="text-neon-amber font-bold hover:underline">Split-Screen Snap</a>, where the fastest finger wins.</li>
+                        <li><strong>For Endurance:</strong> Try <a href="/tug-of-war-trivia.html" class="text-neon-amber font-bold hover:underline">Tug-of-War Trivia</a>, an endless format won through sheer momentum.</li>
+                    </ul>
+                    <p class="text-slate-400 leading-relaxed">
+                        To expand your general knowledge before your next duel, visit our <a href="/categories.html" class="text-neon-amber font-bold hover:underline">Trivia Categories</a> or train your reflexes in the <a href="/arcade.html" class="text-neon-amber font-bold hover:underline">Solo Arcade</a>.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // ==========================================
+        // HARDCODED LIST-BUILDING PROMPT BANK
+        // ==========================================
+        const PROMPT_BANK = [
+            { q: "US States that start with the letter 'M'", answers: ["Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana"] },
+            { q: "Planets in our Solar System", answers: ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"] },
+            { q: "Colors in a standard rainbow", answers: ["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"] },
+            { q: "Months with exactly 31 days", answers: ["January", "March", "May", "July", "August", "October", "December"] },
+            { q: "Original 6 Avengers (MCU movies)", answers: ["Iron Man", "Captain America", "Thor", "Hulk", "Black Widow", "Hawkeye"] },
+            { q: "Harry Potter Books (Main Series)", answers: ["Sorcerer's Stone", "Chamber of Secrets", "Prisoner of Azkaban", "Goblet of Fire", "Order of the Phoenix", "Half-Blood Prince", "Deathly Hallows"] },
+            { q: "Continents of the World", answers: ["Africa", "Antarctica", "Asia", "Europe", "North America", "Australia (Oceania)", "South America"] },
+            { q: "Oceans of the World", answers: ["Pacific", "Atlantic", "Indian", "Southern", "Arctic"] },
+            { q: "US Presidents carved on Mount Rushmore", answers: ["George Washington", "Thomas Jefferson", "Theodore Roosevelt", "Abraham Lincoln"] },
+            { q: "Wives of King Henry VIII", answers: ["Catherine of Aragon", "Anne Boleyn", "Jane Seymour", "Anne of Cleves", "Catherine Howard", "Catherine Parr"] },
+            { q: "The 5 Human Senses", answers: ["Sight", "Hearing", "Taste", "Smell", "Touch"] },
+            { q: "Main characters in 'Friends'", answers: ["Rachel", "Monica", "Phoebe", "Joey", "Chandler", "Ross"] },
+            { q: "Zodiac Signs (Astrology)", answers: ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"] },
+            { q: "Countries that share a land border with Germany", answers: ["Denmark", "Poland", "Czech Republic", "Austria", "Switzerland", "France", "Luxembourg", "Belgium", "Netherlands"] },
+            { q: "Disney Princesses (Official Lineup)", answers: ["Snow White", "Cinderella", "Aurora", "Ariel", "Belle", "Jasmine", "Pocahontas", "Mulan", "Tiana", "Rapunzel", "Merida", "Moana"] }
+        ];
+
+        // ==========================================
+        // GAME STATE
+        // ==========================================
+        let p1Name = "Player 1", p2Name = "Player 2";
+        let p1Score = 0, p2Score = 0;
+        const WIN_SCORE = 3;
+        let currentRound = 1;
+        
+        let activePrompts = [];
+        let currentPrompt = null;
+        
+        // Bidding State
+        let currentBid = 0;
+        let highestBidder = 0; // 0 (none), 1, or 2
+        let whoseTurnToBid = 1; // P1 starts bidding first round
+
+        // Execution State
+        let answersFound = 0;
+        let execTimerInterval = null;
+
+        // --- SCREEN NAVIGATION ---
+        function switchScreen(hideId, showId) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            
+            if(hideEl) hideEl.classList.add('hidden');
+            if(showEl) {
+                showEl.classList.remove('hidden');
+                showEl.classList.remove('fade-in');
+                void showEl.offsetWidth; // reflow
+                showEl.classList.add('fade-in');
+            }
+        }
+
+        // --- INIT MATCH ---
+        function startGame() {
+            const p1Input = document.getElementById('p1Input').value.trim();
+            const p2Input = document.getElementById('p2Input').value.trim();
+            p1Name = p1Input ? p1Input : "Player 1";
+            p2Name = p2Input ? p2Input : "Player 2";
+
+            document.getElementById('bidP1Name').textContent = p1Name;
+            document.getElementById('bidP2Name').textContent = p2Name;
+            
+            p1Score = 0;
+            p2Score = 0;
+            currentRound = 1;
+            whoseTurnToBid = 1;
+
+            activePrompts = [...PROMPT_BANK].sort(() => 0.5 - Math.random());
+
+            updateScoreUI();
+            startBiddingPhase();
+            switchScreen('setup-screen', 'bid-screen');
+        }
+
+        function updateScoreUI() {
+            document.getElementById('bidP1Score').textContent = p1Score;
+            document.getElementById('bidP2Score').textContent = p2Score;
+            document.getElementById('roundDisplay').textContent = currentRound;
+        }
+
+        // --- BIDDING PHASE ---
+        function startBiddingPhase() {
+            if (activePrompts.length === 0) {
+                activePrompts = [...PROMPT_BANK].sort(() => 0.5 - Math.random());
+            }
+            currentPrompt = activePrompts.pop();
+            
+            currentBid = 0;
+            highestBidder = 0; // No one holds it yet
+            
+            document.getElementById('promptText').textContent = currentPrompt.q;
+            document.getElementById('maxAnswers').textContent = currentPrompt.answers.length;
+            
+            updateBiddingUI();
+        }
+
+        function updateBiddingUI() {
+            document.getElementById('currentBidDisplay').textContent = currentBid === 0 ? "-" : currentBid;
+            
+            const bidderText = document.getElementById('currentBidderText');
+            if (highestBidder === 0) {
+                bidderText.textContent = "Open for bidding";
+                bidderText.className = "text-sm font-bold text-slate-400";
+            } else if (highestBidder === 1) {
+                bidderText.textContent = `Held by ${p1Name}`;
+                bidderText.className = "text-sm font-bold text-neon-cyan";
+            } else {
+                bidderText.textContent = `Held by ${p2Name}`;
+                bidderText.className = "text-sm font-bold text-neon-magenta";
+            }
+
+            const maxAnswers = currentPrompt.answers.length;
+            const nextBidAmount = currentBid + 1;
+
+            // P1 Buttons
+            const p1BidBtn = document.getElementById('p1BidBtn');
+            const p1ChalBtn = document.getElementById('p1ChallengeBtn');
+            document.getElementById('p1NextBid').textContent = nextBidAmount;
+
+            // P2 Buttons
+            const p2BidBtn = document.getElementById('p2BidBtn');
+            const p2ChalBtn = document.getElementById('p2ChallengeBtn');
+            document.getElementById('p2NextBid').textContent = nextBidAmount;
+
+            // Logic: You can bid if it's your turn and max isn't reached.
+            // You can challenge if the opponent holds a bid > 0.
+            
+            if (whoseTurnToBid === 1) {
+                p1BidBtn.disabled = nextBidAmount > maxAnswers;
+                p1ChalBtn.disabled = highestBidder !== 2; // Can only challenge if P2 holds bid
+                p2BidBtn.disabled = true;
+                p2ChalBtn.disabled = true;
+            } else {
+                p2BidBtn.disabled = nextBidAmount > maxAnswers;
+                p2ChalBtn.disabled = highestBidder !== 1;
+                p1BidBtn.disabled = true;
+                p1ChalBtn.disabled = true;
+            }
+        }
+
+        function submitBid(player) {
+            currentBid++;
+            highestBidder = player;
+            whoseTurnToBid = player === 1 ? 2 : 1; // pass turn
+            updateBiddingUI();
+        }
+
+        function challenge(challengingPlayer) {
+            // The challenging player is the Judge. The highestBidder is the Runner.
+            const runner = highestBidder;
+            const judge = challengingPlayer;
+            startExecutionPhase(runner, judge);
+        }
+
+        // --- EXECUTION PHASE (JUDGE SCREEN) ---
+        function startExecutionPhase(runner, judge) {
+            switchScreen('bid-screen', 'execution-screen');
+            
+            const runnerName = runner === 1 ? p1Name : p2Name;
+            const judgeName = judge === 1 ? p1Name : p2Name;
+            const runnerColor = runner === 1 ? "text-neon-cyan" : "text-neon-magenta";
+            const judgeColor = judge === 1 ? "text-neon-cyan" : "text-neon-magenta";
+
+            document.getElementById('judgeName').textContent = judgeName;
+            document.getElementById('judgeName').className = `font-black ${judgeColor}`;
+            document.getElementById('runnerName').textContent = runnerName;
+            document.getElementById('runnerName').className = `font-black ${runnerColor}`;
+            
+            document.getElementById('targetBidDisplay').textContent = currentBid;
+            document.getElementById('execPromptText').textContent = currentPrompt.q;
+            
+            answersFound = 0;
+            document.getElementById('answersFound').textContent = answersFound;
+            document.getElementById('answersNeeded').textContent = currentBid;
+
+            // Render Answer Nodes
+            const grid = document.getElementById('answerGrid');
+            grid.innerHTML = '';
+            
+            // Randomize display order for the judge
+            const shuffledAnswers = [...currentPrompt.answers].sort(() => 0.5 - Math.random());
+            
+            shuffledAnswers.forEach((ans) => {
+                const node = document.createElement('div');
+                node.className = "answer-node";
+                node.textContent = ans;
+                node.onclick = () => {
+                    if(!node.classList.contains('revealed')) {
+                        node.classList.add('revealed');
+                        answersFound++;
+                        document.getElementById('answersFound').textContent = answersFound;
+                        checkExecutionProgress(runner, judge);
+                    }
+                };
+                grid.appendChild(node);
+            });
+
+            // Start 45 Second Timer
+            const timer = document.getElementById('executionTimer');
+            timer.style.transition = 'none';
+            timer.style.width = '100%';
+            timer.style.backgroundColor = '#f59e0b';
+            
+            setTimeout(() => {
+                timer.style.transition = 'width 45s linear, background-color 45s linear';
+                timer.style.width = '0%';
+                timer.style.backgroundColor = '#ef4444';
+            }, 50);
+
+            execTimerInterval = setTimeout(() => {
+                failExecution(runner, judge);
+            }, 45000);
+        }
+
+        function checkExecutionProgress(runner, judge) {
+            if (answersFound >= currentBid) {
+                clearTimeout(execTimerInterval);
+                // Runner Wins Round
+                finishRound(runner);
+            }
+        }
+
+        function failExecution() {
+            clearTimeout(execTimerInterval);
+            // Runner failed. Judge wins round.
+            const runner = highestBidder;
+            const judge = runner === 1 ? 2 : 1;
+            finishRound(judge);
+        }
+
+        // --- ROUND RESOLUTION ---
+        function finishRound(roundWinner) {
+            if (roundWinner === 1) p1Score++;
+            if (roundWinner === 2) p2Score++;
+            
+            const title = document.getElementById('roundResultTitle');
+            const msg = document.getElementById('roundResultMessage');
+            const icon = document.getElementById('roundResultIcon');
+
+            if (roundWinner === highestBidder) {
+                // Runner succeeded
+                const name = highestBidder === 1 ? p1Name : p2Name;
+                title.textContent = `${name} Succeeded!`;
+                title.className = `text-3xl md:text-4xl font-black mb-4 ${highestBidder === 1 ? 'text-neon-cyan' : 'text-neon-magenta'}`;
+                msg.textContent = `They successfully named ${currentBid} items and earned a point.`;
+                icon.innerHTML = '<i class="fas fa-check text-5xl text-white"></i>';
+                icon.className = "w-24 h-24 rounded-full bg-neon-emerald flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(16,185,129,0.5)]";
+            } else {
+                // Runner failed, Judge wins
+                const runnerName = highestBidder === 1 ? p1Name : p2Name;
+                const judgeName = roundWinner === 1 ? p1Name : p2Name;
+                title.textContent = `${runnerName} Failed!`;
+                title.className = "text-3xl md:text-4xl font-black mb-4 text-neon-magentaDark";
+                msg.textContent = `They could not name ${currentBid} items in time. ${judgeName} steals the point!`;
+                icon.innerHTML = '<i class="fas fa-times text-5xl text-white"></i>';
+                icon.className = "w-24 h-24 rounded-full bg-neon-magentaDark flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(225,29,72,0.5)]";
+            }
+
+            switchScreen('execution-screen', 'round-result-screen');
+        }
+
+        function nextRound() {
+            if (p1Score >= WIN_SCORE || p2Score >= WIN_SCORE) {
+                endMatch();
+                return;
+            }
+            
+            currentRound++;
+            whoseTurnToBid = currentRound % 2 === 0 ? 2 : 1; // Alternate who starts bidding
+            
+            updateScoreUI();
+            startBiddingPhase();
+            switchScreen('round-result-screen', 'bid-screen');
+        }
+
+        // --- MATCH RESOLUTION ---
+        function endMatch() {
+            document.getElementById('finalP1Name').textContent = p1Name;
+            document.getElementById('finalP2Name').textContent = p2Name;
+            document.getElementById('finalP1Score').textContent = p1Score;
+            document.getElementById('finalP2Score').textContent = p2Score;
+
+            const winnerText = document.getElementById('finalWinnerText');
+            if (p1Score >= WIN_SCORE) {
+                winnerText.textContent = `${p1Name} Wins Match!`;
+                winnerText.className = "text-4xl md:text-5xl font-black mb-10 uppercase tracking-wide text-neon-cyan drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]";
+            } else {
+                winnerText.textContent = `${p2Name} Wins Match!`;
+                winnerText.className = "text-4xl md:text-5xl font-black mb-10 uppercase tracking-wide text-neon-magenta drop-shadow-[0_0_15px_rgba(244,63,94,0.5)]";
+            }
+
+            switchScreen('round-result-screen', 'final-result-screen');
+        }
+    </script>
+</body>
+</html>

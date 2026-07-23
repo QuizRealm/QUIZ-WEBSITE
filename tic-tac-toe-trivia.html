@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Trivia Tic-Tac-Toe | Premium 1v1 Duel | QuizRealm</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#020617">
+
+    <meta name="description" content="Play Trivia Tic-Tac-Toe. A premium local multiplayer strategy game combining general knowledge and grid control.">
+    <meta name="keywords" content="tic tac toe trivia, multiplayer quiz game, 2 player trivia, strategy trivia games, local multiplayer brain games">
+
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace']
+                    },
+                    colors: {
+                        console: {
+                            base: '#020617', // Deepest Slate
+                            surface: '#0f172a',
+                            panel: 'rgba(15, 23, 42, 0.6)',
+                        },
+                        neon: {
+                            cyan: '#06b6d4',
+                            magenta: '#f43f5e',
+                            amber: '#f59e0b'
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 20px rgba(6, 182, 212, 0.4)',
+                        'neon-magenta': '0 0 20px rgba(244, 63, 94, 0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #020617; 
+            background-image: 
+                radial-gradient(circle at 15% 0%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 100%, rgba(244, 63, 94, 0.15) 0%, transparent 50%);
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+        }
+
+        /* Console-Style Glass Panels */
+        .ps-panel {
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Console Inputs */
+        .ps-input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', monospace;
+        }
+        .ps-input:focus {
+            outline: none;
+            background: rgba(0, 0, 0, 0.6);
+        }
+        .focus-cyan:focus { border-color: #06b6d4; box-shadow: inset 0 0 10px rgba(6,182,212,0.2); }
+        .focus-magenta:focus { border-color: #f43f5e; box-shadow: inset 0 0 10px rgba(244,63,94,0.2); }
+
+        /* Category Selector */
+        .cat-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .cat-btn:hover { background: rgba(255, 255, 255, 0.08); }
+        .cat-btn.selected {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: #f59e0b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+            transform: scale(1.02);
+        }
+
+        /* Main Game Buttons */
+        .ps-button {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.2s ease;
+            overflow: hidden;
+        }
+        .ps-button:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        .ps-button:active:not(:disabled) { transform: translateY(1px); }
+        .ps-button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Tic Tac Toe Grid */
+        .ttt-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 12px;
+            width: 100%;
+            aspect-ratio: 1/1;
+        }
+        .ttt-cell {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            font-weight: 900;
+            font-family: 'Space Grotesk', monospace;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: transparent;
+        }
+        .ttt-cell:hover:not(.claimed) {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+        }
+        .ttt-cell.claimed-p1 {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: #06b6d4;
+            color: #06b6d4;
+            box-shadow: inset 0 0 20px rgba(6,182,212,0.2), 0 0 15px rgba(6,182,212,0.4);
+            cursor: default;
+        }
+        .ttt-cell.claimed-p2 {
+            background: rgba(244, 63, 94, 0.15);
+            border-color: #f43f5e;
+            color: #f43f5e;
+            box-shadow: inset 0 0 20px rgba(244,63,94,0.2), 0 0 15px rgba(244,63,94,0.4);
+            cursor: default;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        
+        .modal-card {
+            transform: scale(0.95) translateY(10px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .modal-card { transform: scale(1) translateY(0); }
+
+        /* Answer Buttons */
+        .ans-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            border-radius: 1rem;
+            font-weight: 600;
+            padding: 1.25rem;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+        .ans-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .ans-btn.correct {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: #10b981 !important;
+            color: #34d399 !important;
+            box-shadow: 0 0 15px rgba(16,185,129,0.3);
+        }
+        .ans-btn.incorrect {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: #ef4444 !important;
+            color: #f87171 !important;
+        }
+
+        /* Animations */
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
+        }
+
+        .timer-track {
+            height: 3px; background: rgba(255,255,255,0.1); width: 100%;
+        }
+        .timer-fill {
+            height: 100%; background: #f8fafc; transition: width 10s linear, background-color 10s linear;
+        }
+        
+        .hide-scroll::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <quiz-header></quiz-header>
+
+    <!-- MAIN WRAPPER: 3-COLUMN LAYOUT -->
+    <div class="max-w-[1600px] mx-auto w-full px-4 py-8 grid grid-cols-1 xl:grid-cols-4 gap-8 flex-grow">
+        
+        <!-- ==========================================
+             LEFT SIDEBAR: GAME RULES (PS HUD Style)
+             ========================================== -->
+        <aside class="hidden xl:flex flex-col gap-4 xl:col-span-1 h-[80vh]">
+            <div class="ps-panel p-6">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-6 border-b border-white/10 pb-2">[ SYS.LOG ] Objectives</h3>
+                
+                <div class="space-y-6">
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 flex-shrink-0">
+                            <i class="fas fa-crosshairs"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white mb-1">Target Sector</h4>
+                            <p class="text-xs text-slate-400">Select an unclaimed node on the central grid.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 flex-shrink-0">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white mb-1">Decrypt Data</h4>
+                            <p class="text-xs text-slate-400">Answer the trivia prompt correctly to claim the sector.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 flex-shrink-0">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white mb-1">Establish Link</h4>
+                            <p class="text-xs text-slate-400">Secure three consecutive sectors (horizontal, vertical, or diagonal) to win.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ps-panel p-6 mt-auto">
+                <a href="/duel.html" class="flex items-center justify-between group cursor-pointer text-slate-400 hover:text-white transition-colors">
+                    <span class="text-xs font-mono uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i> Exit Arena</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             CENTER COLUMN: THE GAME ENGINE
+             ========================================== -->
+        <main class="xl:col-span-2 flex flex-col justify-center min-h-[70vh] relative">
+            
+            <!-- SCREEN 1: SETUP -->
+            <div id="setup-screen" class="ps-panel p-8 w-full max-w-lg mx-auto">
+                <div class="text-center mb-8">
+                    <i class="fas fa-border-all text-5xl text-slate-600 mb-4"></i>
+                    <h1 class="text-3xl font-black text-white tracking-wide uppercase">Tic-Tac-Toe</h1>
+                    <p class="text-slate-400 text-sm mt-2">Tactical Trivia Grid</p>
+                </div>
+
+                <div class="space-y-6 mb-8">
+                    <!-- Players -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-mono text-neon-cyan uppercase tracking-widest mb-2">Player 1 [X]</label>
+                            <input type="text" id="p1Input" value="Player 1" class="w-full ps-input focus-cyan rounded-xl p-3 text-sm font-bold text-center" maxlength="12">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono text-neon-magenta uppercase tracking-widest mb-2">Player 2 [O]</label>
+                            <input type="text" id="p2Input" value="Player 2" class="w-full ps-input focus-magenta rounded-xl p-3 text-sm font-bold text-center" maxlength="12">
+                        </div>
+                    </div>
+
+                    <!-- Category Selector -->
+                    <div>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">Select Database</label>
+                        <div class="grid grid-cols-3 gap-2" id="setupCategories">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="startGame()" id="startBtn" class="ps-button w-full py-4 rounded-xl font-bold text-sm tracking-widest bg-white/10 hover:bg-white/20" disabled>
+                    Initialize Match
+                </button>
+            </div>
+
+            <!-- SCREEN 2: GAME BOARD -->
+            <div id="game-screen" class="hidden w-full max-w-lg mx-auto flex-col items-center">
+                
+                <!-- Player HUD -->
+                <div class="w-full flex justify-between items-center mb-8 px-2">
+                    <div id="p1Badge" class="flex flex-col items-start transition-all duration-300">
+                        <span class="text-[10px] font-mono text-neon-cyan uppercase tracking-widest mb-1" id="p1Display">P1</span>
+                        <div class="w-12 h-12 rounded-xl bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center text-2xl font-black text-neon-cyan shadow-[0_0_15px_rgba(6,182,212,0.2)]">X</div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div id="statusBanner" class="px-6 py-2 rounded-full border border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan font-bold uppercase tracking-widest text-[10px] shadow-[0_0_10px_rgba(6,182,212,0.2)] transition-all duration-300">
+                            P1's Turn
+                        </div>
+                    </div>
+
+                    <div id="p2Badge" class="flex flex-col items-end transition-all duration-300 opacity-50 scale-90">
+                        <span class="text-[10px] font-mono text-neon-magenta uppercase tracking-widest mb-1" id="p2Display">P2</span>
+                        <div class="w-12 h-12 rounded-xl bg-neon-magenta/10 border border-neon-magenta/30 flex items-center justify-center text-2xl font-black text-neon-magenta">O</div>
+                    </div>
+                </div>
+
+                <!-- Tic Tac Toe Grid -->
+                <div class="ps-panel ttt-grid" id="boardGrid">
+                    <!-- Generated via JS -->
+                </div>
+            </div>
+
+            <!-- QUESTION MODAL (Overlay) -->
+            <div id="questionModal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="modal-card ps-panel p-6 md:p-8 w-full max-w-md mx-auto flex flex-col border border-white/20">
+                    
+                    <div class="timer-track mb-6">
+                        <div id="questionTimer" class="timer-fill" style="width: 100%;"></div>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+                        <span id="modalPlayerTurn" class="text-xs font-mono uppercase tracking-widest text-neon-cyan">P1 Turn</span>
+                        <span class="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-2 py-1 rounded uppercase tracking-widest border border-amber-400/20">Decrypting...</span>
+                    </div>
+                    
+                    <h2 class="text-lg md:text-xl font-bold text-white mb-8 leading-snug" id="questionText">
+                        Loading sequence...
+                    </h2>
+                    
+                    <div class="grid gap-3" id="answerOptions">
+                        <!-- Buttons injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: RESULTS -->
+            <div id="result-screen" class="hidden ps-panel p-10 w-full max-w-md mx-auto text-center border-t-4 border-t-amber-500">
+                <i class="fas fa-crown text-5xl text-amber-500 mb-6 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]"></i>
+                
+                <h2 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-2">Match Terminated</h2>
+                <div class="text-3xl font-black text-white mb-10 tracking-wide uppercase" id="winnerText">
+                    Player 1 Wins
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <button onclick="resetGame()" class="ps-button bg-white/10 w-full py-4 rounded-xl text-sm font-bold">
+                        Initialize Rematch
+                    </button>
+                    <a href="/categories.html" class="ps-button w-full py-4 rounded-xl text-sm font-bold flex items-center justify-center text-decoration-none">
+                        Access Other Hubs
+                    </a>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ==========================================
+             RIGHT SIDEBAR: TACTICS (PS HUD Style)
+             ========================================== -->
+        <aside class="hidden xl:flex flex-col gap-4 xl:col-span-1 h-[80vh]">
+            <div class="ps-panel p-6">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-6 border-b border-white/10 pb-2">[ SYS.LOG ] Tactics</h3>
+                
+                <div class="space-y-6">
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white mb-1">Volatile Nodes</h4>
+                            <p class="text-xs text-slate-400">The center sector provides the highest probability of establishing a link. Defend it.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 flex-shrink-0">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white mb-1">Data Scramble</h4>
+                            <p class="text-xs text-slate-400">If you fail a decryption (wrong answer), the node scrambles. The next player to click it will face a completely new question.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 flex-shrink-0">
+                            <i class="fas fa-stopwatch"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white mb-1">Time Constraint</h4>
+                            <p class="text-xs text-slate-400">You have 10 seconds per prompt. Failure to act results in an automatic scramble.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ==========================================
+         BOTTOM SEO BLOCK: EDITORIAL CONTENT
+         ========================================== -->
+    <section class="bg-[#0b1224] border-t border-white/5 py-20 mt-auto w-full">
+        <div class="max-w-[1200px] mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">The Ultimate Guide to 1v1 Tic-Tac-Toe Trivia</h2>
+                <p class="text-slate-400 text-sm max-w-2xl mx-auto leading-relaxed">Everything you need to know about combining grid strategy with general knowledge in our premium multiplayer suite.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
+                <!-- Column 1 -->
+                <article class="prose prose-invert prose-sm max-w-none">
+                    <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2"><i class="fas fa-gamepad text-neon-cyan"></i> Why Multiplayer Brain Games?</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        Participating in educational games for adults and competitive brain training provides significant cognitive advantages. When you play trivia games with friends, your brain experiences a unique mixture of stress (from the competition) and reward (from dopamine released upon recalling correct information).
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        In <em>Trivia Tic-Tac-Toe</em>, you are forced to engage in split-second decision-making. If your opponent is one square away from victory, the pressure increases exponentially. This mild competitive stress has been shown to improve memory retention and enhance neuroplasticity. You aren't just passing the time; you are actively conditioning your mind to recall facts under pressure.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed">
+                        The QuizRealm engine ensures a completely fair fight by randomizing question difficulty across the grid. Every match is entirely unique. If you prefer to train solo before jumping into a duel, we highly recommend utilizing our single-player <a href="/arcade.html" class="text-neon-cyan hover:underline">Arcade Hub</a>.
+                    </p>
+                </article>
+                
+                <!-- Column 2 -->
+                <article class="prose prose-invert prose-sm max-w-none">
+                    <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2"><i class="fas fa-cogs text-neon-magenta"></i> The Scramble Mechanic</h3>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        What makes this specific QuizRealm game mode so addictive is the dynamic question pool. In early iterations of trivia grid games, a failed question remained on the board, allowing the next player an easy steal. We evolved the mechanic.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-4">
+                        Now, if a player attempts to claim a square but answers the trivia question incorrectly, their turn ends and the node "scrambles." When the next player attempts to take that exact same square, the engine pulls a <strong>completely new question</strong> from the database. You cannot rely on your opponent's mistakes to secure victory.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed">
+                        Ready for more multiplayer formats? Explore the <a href="/group-hub.html" class="text-neon-magenta hover:underline">QuizRealm Group Hub</a> to take these mechanics online, or check out our upcoming modes like the <a href="/trivia-auction.html" class="text-neon-magenta hover:underline">Trivia Auction</a>, <a href="/split-screen-trivia.html" class="text-neon-magenta hover:underline">Split-Screen Snap</a>, and <a href="/tug-of-war-trivia.html" class="text-neon-magenta hover:underline">Tug-of-War Trivia</a> for endless battle experiences.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        // ==========================================
+        // GUARANTEED QUESTION BANKS (20+ per category)
+        // ==========================================
+        const TRIVIA_BANKS = {
+            general: {
+                label: "General Knowledge",
+                icon: "fa-globe",
+                questions: [
+                    { q: "What is the most widely spoken language in the world?", options: ["English", "Mandarin", "Spanish", "Hindi"], a: 0 },
+                    { q: "How many time zones does Russia have?", options: ["9", "11", "13", "15"], a: 1 },
+                    { q: "What is the national animal of Scotland?", options: ["Lion", "Unicorn", "Eagle", "Stag"], a: 1 },
+                    { q: "How many dots appear on a pair of dice?", options: ["36", "42", "48", "54"], a: 1 },
+                    { q: "What is the tiny piece at the end of a shoelace called?", options: ["Aglet", "Grommet", "Ferrule", "Eyelet"], a: 0 },
+                    { q: "Which is the only body part fully grown from birth?", options: ["Ears", "Eyes", "Nose", "Brain"], a: 1 },
+                    { q: "What is the largest internal organ?", options: ["Heart", "Brain", "Liver", "Lungs"], a: 2 },
+                    { q: "Who invented the lightbulb?", options: ["Nikola Tesla", "Thomas Edison", "Alexander Bell", "Albert Einstein"], a: 1 },
+                    { q: "What is the capital of Japan?", options: ["Seoul", "Beijing", "Tokyo", "Bangkok"], a: 2 },
+                    { q: "How many continents are there?", options: ["5", "6", "7", "8"], a: 2 },
+                    { q: "Which animal is the tallest in the world?", options: ["Elephant", "Giraffe", "Ostrich", "Rhino"], a: 1 },
+                    { q: "What is the main ingredient in guacamole?", options: ["Tomato", "Onion", "Avocado", "Pepper"], a: 2 },
+                    { q: "How many colors are in a rainbow?", options: ["5", "6", "7", "8"], a: 2 },
+                    { q: "What is the chemical symbol for Gold?", options: ["Ag", "Au", "Pb", "Fe"], a: 1 },
+                    { q: "Which country gifted the Statue of Liberty to the US?", options: ["Spain", "England", "Germany", "France"], a: 3 },
+                    { q: "How many legs does a spider have?", options: ["6", "8", "10", "12"], a: 1 },
+                    { q: "What is the largest ocean on Earth?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], a: 3 },
+                    { q: "What is the hardest natural substance on Earth?", options: ["Gold", "Iron", "Diamond", "Quartz"], a: 2 },
+                    { q: "How many hearts does an octopus have?", options: ["1", "2", "3", "4"], a: 2 },
+                    { q: "What is the speed of light in a vacuum (approx)?", options: ["300,000 km/s", "150,000 km/s", "1,000,000 km/s", "500,000 km/s"], a: 0 }
+                ]
+            },
+            geography: {
+                label: "Geography",
+                icon: "fa-map-marker-alt",
+                questions: [
+                    { q: "What is the smallest independent country?", options: ["Monaco", "Vatican City", "San Marino", "Liechtenstein"], a: 1 },
+                    { q: "Which African country has the largest population?", options: ["Egypt", "South Africa", "Nigeria", "Ethiopia"], a: 2 },
+                    { q: "What is the capital city of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Brisbane"], a: 2 },
+                    { q: "Mount Everest is in which mountain range?", options: ["Alps", "Andes", "Rockies", "Himalayas"], a: 3 },
+                    { q: "Which river flows through the Grand Canyon?", options: ["Mississippi", "Colorado", "Snake", "Missouri"], a: 1 },
+                    { q: "What is the longest river in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], a: 1 },
+                    { q: "Which country has the most islands?", options: ["Canada", "Indonesia", "Sweden", "Philippines"], a: 2 },
+                    { q: "What desert covers northern Africa?", options: ["Gobi", "Kalahari", "Mojave", "Sahara"], a: 3 },
+                    { q: "In what ocean is the Bermuda Triangle?", options: ["Pacific", "Atlantic", "Indian", "Arctic"], a: 1 },
+                    { q: "Which U.S. state has the longest coastline?", options: ["California", "Florida", "Texas", "Alaska"], a: 3 },
+                    { q: "What is the capital of Canada?", options: ["Toronto", "Vancouver", "Ottawa", "Montreal"], a: 2 },
+                    { q: "Which country is shaped like a boot?", options: ["Spain", "Greece", "Italy", "Portugal"], a: 2 },
+                    { q: "What is the largest country by land area?", options: ["China", "USA", "Canada", "Russia"], a: 3 },
+                    { q: "Which continent is also a country?", options: ["Antarctica", "Australia", "Europe", "South America"], a: 1 },
+                    { q: "The Amazon Rainforest is located in which continent?", options: ["Africa", "Asia", "South America", "North America"], a: 2 }
+                ]
+            },
+            history: {
+                label: "History",
+                icon: "fa-landmark",
+                questions: [
+                    { q: "In what year did the Titanic sink?", options: ["1910", "1912", "1914", "1916"], a: 1 },
+                    { q: "Who was the first woman to win a Nobel Prize?", options: ["Marie Curie", "Mother Teresa", "Rosa Parks", "Ada Lovelace"], a: 0 },
+                    { q: "Rome was built on how many hills?", options: ["5", "7", "9", "12"], a: 1 },
+                    { q: "Which empire was ruled by Genghis Khan?", options: ["Roman", "Ottoman", "Mongol", "Persian"], a: 2 },
+                    { q: "Who wrote the Declaration of Independence?", options: ["George Washington", "Thomas Jefferson", "John Adams", "Alexander Hamilton"], a: 1 },
+                    { q: "What was the first artificial Earth satellite?", options: ["Apollo 1", "Sputnik 1", "Explorer 1", "Voyager 1"], a: 1 },
+                    { q: "In what year did World War II end?", options: ["1943", "1944", "1945", "1946"], a: 2 },
+                    { q: "Who was the first U.S. President?", options: ["Thomas Jefferson", "John Adams", "George Washington", "James Madison"], a: 2 },
+                    { q: "What civilization built Machu Picchu?", options: ["Aztec", "Maya", "Inca", "Olmec"], a: 2 },
+                    { q: "Who discovered penicillin?", options: ["Alexander Fleming", "Louis Pasteur", "Marie Curie", "Isaac Newton"], a: 0 },
+                    { q: "Who painted the Sistine Chapel ceiling?", options: ["Da Vinci", "Michelangelo", "Raphael", "Donatello"], a: 1 },
+                    { q: "In what year did the Berlin Wall fall?", options: ["1987", "1989", "1991", "1993"], a: 1 },
+                    { q: "Who was the first person to walk on the moon?", options: ["Buzz Aldrin", "Yuri Gagarin", "Neil Armstrong", "John Glenn"], a: 2 },
+                    { q: "The ancient Egyptians built pyramids as what?", options: ["Temples", "Palaces", "Tombs", "Fortresses"], a: 2 },
+                    { q: "Who was the British Prime Minister during WWII?", options: ["Neville Chamberlain", "Winston Churchill", "Clement Attlee", "Margaret Thatcher"], a: 1 }
+                ]
+            },
+            science: {
+                label: "Science",
+                icon: "fa-flask",
+                questions: [
+                    { q: "What is the hardest natural substance?", options: ["Gold", "Iron", "Diamond", "Platinum"], a: 2 },
+                    { q: "Which element has the symbol 'O'?", options: ["Osmium", "Oxygen", "Oganesson", "Oxide"], a: 1 },
+                    { q: "What is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria", "Endoplasmic Reticulum"], a: 2 },
+                    { q: "What gas do plants absorb?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], a: 2 },
+                    { q: "At what temp does water boil (Celsius)?", options: ["50", "90", "100", "120"], a: 2 },
+                    { q: "What is the closest planet to the Sun?", options: ["Venus", "Mars", "Mercury", "Earth"], a: 2 },
+                    { q: "What part of the brain controls balance?", options: ["Cerebrum", "Cerebellum", "Brainstem", "Hypothalamus"], a: 1 },
+                    { q: "What wave is used in radar?", options: ["Infrared", "Microwave", "Ultraviolet", "Radio"], a: 3 },
+                    { q: "Who proposed the theory of relativity?", options: ["Isaac Newton", "Niels Bohr", "Albert Einstein", "Galileo Galilei"], a: 2 },
+                    { q: "What is the chemical formula for water?", options: ["HO2", "H2O", "H2O2", "OH"], a: 1 },
+                    { q: "What is the center of an atom called?", options: ["Proton", "Electron", "Nucleus", "Neutron"], a: 2 },
+                    { q: "Which planet is known for its rings?", options: ["Jupiter", "Uranus", "Neptune", "Saturn"], a: 3 },
+                    { q: "What force keeps us on the ground?", options: ["Magnetism", "Friction", "Gravity", "Inertia"], a: 2 },
+                    { q: "What is the study of mushrooms called?", options: ["Botany", "Mycology", "Zoology", "Entomology"], a: 1 },
+                    { q: "Which blood cells fight infection?", options: ["Red", "White", "Platelets", "Plasma"], a: 1 }
+                ]
+            },
+            popculture: {
+                label: "Pop Culture",
+                icon: "fa-film",
+                questions: [
+                    { q: "Which actor plays Iron Man?", options: ["Chris Evans", "Chris Hemsworth", "Robert Downey Jr.", "Mark Ruffalo"], a: 2 },
+                    { q: "Where does Batman live?", options: ["Metropolis", "Star City", "Central City", "Gotham City"], a: 3 },
+                    { q: "Who won the first season of American Idol?", options: ["Kelly Clarkson", "Carrie Underwood", "Ruben Studdard", "Fantasia Barrino"], a: 0 },
+                    { q: "Which show features a meth kingpin?", options: ["The Wire", "Breaking Bad", "Mad Men", "The Sopranos"], a: 1 },
+                    { q: "What is the highest-grossing film of all time?", options: ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars"], a: 0 },
+                    { q: "Who wrote Harry Potter?", options: ["J.R.R. Tolkien", "George R.R. Martin", "J.K. Rowling", "Suzanne Collins"], a: 2 },
+                    { q: "Name of the coffee shop in Friends?", options: ["Central Perk", "Monk's Diner", "MacLaren's Pub", "The Peach Pit"], a: 0 },
+                    { q: "Who is the 'Queen of Pop'?", options: ["Britney Spears", "Madonna", "Lady Gaga", "Whitney Houston"], a: 1 },
+                    { q: "In The Matrix, which pill does Neo take?", options: ["Blue", "Red", "Green", "Yellow"], a: 1 },
+                    { q: "Captain America's shield is made of?", options: ["Adamantium", "Vibranium", "Promethium", "Carbonadium"], a: 1 },
+                    { q: "Who directed 'Jurassic Park'?", options: ["George Lucas", "James Cameron", "Steven Spielberg", "Christopher Nolan"], a: 2 },
+                    { q: "What is the name of Mickey Mouse's dog?", options: ["Goofy", "Pluto", "Snoopy", "Odie"], a: 1 },
+                    { q: "Which pop star's fans are called 'Little Monsters'?", options: ["Katy Perry", "Taylor Swift", "Lady Gaga", "Ariana Grande"], a: 2 },
+                    { q: "What TV show is set in Westeros?", options: ["The Witcher", "Game of Thrones", "Vikings", "Lord of the Rings"], a: 1 },
+                    { q: "Who voiced the Genie in Aladdin (1992)?", options: ["Will Smith", "Robin Williams", "Eddie Murphy", "Jim Carrey"], a: 1 }
+                ]
+            },
+            mix: {
+                label: "Everything Mix",
+                icon: "fa-dice",
+                questions: [] // Generated dynamically below
+            }
+        };
+
+        // Populate Mix Category dynamically from others
+        let mixQuestions = [];
+        ['general', 'geography', 'history', 'science', 'popculture'].forEach(k => {
+            mixQuestions.push(...TRIVIA_BANKS[k].questions);
+        });
+        TRIVIA_BANKS.mix.questions = mixQuestions;
+
+
+        // ==========================================
+        // GAME STATE & LOGIC
+        // ==========================================
+        let selectedCategoryKey = 'mix'; // Default
+        let p1Name = "Player 1", p2Name = "Player 2";
+        let currentPlayer = 1; // 1 or 2
+        let board = Array(9).fill(null); // null, 1, or 2
+        let isInputLocked = false;
+        let activeSquareIndex = null;
+        let activeQuestionPool = []; // Global pool for dynamic popping
+        let timerInterval = null;
+        
+        const winLines = [
+            [0,1,2], [3,4,5], [6,7,8], // Rows
+            [0,3,6], [1,4,7], [2,5,8], // Cols
+            [0,4,8], [2,4,6]           // Diagonals
+        ];
+
+        // Initialization
+        window.onload = () => {
+            initCategorySelector();
+        };
+
+        function initCategorySelector() {
+            const container = document.getElementById('setupCategories');
+            container.innerHTML = '';
+            
+            Object.keys(TRIVIA_BANKS).forEach(key => {
+                const cat = TRIVIA_BANKS[key];
+                const btn = document.createElement('button');
+                btn.className = `cat-btn p-3 rounded-xl flex flex-col items-center gap-2 ${key === 'mix' ? 'selected' : ''}`;
+                btn.innerHTML = `
+                    <i class="fas ${cat.icon} text-xl text-slate-300"></i>
+                    <span class="text-[10px] font-mono text-slate-300 uppercase tracking-widest">${cat.label}</span>
+                `;
+                btn.onclick = () => {
+                    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedCategoryKey = key;
+                };
+                container.appendChild(btn);
+            });
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        function startGame() {
+            const p1Input = document.getElementById('p1Input').value.trim();
+            const p2Input = document.getElementById('p2Input').value.trim();
+            p1Name = p1Input ? p1Input : "Player 1";
+            p2Name = p2Input ? p2Input : "Player 2";
+
+            document.getElementById('p1Display').textContent = p1Name;
+            document.getElementById('p2Display').textContent = p2Name;
+
+            // Load and shuffle the global question pool for this match
+            activeQuestionPool = [...TRIVIA_BANKS[selectedCategoryKey].questions].sort(() => 0.5 - Math.random());
+
+            resetBoard();
+            
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            updateTurnUI();
+        }
+
+        function resetBoard() {
+            board = Array(9).fill(null);
+            currentPlayer = 1;
+            isInputLocked = false;
+            
+            const grid = document.getElementById('boardGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.className = "ttt-cell";
+                cell.textContent = "X"; // Hidden by CSS
+                cell.onclick = () => handleCellClick(i, cell);
+                grid.appendChild(cell);
+            }
+        }
+
+        function updateTurnUI() {
+            const banner = document.getElementById('statusBanner');
+            const p1Badge = document.getElementById('p1Badge');
+            const p2Badge = document.getElementById('p2Badge');
+
+            if (currentPlayer === 1) {
+                banner.textContent = `${p1Name}'s Turn`;
+                banner.className = "px-6 py-2 rounded-full border border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan font-bold uppercase tracking-widest text-[10px] shadow-[0_0_10px_rgba(6,182,212,0.2)] transition-all duration-300";
+                
+                p1Badge.classList.remove('opacity-50', 'scale-90');
+                p2Badge.classList.add('opacity-50', 'scale-90');
+            } else {
+                banner.textContent = `${p2Name}'s Turn`;
+                banner.className = "px-6 py-2 rounded-full border border-neon-magenta/50 bg-neon-magenta/10 text-neon-magenta font-bold uppercase tracking-widest text-[10px] shadow-[0_0_10px_rgba(244,63,94,0.2)] transition-all duration-300";
+                
+                p2Badge.classList.remove('opacity-50', 'scale-90');
+                p1Badge.classList.add('opacity-50', 'scale-90');
+            }
+        }
+
+        // ==========================================
+        // DYNAMIC QUESTION FETCHING (THE STEAL/SCRAMBLE MECHANIC)
+        // ==========================================
+        function handleCellClick(index, cellEl) {
+            if (board[index] !== null || isInputLocked) return;
+            activeSquareIndex = index;
+            
+            // Check if pool is empty, reshuffle if necessary
+            if (activeQuestionPool.length === 0) {
+                activeQuestionPool = [...TRIVIA_BANKS[selectedCategoryKey].questions].sort(() => 0.5 - Math.random());
+            }
+
+            // Pop a fresh question from the pool.
+            // If they get it wrong, the next click on this tile will grab a NEW question.
+            const qData = activeQuestionPool.pop();
+            openModal(qData);
+        }
+
+        function openModal(qData) {
+            isInputLocked = true; // Lock background board
+            const modal = document.getElementById('questionModal');
+            document.getElementById('questionText').textContent = qData.q;
+            
+            const pTurn = document.getElementById('modalPlayerTurn');
+            if(currentPlayer === 1) {
+                pTurn.textContent = `${p1Name}'s Turn`;
+                pTurn.className = "text-xs font-mono uppercase tracking-widest text-neon-cyan";
+            } else {
+                pTurn.textContent = `${p2Name}'s Turn`;
+                pTurn.className = "text-xs font-mono uppercase tracking-widest text-neon-magenta";
+            }
+
+            const optsContainer = document.getElementById('answerOptions');
+            optsContainer.innerHTML = '';
+
+            qData.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "ans-btn w-full";
+                btn.textContent = optText;
+                btn.onclick = () => processAnswer(btn, idx, qData.a);
+                optsContainer.appendChild(btn);
+            });
+
+            modal.classList.add('active');
+
+            // Timer Logic
+            const timer = document.getElementById('questionTimer');
+            timer.style.transition = 'none';
+            timer.style.width = '100%';
+            timer.style.backgroundColor = '#f8fafc';
+            
+            // Allow CSS to reset, then animate
+            setTimeout(() => {
+                timer.style.transition = 'width 10s linear, background-color 10s linear';
+                timer.style.width = '0%';
+                timer.style.backgroundColor = '#ef4444';
+            }, 50);
+
+            // 10 Second Auto-Fail
+            timerInterval = setTimeout(() => {
+                if(modal.classList.contains('active')) {
+                    // Simulate wrong answer if time runs out
+                    processAnswer(null, -1, qData.a);
+                }
+            }, 10000);
+        }
+
+        function processAnswer(btn, selectedIdx, correctIdx) {
+            clearTimeout(timerInterval);
+            const timer = document.getElementById('questionTimer');
+            timer.style.transition = 'none'; // Freeze timer
+
+            const allBtns = document.getElementById('answerOptions').children;
+            for(let b of allBtns) { b.disabled = true; }
+
+            const isCorrect = (selectedIdx === correctIdx);
+            
+            if (isCorrect && btn) {
+                btn.classList.add('correct');
+                // Claim Square
+                board[activeSquareIndex] = currentPlayer;
+                const cell = document.getElementById('boardGrid').children[activeSquareIndex];
+                cell.textContent = currentPlayer === 1 ? "X" : "O";
+                cell.classList.add(`claimed-p${currentPlayer}`);
+            } else {
+                if (btn) btn.classList.add('incorrect');
+                document.querySelector('.modal-card').classList.add('shake');
+                // Show Correct
+                if(allBtns[correctIdx]) allBtns[correctIdx].classList.add('correct');
+                // The square remains unclaimed, and because we popped the question, 
+                // the next click gets a new one automatically.
+            }
+
+            setTimeout(() => {
+                closeModal();
+                if (isCorrect && checkWin(currentPlayer)) {
+                    endGame(currentPlayer);
+                } else if (!board.includes(null)) {
+                    endGame(null); // Draw
+                } else {
+                    // Switch turn
+                    currentPlayer = currentPlayer === 1 ? 2 : 1;
+                    updateTurnUI();
+                    isInputLocked = false;
+                }
+            }, 1500);
+        }
+
+        function closeModal() {
+            document.getElementById('questionModal').classList.remove('active');
+            document.querySelector('.modal-card').classList.remove('shake');
+        }
+
+        function checkWin(player) {
+            return winLines.some(line => {
+                return line.every(index => board[index] === player);
+            });
+        }
+
+        function endGame(winner) {
+            document.getElementById('game-screen').classList.add('hidden');
+            const resScreen = document.getElementById('result-screen');
+            resScreen.classList.remove('hidden');
+            
+            const winnerText = document.getElementById('winnerText');
+            
+            if (winner === 1) {
+                winnerText.textContent = `${p1Name} Wins!`;
+                winnerText.className = "text-3xl font-black mb-10 tracking-wide uppercase text-neon-cyan drop-shadow-[0_0_10px_rgba(6,182,212,0.4)]";
+            } else if (winner === 2) {
+                winnerText.textContent = `${p2Name} Wins!`;
+                winnerText.className = "text-3xl font-black mb-10 tracking-wide uppercase text-neon-magenta drop-shadow-[0_0_10px_rgba(244,63,94,0.4)]";
+            } else {
+                winnerText.textContent = "Draw Detected";
+                winnerText.className = "text-3xl font-black mb-10 tracking-wide uppercase text-slate-400";
+            }
+        }
+
+        function resetGame() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+            isInputLocked = false;
+        }
+    </script>
+</body>
+</html>

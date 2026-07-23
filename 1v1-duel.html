@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+<!-- End Google Tag Manager -->
+ <script type="module" src="firebase-config.js"></script>
+  <script src="game-engine.js"></script> <script src="components.js" defer></script>
+<script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="manifest" href="assets/site.webmanifest">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1v1 Trivia Duel | QuizRealm Multiplayer</title>
+<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+<meta name="msapplication-TileColor" content="#020617">
+<meta name="theme-color" content="#020617">
+    <meta name="description" content="Challenge a friend in the ultimate 1v1 Trivia Duel. Pick a category, track scores, and prove who has the bigger brain in this local multiplayer mode.">
+    <meta name="keywords" content="2 player quiz, multiplayer trivia, 1v1 quiz game, duel mode, quizrealm battle">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="components.js" defer></script>
+<script type="module" src="assets/ux-core.js"></script>
+    <script src="data.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        arcade: ['Bungee', 'cursive'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    },
+                    colors: {
+                        p1Color: '#3b82f6', // Blue
+                        p2Color: '#ef4444', // Red
+                        bgDark: '#020617',
+                    },
+                    animation: {
+                        'fight': 'fight 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fight: {
+                            '0%': { transform: 'scale(0.5)', opacity: '0' },
+                            '50%': { transform: 'scale(1.2)' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #020617; 
+            /* Fighting Game Gradient */
+            background-image: linear-gradient(to bottom right, #0f172a, #000000);
+            min-height: 100vh; 
+            color: #e2e8f0;
+        }
+        
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Character Selection Cards */
+        .char-card {
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .char-card.selected {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        /* VS Text styling */
+        .vs-text {
+            font-family: 'Bungee', cursive;
+            text-shadow: 4px 4px 0px #000;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased selection:bg-purple-500 selection:text-white">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+    <quiz-header></quiz-header>
+
+    <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-8">
+
+        <div id="setupScreen" class="animate-fade-in">
+            <div class="text-center mb-10">
+                <span class="bg-purple-900/30 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4 inline-block">
+                    Local Multiplayer
+                </span>
+                <h1 class="font-arcade text-5xl md:text-7xl text-white mb-2 leading-none">
+                    1<span class="text-purple-500">v</span>1 DUEL
+                </h1>
+                <p class="text-slate-400">Battle your friends on the same device.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto mb-10">
+                <div class="glass-panel p-6 rounded-2xl border-t-4 border-t-blue-500 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-gamepad text-6xl text-blue-500"></i></div>
+                    <label class="block text-blue-400 font-bold text-xs uppercase tracking-widest mb-2">Player One</label>
+                    <input type="text" id="p1Name" value="Player 1" class="w-full bg-black/40 border border-blue-500/30 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 font-bold text-lg mb-4">
+                    <div class="flex gap-2">
+                        <div class="w-8 h-8 rounded bg-blue-600"></div>
+                        <span class="text-xs text-slate-500 self-center">Challenger</span>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl border-t-4 border-t-red-500 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-gamepad text-6xl text-red-500"></i></div>
+                    <label class="block text-red-400 font-bold text-xs uppercase tracking-widest mb-2">Player Two</label>
+                    <input type="text" id="p2Name" value="Player 2" class="w-full bg-black/40 border border-red-500/30 rounded-lg p-3 text-white focus:outline-none focus:border-red-500 font-bold text-lg mb-4">
+                    <div class="flex gap-2">
+                        <div class="w-8 h-8 rounded bg-red-600"></div>
+                        <span class="text-xs text-slate-500 self-center">Opponent</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <h3 class="text-center text-white font-bold mb-6 flex items-center justify-center gap-2">
+                    <i class="fas fa-layer-group text-purple-500"></i> SELECT BATTLEGROUND
+                </h3>
+                <div id="categoryGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <button onclick="startGame()" id="startBtn" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-arcade text-xl py-4 px-12 rounded-xl shadow-lg shadow-purple-900/50 transform hover:scale-105 transition-all opacity-50 cursor-not-allowed" disabled>
+                    ENTER ARENA
+                </button>
+            </div>
+        </div>
+
+        <div id="battleScreen" class="hidden min-h-[70vh] flex flex-col">
+            
+            <div class="flex justify-between items-center bg-black/40 border border-white/10 rounded-xl p-4 mb-8">
+                <div class="text-left w-1/3">
+                    <div class="text-[10px] text-blue-400 font-bold uppercase tracking-widest" id="battleP1Name">P1</div>
+                    <div class="text-3xl font-mono text-white font-bold" id="battleP1Score">0</div>
+                </div>
+                <div class="text-center w-1/3">
+                    <div class="inline-block bg-purple-900/50 border border-purple-500/50 px-3 py-1 rounded text-[10px] font-bold text-purple-300">
+                        ROUND <span id="roundNum">1</span>/5
+                    </div>
+                </div>
+                <div class="text-right w-1/3">
+                    <div class="text-[10px] text-red-400 font-bold uppercase tracking-widest" id="battleP2Name">P2</div>
+                    <div class="text-3xl font-mono text-white font-bold" id="battleP2Score">0</div>
+                </div>
+            </div>
+
+            <div class="text-center mb-6">
+                <div id="turnBanner" class="inline-block px-8 py-2 rounded-full bg-blue-600 text-white font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(59,130,246,0.5)] animate-pulse">
+                    Player 1's Turn
+                </div>
+            </div>
+
+            <div class="glass-panel p-8 rounded-2xl text-center max-w-2xl mx-auto w-full mb-6 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-white/10">
+                    <div id="timerBar" class="h-full bg-purple-500 w-full transition-all duration-1000 ease-linear"></div>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-8 mt-4 leading-snug" id="questionText">
+                    Loading Question...
+                </h2>
+                <div class="grid grid-cols-1 gap-3" id="battleOptions">
+                    </div>
+            </div>
+
+        </div>
+
+        <div id="resultScreen" class="hidden text-center pt-10">
+            <div class="mb-6 relative inline-block">
+                <div class="absolute inset-0 bg-purple-500 blur-2xl opacity-30 animate-pulse"></div>
+                <i class="fas fa-trophy text-6xl text-yellow-400 relative z-10 drop-shadow-xl"></i>
+            </div>
+            
+            <h2 class="font-arcade text-5xl text-white mb-2">VICTORY</h2>
+            <p class="text-xl text-slate-300 mb-8">
+                <span id="winnerName" class="font-bold text-white text-2xl">Player Name</span> Wins!
+            </p>
+
+            <div class="flex justify-center gap-8 mb-12">
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 uppercase">P1 Score</div>
+                    <div class="text-2xl font-mono text-blue-400 font-bold" id="finalP1">0</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 uppercase">P2 Score</div>
+                    <div class="text-2xl font-mono text-red-400 font-bold" id="finalP2">0</div>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button onclick="location.reload()" class="bg-white/10 hover:bg-white/20 text-white py-3 px-8 rounded-xl font-bold transition">
+                    Rematch
+                </button>
+                <a href="index.html" class="bg-purple-600 hover:bg-purple-500 text-white py-3 px-8 rounded-xl font-bold transition shadow-lg shadow-purple-900/40">
+                    Main Menu
+                </a>
+            </div>
+        </div>
+
+        <article class="mt-24 border-t border-white/10 pt-16 max-w-3xl mx-auto">
+            <span class="text-purple-500 font-bold tracking-widest uppercase text-xs">Game Mode Info</span>
+            <h2 class="text-2xl font-bold text-white mt-2 mb-6">Why Competitive Trivia?</h2>
+            <div class="prose prose-invert prose-sm text-slate-400">
+                <p>
+                    The <strong>1v1 Duel Mode</strong> transforms passive learning into active recall. By adding a competitive element ("Gamification"), your brain releases higher levels of dopamine when you answer correctly, reinforcing the memory pathway.
+                </p>
+                <p>
+                    This mode uses a "Hot Seat" mechanic designed for local multiplayer. Whether you are settling a debate or just killing time, the Duel Mode pulls from our entire database of <strong>Science, History, Tech, and Pop Culture</strong> questions.
+                </p>
+                <ul class="list-disc pl-5 mt-4 space-y-2">
+                    <li><strong class="text-white">Turn-Based Strategy:</strong> It's not just about speed; it's about consistency.</li>
+                    <li><strong class="text-white">Fair Play:</strong> Both players face questions from the same difficulty pool.</li>
+                    <li><strong class="text-white">No Setup:</strong> No accounts or lobbies needed. Just enter names and fight.</li>
+                </ul>
+            </div>
+        </article>
+
+    </main>
+
+    
+
+<div class="qr-seo-wrapper">
+    <style>
+        /* --- CONTAINER & SHARED STYLES --- */
+        .qr-seo-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            width: 100%;
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* --- CARD BASE --- */
+        .qr-hub-card {
+            position: relative;
+            background: linear-gradient(145deg, #060b18, #0f172a);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CARD THEMES (Unique Colors) */
+        .theme-green { border-left: 4px solid #10b981; }
+        .theme-green h2 span { color: #34d399; }
+        .theme-green .qr-badge { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        .theme-green a { color: #34d399; }
+
+        .theme-purple { border-left: 4px solid #a855f7; }
+        .theme-purple h2 span { color: #c084fc; }
+        .theme-purple .qr-badge { background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+        .theme-purple a { color: #c084fc; }
+
+        .theme-cyan { border-left: 4px solid #06b6d4; }
+        .theme-cyan h2 span { color: #22d3ee; }
+        .theme-cyan .qr-badge { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9; }
+        .theme-cyan a { color: #22d3ee; }
+
+        .theme-amber { border-left: 4px solid #f59e0b; }
+        .theme-amber h2 span { color: #fbbf24; }
+        .theme-amber .qr-badge { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .theme-amber a { color: #fbbf24; }
+
+        /* Content Layout */
+        .qr-card-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            height: 100%;
+        }
+        @media (min-width: 900px) {
+            .qr-card-content { flex-direction: row; align-items: flex-start; }
+        }
+
+        .qr-main-col { flex: 1; }
+        
+        .qr-side-col {
+            width: 100%;
+            max-width: 320px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        /* Typography & Elements */
+        .qr-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 4px 12px; border-radius: 99px;
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em;
+            margin-bottom: 1rem; font-weight: 700;
+        }
+        .qr-hub-card h2 { color: #fff; font-size: 1.8rem; margin: 0 0 1rem 0; line-height: 1.2; letter-spacing: -0.02em; }
+        .qr-hub-card p { margin-bottom: 1.5rem; font-size: 0.95rem; text-align: justify; }
+        .qr-hub-card strong { color: #fff; }
+        .qr-hub-card a { font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
+        .qr-hub-card a:hover { border-bottom-color: currentColor; }
+
+        /* Sidebar Links */
+        .qr-sidebar-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px; margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            text-decoration: none !important;
+        }
+        .qr-sidebar-link:hover { background: rgba(255, 255, 255, 0.08); }
+        .qr-link-text { display: flex; flex-direction: column; }
+        .qr-link-head { color: #e2e8f0; font-size: 0.85rem; font-weight: 700; }
+        .qr-link-sub { color: #64748b; font-size: 0.7rem; }
+        .qr-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 6px; }
+
+        /* Game Grid (Card 1) */
+        .qr-game-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px;
+            padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .qr-mini-link {
+            padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);
+            text-align: center; font-size: 0.75rem; color: #cbd5e1 !important;
+        }
+        .qr-mini-link:hover { background: rgba(255,255,255,0.1); }
+
+        /* Dense Link Matrix (Card 4) */
+        .qr-link-matrix {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem;
+        }
+        .qr-matrix-item {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; 
+            background: rgba(251, 191, 36, 0.1); color: #fbbf24 !important;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        .qr-matrix-item:hover { background: rgba(251, 191, 36, 0.2); }
+
+        @media (max-width: 600px) {
+            .qr-hub-card { padding: 1.5rem; }
+            .qr-side-col { max-width: 100%; }
+        }
+    </style>
+
+    <div class="qr-hub-card theme-green">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-gamepad"></i> The Neural Gym</div>
+                <h2>Arcade: <span>Logic & Reaction Training</span></h2>
+                <p>
+                    The <strong>Quiz Realm Arcade</strong> is a dedicated gymnasium for your brain. Designed for competitive data hunters, our platform offers a suite of 13+ browser-based games that require zero downloads. From the vocabulary challenges of <strong>Word Ladder</strong> to the binary constraints of <strong>Tango</strong>, these games are engineered to stimulate cognitive function.
+                </p>
+                <p>
+                    Whether you are killing time or keeping your daily streak alive, our engine tracks every move. Your performance across these modes contributes to your global RPG Rank, allowing you to level up from "Drifter" to "System Lord" based purely on mental agility.
+                </p>
+                
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1rem; color: #fff;">Featured Modules</div>
+                <div class="qr-game-grid">
+                    <a href="fusion-core.html" class="qr-mini-link">Logic Core</a>
+                    <a href="cryptex.html" class="qr-mini-link">Cryptex</a>
+                    <a href="rapid.html" class="qr-mini-link">Rapid Fire</a>
+                    <a href="nexus.html" class="qr-mini-link">Nexus</a>
+                    <a href="minigames.html" class="qr-mini-link">Pictionary</a>
+                    <a href="timeline-history.html" class="qr-mini-link">Timeline</a>
+                </div>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Quick Play</div>
+                <a href="daily.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-calendar-day text-green-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Daily Challenge</span><span class="qr-link-sub">Streak Builder</span></div>
+                </a>
+                <a href="arcade.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-th text-green-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Full Roster</span><span class="qr-link-sub">View All Games</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-purple">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-book"></i> The Archives</div>
+                <h2>Knowledge Hubs: <span>Deep Lore & Fandom</span></h2>
+                <p>
+                    For players who prefer deep data over reflexes, the <strong>Knowledge Nexus</strong> offers specialized "Hubs" for the world's biggest franchises. Here, you can explore the intricate timelines of the cinematic universes, study the genealogy of comic book mutants, or analyze sci-fi physics.
+                </p>
+                <p>
+                    <strong>Why separate Hubs?</strong> Standard trivia mixes topics randomly. Our Hubs allow for "Vertical Progression." You start with surface-level facts (e.g., "Who is Iron Man?") and unlock "Deep Lore" questions (e.g., "Earth-616 Serial Numbers") as you level up. Ideal for completionists.
+                </p>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Select Universe</div>
+                <a href="marvel.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-shield-alt text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Marvel Multiverse</span><span class="qr-link-sub">MCU & Comics</span></div>
+                </a>
+                <a href="dc.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-mask text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">DC Archives</span><span class="qr-link-sub">Gotham & Krypton</span></div>
+                </a>
+                <a href="rick-and-morty.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-flask text-purple-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Rick & Morty</span><span class="qr-link-sub">Sci-Fi Lore</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-cyan">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-fingerprint"></i> Identity Protocol</div>
+                <h2>Player Profile: <span>Gamify Your Mind</span></h2>
+                <p>
+                    Knowledge is personal. The Quiz Realm utilizes a persistent <strong>RPG Progression System</strong>. Every question you answer contributes XP (Experience Points) to your profile, building a unique "Data Fingerprint." Are you a specialist in History but weak in Pop Culture? Your stats will reveal the truth.
+                </p>
+                <p>
+                    We also host the <strong>Identity Lab</strong>. Unlike standard quizzes that score you right or wrong, our Identity Protocol uses a psych-eval algorithm to analyze your choices. Answer ethical dilemmas to discover which fictional archetype matches your personality—from "Stark-Level Visionary" to "Jedi Consular."
+                </p>
+            </div>
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Your Data</div>
+                <a href="profile.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-user-circle text-cyan-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">My Profile</span><span class="qr-link-sub">Check Stats</span></div>
+                </a>
+                <a href="achievements.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-trophy text-cyan-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Trophy Room</span><span class="qr-link-sub">Badges & Ranks</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-hub-card theme-amber">
+        <div class="qr-card-content">
+            <div class="qr-main-col">
+                <div class="qr-badge"><i class="fas fa-layer-group"></i> Master Index</div>
+                <h2>The Taxonomy: <span>Browse by Category</span></h2>
+                <p>
+                    Not sure where to begin? The <strong>Master Index</strong> breaks down our entire question database into granular categories. Whether you are a student brushing up on <a href="#">STEM</a> subjects or a film buff organizing a trivia night, you can filter by topic.
+                </p>
+                <p>
+                    Our database is updated weekly with trending topics. Below is the direct routing matrix to our most popular question banks. Selecting a category here bypasses the main menu and launches a "Quick Play" session immediately.
+                </p>
+
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem; color: #fff;">Direct Access Matrix</div>
+                <div class="qr-link-matrix">
+                    <a href="categories.html" class="qr-matrix-item">General Knowledge</a>
+                    <a href="categories.html" class="qr-matrix-item">Film & Cinema</a>
+                    <a href="categories.html" class="qr-matrix-item">World History</a>
+                    <a href="categories.html" class="qr-matrix-item">Geography</a>
+                    <a href="categories.html" class="qr-matrix-item">Science (STEM)</a>
+                    <a href="categories.html" class="qr-matrix-item">Technology</a>
+                    <a href="categories.html" class="qr-matrix-item">Literature</a>
+                    <a href="categories.html" class="qr-matrix-item">Music Theory</a>
+                    <a href="categories.html" class="qr-matrix-item">Video Games</a>
+                    <a href="categories.html" class="qr-matrix-item">Art History</a>
+                    <a href="categories.html" class="qr-matrix-item">Sports</a>
+                    <a href="categories.html" class="qr-matrix-item">Mythology</a>
+                    <a href="categories.html" class="qr-matrix-item">Television</a>
+                    <a href="categories.html" class="qr-matrix-item">Anime / Manga</a>
+                    <a href="categories.html" class="qr-matrix-item">Celebs</a>
+                </div>
+            </div>
+            
+            <div class="qr-side-col">
+                <div style="margin-bottom:1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">System Links</div>
+                <a href="about.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-info text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">About Us</span><span class="qr-link-sub">Mission Statement</span></div>
+                </a>
+                <a href="contact.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-envelope text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Contact</span><span class="qr-link-sub">Support & feedback</span></div>
+                </a>
+                <a href="privacy.html" class="qr-sidebar-link">
+                    <div class="qr-icon"><i class="fas fa-lock text-amber-400"></i></div>
+                    <div class="qr-link-text"><span class="qr-link-head">Privacy</span><span class="qr-link-sub">Data Policy</span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<quiz-footer></quiz-footer>
+
+    <script>
+        // --- GAME LOGIC ---
+        let selectedCategory = null;
+        let p1Name = "Player 1";
+        let p2Name = "Player 2";
+        let scoreP1 = 0;
+        let scoreP2 = 0;
+        let currentRound = 1;
+        const totalRounds = 5;
+        let currentPlayer = 1; // 1 or 2
+        let questionPool = [];
+        let isLocked = false;
+
+        // 1. INIT SETUP SCREEN
+        function initSetup() {
+            const grid = document.getElementById('categoryGrid');
+            
+            // Use existing CATEGORY_CONFIG from data.js, or fallback
+            const config = (typeof CATEGORY_CONFIG !== 'undefined') ? CATEGORY_CONFIG : {
+                general: { label: "General", icon: "🧠" },
+                science: { label: "Science", icon: "🧬" },
+                history: { label: "History", icon: "📜" },
+                movies: { label: "Movies", icon: "🎬" }
+            };
+
+            grid.innerHTML = '';
+            Object.keys(config).forEach(key => {
+                const cat = config[key];
+                if(cat.group === 'locked') return; // Skip locked
+
+                const div = document.createElement('div');
+                div.className = "char-card bg-white/5 p-4 rounded-xl cursor-pointer hover:bg-white/10 text-center";
+                div.innerHTML = `
+                    <div class="text-2xl mb-2">${cat.icon}</div>
+                    <div class="text-xs font-bold text-white uppercase">${cat.label}</div>
+                `;
+                div.onclick = () => selectCategory(key, div);
+                grid.appendChild(div);
+            });
+        }
+
+        function selectCategory(key, el) {
+            selectedCategory = key;
+            // Visual feedback
+            document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            // Enable button
+            const btn = document.getElementById('startBtn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function startGame() {
+            p1Name = document.getElementById('p1Name').value || "Player 1";
+            p2Name = document.getElementById('p2Name').value || "Player 2";
+
+            // Prepare Questions
+            // Try to get from QUESTION_BANKS in data.js
+            if (typeof QUESTION_BANKS !== 'undefined' && QUESTION_BANKS[selectedCategory]) {
+                const raw = QUESTION_BANKS[selectedCategory];
+                // Combine easy/med/hard if structured
+                if(raw.easy) questionPool = [...raw.easy, ...raw.medium, ...raw.hard];
+                else questionPool = raw;
+            } else {
+                // Fallback questions
+                questionPool = [
+                    { question: "What is the capital of France?", options: ["Paris", "Berlin", "Rome"], correctIndex: 0 },
+                    { question: "H2O is the chemical formula for?", options: ["Gold", "Water", "Silver"], correctIndex: 1 },
+                    // ... add more generics if needed
+                ];
+            }
+            
+            // Shuffle
+            questionPool = questionPool.sort(() => 0.5 - Math.random());
+
+            // Switch Screens
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('battleScreen').classList.remove('hidden');
+            document.getElementById('battleP1Name').textContent = p1Name;
+            document.getElementById('battleP2Name').textContent = p2Name;
+
+            loadRound();
+        }
+
+        function loadRound() {
+            if (currentRound > totalRounds) {
+                endGame();
+                return;
+            }
+
+            isLocked = false;
+            document.getElementById('roundNum').textContent = `${currentRound}/${totalRounds}`;
+            
+            // UI Update for Turn
+            const banner = document.getElementById('turnBanner');
+            if (currentPlayer === 1) {
+                banner.textContent = `${p1Name}'s Turn`;
+                banner.className = "inline-block px-8 py-2 rounded-full bg-blue-600 text-white font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(59,130,246,0.5)]";
+            } else {
+                banner.textContent = `${p2Name}'s Turn`;
+                banner.className = "inline-block px-8 py-2 rounded-full bg-red-600 text-white font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.5)]";
+            }
+
+            // Load Question
+            const q = questionPool[currentRound + currentPlayer]; // Simple index logic to ensure unique qs
+            if (!q) { endGame(); return; } // Safety catch
+
+            document.getElementById('questionText').textContent = q.question;
+            const opts = document.getElementById('battleOptions');
+            opts.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all font-medium text-slate-300";
+                btn.textContent = opt;
+                btn.onclick = () => handleAnswer(btn, idx, q.correctIndex);
+                opts.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(btn, selected, correct) {
+            if (isLocked) return;
+            isLocked = true;
+
+            if (selected === correct) {
+                btn.classList.add('bg-green-600', 'border-green-500', 'text-white');
+                if (currentPlayer === 1) scoreP1 += 100;
+                else scoreP2 += 100;
+            } else {
+                btn.classList.add('bg-red-600', 'border-red-500', 'text-white');
+            }
+
+            // Update Scores
+            document.getElementById('battleP1Score').textContent = scoreP1;
+            document.getElementById('battleP2Score').textContent = scoreP2;
+
+            setTimeout(() => {
+                if (currentPlayer === 1) {
+                    currentPlayer = 2; // Switch to P2 for same round (optional logic, or next question)
+                    // Actually, let's keep it simple: P1 answers Q1, P2 answers Q2.
+                    // So we just toggle player.
+                    loadRound();
+                } else {
+                    currentPlayer = 1;
+                    currentRound++;
+                    loadRound();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            document.getElementById('battleScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            document.getElementById('finalP1').textContent = scoreP1;
+            document.getElementById('finalP2').textContent = scoreP2;
+
+            const winnerEl = document.getElementById('winnerName');
+            if (scoreP1 > scoreP2) {
+                winnerEl.textContent = p1Name;
+                winnerEl.className = "font-bold text-blue-400 text-2xl";
+            } else if (scoreP2 > scoreP1) {
+                winnerEl.textContent = p2Name;
+                winnerEl.className = "font-bold text-red-400 text-2xl";
+            } else {
+                winnerEl.textContent = "It's a Draw!";
+                winnerEl.className = "font-bold text-purple-400 text-2xl";
+            }
+        }
+
+        window.onload = initSetup;
+    </script>
+</body>
+</html>
