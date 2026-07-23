@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Midnight Dilemmas • Couples Would You Rather Game | SoulSync by QuizRealm</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#020617">
+
+    <meta name="description" content="Play Midnight Dilemmas. A fun, absurd, and provocative 3 AM 'Would You Rather' game for couples. Test your choices and see if you sync up.">
+    <meta name="keywords" content="midnight dilemmas, couples would you rather, funny couple questions, date night browser game, relationship game, SoulSync">
+
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace']
+                    },
+                    colors: {
+                        console: { base: '#020617', panel: 'rgba(15, 23, 42, 0.6)' },
+                        romance: { amber: '#f59e0b', gold: '#fbbf24', rose: '#f43f5e', purple: '#a855f7' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #020617; 
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.08) 0%, transparent 60%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .ps-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .ps-input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .ps-input:focus { outline: none; background: rgba(0, 0, 0, 0.6); border-color: #f59e0b; box-shadow: 0 0 15px rgba(245,158,11,0.2); }
+
+        .btn-3d {
+            position: relative;
+            border-bottom-width: 6px;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+        }
+        .btn-3d:active:not(:disabled) {
+            border-bottom-width: 0px;
+            transform: translateY(6px);
+            margin-bottom: 6px; 
+        }
+        .btn-amber { background: #f59e0b; border-color: #d97706; color: #fff; }
+        .btn-rose { background: #f43f5e; border-color: #be123c; color: #fff; }
+        .btn-dark { background: #1e293b; border-color: #0f172a; color: #f8fafc; }
+        .btn-dark:hover:not(:disabled) { background: #334155; }
+
+        .dilemma-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-bottom-width: 6px;
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #f8fafc;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+        }
+        .dilemma-card:hover {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: #f59e0b;
+            color: #fbbf24;
+            transform: translateY(-2px);
+        }
+        .dilemma-card:active {
+            border-bottom-width: 0px;
+            transform: translateY(4px);
+            margin-bottom: 4px;
+        }
+
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <div class="max-w-[1600px] mx-auto w-full px-4 py-8 grid grid-cols-1 xl:grid-cols-4 gap-8 flex-grow">
+        
+        <!-- LEFT SIDEBAR: RULES -->
+        <aside class="hidden xl:flex flex-col gap-4 xl:col-span-1">
+            <div class="ps-panel p-8">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-8 border-b border-white/10 pb-3">
+                    [ PROTOCOL ] Midnight Rules
+                </h3>
+                <div class="space-y-8">
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 flex-shrink-0 font-bold">1</div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">The Forced Choice</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">An absurd, funny, or provocative "Would You Rather" scenario appears.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 flex-shrink-0 font-bold">2</div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Secret Locking</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">Partners independently lock in their preferred side of the dilemma.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 flex-shrink-0 font-bold">3</div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Midnight Sync</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">Matching choices earn sync points. Disagreements spark 3 AM debates!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER COLUMN: GAME ENGINE -->
+        <main class="xl:col-span-2 flex flex-col justify-center min-h-[75vh] relative overflow-hidden">
+            
+            <!-- SCREEN 1: SETUP -->
+            <div id="setup-screen" class="ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-20">
+                <div class="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner text-amber-400">
+                    <i class="fas fa-moon text-4xl"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-white mb-3 uppercase tracking-tight">Midnight Dilemmas</h1>
+                <p class="text-slate-400 text-sm md:text-base font-medium mb-10">Absurd 3 AM "Would You Rather" choices. First to 5 Sync points wins!</p>
+
+                <div class="space-y-6 mb-10 text-left">
+                    <div>
+                        <label class="block text-[11px] font-mono text-cyan-400 uppercase tracking-widest mb-2 ml-1">Partner 1</label>
+                        <input type="text" id="p1Input" value="Player 1" class="w-full ps-input rounded-xl p-4 text-base font-bold" maxlength="12">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-mono text-amber-400 uppercase tracking-widest mb-2 ml-1">Partner 2</label>
+                        <input type="text" id="p2Input" value="Player 2" class="w-full ps-input rounded-xl p-4 text-base font-bold" maxlength="12">
+                    </div>
+                </div>
+
+                <button onclick="startDilemmaMatch()" class="btn-3d btn-amber w-full py-5 text-xl tracking-widest uppercase text-slate-950 font-black">
+                    Start Dilemmas
+                </button>
+            </div>
+
+            <!-- SCREEN 2: VOTING PHASE -->
+            <div id="vote-screen" class="hidden w-full max-w-xl mx-auto flex-col fade-in">
+                <div class="flex justify-between items-center mb-6 px-4">
+                    <div class="text-xs font-mono text-amber-400 uppercase tracking-widest" id="turnHeader">Player 1's Choice</div>
+                    <div class="text-xs font-mono text-slate-400 uppercase tracking-widest">Midnight Sync: <span id="syncScore">0</span> pts</div>
+                </div>
+
+                <div class="ps-panel p-8 text-center mb-8 border-t-4 border-t-amber-500 bg-amber-500/5">
+                    <span class="text-[10px] font-mono text-amber-400 uppercase tracking-widest mb-2 block">[ WOULD YOU RATHER ]</span>
+                    <h2 class="text-xl md:text-2xl font-black text-white mb-2 leading-snug">
+                        Choose your absolute destiny:
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="submitChoice('A')" class="dilemma-card" id="optionABtn">
+                        Option A
+                    </button>
+                    <button onclick="submitChoice('B')" class="dilemma-card" id="optionBBtn">
+                        Option B
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: ROUND REVEAL -->
+            <div id="reveal-screen" class="hidden ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-30 border-t-4 border-t-amber-400">
+                <div id="revealIcon" class="w-20 h-20 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-6 text-3xl">
+                    <i class="fas fa-sync"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-black text-white mb-2 uppercase tracking-wide" id="revealTitle">Midnight Sync!</h2>
+                <p class="text-slate-300 text-sm mb-6" id="revealDesc">You both picked the exact same option.</p>
+                <button onclick="nextDilemmaRound()" class="btn-3d btn-amber w-full py-4 text-base tracking-widest uppercase text-slate-950 font-black">
+                    Next Dilemma
+                </button>
+            </div>
+
+            <!-- SCREEN 4: MATCH OVER -->
+            <div id="match-over-screen" class="hidden ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-40 border-t-4 border-t-rose-500">
+                <i class="fas fa-crown text-6xl text-amber-400 mb-6 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]"></i>
+                <h2 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-2">Midnight Concluded</h2>
+                <div class="text-4xl md:text-5xl font-black text-white mb-10 uppercase tracking-wide" id="matchWinnerText">
+                    Absolute Mind Meld!
+                </div>
+                <div class="flex flex-col gap-4">
+                    <button onclick="location.reload()" class="btn-3d btn-amber w-full py-5 text-lg tracking-widest uppercase text-slate-950 font-black">
+                        Play Again
+                    </button>
+                    <a href="couples-hub.html" class="btn-3d btn-dark w-full py-5 text-lg flex items-center justify-center text-decoration-none tracking-widest uppercase">
+                        Back to SoulSync Hub
+                    </a>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- RIGHT SIDEBAR: SOULSYNC DIRECTORY -->
+        <aside class="hidden xl:flex flex-col gap-6 xl:col-span-1 h-[80vh]">
+            <div class="ps-panel p-8 h-full flex flex-col">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-8 border-b border-white/10 pb-3">
+                    [ SOULSYNC ] Hub Games
+                </h3>
+                
+                <div class="space-y-4 flex-grow custom-scroll overflow-y-auto pr-2">
+                    <a href="couples-hub.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-amber-500 transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-heart mr-2 text-romance-rose"></i> SoulSync Hub</h4>
+                        <p class="text-[11px] text-slate-400">Return to the main couples game collection.</p>
+                    </a>
+                    <a href="pillow-talk-test.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-romance-rose transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-user-secret mr-2 text-romance-rose"></i> Pillow Talk Test</h4>
+                        <p class="text-[11px] text-slate-400">Intimate 1v1 trivia testing your relationship radar.</p>
+                    </a>
+                    <a href="green-flag-duel.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-emerald-500 transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-flag mr-2 text-emerald-400"></i> Green Flag, Red Flag</h4>
+                        <p class="text-[11px] text-slate-400">Rapid-fire lifestyle and relationship dealbreaker compatibility.</p>
+                    </a>
+                    <a href="chemistry-sparks.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-purple-500 transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-fire mr-2 text-romance-purple"></i> Chemistry & Sparks</h4>
+                        <p class="text-[11px] text-slate-400">Rate flirty scenarios and guess your partner's secret number.</p>
+                    </a>
+                    <a href="sensual-secrets.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-cyan-500 transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-masks-theater mr-2 text-cyan-400"></i> Sensual Secrets</h4>
+                        <p class="text-[11px] text-slate-400">Memory quiz recalling favorite romantic milestones and preferences.</p>
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- MASSIVE SEO EDITORIAL BLOCK: 4 SEPARATE BOXES OF SEVERAL STYLES -->
+    <section class="bg-[#050b14] border-t border-white/5 py-20 mt-auto w-full font-sans">
+        <div class="max-w-[1200px] mx-auto px-4">
+            
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">The Magic of 3 AM Would You Rather Questions</h2>
+                <p class="text-slate-400 text-base max-w-3xl mx-auto leading-relaxed">
+                    Why absurd late-night relationship dilemmas foster deep laughter, unfiltered bonding, and unforgettable date night memories.
+                </p>
+            </div>
+            
+            <!-- 4 SEPARATE BOXES OF DIFFERENT STYLES -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Box Style 1: Glass Gradient Border -->
+                <div class="p-8 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-amber-500/30 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-amber-500/10 blur-2xl rounded-full"></div>
+                    <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fas fa-moon text-amber-400"></i> Unleash 3 AM Conversations
+                    </h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        Some of the best conversations happen when you throw logic out the window. <strong>Midnight Dilemmas</strong> provides outrageous forced-choice scenarios that spark hours of playful debating between boyfriends and girlfriends.
+                    </p>
+                    <a href="couples-hub.html" class="text-xs font-bold text-amber-400 uppercase tracking-widest hover:underline">Explore SoulSync Hub &rarr;</a>
+                </div>
+
+                <!-- Box Style 2: Solid Dark Panel with Rose Accent -->
+                <div class="p-8 rounded-2xl bg-slate-900 border-l-4 border-l-rose-500 border border-slate-800 shadow-xl">
+                    <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fas fa-heart text-romance-rose"></i> Discover Hidden Quirks
+                    </h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        You might think you know everything about your partner until you ask them whether they'd rather fight one horse-sized duck or live without Wi-Fi. Try our other game, <a href="green-flag-duel.html" class="text-romance-rose font-bold hover:underline">Green Flag, Red Flag</a>.
+                    </p>
+                    <span class="text-xs font-mono text-slate-500 uppercase">Interactive Date Night Module</span>
+                </div>
+
+                <!-- Box Style 3: Glow Card with Cyan Accent -->
+                <div class="p-8 rounded-2xl bg-slate-900/80 border border-cyan-500/20 shadow-xl backdrop-blur-md">
+                    <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fas fa-bolt text-cyan-400"></i> Zero Friction Browser Gaming
+                    </h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        No app store downloads or awkward sign-ups. Open any QuizRealm game instantly on your phone or laptop browser for seamless couch co-op or long-distance FaceTime dates.
+                    </p>
+                    <a href="duel.html" class="text-xs font-bold text-cyan-400 uppercase tracking-widest hover:underline">Access Main Duel Hub &rarr;</a>
+                </div>
+
+                <!-- Box Style 4: Minimalist Deep Slate Card -->
+                <div class="p-8 rounded-2xl bg-[#030712] border border-white/10 shadow-xl">
+                    <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fas fa-shield-alt text-emerald-400"></i> 100% Private & Secure
+                    </h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        Your choices remain entirely local to your device. Enjoy an unmonitored, private game session designed purely for couple connection and laughter.
+                    </p>
+                    <span class="text-xs font-mono text-emerald-400 uppercase">Private Local Engine</span>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        const DILEMMAS_DB = [
+            { a: "Always have to whisper directly into each other's ears when talking at home", b: "Always have to sing every single sentence you speak to each other" },
+            { a: "Accidentally text your partner a spicy meme meant for your group chat", b: "Accidentally text your boss a screenshot of your relationship anniversary countdown" },
+            { a: "Have your partner narrate your internal thoughts out loud all day long", b: "Read your partner's exact unedited search history from the last 3 years" },
+            { a: "Spend a romantic weekend in a haunted cabin with zero electricity", b: "Spend a luxury weekend in a spotless white room with zero phones or conversation" },
+            { a: "Swap bodies with your partner for 24 hours", b: "Share one single giant pair of shoes for the next month" },
+            { a: "Have every secret embarrassing nickname you have for each other broadcast on billboards", b: "Never be allowed to use emojis or exclamation points when texting ever again" },
+            { a: "Eat only spicy jalapeño flavored ice cream for every dessert", b: "Drink lukewarm coffee stirred with a spicy pepper every morning" }
+        ];
+
+        let p1Name = "Player 1", p2Name = "Player 2";
+        let syncScore = 0;
+        const WIN_SCORE = 5;
+        let activeDilemma = null;
+        let p1Choice = null;
+        let votingTurn = 1; // 1 = P1 chooses, 2 = P2 chooses
+
+        function startDilemmaMatch() {
+            p1Name = document.getElementById('p1Input').value.trim() || "Player 1";
+            p2Name = document.getElementById('p2Input').value.trim() || "Player 2";
+            syncScore = 0;
+            votingTurn = 1;
+
+            document.getElementById('syncScore').textContent = syncScore;
+            nextDilemmaRound();
+            switchScreen('setup-screen', 'vote-screen');
+        }
+
+        function nextDilemmaRound() {
+            activeDilemma = DILEMMAS_DB[Math.floor(Math.random() * DILEMMAS_DB.length)];
+            votingTurn = 1;
+            document.getElementById('turnHeader').textContent = `${p1Name}'s Secret Choice`;
+            document.getElementById('optionABtn').textContent = activeDilemma.a;
+            document.getElementById('optionBBtn').textContent = activeDilemma.b;
+            switchScreen('reveal-screen', 'vote-screen');
+        }
+
+        function submitChoice(choice) {
+            if (votingTurn === 1) {
+                p1Choice = choice;
+                votingTurn = 2;
+                document.getElementById('turnHeader').textContent = `${p2Name}'s Secret Choice`;
+                alert(`Pass the device to ${p2Name}! Tap OK when ready.`);
+            } else {
+                const p2Choice = choice;
+                evaluateRound(p1Choice, p2Choice);
+            }
+        }
+
+    function evaluateRound(c1, c2) {
+            const isMatch = (c1 === c2);
+            const icon = document.getElementById('revealIcon');
+            const title = document.getElementById('revealTitle');
+            const desc = document.getElementById('revealDesc');
+
+            if (isMatch) {
+                syncScore++;
+                document.getElementById('syncScore').textContent = syncScore;
+                icon.className = "w-20 h-20 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-6 text-3xl";
+                icon.innerHTML = '<i class="fas fa-sync"></i>';
+                title.textContent = "Midnight Sync!";
+                desc.textContent = `Both of you chose Option ${c1}! Perfect wavelength alignment.`;
+            } else {
+                icon.className = "w-20 h-20 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-6 text-3xl";
+                icon.innerHTML = '<i class="fas fa-bolt"></i>';
+                title.textContent = "Choice Clash!";
+                desc.textContent = `${p1Name} chose Option ${c1}, but ${p2Name} chose Option ${c2}! Time to argue why!`;
+            }
+
+            if (syncScore >= WIN_SCORE) {
+                endMatch();
+            } else {
+                switchScreen('vote-screen', 'reveal-screen');
+            }
+        }
+
+        function endMatch() {
+            document.getElementById('matchWinnerText').textContent = `Achieved ${syncScore} Midnight Syncs!`;
+            switchScreen('vote-screen', 'match-over-screen');
+        }
+
+        function switchScreen(hideId, showId) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            if(hideEl) hideEl.classList.add('hidden');
+            if(showEl) {
+                showEl.classList.remove('hidden');
+                showEl.classList.remove('fade-in');
+                void showEl.offsetWidth;
+                showEl.classList.add('fade-in');
+            }
+        }
+    </script>
+</body>
+</html>

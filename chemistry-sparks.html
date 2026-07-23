@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Chemistry & Sparks • Couples Rating Game | SoulSync by QuizRealm</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#020617">
+
+    <meta name="description" content="Play Chemistry & Sparks. A flirty 1v1 rating game for couples. Rate romantic scenarios from 1 to 10 and guess your partner's secret number.">
+    <meta name="keywords" content="chemistry and sparks game, couples rating game, romantic scale quiz, boyfriend girlfriend game, date night browser game, SoulSync">
+
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace']
+                    },
+                    colors: {
+                        console: { base: '#020617', panel: 'rgba(15, 23, 42, 0.6)' },
+                        romance: { purple: '#a855f7', pink: '#ec4899', rose: '#f43f5e', amber: '#f59e0b' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #020617; 
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 60%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .ps-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .ps-input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .ps-input:focus { outline: none; background: rgba(0, 0, 0, 0.6); border-color: #a855f7; box-shadow: 0 0 15px rgba(168,85,247,0.2); }
+
+        .btn-3d {
+            position: relative;
+            border-bottom-width: 6px;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+        }
+        .btn-3d:active:not(:disabled) {
+            border-bottom-width: 0px;
+            transform: translateY(6px);
+            margin-bottom: 6px; 
+        }
+        .btn-purple { background: #a855f7; border-color: #7e22ce; color: #fff; }
+        .btn-dark { background: #1e293b; border-color: #0f172a; color: #f8fafc; }
+        .btn-dark:hover:not(:disabled) { background: #334155; }
+
+        .rating-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .rating-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1rem;
+            font-size: 1.25rem;
+            font-weight: 900;
+            font-family: 'Space Grotesk', monospace;
+            color: #cbd5e1;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        .rating-btn:hover { background: rgba(168, 85, 247, 0.2); border-color: #a855f7; color: white; transform: translateY(-2px); }
+        .rating-btn.selected { background: #a855f7; border-color: #7e22ce; color: white; box-shadow: 0 0 15px rgba(168,85,247,0.4); }
+
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <div class="max-w-[1600px] mx-auto w-full px-4 py-8 grid grid-cols-1 xl:grid-cols-4 gap-8 flex-grow">
+        
+        <!-- LEFT SIDEBAR: RULES -->
+        <aside class="hidden xl:flex flex-col gap-4 xl:col-span-1">
+            <div class="ps-panel p-8">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-8 border-b border-white/10 pb-3">
+                    [ PROTOCOL ] Sparks Rules
+                </h3>
+                <div class="space-y-8">
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0 font-bold">1</div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Secret 1-10 Scale</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">Partner 1 secretly rates a romantic or flirty scenario from 1 to 10.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0 font-bold">2</div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">The Partner Guess</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">Partner 2 takes the device and tries to guess the exact number.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0 font-bold">3</div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-1">Spark Match</h4>
+                            <p class="text-sm text-slate-400 leading-relaxed">Exact matches or within 1 point earn Spark points. First to 5 wins!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER COLUMN: GAME ENGINE -->
+        <main class="xl:col-span-2 flex flex-col justify-center min-h-[75vh] relative overflow-hidden">
+            
+            <!-- SCREEN 1: SETUP -->
+            <div id="setup-screen" class="ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-20">
+                <div class="w-20 h-20 bg-purple-500/10 border border-purple-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner text-purple-400">
+                    <i class="fas fa-fire text-4xl"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-white mb-3 uppercase tracking-tight">Chemistry & Sparks</h1>
+                <p class="text-slate-400 text-sm md:text-base font-medium mb-10">Rate flirty scenarios from 1 to 10 and guess your partner's secret vibe.</p>
+
+                <div class="space-y-6 mb-10 text-left">
+                    <div>
+                        <label class="block text-[11px] font-mono text-cyan-400 uppercase tracking-widest mb-2 ml-1">Partner 1</label>
+                        <input type="text" id="p1Input" value="Player 1" class="w-full ps-input rounded-xl p-4 text-base font-bold" maxlength="12">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-mono text-purple-400 uppercase tracking-widest mb-2 ml-1">Partner 2</label>
+                        <input type="text" id="p2Input" value="Player 2" class="w-full ps-input rounded-xl p-4 text-base font-bold" maxlength="12">
+                    </div>
+                </div>
+
+                <button onclick="startSparksMatch()" class="btn-3d btn-purple w-full py-5 text-xl tracking-widest uppercase">
+                    Start Chemistry Match
+                </button>
+            </div>
+
+            <!-- SCREEN 2: PHASE 1 (SECRET RATING) -->
+            <div id="phase1-screen" class="hidden w-full max-w-xl mx-auto flex-col fade-in">
+                <div class="flex justify-between items-center mb-6 px-4">
+                    <div class="text-xs font-mono text-purple-400 uppercase tracking-widest" id="phase1TurnHeader">Player 1's Secret Rating</div>
+                    <div class="text-xs font-mono text-slate-400 uppercase tracking-widest">Score: P1 <span id="s1">0</span> | P2 <span id="s2">0</span></div>
+                </div>
+
+                <div class="ps-panel p-8 text-center mb-8 border-t-4 border-t-purple-500 bg-purple-500/5">
+                    <span class="text-[10px] font-mono text-purple-400 uppercase tracking-widest mb-2 block">[ FLIRTY SCENARIO ]</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-white mb-2 leading-snug" id="scenarioText">
+                        Scenario loading...
+                    </h2>
+                    <p class="text-xs text-slate-400 italic" id="phase1Instructions">Rate this from 1 (Not my vibe at all) to 10 (Absolute peak romance/chaos).</p>
+                </div>
+
+                <div class="rating-grid mb-6" id="ratingGridP1">
+                    <!-- 1 to 10 injected via JS -->
+                </div>
+            </div>
+
+            <!-- SCREEN 3: PHASE 2 (PARTNER GUESS) -->
+            <div id="phase2-screen" class="hidden w-full max-w-xl mx-auto flex-col fade-in">
+                <div class="flex justify-between items-center mb-6 px-4">
+                    <div class="text-xs font-mono text-cyan-400 uppercase tracking-widest" id="phase2TurnHeader">Player 2's Guess</div>
+                    <div class="text-xs font-mono text-slate-400 uppercase tracking-widest">Pass the device</div>
+                </div>
+
+                <div class="ps-panel p-8 text-center mb-8 border-t-4 border-t-cyan-400 bg-cyan-500/5">
+                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-widest mb-2 block">[ GUESS YOUR PARTNER'S RATING ]</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-white mb-2 leading-snug" id="guessScenarioText">
+                        Scenario loading...
+                    </h2>
+                    <p class="text-xs text-slate-400 italic">What number did <span id="targetPartnerName" class="text-white font-bold">Partner</span> pick (1 to 10)?</p>
+                </div>
+
+                <div class="rating-grid mb-6" id="ratingGridP2">
+                    <!-- 1 to 10 guess grid injected via JS -->
+                </div>
+            </div>
+
+            <!-- SCREEN 4: ROUND RESULT -->
+            <div id="result-screen" class="hidden ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-30 border-t-4 border-t-purple-400">
+                <div id="resultIcon" class="w-20 h-20 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center mx-auto mb-6 text-3xl">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-black text-white mb-2 uppercase tracking-wide" id="resultTitle">Spark Match!</h2>
+                <p class="text-slate-300 text-sm mb-6" id="resultMessage">You were right on target.</p>
+                <button onclick="nextSparksRound()" class="btn-3d btn-purple w-full py-4 text-base tracking-widest uppercase">
+                    Next Scenario
+                </button>
+            </div>
+
+            <!-- SCREEN 5: MATCH OVER -->
+            <div id="match-over-screen" class="hidden ps-panel p-8 md:p-12 w-full max-w-lg mx-auto text-center fade-in absolute inset-0 m-auto h-max z-40 border-t-4 border-t-amber-500">
+                <i class="fas fa-crown text-6xl text-amber-400 mb-6 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]"></i>
+                <h2 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-2">Chemistry Concluded</h2>
+                <div class="text-4xl md:text-5xl font-black text-white mb-10 uppercase tracking-wide" id="matchWinnerText">
+                    Player 1 Wins!
+                </div>
+                <div class="flex flex-col gap-4">
+                    <button onclick="location.reload()" class="btn-3d btn-purple w-full py-5 text-lg tracking-widest uppercase">
+                        Play Again
+                    </button>
+                    <a href="couples-hub.html" class="btn-3d btn-dark w-full py-5 text-lg flex items-center justify-center text-decoration-none tracking-widest uppercase">
+                        Back to SoulSync Hub
+                    </a>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- RIGHT SIDEBAR: SOULSYNC DIRECTORY -->
+        <aside class="hidden xl:flex flex-col gap-6 xl:col-span-1 h-[80vh]">
+            <div class="ps-panel p-8 h-full flex flex-col">
+                <h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-8 border-b border-white/10 pb-3">
+                    [ SOULSYNC ] Hub Games
+                </h3>
+                
+                <div class="space-y-4 flex-grow custom-scroll overflow-y-auto pr-2">
+                    <a href="couples-hub.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-romance-purple transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-heart mr-2 text-romance-rose"></i> SoulSync Hub</h4>
+                        <p class="text-[11px] text-slate-400">Return to the main couples game collection.</p>
+                    </a>
+                    <a href="pillow-talk-test.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-romance-rose transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-user-secret mr-2 text-romance-rose"></i> Pillow Talk Test</h4>
+                        <p class="text-[11px] text-slate-400">Intimate 1v1 trivia testing your relationship radar.</p>
+                    </a>
+                    <a href="green-flag-duel.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-emerald-500 transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-flag mr-2 text-emerald-400"></i> Green Flag, Red Flag</h4>
+                        <p class="text-[11px] text-slate-400">Rapid-fire lifestyle and relationship dealbreaker compatibility.</p>
+                    </a>
+                    <a href="midnight-dilemmas.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-amber-500 transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-moon mr-2 text-romance-amber"></i> Midnight Dilemmas</h4>
+                        <p class="text-[11px] text-slate-400">Absurd and funny 3 AM 'Would You Rather' choices.</p>
+                    </a>
+                    <a href="sensual-secrets.html" class="block btn-3d btn-dark p-4 rounded-xl text-left border border-slate-700 hover:border-cyan-500 transition-colors">
+                        <h4 class="text-white font-bold text-sm mb-1"><i class="fas fa-masks-theater mr-2 text-cyan-400"></i> Sensual Secrets</h4>
+                        <p class="text-[11px] text-slate-400">Memory quiz recalling favorite romantic milestones and preferences.</p>
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- MASSIVE SEO EDITORIAL BLOCK: 4 SEPARATE BOXES OF SEVERAL STYLES -->
+    <section class="bg-[#050b14] border-t border-white/5 py-20 mt-auto w-full font-sans">
+        <div class="max-w-[1200px] mx-auto px-4">
+            
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">The Psychology of Rating Scales in Relationships</h2>
+                <p class="text-slate-400 text-base max-w-3xl mx-auto leading-relaxed">
+                    Why subjective scale-based couple games help partners articulate romantic preferences and emotional wavelengths effortlessly.
+                </p>
+            </div>
+            
+            <!-- 4 SEPARATE BOXES OF DIFFERENT STYLES -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Box Style 1: Glass Gradient Border -->
+                <div class="p-8 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-purple-500/30 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-purple-500/10 blur-2xl rounded-full"></div>
+                    <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fas fa-fire text-purple-400"></i> Quantifying Romantic Chemistry
+                    </h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        Emotions and romantic preferences are often difficult to put into words. <strong>Chemistry & Sparks</strong> uses a simple 1 to 10 scale to help couples measure alignment on everything from public displays of affection to cozy date nights.
+                    </p>
+                    <a href="couples-hub.html" class="text-xs font-bold text-purple-400 uppercase tracking-widest hover:underline">Explore SoulSync Hub &rarr;</a>
+                </div>
+
+                <!-- Box Style 2: Solid Dark Panel with Rose Accent -->
+                <div class="p-8 rounded-2xl bg-slate-900 border-l-4 border-l-rose-500 border border-slate-800 shadow-xl">
+                    <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fas fa-heart text-romance-rose"></i> Intuition and Empathy Testing
+                    </h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        Guessing your partner's secret number tests how closely tuned your empathy and intuition are to their inner world. Try out our other psychological game, <a href="pillow-talk-test.html" class="text-romance-rose font-bold hover:underline">Pillow Talk Test</a>.
+                    </p>
+                    <span class="text-xs font-mono text-slate-500 uppercase">Interactive Date Night Module</span>
+                </div>
+
+                <!-- Box Style 3: Glow Card with Cyan Accent -->
+                <div class="p-8 rounded-2xl bg-slate-900/80 border border-cyan-500/20 shadow-xl backdrop-blur-md">
+                    <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fas fa-bolt text-cyan-400"></i> Instant Browser Accessibility
+                    </h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        No app store downloads required. Open any QuizRealm game instantly on your phone or laptop browser for seamless couch co-op or long-distance FaceTime dates.
+                    </p>
+                    <a href="duel.html" class="text-xs font-bold text-cyan-400 uppercase tracking-widest hover:underline">Access Main Duel Hub &rarr;</a>
+                </div>
+
+                <!-- Box Style 4: Minimalist Deep Slate Card -->
+                <div class="p-8 rounded-2xl bg-[#030712] border border-white/10 shadow-xl">
+                    <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fas fa-shield-alt text-emerald-400"></i> 100% Private & Secure
+                    </h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        Your scores and secret choices remain entirely local to your device. Enjoy an unmonitored, private game session designed purely for couple connection.
+                    </p>
+                    <span class="text-xs font-mono text-emerald-400 uppercase">Private Local Engine</span>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <quiz-footer></quiz-footer>
+
+    <script>
+        const SCENARIOS_DB = [
+            { s: "How romantic is slow dancing in the kitchen at 2 AM with no music playing?" },
+            { s: "How important is holding hands whenever we walk down the street?" },
+            { s: "How much do you love it when I surprise you with your favorite takeout out of nowhere?" },
+            { s: "How funny are my worst jokes when nobody else is around to hear them?" },
+            { s: "How cozy is spending an entire rainy Sunday in bed watching movies?" },
+            { s: "How much excitement is there when we plan our next big vacation together?" },
+            { s: "How sweet is waking up early just to make coffee or breakfast for each other?" },
+            { s: "How much do you enjoy impromptu tickle fights or silly teasing around the house?" }
+        ];
+
+        let p1Name = "Player 1", p2Name = "Player 2";
+        let score1 = 0, score2 = 0;
+        const WIN_SCORE = 5;
+        let activeScenario = null;
+        let p1SecretRating = null;
+        let currentRoundRole = 1; // 1 = P1 rates / P2 guesses; 2 = P2 rates / P1 guesses
+
+        function startSparksMatch() {
+            p1Name = document.getElementById('p1Input').value.trim() || "Player 1";
+            p2Name = document.getElementById('p2Input').value.trim() || "Player 2";
+            score1 = 0;
+            score2 = 0;
+            currentRoundRole = 1;
+
+            document.getElementById('s1').textContent = score1;
+            document.getElementById('s2').textContent = score2;
+
+            startPhase1();
+            switchScreen('setup-screen', 'phase1-screen');
+        }
+
+        function startPhase1() {
+            activeScenario = SCENARIOS_DB[Math.floor(Math.random() * SCENARIOS_DB.length)];
+            const ratingPlayer = (currentRoundRole === 1) ? p1Name : p2Name;
+
+            document.getElementById('phase1TurnHeader').textContent = `${ratingPlayer}'s Secret Rating`;
+            document.getElementById('scenarioText').textContent = activeScenario.s;
+
+            const grid = document.getElementById('ratingGridP1');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+                const btn = document.createElement('button');
+                btn.className = "rating-btn";
+                btn.textContent = i;
+                btn.onclick = () => lockSecretRating(i);
+                grid.appendChild(btn);
+            }
+        }
+
+        function lockSecretRating(rating) {
+            p1SecretRating = rating;
+            startPhase2();
+            switchScreen('phase1-screen', 'phase2-screen');
+        }
+
+        function startPhase2() {
+            const guessingPlayer = (currentRoundRole === 1) ? p2Name : p1Name;
+            const targetName = (currentRoundRole === 1) ? p1Name : p2Name;
+
+            document.getElementById('phase2TurnHeader').textContent = `${guessingPlayer}'s Guess`;
+            document.getElementById('guessScenarioText').textContent = activeScenario.s;
+            document.getElementById('targetPartnerName').textContent = targetName;
+
+            const grid = document.getElementById('ratingGridP2');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+                const btn = document.createElement('button');
+                btn.className = "rating-btn";
+                btn.textContent = i;
+                btn.onclick = () => submitGuess(i);
+                grid.appendChild(btn);
+            }
+        }
+
+        function submitGuess(guessVal) {
+            const diff = Math.abs(guessVal - p1SecretRating);
+            const isMatch = diff <= 1; // within 1 point is a spark match!
+            const guessingPlayer = (currentRoundRole === 1) ? p2Name : p1Name;
+
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const msg = document.getElementById('resultMessage');
+
+            if (isMatch) {
+                if (currentRoundRole === 1) score2++; else score1++;
+                icon.className = "w-20 h-20 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center mx-auto mb-6 text-3xl";
+                icon.innerHTML = '<i class="fas fa-fire"></i>';
+                title.textContent = "Spark Match!";
+                msg.textContent = `${guessingPlayer} guessed ${guessVal} (Actual: ${p1SecretRating})! Incredible wavelength alignment.`;
+            } else {
+                icon.className = "w-20 h-20 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-6 text-3xl";
+                icon.innerHTML = '<i class="fas fa-heart-crack"></i>';
+                title.textContent = "Wavelength Miss!";
+                msg.textContent = `${guessingPlayer} guessed ${guessVal}, but the secret rating was ${p1SecretRating}!`;
+            }
+
+            document.getElementById('s1').textContent = score1;
+            document.getElementById('s2').textContent = score2;
+
+            switchScreen('phase2-screen', 'result-screen');
+        }
+
+        function nextSparksRound() {
+            if (score1 >= WIN_SCORE || score2 >= WIN_SCORE) {
+                endMatch(score1 >= WIN_SCORE ? p1Name : p2Name);
+                return;
+            }
+
+            currentRoundRole = currentRoundRole === 1 ? 2 : 1;
+            startPhase1();
+            switchScreen('result-screen', 'phase1-screen');
+        }
+
+        function endMatch(winnerName) {
+            document.getElementById('matchWinnerText').textContent = `${winnerName} Wins Chemistry!`;
+            switchScreen('result-screen', 'match-over-screen');
+        }
+
+        function switchScreen(hideId, showId) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            if(hideEl) hideEl.classList.add('hidden');
+            if(showEl) {
+                showEl.classList.remove('hidden');
+                showEl.classList.remove('fade-in');
+                void showEl.offsetWidth;
+                showEl.classList.add('fade-in');
+            }
+        }
+    </script>
+</body>
+</html>
