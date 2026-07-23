@@ -117,12 +117,19 @@ function getQuizHeaderMarkup() {
                     <i class="fas fa-home text-slate-500 text-xs"></i> <span>Home</span>
                 </a>
 
-                 <a href="/categories.html" class="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5">
-                    <i class="fas fa-layer-group text-slate-500 text-xs"></i> <span>Categories</span>
-                </a>
+                
                 
 
                 
+                <a href="/categories.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] mr-1">
+                    <div class="absolute inset-0 bg-gradient-to-r from-grey-900/50 to-grey-900/50 border border-grey-500/40 group-hover:border-grey-400/70 rounded-full transition-colors"></div>
+                    <div class="relative flex items-center gap-1.5">
+                        <i class="fas fa-book text-[10px] text-grey-300 group-hover:text-grey transition-colors"></i>
+                        <span class="text-[10px] font-semibold uppercase tracking-[0.22em] text-fuchsia-100 group-hover:text-white transition-colors">Categories</span>
+                    </div>
+                </a>
+
+
                 <a href="/identity-lab.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] mr-1">
                     <div class="absolute inset-0 bg-gradient-to-r from-violet-900/50 to-fuchsia-900/50 border border-violet-500/40 group-hover:border-fuchsia-400/70 rounded-full transition-colors"></div>
                     <div class="relative flex items-center gap-1.5">
@@ -131,11 +138,20 @@ function getQuizHeaderMarkup() {
                     </div>
                 </a>
 
+                
                  <a href="/duel.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] mr-1">
                     <div class="absolute inset-0 bg-gradient-to-r from-yellow-900/50 to-yellow-900/50 border border-yellow-500/40 group-hover:border-yellow-400/70 rounded-full transition-colors"></div>
                     <div class="relative flex items-center gap-1.5">
                         <i class="fas fa-trophy text-[10px] text-red-300 group-hover:text-white transition-colors"></i>
                         <span class="text-[10px] font-semibold uppercase tracking-[0.22em] text-fuchsia-100 group-hover:text-white transition-colors">Multiplayer</span>
+                    </div>
+                </a>
+
+                <a href="/couples-hub.html" class="relative group px-4 py-1.5 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_15px_rgba(16,85,247,0.4)] mr-1">
+                    <div class="absolute inset-0 bg-gradient-to-b from-blue-900/50 to-blue-900/50 border border-blue-500/40 group-hover:border-blue-400/70 rounded-full transition-colors"></div>
+                    <div class="relative flex items-center gap-1.5">
+                        <i class="fas fa-glass-cheers text-[10px] text-red-300 group-hover:text-white transition-colors"></i>
+                        <span class="text-[10px] font-semibold uppercase tracking-[0.22em] text-fuchsia-100 group-hover:text-white transition-colors">Date Night</span>
                     </div>
                 </a>
 
