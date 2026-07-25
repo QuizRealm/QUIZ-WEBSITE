@@ -22,7 +22,10 @@ Format all injected text using Tailwind CSS utility classes to perfectly match t
 
 Use classes like text-slate-300, text-white, font-bold, mb-4, and max-w-4xl mx-auto px-6 to ensure it blends seamlessly with the existing UI.
 
-CRITICAL CONSTRAINT: Do not alter, delete, or touch the existing JavaScript, the game <canvas>, or the <head> tags. Only append the new content block.
+CRITICAL CONSTRAINT: Do not alter, delete, or touch the existing JavaScript, the game <canvas>, or the <head>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6205081520399538"
+     crossorigin="anonymous"></script> tags. Only append the new content block.
 
 Execution:
 Work methodically through the files. Save each file after editing. Do not stop until all thin-content game pages have been updated.---
