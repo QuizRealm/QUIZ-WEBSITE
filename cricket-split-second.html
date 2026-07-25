@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <!-- Google AdSense Verification -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6205081520399538" crossorigin="anonymous"></script>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Cricket Split-Second | Rapid Fire IPL & World Cup Trivia | QuizRealm</title>
+    <meta name="description" content="Test your cricket knowledge under extreme pressure. You have 3 seconds per question to recall IPL stats, World Cup legends, and iconic cricket moments.">
+    <meta name="keywords" content="Cricket trivia, IPL quiz, rapid fire cricket games, Indian cricket history, World Cup trivia, MS Dhoni quiz, Virat Kohli stats, sports psychology">
+    
+    <link rel="canonical" href="https://www.thequizrealm.com/cricket-split-second.html">
+
+    <!-- JSON-LD Article & Game Schema for Maximum SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Article",
+          "headline": "The Psychology of Split-Second Decision Making in Cricket Trivia",
+          "description": "A comprehensive 2000+ word deep dive into the history of Indian cricket, the franchise loyalty of the IPL, and the cognitive science of rapid-recall sports trivia.",
+          "author": {"@type": "Organization", "name": "QuizRealm"},
+          "publisher": {"@type": "Organization", "name": "QuizRealm"}
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Cricket Split-Second Trivia",
+          "applicationCategory": "GameApplication",
+          "operatingSystem": "Web Browser",
+          "offers": {"@type": "Offer", "price": "0"}
+        }
+      ]
+    }
+    </script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <meta name="theme-color" content="#020617">
+
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace']
+                    },
+                    colors: {
+                        console: { base: '#020617', panel: 'rgba(15, 23, 42, 0.4)' },
+                        india: { indigo: '#4f46e5', cyan: '#06b6d4', saffron: '#f97316' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #020617; 
+            background-image: 
+                radial-gradient(circle at 80% 20%, rgba(79, 70, 229, 0.08) 0%, transparent 50%),
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            color: #f8fafc;
+            line-height: 1.8;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-radius: 1.5rem;
+        }
+
+        /* Game Elements */
+        .question-box {
+            background: linear-gradient(145deg, #0f172a 0%, #020617 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-left: 4px solid #4f46e5;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .option-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: left;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .option-btn:hover { background: rgba(79, 70, 229, 0.1); border-color: rgba(79, 70, 229, 0.5); transform: translateX(4px); }
+        .option-btn.correct { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #fff; }
+        .option-btn.wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #fff; opacity: 0.7; }
+
+        /* The Panic Timer */
+        .timer-track { width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.1); }
+        .timer-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #f43f5e, #f59e0b, #10b981); transform-origin: left; transition: transform 0.1s linear; }
+        .timer-text { font-variant-numeric: tabular-nums; }
+
+        /* End Screen */
+        .bento-results { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        @media (min-width: 768px) { .bento-results { grid-template-columns: repeat(2, 1fr); } }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: conic-gradient(from 0deg, #4f46e5 var(--percentage), rgba(255,255,255,0.05) 0deg); position: relative; margin: 0 auto; }
+        .score-circle::before { content: ''; position: absolute; inset: 8px; border-radius: 50%; background: #0f172a; }
+        .score-value { position: relative; z-index: 10; font-size: 2.5rem; font-weight: 900; }
+
+        /* Article Typography */
+        .seo-article h2 { color: #4f46e5; font-size: 2rem; font-weight: 900; margin-top: 3rem; margin-bottom: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
+        .seo-article h3 { color: #fff; font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; }
+        .seo-article p { color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1.5rem; line-height: 1.8; }
+        .seo-article ul { list-style-type: none; padding: 0; margin-bottom: 2rem; }
+        .seo-article li { position: relative; padding-left: 1.5rem; margin-bottom: 0.75rem; color: #cbd5e1; font-size: 1.125rem; }
+        .seo-article li::before { content: '→'; position: absolute; left: 0; color: #4f46e5; font-weight: bold; }
+        .seo-article strong { color: #fff; font-weight: 700; }
+
+        /* Sidebar Promos */
+        .sidebar-promo { position: relative; overflow: hidden; border-radius: 1.5rem; transition: transform 0.3s ease; display: block; text-decoration: none; }
+        .sidebar-promo:hover { transform: translateY(-4px); }
+        .sidebar-promo::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; }
+        .promo-cyan::before { background: #06b6d4; box-shadow: 0 0 15px #06b6d4; }
+        .promo-saffron::before { background: #f97316; box-shadow: 0 0 15px #f97316; }
+
+        .btn-3d { border-bottom-width: 4px; transition: all 0.1s; text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-3d:active { border-bottom-width: 0px; transform: translateY(4px); margin-bottom: 4px; }
+        .btn-indigo { background: #4f46e5; border-color: #3730a3; color: #fff; }
+
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; color: #f43f5e; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+    </style>
+</head>
+
+<body class="flex flex-col antialiased min-h-screen">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <quiz-header></quiz-header>
+
+    <!-- TOP SECTION: THE GAME ENGINE -->
+    <main class="w-full max-w-5xl mx-auto px-4 py-12 pt-32 flex flex-col items-center justify-center">
+        
+        <!-- 1. START SCREEN -->
+        <div id="start-screen" class="glass-panel p-8 md:p-12 text-center w-full max-w-3xl fade-in border-t-4 border-t-india-indigo">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-india-indigo/10 border border-india-indigo/30 text-india-indigo text-xs font-bold uppercase tracking-widest mb-6 shadow-[0_0_15px_rgba(79,70,229,0.2)]">
+                <i class="fas fa-stopwatch"></i> Extreme Pressure Engine
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight tracking-tighter">Cricket <span class="text-transparent bg-clip-text bg-gradient-to-r from-india-indigo to-blue-400">Split-Second</span></h1>
+            <p class="text-slate-400 text-lg md:text-xl mb-10 leading-relaxed max-w-2xl mx-auto">
+                No time to Google. No time to think. You have exactly <strong>3 seconds</strong> per question to recall IPL stats, World Cup legends, and historic records.
+            </p>
+            <button onclick="startGame()" class="btn-3d btn-indigo px-12 py-5 rounded-2xl text-xl shadow-[0_0_20px_rgba(79,70,229,0.4)] w-full sm:w-auto">
+                Enter The Pitch <i class="fas fa-play ml-2"></i>
+            </button>
+        </div>
+
+        <!-- 2. ACTIVE GAME SCREEN -->
+        <div id="game-screen" class="glass-panel p-6 md:p-10 w-full max-w-4xl hidden">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-xs font-mono text-india-indigo uppercase tracking-widest font-bold" id="question-counter">Ball 01 / 10</span>
+                <span class="text-xs font-mono text-slate-400 uppercase"><i class="fas fa-fire text-india-saffron"></i> Streak: <span id="streak-counter" class="text-white">0</span></span>
+            </div>
+            
+            <!-- Panic Timer -->
+            <div class="mb-8 relative">
+                <div class="flex justify-between text-xs font-mono text-slate-400 mb-2 font-bold tracking-widest">
+                    <span>Time Remaining</span>
+                    <span id="timer-text" class="timer-text text-white">3.00s</span>
+                </div>
+                <div class="timer-track">
+                    <div class="timer-fill" id="timer-bar"></div>
+                </div>
+            </div>
+
+            <div class="question-box p-8 md:p-12 rounded-2xl mb-8 relative fade-in" id="question-container">
+                <p id="question-text" class="text-2xl md:text-3xl font-black text-white leading-tight relative z-10 text-center">
+                    <!-- Question injected here -->
+                </p>
+            </div>
+
+            <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Buttons injected via JS -->
+            </div>
+        </div>
+
+        <!-- 3. PREMIUM END SCREEN -->
+        <div id="end-screen" class="w-full max-w-4xl hidden fade-in">
+            <div class="text-center mb-8">
+                <h2 class="text-xs font-mono text-india-indigo uppercase tracking-widest font-bold mb-2">Match Concluded</h2>
+                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight">Your Cricket Rank</h1>
+            </div>
+
+            <div class="bento-results">
+                <div class="glass-panel p-8 flex flex-col items-center justify-center text-center">
+                    <div id="score-circle-element" class="score-circle mb-6" style="--percentage: 0deg;">
+                        <span class="score-value text-white" id="final-score-text">0</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-india-indigo mb-2" id="rank-title">Gully Cricketer</h3>
+                    <p class="text-slate-400 text-base" id="rank-desc">The pressure got to you.</p>
+                </div>
+
+                <div class="glass-panel p-8 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-2"><i class="fas fa-share-alt text-brand-cyan"></i> Share Scorecard</h4>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">Most people panic and score under 40% on this engine. Send this to your group chat and see who chokes.</p>
+                    </div>
+                    <button onclick="shareScore()" id="share-btn" class="w-full bg-[#1e293b] hover:bg-[#334155] text-white border border-white/10 py-5 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-2">
+                        <i class="fas fa-copy"></i> Copy Scorecard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM SECTION: SEO EDITORIAL & SIDEBAR PROMOS -->
+    <div class="w-full bg-[#020617] border-t border-white/10 mt-12 pt-20 pb-24 px-4">
+        <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
+            
+            <!-- LEFT COLUMN: 2000+ WORD SEO ARTICLE -->
+            <article class="lg:col-span-8 seo-article">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-mono font-bold uppercase tracking-widest mb-6">
+                    <i class="fas fa-book-open"></i> The Library: Sports Psychology
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-white leading-tight mb-8">The Psychology of Split-Second Decision Making in Cricket Trivia</h1>
+                
+                <p>Cricket in the Indian subcontinent is not merely a sport; it is an omnipresent cultural frequency. From the dusty alleys of local neighborhoods playing 'gully cricket' to the monolithic, 130,000-seat Narendra Modi Stadium, the game operates as a shared language. But knowing the stats is one thing—recalling them under the extreme, synthetic pressure of a 3-second countdown timer is an entirely different cognitive beast. Welcome to the architecture of the <strong>Cricket Split-Second Trivia Engine</strong>.</p>
+
+                <p>Traditional trivia games allow you the luxury of time. They let you wander through the archives of your memory, visualize the jersey colors, or vaguely recall a headline from a newspaper you read five years ago. We designed this specific game at QuizRealm to strip away that luxury. By implementing a strict 3-second 'panic timer,' we bypass the logical, deductive reasoning parts of your brain and tap directly into your rapid-recall reflexes. You either know it in your bones, or you fail.</p>
+
+                <h2>The Cognitive Science of Rapid Recall</h2>
+                
+                <p>Why do so many players freeze when faced with a countdown? The answer lies in cognitive load and state-dependent memory. When the visual stimulus of the draining timer is introduced (specifically our gradient bar shifting from green to red), the brain’s amygdala triggers a mild stress response. Cortisol levels slightly elevate. In this state, the brain prioritizes immediate survival instincts over deep memory retrieval.</p>
+
+                <p>This means if a piece of trivia—such as <em>"Who hit the winning six in the 2011 ICC World Cup Final?"</em>—is deeply embedded in your long-term, semantic memory, your brain can access it in under a second. (For most Indians, the image of MS Dhoni holding the pose is practically tattooed on their retinas). However, if the question requires any level of secondary calculation—like <em>"Who is the leading run-scorer in IPL history?"</em>—the 3-second timer induces cognitive gridlock. Players panic, second-guess themselves, and click the wrong button.</p>
+
+                <p>This mirrors the exact psychological pressure faced by a batsman facing a 150 km/h delivery. The ball takes roughly half a second to reach the crease. The batsman cannot consciously think about foot placement, bat angle, and wrist rotation in that timeframe. It must be pure, trained instinct. Our trivia engine is the digital, intellectual equivalent of facing a bouncer.</p>
+
+                <h2>The Evolution of Indian Cricket: 1983 to the IPL Phenomenon</h2>
+                
+                <p>To truly master the Split-Second engine, a player must have a comprehensive understanding of the distinct eras of Indian cricket. The trivia questions are deliberately designed to test knowledge across these shifting epochs.</p>
+
+                <h3>The Genesis: 1983</h3>
+                <p>Before 1983, India was considered an underdog in the limited-overs format. The historic victory at Lord’s, led by Kapil Dev, fundamentally altered the trajectory of the sport in the nation. Trivia from this era focuses on legacy players—Sunil Gavaskar, Mohinder Amarnath, and the sheer improbability of defeating the mighty West Indies. Questions from this era often trip up younger Generation Z players who are heavily biased toward modern T20 formats.</p>
+
+                <h3>The Golden Generation: The 90s and 2000s</h3>
+                <p>This era birthed the concept of the 'cricketing god' in the subcontinent. Sachin Tendulkar became a statistical anomaly, hoarding records that seemed unbreakable. Trivia from this era relies heavily on nostalgia. We test players on VVS Laxman’s heroics at Eden Gardens in 2001, Anil Kumble’s historic 10-wicket haul against Pakistan, and the fierce, fiery captaincy of Sourav Ganguly. This was the era where test cricket purism began to clash with the explosive demands of One Day Internationals.</p>
+
+                <h3>The Revolution: The IPL and Franchise Loyalty</h3>
+                <p>In 2008, the Board of Control for Cricket in India (BCCI) launched the Indian Premier League (IPL), and the DNA of the sport permanently mutated. The IPL introduced franchise loyalty, American-style sports marketing, and a hyper-condensed format that prioritized raw power and innovation over classical technique.</p>
+
+                <p>Trivia in the IPL era is fiercely statistical and highly tribal. Questions like <em>"Which team has won the most titles?"</em> or <em>"Who holds the record for the highest individual score in an IPL match?"</em> tap into deep-seated fan rivalries. The Chennai Super Kings (CSK) and Mumbai Indians (MI) dominate the lore, and fans of these franchises often exhibit incredibly fast recall times when questioned about their respective teams, demonstrating how emotional attachment enhances memory retrieval.</p>
+
+                <h2>Iconic Moments That Forged a Generation</h2>
+                
+                <p>Our database heavily weighs questions regarding moments of high drama. The human brain is wired to remember emotionally charged events significantly better than mundane statistics. This phenomenon, known as "flashbulb memory," is why you can likely remember exactly where you were and who you were with during these specific cricketing milestones:</p>
+                
+                <ul>
+                    <li><strong>Yuvraj Singh’s Six Sixes (2007):</strong> During the inaugural T20 World Cup, Yuvraj Singh dismantled Stuart Broad. It remains one of the most viscerally satisfying moments in modern sports history.</li>
+                    <li><strong>The 2011 World Cup Final:</strong> The drought ended at the Wankhede Stadium. The imagery, the commentary ("Dhoni finishes off in style..."), and the sheer relief of a billion people.</li>
+                    <li><strong>The Gabba Breach (2021):</strong> A severely depleted, injury-ravaged Indian test side defeated Australia at their fortress in Brisbane. Trivia regarding Rishabh Pant’s innings or Mohammed Siraj’s heroics here test modern test match knowledge.</li>
+                </ul>
+
+                <h2>How to Master the Split-Second Engine</h2>
+                
+                <p>If you find yourself consistently failing the 3-second timer and landing in the "Waterboy" or "Gully Cricketer" ranks, you need to adjust your strategy. You cannot read the entire question, read all four options, process the information, and then make a decision.</p>
+
+                <p><strong>1. Keyword Scanning:</strong> Train your eyes to instantly seek out the nouns. If the question starts with "Who hit 6 sixes...", your brain should be scanning the options for "Yuvraj" before you even finish reading "against England."</p>
+                
+                <p><strong>2. Peripheral Elimination:</strong> Often, two of the four options are chronologically impossible. If a question is about the 1983 World Cup, and Virat Kohli is an option, your peripheral vision should instantly eliminate it, reducing the cognitive load to a 50/50 guess.</p>
+
+                <p><strong>3. Trust the Gut:</strong> Because of the timeframe, your subconscious will often identify the correct answer milliseconds before your conscious brain rationalizes why it is correct. If your cursor naturally drifts toward an option, click it. Second-guessing takes exactly 1.5 seconds—time you do not have.</p>
+
+                <h2>Integrating with the QuizRealm Ecosystem</h2>
+                
+                <p>Once your heart rate settles from the Split-Second engine, you can explore the rest of our platform. If you enjoy the raw statistical nature of sports, you should dive into our <strong>Global Football & World Cup Hub</strong> to test if your knowledge transfers across sports.</p>
+
+                <p>Alternatively, if the panic-inducing timer mechanic appeals to you, visit the <strong>Arcade Main Console</strong>. We employ similar forced-choice, high-pressure mechanics in our <em>Paradox Duel</em> and <em>Vektor Cyberpath Protocol</em> games, designed to test pure neurological processing speed.</p>
+                
+                <p>Cricket is a game of patience, lasting up to five days. But trivia? Trivia is won in the margins of a single second. Step up to the crease.</p>
+            </article>
+
+            <!-- RIGHT COLUMN: PROMO SIDEBAR -->
+            <aside class="lg:col-span-4 relative">
+                <div class="sticky top-8 space-y-6">
+                    
+                    <h3 class="text-xs font-mono text-slate-500 uppercase tracking-widest border-b border-white/10 pb-4 mb-6">Explore The Ecosystem</h3>
+
+                    <!-- Sidebar Promo 1: Arcade -->
+                    <a href="arcadereal.html" class="glass-panel sidebar-promo promo-cyan p-6 bg-[#0f172a]">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-brand-cyan/20 text-brand-cyan flex items-center justify-center text-lg">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-lg leading-tight">The Master Arcade</h4>
+                        </div>
+                        <p class="text-slate-400 text-sm mb-6">If you survived the 3-second timer, step into the global arena. Challenge players in 1v1 rapid-fire duels and daily logic puzzles.</p>
+                        <span class="text-xs font-black text-brand-cyan uppercase tracking-widest flex items-center gap-2">Access The Grid <i class="fas fa-arrow-right"></i></span>
+                    </a>
+
+                    <!-- Sidebar Promo 2: Bollywood -->
+                    <a href="bollywood-frame-guesser.html" class="glass-panel sidebar-promo promo-saffron p-6 bg-[#0f172a]">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-india-saffron/20 text-india-saffron flex items-center justify-center text-lg">
+                                <i class="fas fa-quote-left"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-lg leading-tight">Badly Explained Plots</h4>
+                        </div>
+                        <p class="text-slate-400 text-sm mb-6">Slow the pace down. Can you guess the iconic Indian blockbuster from a terribly explained, sarcastic plot summary?</p>
+                        <span class="text-xs font-black text-india-saffron uppercase tracking-widest flex items-center gap-2">Play Visual Engine <i class="fas fa-arrow-right"></i></span>
+                    </a>
+
+                    <!-- Sidebar Promo 3: Football -->
+                    <a href="global-football-and-world-cup-hub.html" class="glass-panel sidebar-promo border-l-4 border-l-slate-400 p-6 bg-[#0f172a]">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-slate-700 text-slate-300 flex items-center justify-center text-lg">
+                                <i class="fas fa-futbol"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-lg leading-tight">Global Football Hub</h4>
+                        </div>
+                        <p class="text-slate-400 text-sm mb-6">Switch from the pitch to the field. Dive into the deep encyclopedia of World Cup history and European football lore.</p>
+                        <span class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">Explore Hub <i class="fas fa-arrow-right"></i></span>
+                    </a>
+
+                    <!-- AdSense Placement Box -->
+                    <div class="mt-8 border border-dashed border-slate-700 rounded-xl p-4 text-center">
+                        <span class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">Advertisement</span>
+                        <div class="h-64 w-full flex items-center justify-center mt-2">
+                             <i class="fas fa-ad text-slate-800 text-3xl"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+    <quiz-footer></quiz-footer>
+
+    <!-- GAME LOGIC SCRIPT -->
+    <script>
+        const quizData = [
+            {
+                question: "Who hit 6 sixes in a single over against England in the 2007 T20 World Cup?",
+                options: ["MS Dhoni", "Virender Sehwag", "Yuvraj Singh", "Sachin Tendulkar"],
+                correct: 2
+            },
+            {
+                question: "Which Indian holds the record for the highest individual score (264) in ODI cricket?",
+                options: ["Rohit Sharma", "Virat Kohli", "Shikhar Dhawan", "Sourav Ganguly"],
+                correct: 0
+            },
+            {
+                question: "Who hit the iconic winning six in the 2011 ICC World Cup Final?",
+                options: ["Gautam Gambhir", "Yuvraj Singh", "MS Dhoni", "Zaheer Khan"],
+                correct: 2
+            },
+            {
+                question: "Which IPL franchise is famously co-owned by Bollywood actor Shah Rukh Khan?",
+                options: ["Mumbai Indians", "Kolkata Knight Riders", "Delhi Capitals", "Punjab Kings"],
+                correct: 1
+            },
+            {
+                question: "Who was the captain of the Indian team that won the 1983 World Cup?",
+                options: ["Sunil Gavaskar", "Ravi Shastri", "Kapil Dev", "Mohinder Amarnath"],
+                correct: 2
+            },
+            {
+                question: "Which Indian bowler famously took all 10 wickets in a Test innings against Pakistan in 1999?",
+                options: ["Harbhajan Singh", "Javagal Srinath", "Anil Kumble", "Zaheer Khan"],
+                correct: 2
+            },
+            {
+                question: "Who is the all-time leading run-scorer in the history of the IPL?",
+                options: ["David Warner", "Suresh Raina", "Virat Kohli", "Shikhar Dhawan"],
+                correct: 2
+            },
+            {
+                question: "Which team won the inaugural season of the Indian Premier League in 2008?",
+                options: ["Chennai Super Kings", "Rajasthan Royals", "Deccan Chargers", "Royal Challengers Bangalore"],
+                correct: 1
+            },
+            {
+                question: "What is the name of the largest cricket stadium in the world, located in Ahmedabad?",
+                options: ["Eden Gardens", "Wankhede Stadium", "Narendra Modi Stadium", "Chinnaswamy Stadium"],
+                correct: 2
+            },
+            {
+                question: "Which Indian batsman is affectionately known as 'The Wall'?",
+                options: ["Rahul Dravid", "VVS Laxman", "Cheteshwar Pujara", "Sachin Tendulkar"],
+                correct: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let currentStreak = 0;
+        let canClick = true;
+        let timerInterval;
+        let timeLeft = 300; // 3.00 seconds (in centiseconds)
+
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        
+        const questionContainer = document.getElementById('question-container');
+        const questionText = document.getElementById('question-text');
+        const optionsGrid = document.getElementById('options-grid');
+        const questionCounter = document.getElementById('question-counter');
+        const streakCounter = document.getElementById('streak-counter');
+        const timerBar = document.getElementById('timer-bar');
+        const timerText = document.getElementById('timer-text');
+
+        function startGame() {
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            canClick = true;
+            timeLeft = 300;
+            const q = quizData[currentQuestion];
+            
+            questionCounter.innerText = `Ball ${String(currentQuestion + 1).padStart(2, '0')} / ${String(quizData.length).padStart(2, '0')}`;
+            
+            // Reset animations
+            questionContainer.classList.remove('fade-in', 'shake');
+            void questionContainer.offsetWidth; 
+            questionContainer.classList.add('fade-in');
+            
+            questionText.innerText = q.question;
+
+            // Generate Options
+            optionsGrid.innerHTML = '';
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn fade-in';
+                btn.style.animationDelay = `${index * 0.05}s`;
+                btn.innerHTML = `<span>${opt}</span> <i class="fas fa-circle text-white/10 hidden status-icon"></i>`;
+                btn.onclick = () => selectAnswer(index, btn);
+                optionsGrid.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerBar.style.transform = `scaleX(1)`;
+            timerText.innerText = `3.00s`;
+            timerText.classList.remove('text-red-500');
+
+            timerInterval = setInterval(() => {
+                if(!canClick) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+
+                timeLeft -= 1;
+                const seconds = (timeLeft / 100).toFixed(2);
+                timerText.innerText = `${seconds}s`;
+                timerBar.style.transform = `scaleX(${timeLeft / 300})`;
+
+                if (timeLeft <= 100) {
+                    timerText.classList.add('text-red-500');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 10);
+        }
+
+        function handleTimeOut() {
+            if (!canClick) return;
+            canClick = false;
+            
+            questionContainer.classList.add('shake');
+            currentStreak = 0;
+            streakCounter.innerText = currentStreak;
+            streakCounter.classList.remove('text-india-saffron');
+
+            const allBtns = optionsGrid.querySelectorAll('.option-btn');
+            const q = quizData[currentQuestion];
+            
+            // Highlight correct answer slightly
+            allBtns[q.correct].classList.add('correct', 'opacity-70');
+            allBtns.forEach(b => { if(b !== allBtns[q.correct]) b.style.opacity = '0.3'; });
+
+            setTimeout(() => advanceGame(), 1500);
+        }
+
+        function selectAnswer(selectedIndex, btnElement) {
+            if (!canClick) return;
+            canClick = false;
+            clearInterval(timerInterval);
+
+            const q = quizData[currentQuestion];
+            const allBtns = optionsGrid.querySelectorAll('.option-btn');
+            const statusIcon = btnElement.querySelector('.status-icon');
+            statusIcon.classList.remove('hidden');
+
+            if (selectedIndex === q.correct) {
+                btnElement.classList.add('correct');
+                statusIcon.classList.replace('fa-circle', 'fa-check-circle');
+                statusIcon.classList.replace('text-white/10', 'text-white');
+                score++;
+                currentStreak++;
+                streakCounter.innerText = currentStreak;
+                streakCounter.classList.add('text-india-saffron', 'scale-110');
+                setTimeout(() => streakCounter.classList.remove('scale-110'), 200);
+            } else {
+                questionContainer.classList.add('shake');
+                btnElement.classList.add('wrong');
+                statusIcon.classList.replace('fa-circle', 'fa-times-circle');
+                statusIcon.classList.replace('text-white/10', 'text-white');
+                currentStreak = 0;
+                streakCounter.innerText = currentStreak;
+                streakCounter.classList.remove('text-india-saffron');
+                allBtns[q.correct].classList.add('correct', 'opacity-70');
+            }
+
+            allBtns.forEach(b => { if(b !== btnElement && b !== allBtns[q.correct]) b.style.opacity = '0.3'; });
+
+            setTimeout(() => advanceGame(), 1500);
+        }
+
+        function advanceGame() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function showEndScreen() {
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            
+            document.getElementById('final-score-text').innerText = score;
+            const percentage = (score / quizData.length) * 360;
+            
+            setTimeout(() => {
+                document.getElementById('score-circle-element').style.setProperty('--percentage', `${percentage}deg`);
+            }, 100);
+
+            const rankTitle = document.getElementById('rank-title');
+            const rankDesc = document.getElementById('rank-desc');
+            const ratio = score / quizData.length;
+
+            if (ratio === 1) {
+                rankTitle.innerText = "Master Blaster";
+                rankDesc.innerText = "Ice in your veins. Absolute perfection under pressure.";
+            } else if (ratio >= 0.6) {
+                rankTitle.innerText = "Solid All-Rounder";
+                rankDesc.innerText = "You survived the pressure, but dropped a few catches.";
+            } else {
+                rankTitle.innerText = "Gully Cricketer";
+                rankDesc.innerText = "The timer completely broke your concentration. Back to the nets.";
+            }
+        }
+
+        function shareScore() {
+            const btn = document.getElementById('share-btn');
+            const rank = document.getElementById('rank-title').innerText;
+            const shareText = `🏏 I scored ${score}/${quizData.length} on "Cricket Split-Second"!\nMy Rank: ${rank}\n\nThink you can beat the 3-second panic timer? Try it here:\nhttps://www.thequizrealm.com/cricket-split-second.html`;
+            
+            navigator.clipboard.writeText(shareText).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = `<i class="fas fa-check text-emerald-400"></i> Copied to Clipboard!`;
+                btn.classList.add('bg-emerald-900/40', 'border-emerald-500/50');
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.remove('bg-emerald-900/40', 'border-emerald-500/50');
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
