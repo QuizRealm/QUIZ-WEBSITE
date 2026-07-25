@@ -1,21 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <!-- Google AdSense Verification -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6205081520399538" crossorigin="anonymous"></script>
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6205081520399538"
-     crossorigin="anonymous"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rank It</title>
-    <!-- Tailwind CSS for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SortableJS for buttery smooth drag and drop -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     
+    <!-- ADVANCED SEO METADATA -->
+    <title>Rank It | The Ultimate Subjective Tier List Game | QuizRealm Arcade</title>
+    <meta name="description" content="Play Rank It, a free interactive tier-list ranking game across 20 rounds of relatable dilemmas. Drag to rank and get roasted based on your choices." />
+    <meta name="keywords" content="rank it game, tier list game, subjective ranking game, funny choice game, free browser games, QuizRealm Arcade" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://thequizrealm.com/rank-it.html" />
+
+    <!-- STRUCTURED DATA FOR GOOGLE INDEXING -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "Rank It",
+      "description": "An interactive subjective ranking game across 20 rounds of hilarious daily dilemmas.",
+      "genre": ["Party", "Casual", "Strategy"],
+      "playMode": "SinglePlayer",
+      "applicationCategory": "GameApplication"
+    }
+    </script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SortableJS for drag and drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
-        /* Smooth, Expensive Animations */
         body {
-            overscroll-behavior-y: contain; /* Prevents pull-to-refresh on mobile */
+            background-color: #09090b;
+            color: #f4f4f5;
+            overscroll-behavior-y: contain;
             -webkit-tap-highlight-color: transparent;
         }
         
@@ -37,7 +70,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Drag state styling */
         .sortable-ghost {
             opacity: 0.2;
         }
@@ -45,8 +77,8 @@
         .sortable-chosen {
             transform: scale(1.02);
             box-shadow: 0 15px 30px -5px rgba(139, 92, 246, 0.25);
-            background-color: #27272a !important; /* zinc-800 */
-            border-color: #8b5cf6 !important; /* violet-500 */
+            background-color: #27272a !important;
+            border-color: #8b5cf6 !important;
             z-index: 50;
         }
 
@@ -55,97 +87,191 @@
         }
 
         .drag-handle {
-            touch-action: none; /* Prevents scrolling when dragging */
+            touch-action: none;
         }
+
+        /* SEO Article Styling */
+        .seo-content h2 { font-size: 1.75rem; font-weight: 700; color: #fff; margin-top: 2.5rem; margin-bottom: 1rem; font-family: sans-serif; }
+        .seo-content h3 { font-size: 1.25rem; font-weight: 700; color: #a78bfa; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .seo-content p { color: #a1a1aa; font-size: 1.05rem; margin-bottom: 1.25rem; line-height: 1.8; }
+        .seo-content ul { list-style-type: disc; padding-left: 1.5rem; color: #a1a1aa; margin-bottom: 1.25rem; }
+        .seo-content li { margin-bottom: 0.5rem; }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans flex flex-col items-center py-10 px-5 antialiased selection:bg-violet-500 selection:text-white">
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-violet-500 selection:text-white">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-    <div id="game-container" class="w-full max-w-md flex flex-col gap-8 slide-up">
+    <quiz-header></quiz-header>
+
+    <!-- Top Navigation -->
+    <header class="w-full max-w-xl mx-auto px-6 pt-6 flex justify-between items-center z-20">
+        <div class="flex items-center gap-3">
+            <a href="arcade.html" class="w-10 h-10 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center hover:bg-zinc-800 transition-all text-zinc-300">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="font-bold text-lg text-white leading-none">Rank It.</h1>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-violet-400">QuizRealm Arcade</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="toggleAudio()" id="audio-btn" class="w-10 h-10 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center hover:bg-zinc-800 transition-all text-zinc-300" title="Toggle Sound">
+                <i class="fas fa-volume-high text-sm"></i>
+            </button>
+            <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-full" id="round-indicator">
+                Round 1/20
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="w-full max-w-xl mx-auto px-4 flex flex-col items-center my-8 z-10">
+        <div id="game-container" class="w-full flex flex-col gap-6 slide-up">
+            
+            <div class="text-center space-y-1">
+                <p class="text-zinc-400 text-xs tracking-wider uppercase font-semibold">Drag to rank items. #1 is the Absolute Best, #5 is the Absolute Worst.</p>
+            </div>
+
+            <!-- Sortable List Container -->
+            <div id="rank-list" class="flex flex-col gap-3">
+                <!-- Items injected by JS -->
+            </div>
+
+            <!-- Action Area -->
+            <div class="flex flex-col gap-4 mt-2">
+                <button id="lock-btn" class="w-full py-4 rounded-2xl bg-zinc-100 text-zinc-950 font-extrabold text-lg shadow-[0_0_20px_rgba(244,244,245,0.1)] hover:bg-white hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(139,92,246,0.4)] transition-all duration-300 active:scale-95">
+                    Lock It In
+                </button>
+            </div>
+
+            <!-- Result/Judgement Area (Hidden by default) -->
+            <div id="result-area" class="hidden flex-col items-center gap-6 bg-zinc-900 border border-zinc-800 rounded-3xl p-6 fade-in shadow-2xl shadow-violet-900/10">
+                <div class="text-4xl">🔮</div>
+                <p id="judgement-text" class="text-center text-lg font-medium text-zinc-200 leading-relaxed"></p>
+                
+                <div class="w-full space-y-3">
+                    <button id="next-btn" class="w-full py-3.5 rounded-xl bg-violet-600 text-white font-bold hover:bg-violet-500 transition-colors active:scale-95 shadow-lg shadow-violet-600/20">
+                        Next Round
+                    </button>
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <a href="arcade.html" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-decoration-none">
+                            <i class="fas fa-gamepad text-violet-400"></i> Arcade Hub
+                        </a>
+                        <button onclick="shareScore()" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
+                            <i class="fas fa-share-nodes text-fuchsia-400"></i> Share Game
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- SEO Content Section -->
+    <section class="w-full max-w-3xl mx-auto px-6 py-12 border-t border-zinc-800 seo-content z-10">
+        <h2>About Rank It: The Subjective Tier List Game</h2>
+        <p>Welcome to <strong>Rank It</strong>, an interactive tier-list challenge built for the QuizRealm Arcade. This game strips away standard trivia and forces you to rank hilariously relatable, chaotic, and everyday human experiences from best to worst.</p>
         
-        <!-- Header -->
-        <header class="text-center space-y-2">
-            <h1 class="text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">
-                Rank It.
-            </h1>
-            <p class="text-zinc-400 text-sm font-medium" id="round-indicator">Round 1 of 5</p>
-            <p class="text-zinc-500 text-xs mt-1">Drag to rank. #1 is the Absolute Best, #5 is the Absolute Worst.</p>
-        </header>
+        <h3>How to Play & Strategy</h3>
+        <p>Every round presents 5 randomized items centered around a specific theme or dilemma. Using touch or mouse controls, drag and drop the items into your preferred order:</p>
+        <ul>
+            <li><strong>Position #1:</strong> Reserved for your ultimate champion or coping mechanism.</li>
+            <li><strong>Position #5:</strong> Your absolute dealbreaker or minor inconvenience.</li>
+            <li><strong>The Roast Engine:</strong> Once you lock in your choices, our diagnostic engine evaluates your top and bottom picks and delivers a witty psychological judgment.</li>
+        </ul>
 
-        <!-- Sortable List Container -->
-        <div id="rank-list" class="flex flex-col gap-3">
-            <!-- Items injected by JS -->
+        <h3>Explore More Free Browser Games</h3>
+        <p>Finished sorting all 20 rounds? Keep your brain active across our arcade network:</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <a href="arcade.html" class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-violet-500/40 transition-all text-decoration-none block">
+                <span class="text-xs font-mono text-violet-400 uppercase font-bold block mb-1">Main Lobby</span>
+                <h4 class="text-white font-bold text-sm">Arcade Hub</h4>
+            </a>
+            <a href="intuition-engine.html" class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-cyan-500/40 transition-all text-decoration-none block">
+                <span class="text-xs font-mono text-cyan-400 uppercase font-bold block mb-1">Consensus Game</span>
+                <h4 class="text-white font-bold text-sm">Intuition Engine</h4>
+            </a>
+            <a href="knot-garden.html" class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/40 transition-all text-decoration-none block">
+                <span class="text-xs font-mono text-emerald-400 uppercase font-bold block mb-1">Zen Puzzle</span>
+                <h4 class="text-white font-bold text-sm">The Knot Garden</h4>
+            </a>
         </div>
+    </section>
 
-        <!-- Action Area -->
-        <div class="flex flex-col gap-4 mt-2">
-            <button id="lock-btn" class="w-full py-4 rounded-2xl bg-zinc-100 text-zinc-950 font-bold text-lg shadow-[0_0_20px_rgba(244,244,245,0.1)] hover:bg-white hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(139,92,246,0.4)] transition-all duration-300 active:scale-95">
-                Lock It In
-            </button>
-        </div>
-
-        <!-- Result/Judgement Area (Hidden by default) -->
-        <div id="result-area" class="hidden flex-col items-center gap-6 bg-zinc-900 border border-zinc-800 rounded-3xl p-6 fade-in shadow-2xl shadow-violet-900/10">
-            <div class="text-4xl">🔮</div>
-            <p id="judgement-text" class="text-center text-lg font-medium text-zinc-200 leading-relaxed"></p>
-            <button id="next-btn" class="w-full py-3 rounded-xl bg-violet-600 text-white font-semibold hover:bg-violet-500 transition-colors active:scale-95">
-                Next Round
-            </button>
-        </div>
-
-    </div>
+    <quiz-footer></quiz-footer>
 
     <script>
-        // 5 Rounds of Highly Relatable, Arguable Human Experiences
-        const roundsData = [
-            {
-                items: [
-                    "Finding $5 in an old coat",
-                    "Stepping in a wet spot with fresh socks",
-                    "Canceled plans so you can sleep",
-                    "A warm public toilet seat",
-                    "Getting a text back immediately"
-                ]
-            },
-            {
-                items: [
-                    "Food arriving exactly when you pick a movie",
-                    "Biting the inside of your own cheek",
-                    "Unskippable 30-second ads",
-                    "Flipping to the cool side of the pillow",
-                    "Remembering a cringe moment from 5 years ago"
-                ]
-            },
-            {
-                items: [
-                    "Waking up and realizing you have 2 more hours to sleep",
-                    "Someone holding the door too long so you have to jog",
-                    "Hitting every single red light when you're late",
-                    "Perfectly peeling a sticker off in one piece",
-                    "Dropping your phone flat on your face in bed"
-                ]
-            },
-            {
-                items: [
-                    "Plugging in a USB right on the first try",
-                    "Stubbing your pinky toe on the bed frame",
-                    "The Wi-Fi dropping right at the climax of a show",
-                    "Taking off tight shoes after a long day",
-                    "Laughing at a joke you didn't actually hear"
-                ]
-            },
-            {
-                items: [
-                    "Losing the TV remote in the blankets",
-                    "Washing your hair after 4 days of dry shampoo",
-                    "Getting into a freshly made bed after a shower",
-                    "When someone leaves your room and doesn't shut the door",
-                    "Nail clippers that actually cut cleanly"
-                ]
+        // --- WEB AUDIO SYNTH FOR FEEDBACK ---
+        let audioEnabled = true;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
+        }
+
+        function playSound(type) {
+            if (!audioEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'lock') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.setValueAtTime(600, now + 0.1);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('audio-btn');
+            btn.innerHTML = audioEnabled ? '<i class="fas fa-volume-high text-sm"></i>' : '<i class="fas fa-volume-xmark text-sm text-red-400"></i>';
+        }
+
+        // --- 20 ROUNDS OF RELATABLE DILEMMAS ---
+        const roundsData = [
+            { items: ["Finding $5 in an old coat", "Stepping in a wet spot with fresh socks", "Canceled plans so you can sleep", "A warm public toilet seat", "Getting a text back immediately"] },
+            { items: ["Food arriving exactly when you pick a movie", "Biting the inside of your own cheek", "Unskippable 30-second ads", "Flipping to the cool side of the pillow", "Remembering a cringe moment from 5 years ago"] },
+            { items: ["Waking up and realizing you have 2 more hours to sleep", "Someone holding the door too long so you have to jog", "Hitting every single red light when you're late", "Perfectly peeling a sticker off in one piece", "Dropping your phone flat on your face in bed"] },
+            { items: ["Plugging in a USB right on the first try", "Stubbing your pinky toe on the bed frame", "The Wi-Fi dropping right at the climax of a show", "Taking off tight shoes after a long day", "Laughing at a joke you didn't actually hear"] },
+            { items: ["Losing the TV remote in the blankets", "Washing your hair after 4 days of dry shampoo", "Getting into a freshly made bed after a shower", "When someone leaves your room and doesn't shut the door", "Nail clippers that actually cut cleanly"] },
+            { items: ["Finding an extra chicken nugget in your fries", "Stepping on a Lego brick in the dark", "Your phone battery dying at 1% right as you pay", "Getting the exact parking spot right in front", "Accidentally making eye contact with a stranger"] },
+            { items: ["The first sip of ice-cold water at 3 AM", "A sneeze that gets stuck halfway", "Discovering your favorite show was canceled on a cliffhanger", "Freshly baked cookies coming out of the oven", "Getting popcorn kernels stuck in your gums"] },
+            { items: ["Slipping into clean bedsheets after shaving your legs", "Wet hair touching your neck in winter", "Autocomplete guessing what you wanted to type perfectly", "An unexpected package arriving in the mail", "Trying to pull a stubborn receipt out of an ATM"] },
+            { items: ["The smell of rain on hot pavement (Petrichor)", "Getting water up your nose while swimming", "When the waiter says 'Enjoy your meal' and you reply 'You too'", "An elevator ride with awkward silence", "Finding out your favorite song is extended mix"] },
+            { items: ["Peeling the plastic film off a brand-new screen", "Your headphones ripping out of your ears by a doorknob", "That satisfying pop when opening a jar lid", "Slow walkers taking up the entire narrow hallway", "An unexpected day off work or school"] },
+            { items: ["The crunch of biting into a fresh apple", "A paper cut on your finger web", "Finding money you forgot about in your bank account", "Getting a group project where you do all the work", "Successfully parallel parking on the first try"] },
+            { items: ["Waking up naturally right before your alarm goes off", "The burning itch of a mosquito bite", "The waiter bringing the exact food you ordered without asking", "Stepping outside into freezing rain without a jacket", "A really good hair day when nobody is looking"] },
+            { items: ["The sound of birds chirping on a quiet morning", "Stubbing your toe on a wooden chair leg", "Getting a compliment that makes your whole week", "Burning the roof of your mouth on hot cheese", "Finding your lost keys in your pocket"] },
+            { items: ["The crisp feeling of crisp new bank notes", "A screen protector that gets a bubble right in the center", "Your favorite hoodie feeling extra soft after laundry", "Stepping in chewing gum with new sneakers", "An iced coffee on a scorching summer afternoon"] },
+            { items: ["The rush of submitting an assignment 1 minute before deadline", "Getting food poisoning from your favorite takeout", "A song you love coming on the radio just as you start driving", "Dropping your toast butter-side down", "Watching a thunderstorm safely from your window"] },
+            { items: ["The magic of a sunset over the ocean", "Forgetting why you walked into the kitchen", "A stranger smiling at you for no reason", "Your phone autocorrecting a clean word to a swear", "The smell of old books in a library"] },
+            { items: ["The satisfaction of crossing off a completed to-do list", "A battery warning popping up in a video game boss fight", "Getting the last slice of pizza", "Trying to untangle Christmas lights", "An old friend reaching out out of nowhere"] },
+            { items: ["The chill breeze on a hot summer evening", "Stepping into a puddle hidden by autumn leaves", "A movie plot twist that actually surprises you", "Dropping your keys down a storm drain", "Eating the crispy corner piece of a lasagna"] },
+            { items: ["The comfort of an oversized hoodie", "Getting an email that says 'This could have been a meeting'", "Finding a parking spot right outside the entrance", "A bird pooping directly on your freshly washed car", "The smell of freshly brewed coffee in the morning"] },
+            { items: ["Achieving total flow state while working", "Losing internet connection during a save screen", "A warm towel straight out of the dryer", "Stepping on a wet bathroom mat", "Laughing so hard your stomach hurts"] }
         ];
 
-        // Specific, highly judgmental roasts based on what they put at #1 or #5
+        // Specific roasts
         const specificRoasts = {
             "Stepping in a wet spot with fresh socks": "You put stepping in a wet spot at #1? You are an absolute psychopath and a danger to society.",
             "A warm public toilet seat": "A warm public toilet seat at #1? You thrive on the chaotic energy of strangers. Seek therapy.",
@@ -168,7 +294,6 @@
         const roundIndicator = document.getElementById('round-indicator');
         const judgementText = document.getElementById('judgement-text');
 
-        // Helper: Shuffle array so items aren't pre-ranked
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
             while (currentIndex !== 0) {
@@ -179,22 +304,21 @@
             return array;
         }
 
-        // Render a round
         function loadRound(roundIndex) {
             listContainer.innerHTML = '';
             resultArea.classList.add('hidden');
             lockBtn.classList.remove('hidden');
-            roundIndicator.innerText = `Round ${roundIndex + 1} of ${roundsData.length}`;
+            roundIndicator.innerText = `Round ${roundIndex + 1}/${roundsData.length}`;
             
             const shuffledItems = shuffle([...roundsData[roundIndex].items]);
 
             shuffledItems.forEach((text, index) => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = "rank-item group flex items-center gap-4 bg-[#18181b] border border-zinc-800/50 p-4 rounded-2xl cursor-grab transition-colors hover:border-zinc-700";
+                itemDiv.className = "rank-item group flex items-center gap-4 bg-zinc-900 border border-zinc-800 p-4 rounded-2xl cursor-grab transition-colors hover:border-zinc-700";
                 itemDiv.dataset.text = text;
                 
                 itemDiv.innerHTML = `
-                    <div class="rank-number flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-zinc-900 text-zinc-500 font-bold text-sm border border-zinc-800 transition-colors">
+                    <div class="rank-number flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-zinc-950 text-zinc-500 font-bold text-sm border border-zinc-800 transition-colors">
                         ${index + 1}
                     </div>
                     <div class="flex-1 font-medium text-zinc-200 leading-snug">
@@ -209,49 +333,38 @@
                 listContainer.appendChild(itemDiv);
             });
 
-            // Initialize SortableJS
             if (sortableInstance) sortableInstance.destroy();
             sortableInstance = new Sortable(listContainer, {
                 animation: 250,
-                easing: "cubic-bezier(0.25, 1, 0.5, 1)", // Apple-like smooth easing
+                easing: "cubic-bezier(0.25, 1, 0.5, 1)",
                 handle: ".rank-item",
                 ghostClass: "sortable-ghost",
                 chosenClass: "sortable-chosen",
                 dragClass: "sortable-drag",
-                onEnd: updateNumbers
+                onEnd: () => {
+                    playSound('click');
+                    updateNumbers();
+                }
             });
         }
 
-        // Update the 1-5 numbers visually after a drag event
         function updateNumbers() {
             const items = listContainer.querySelectorAll('.rank-item');
             items.forEach((item, index) => {
                 const numBadge = item.querySelector('.rank-number');
                 numBadge.innerText = index + 1;
-                // Highlight #1 dynamically
                 if (index === 0) {
-                    numBadge.classList.replace('bg-zinc-900', 'bg-violet-500/20');
-                    numBadge.classList.replace('text-zinc-500', 'text-violet-400');
-                    numBadge.classList.replace('border-zinc-800', 'border-violet-500/30');
+                    numBadge.className = "rank-number flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-violet-500/20 text-violet-400 font-bold text-sm border border-violet-500/30 transition-colors";
                 } else {
-                    numBadge.classList.replace('bg-violet-500/20', 'bg-zinc-900');
-                    numBadge.classList.replace('text-violet-400', 'text-zinc-500');
-                    numBadge.classList.replace('border-violet-500/30', 'border-zinc-800');
+                    numBadge.className = "rank-number flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-zinc-950 text-zinc-500 font-bold text-sm border border-zinc-800 transition-colors";
                 }
             });
         }
 
-        // Generate the funny judgement
         function generateJudgement(topItem, bottomItem) {
-            // Check for specific unhinged roasts
-            if (specificRoasts[topItem]) {
-                return specificRoasts[topItem];
-            }
-            if (specificRoasts[bottomItem]) {
-                return specificRoasts[bottomItem];
-            }
+            if (specificRoasts[topItem]) return specificRoasts[topItem];
+            if (specificRoasts[bottomItem]) return specificRoasts[bottomItem];
 
-            // Fallback generic but funny roasts
             const genericRoasts = [
                 `You put "${topItem}" at #1? Your priorities are deeply fascinating and slightly concerning.`,
                 `Ranking "${bottomItem}" as the absolute worst tells me you have zero tolerance for minor inconveniences.`,
@@ -259,51 +372,55 @@
                 `You rejected "${bottomItem}" so aggressively. I respect the boundaries, but I question your methods.`,
                 `Honestly, a very solid ranking. Except for putting "${topItem}" first. That's just wild.`
             ];
-            
             return genericRoasts[Math.floor(Math.random() * genericRoasts.length)];
         }
 
-        // Lock in button click
         lockBtn.addEventListener('click', () => {
-            sortableInstance.option("disabled", true); // Disable dragging
+            playSound('lock');
+            sortableInstance.option("disabled", true);
             lockBtn.classList.add('hidden');
             resultArea.classList.remove('hidden');
 
-            // Get current order
             const currentOrder = Array.from(listContainer.querySelectorAll('.rank-item')).map(item => item.dataset.text);
             const topItem = currentOrder[0];
             const bottomItem = currentOrder[4];
 
             judgementText.innerText = generateJudgement(topItem, bottomItem);
 
-            // Change button text if it's the last round
             if (currentRound === roundsData.length - 1) {
                 nextBtn.innerText = "Play Again";
-                nextBtn.classList.replace('bg-violet-600', 'bg-zinc-100');
-                nextBtn.classList.replace('text-white', 'text-zinc-950');
-                nextBtn.classList.replace('hover:bg-violet-500', 'hover:bg-white');
+                nextBtn.className = "w-full py-3.5 rounded-xl bg-zinc-100 text-zinc-950 font-extrabold hover:bg-white transition-colors active:scale-95";
             }
         });
 
-        // Next round button click
         nextBtn.addEventListener('click', () => {
+            playSound('click');
             currentRound++;
             if (currentRound >= roundsData.length) {
-                // Reset game
                 currentRound = 0;
                 nextBtn.innerText = "Next Round";
-                nextBtn.classList.replace('bg-zinc-100', 'bg-violet-600');
-                nextBtn.classList.replace('text-zinc-950', 'text-white');
-                nextBtn.classList.replace('hover:bg-white', 'hover:bg-violet-500');
+                nextBtn.className = "w-full py-3.5 rounded-xl bg-violet-600 text-white font-bold hover:bg-violet-500 transition-colors active:scale-95 shadow-lg shadow-violet-600/20";
             }
             loadRound(currentRound);
             updateNumbers();
         });
 
-        // Initialize Game
+        window.shareScore = () => {
+            const shareData = {
+                title: 'Rank It on QuizRealm',
+                text: `I just beat all 20 rounds of Rank It on QuizRealm! Can you survive the judgment?`,
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Game link copied to clipboard!');
+            }
+        };
+
         loadRound(currentRound);
         updateNumbers();
-
     </script>
 </body>
 </html>

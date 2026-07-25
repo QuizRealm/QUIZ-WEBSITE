@@ -1,519 +1,651 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <!-- Google AdSense Verification -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6205081520399538" crossorigin="anonymous"></script>
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6205081520399538"
-     crossorigin="anonymous"></script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  
-  <!-- ADVANCED SEO METADATA -->
-  <title>The Knot Garden | Relaxing Untangle Puzzle Game</title>
-  <meta name="description" content="Play The Knot Garden, a free, relaxing untangle puzzle game. Drag the nodes to uncross the silk threads and find perfect harmony. Play instantly in your browser." />
-  <meta name="keywords" content="untangle game, knot puzzle, relaxing web game, zen puzzle, line crossing game, uncross lines puzzle, free browser games" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://thequizrealm.com/knot-garden.html" />
-  
-  <!-- STRUCTURED DATA FOR GOOGLE INDEXING -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "VideoGame",
-    "name": "The Knot Garden",
-    "description": "A relaxing spatial puzzle where players untangle crossing lines.",
-    "genre": ["Puzzle", "Logic", "Casual"],
-    "playMode": "SinglePlayer",
-    "applicationCategory": "GameApplication",
-    "offers": {
-      "@type": "Offer",
-      "price": "0.00",
-      "priceCurrency": "USD"
-    }
-  }
-  </script>
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
 
-  <!-- Tailwind CSS & Premium Typography -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"DM Sans"', 'sans-serif'],
-            serif: ['"Playfair Display"', 'serif']
-          },
-          colors: {
-            zen: {
-              50: '#faf9f8',
-              100: '#f2efeb',
-              200: '#e5dfd6',
-              300: '#d1c7b9',
-              600: '#8c7b65',
-              800: '#4a4135',
-              900: '#2d2720'
-            },
-            tangled: '#e17055', /* Soft Terracotta */
-            harmony: '#00b894'  /* Sage Green */
-          }
-        }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- ADVANCED SEO METADATA -->
+    <title>The Knot Garden | Free Relaxing Untangle Puzzle Game | QuizRealm</title>
+    <meta name="description" content="Play The Knot Garden, a free relaxing untangle puzzle game. Drag nodes across 20 levels to uncross silk threads and find harmony. Play instantly in your browser." />
+    <meta name="keywords" content="untangle game, knot puzzle, relaxing web game, zen puzzle, line crossing game, uncross lines puzzle, free browser games, QuizRealm Arcade" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://thequizrealm.com/knot-garden.html" />
+    
+    <!-- STRUCTURED DATA FOR GOOGLE INDEXING -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "The Knot Garden",
+      "description": "A relaxing spatial puzzle where players untangle crossing lines across 20 escalating levels.",
+      "genre": ["Puzzle", "Logic", "Casual"],
+      "playMode": "SinglePlayer",
+      "applicationCategory": "GameApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
       }
     }
-  </script>
+    </script>
 
-  <style>
-    body {
-      background-color: #faf9f8;
-      color: #2d2720;
-      overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    /* Game Canvas UI */
-    #game-board {
-      position: relative;
-      touch-action: none; /* Prevents screen scrolling when dragging nodes */
-      background: #ffffff;
-      box-shadow: 0 20px 40px -15px rgba(74, 65, 53, 0.08), inset 0 0 0 1px rgba(74, 65, 53, 0.05);
-      border-radius: 2rem;
-      overflow: hidden;
-    }
+    <!-- Tailwind CSS & Premium Typography -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    #lines-canvas {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"DM Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif']
+                    },
+                    colors: {
+                        zen: {
+                            50: '#faf9f8',
+                            100: '#f2efeb',
+                            200: '#e5dfd6',
+                            300: '#d1c7b9',
+                            600: '#8c7b65',
+                            800: '#4a4135',
+                            900: '#2d2720'
+                        },
+                        tangled: '#e17055', /* Soft Terracotta */
+                        harmony: '#00b894'  /* Sage Green */
+                    }
+                }
+            }
+        }
+    </script>
 
-    /* Draggable Nodes */
-    .node {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      margin-left: -16px;
-      margin-top: -16px;
-      background: #ffffff;
-      border: 3px solid #4a4135;
-      border-radius: 50%;
-      z-index: 10;
-      cursor: grab;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, border-color 0.3s;
-    }
-    
-    .node:active, .node.dragging {
-      cursor: grabbing;
-      transform: scale(1.3);
-      box-shadow: 0 10px 15px rgba(0,0,0,0.15);
-      z-index: 20;
-    }
+    <style>
+        body {
+            background-color: #faf9f8;
+            color: #2d2720;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        #game-board {
+            position: relative;
+            touch-action: none;
+            background: #ffffff;
+            box-shadow: 0 20px 40px -15px rgba(74, 65, 53, 0.08), inset 0 0 0 1px rgba(74, 65, 53, 0.05);
+            border-radius: 2rem;
+            overflow: hidden;
+        }
 
-    .node.harmony { border-color: #00b894; }
+        #lines-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
 
-    /* Transitions */
-    .fade-enter { opacity: 0; transform: translateY(10px); }
-    .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.5s ease-out; }
-  </style>
+        .node {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            margin-left: -16px;
+            margin-top: -16px;
+            background: #ffffff;
+            border: 3px solid #4a4135;
+            border-radius: 50%;
+            z-index: 10;
+            cursor: grab;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, border-color 0.3s;
+        }
+        
+        .node:active, .node.dragging {
+            cursor: grabbing;
+            transform: scale(1.3);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.15);
+            z-index: 20;
+        }
+
+        .node.harmony { border-color: #00b894; }
+
+        .fade-enter { opacity: 0; transform: translateY(10px); }
+        .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.5s ease-out; }
+
+        /* SEO Article Styling */
+        .seo-content h2 { font-size: 1.75rem; font-weight: 700; color: #2d2720; margin-top: 2.5rem; margin-bottom: 1rem; font-family: 'Playfair Display', serif; }
+        .seo-content h3 { font-size: 1.25rem; font-weight: 700; color: #8c7b65; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .seo-content p { color: #4a4135; font-size: 1.05rem; margin-bottom: 1.25rem; line-height: 1.8; }
+        .seo-content ul { list-style-type: disc; padding-left: 1.5rem; color: #4a4135; margin-bottom: 1.25rem; }
+        .seo-content li { margin-bottom: 0.5rem; }
+    </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans selection:bg-harmony selection:text-white">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-  <!-- Minimal Navigation -->
-  <header class="w-full max-w-5xl mx-auto px-6 py-6 flex justify-between items-center z-20">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-white rounded-xl shadow-sm border border-zen-100 flex items-center justify-center">
-        <i class="fas fa-leaf text-harmony text-lg"></i>
-      </div>
-      <div>
-        <h1 class="font-serif text-xl font-bold text-zen-900 leading-none">The Knot Garden</h1>
-      </div>
-    </div>
-    <div class="flex items-center gap-4">
-      <span class="text-sm font-bold text-zen-600 uppercase tracking-widest bg-zen-100 px-4 py-2 rounded-full">
-        Level <span id="level-indicator">1</span>/6
-      </span>
-    </div>
-  </header>
+    <quiz-header></quiz-header>
 
-  <!-- Interactive Game Area -->
-  <main class="w-full max-w-5xl mx-auto px-4 lg:px-6 flex flex-col lg:flex-row gap-10 items-start pb-16">
-    
-    <!-- Game Container (Sticky on Desktop) -->
-    <div class="w-full lg:w-[600px] shrink-0 sticky top-6">
-      
-      <!-- Top status bar -->
-      <div class="flex justify-between items-end mb-4 px-2">
-        <div>
-          <h2 id="level-title" class="font-serif text-2xl font-bold text-zen-900">The Morning Dew</h2>
-          <p id="level-status" class="text-sm font-medium text-tangled mt-1 transition-colors duration-300"><i class="fas fa-times-circle mr-1"></i> Tangled</p>
+    <!-- Navigation Header -->
+    <header class="w-full max-w-5xl mx-auto px-6 py-6 flex justify-between items-center z-20">
+        <div class="flex items-center gap-3">
+            <a href="arcade.html" class="w-10 h-10 bg-white rounded-xl shadow-sm border border-zen-100 flex items-center justify-center hover:bg-zen-100 transition-all text-zen-800">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="font-serif text-xl font-bold text-zen-900 leading-none">The Knot Garden</h1>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-zen-600">QuizRealm Arcade</span>
+            </div>
         </div>
-        <button onclick="resetLevel()" class="text-xs font-bold text-zen-600 hover:text-zen-900 uppercase tracking-widest transition-colors pb-1">
-          <i class="fas fa-undo mr-1"></i> Reset
-        </button>
-      </div>
+        <div class="flex items-center gap-3">
+            <button onclick="toggleAudio()" id="audio-btn" class="w-10 h-10 rounded-xl bg-white shadow-sm border border-zen-100 flex items-center justify-center hover:bg-zen-100 transition-all text-zen-800" title="Toggle Sound">
+                <i class="fas fa-volume-high text-sm"></i>
+            </button>
+            <span class="text-sm font-bold text-zen-600 uppercase tracking-widest bg-zen-100 px-4 py-2 rounded-full">
+                Level <span id="level-indicator">1</span>/20
+            </span>
+        </div>
+    </header>
 
-      <!-- The Board -->
-      <div id="game-board" class="w-full aspect-square">
-        <canvas id="lines-canvas"></canvas>
-        <div id="nodes-container" class="absolute inset-0 w-full h-full z-10"></div>
-      </div>
-    </div>
-
-    <!-- SEO & Contextual Content Area -->
-    <div class="flex-1 bg-white rounded-3xl p-8 lg:p-10 shadow-sm border border-zen-100">
-      <article class="prose prose-stone max-w-none">
-        <h2 class="font-serif text-3xl font-bold text-zen-900 mb-6">Find Your Focus</h2>
+    <!-- Interactive Game Area -->
+    <main class="w-full max-w-5xl mx-auto px-4 lg:px-6 flex flex-col lg:flex-row gap-10 items-start pb-16">
         
-        <p class="text-zen-800 leading-relaxed mb-6">
-          Welcome to <strong>The Knot Garden</strong>. In a world full of digital noise and high-stress timers, this spatial puzzle is designed to help you slow down, breathe, and engage your lateral logic. 
-        </p>
+        <!-- Game Container (Sticky on Desktop) -->
+        <div class="w-full lg:w-[600px] shrink-0 sticky top-6">
+            
+            <!-- Top status bar -->
+            <div class="flex justify-between items-end mb-4 px-2">
+                <div>
+                    <h2 id="level-title" class="font-serif text-2xl font-bold text-zen-900">The Morning Dew</h2>
+                    <p id="level-status" class="text-sm font-medium text-tangled mt-1 transition-colors duration-300"><i class="fas fa-times-circle mr-1"></i> Tangled</p>
+                </div>
+                <button onclick="resetLevel()" class="text-xs font-bold text-zen-600 hover:text-zen-900 uppercase tracking-widest transition-colors pb-1">
+                    <i class="fas fa-undo mr-1"></i> Reset
+                </button>
+            </div>
 
-        <div class="bg-zen-50 p-6 rounded-2xl border border-zen-100 mb-8">
-          <h3 class="font-bold text-zen-900 text-lg mb-3 flex items-center gap-2">
-            <i class="fas fa-book-open text-zen-600"></i> How to Play
-          </h3>
-          <ul class="space-y-3 text-zen-800 text-sm">
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-white border border-zen-200 flex items-center justify-center shrink-0 mt-0.5"><i class="fas fa-hand-pointer text-xs"></i></span>
-              <span><strong>Drag the Nodes:</strong> Use your mouse or finger to tap and drag the circular stones around the garden board.</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-white border border-tangled flex items-center justify-center shrink-0 mt-0.5"><i class="fas fa-times text-tangled text-xs"></i></span>
-              <span><strong>Uncross the Threads:</strong> Lines that are crossing each other will glow <span class="text-tangled font-bold">Terracotta</span>. These are tangled.</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-white border border-harmony flex items-center justify-center shrink-0 mt-0.5"><i class="fas fa-check text-harmony text-xs"></i></span>
-              <span><strong>Achieve Harmony:</strong> Position the nodes so that <em>absolutely zero lines cross</em>. Once cleared, the threads will turn <span class="text-harmony font-bold">Sage Green</span> and the next level will unlock.</span>
-            </li>
-          </ul>
+            <!-- The Board -->
+            <div id="game-board" class="w-full aspect-square">
+                <canvas id="lines-canvas"></canvas>
+                <div id="nodes-container" class="absolute inset-0 w-full h-full z-10"></div>
+            </div>
         </div>
 
-        <h3 class="font-serif text-2xl font-bold text-zen-900 mb-4">The Psychology of Spatial Puzzles</h3>
-        <p class="text-zen-800 leading-relaxed text-sm mb-4">
-          Untangling games operate on a mathematical concept known as <em>Planar Graphs</em>—a graph that can be embedded in the plane so that no edges intersect. 
-        </p>
-        <p class="text-zen-800 leading-relaxed text-sm mb-4">
-          While the math is complex, the human brain is naturally equipped to solve these visual-spatial problems. Playing untangling games activates the parietal lobe, the area of your brain responsible for spatial awareness and navigation. Because there are no timers and no fail states, your brain enters a state of "productive relaxation," making this the perfect mental palate cleanser during a busy workday.
-        </p>
-      </article>
+        <!-- SEO & Contextual Content Area -->
+        <div class="flex-1 bg-white rounded-3xl p-8 lg:p-10 shadow-sm border border-zen-100 seo-content">
+            <h2 class="font-serif text-3xl font-bold text-zen-900 mb-6" style="margin-top:0;">Find Your Focus in the Garden</h2>
+            
+            <p>
+                Welcome to <strong>The Knot Garden</strong>. In a world full of digital noise and high-stress timers, this spatial puzzle is designed to help you slow down, breathe, and engage your lateral logic across 20 escalating garden levels.
+            </p>
+
+            <div class="bg-zen-50 p-6 rounded-2xl border border-zen-100 mb-8">
+                <h3 class="font-bold text-zen-900 text-lg mb-3 flex items-center gap-2" style="margin-top:0;">
+                    <i class="fas fa-book-open text-zen-600"></i> How to Play & Pro Tips
+                </h3>
+                <ul class="space-y-3 text-zen-800 text-sm" style="padding-left: 1.2rem;">
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-white border border-zen-200 flex items-center justify-center shrink-0 mt-0.5"><i class="fas fa-hand-pointer text-xs"></i></span>
+                        <span><strong>Drag the Nodes:</strong> Use your mouse or finger to tap and drag the circular stones around the garden board.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-white border border-tangled flex items-center justify-center shrink-0 mt-0.5"><i class="fas fa-times text-tangled text-xs"></i></span>
+                        <span><strong>Uncross the Threads:</strong> Lines that cross each other glow <span class="text-tangled font-bold">Terracotta</span>. These are tangled.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-white border border-harmony flex items-center justify-center shrink-0 mt-0.5"><i class="fas fa-check text-harmony text-xs"></i></span>
+                        <span><strong>Achieve Harmony:</strong> Position nodes so that <em>zero lines cross</em>. Threads turn <span class="text-harmony font-bold">Sage Green</span> when clear.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-white border border-zen-300 flex items-center justify-center shrink-0 mt-0.5"><i class="fas fa-lightbulb text-xs text-amber-500"></i></span>
+                        <span><strong>Pro Strategy:</strong> Look for outer perimeter nodes and pull them outward to instantly untangle dense center webs.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <h2>The Psychology of Spatial Puzzles</h2>
+            <p>
+                Untangling games operate on a mathematical concept known as <em>Planar Graphs</em>—a graph that can be embedded in a plane so that no edges intersect. While the math is complex, the human brain is naturally equipped to solve these visual-spatial challenges.
+            </p>
+            <p>
+                Playing untangling games activates the parietal lobe, the area of your brain responsible for spatial awareness and navigation. Because there are no timers and no fail states, your brain enters a state of "productive relaxation," making this the ultimate mental palate cleanser.
+            </p>
+
+            <h3>Explore More Free Browser Games</h3>
+            <p>Finished untangling all 20 gardens? Keep exploring our arcade network:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                <a href="arcade.html" class="p-3 rounded-xl bg-zen-50 border border-zen-100 hover:border-zen-300 transition-all text-decoration-none block text-center">
+                    <span class="text-[10px] font-mono text-zen-600 uppercase font-bold block mb-1">Lobby</span>
+                    <span class="text-zen-900 font-bold text-xs">Arcade Hub</span>
+                </a>
+                <a href="chroma-shift.html" class="p-3 rounded-xl bg-zen-50 border border-zen-100 hover:border-cyan-500/40 transition-all text-decoration-none block text-center">
+                    <span class="text-[10px] font-mono text-cyan-600 uppercase font-bold block mb-1">Logic Puzzle</span>
+                    <span class="text-zen-900 font-bold text-xs">Chroma Shift</span>
+                </a>
+                <a href="timeline-history.html" class="p-3 rounded-xl bg-zen-50 border border-zen-100 hover:border-amber-500/40 transition-all text-decoration-none block text-center">
+                    <span class="text-[10px] font-mono text-amber-600 uppercase font-bold block mb-1">Chronology</span>
+                    <span class="text-zen-900 font-bold text-xs">Timeline Game</span>
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Results / Victory Overlay Screen -->
+    <div id="victory-modal" class="fixed inset-0 bg-zen-900/70 backdrop-blur-md z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-500 px-4">
+        <div id="victory-card" class="bg-white p-10 rounded-[2rem] max-w-sm w-full text-center shadow-2xl transform scale-95 transition-all duration-500">
+            <div id="modal-icon" class="w-20 h-20 bg-harmony/10 rounded-full flex items-center justify-center mx-auto mb-6 text-harmony text-3xl">
+                <i class="fas fa-seedling"></i>
+            </div>
+            <h2 id="modal-title" class="font-serif text-3xl font-bold text-zen-900 mb-2">Harmony Found</h2>
+            <p id="modal-desc" class="text-zen-600 text-sm mb-8">The garden is at peace. You are ready for the next arrangement.</p>
+            
+            <div id="modal-actions" class="space-y-3">
+                <button onclick="nextLevel()" id="modal-primary-btn" class="w-full py-4 bg-zen-900 text-white font-bold rounded-xl hover:bg-zen-800 active:scale-95 transition-all shadow-lg uppercase text-sm tracking-wider">
+                    Enter Next Garden
+                </button>
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <a href="arcade.html" class="py-3 bg-zen-100 hover:bg-zen-200 text-zen-900 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-decoration-none">
+                        <i class="fas fa-gamepad text-zen-800"></i> Arcade Hub
+                    </a>
+                    <button onclick="shareScore()" class="py-3 bg-zen-50 hover:bg-zen-100 border border-zen-200 text-zen-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
+                        <i class="fas fa-share-nodes text-zen-600"></i> Share Score
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-  </main>
+    <quiz-footer></quiz-footer>
 
-  <!-- Level Complete Overlay -->
-  <div id="victory-modal" class="fixed inset-0 bg-zen-900/60 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-500 px-4">
-    <div id="victory-card" class="bg-white p-10 rounded-[2rem] max-w-sm w-full text-center shadow-2xl transform scale-95 transition-all duration-500">
-      <div class="w-20 h-20 bg-harmony/10 rounded-full flex items-center justify-center mx-auto mb-6 text-harmony text-3xl">
-        <i class="fas fa-seedling"></i>
-      </div>
-      <h2 class="font-serif text-3xl font-bold text-zen-900 mb-2">Harmony Found</h2>
-      <p class="text-zen-600 text-sm mb-8">The garden is at peace. You are ready for the next arrangement.</p>
-      <button onclick="nextLevel()" class="w-full py-4 bg-zen-900 text-white font-bold rounded-xl hover:bg-zen-800 active:scale-95 transition-all shadow-lg">
-        Enter Next Garden
-      </button>
-    </div>
-  </div>
+    <script>
+        // --- WEB AUDIO SYNTH FOR ZEN FEEDBACK ---
+        let audioEnabled = true;
+        let audioCtx = null;
 
-  <script>
-    // --- GAME DATA: 6 Carefully Designed Levels ---
-    // Nodes are positioned by percentages (0 to 1) so the game is perfectly responsive
-    const LEVELS = [
-      {
-        title: "The Simple Cross",
-        nodes: [{x: 0.3, y: 0.3}, {x: 0.7, y: 0.3}, {x: 0.3, y: 0.7}, {x: 0.7, y: 0.7}],
-        edges: [[0, 3], [1, 2], [0, 1], [2, 3]] // 0-3 and 1-2 cross initially
-      },
-      {
-        title: "The Star",
-        nodes: [{x: 0.5, y: 0.2}, {x: 0.8, y: 0.8}, {x: 0.2, y: 0.4}, {x: 0.8, y: 0.4}, {x: 0.2, y: 0.8}],
-        edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]] // Standard 5-point star
-      },
-      {
-        title: "The Hexagon Snare",
-        nodes: [{x: 0.3, y: 0.2}, {x: 0.7, y: 0.2}, {x: 0.8, y: 0.5}, {x: 0.7, y: 0.8}, {x: 0.3, y: 0.8}, {x: 0.2, y: 0.5}],
-        edges: [[0, 3], [1, 4], [2, 5], [0, 1], [3, 4]] 
-      },
-      {
-        title: "The Woven Basket",
-        nodes: [{x: 0.5, y: 0.1}, {x: 0.9, y: 0.5}, {x: 0.5, y: 0.9}, {x: 0.1, y: 0.5}, {x: 0.4, y: 0.4}, {x: 0.6, y: 0.4}, {x: 0.6, y: 0.6}, {x: 0.4, y: 0.6}],
-        edges: [[0, 6], [0, 7], [1, 4], [1, 7], [2, 4], [2, 5], [3, 5], [3, 6], [4,5], [5,6], [6,7], [7,4]]
-      },
-      {
-        title: "The Double Prism",
-        nodes: [{x: 0.2, y: 0.2}, {x: 0.5, y: 0.2}, {x: 0.8, y: 0.2}, {x: 0.35, y: 0.5}, {x: 0.65, y: 0.5}, {x: 0.2, y: 0.8}, {x: 0.5, y: 0.8}, {x: 0.8, y: 0.8}],
-        edges: [[0, 4], [1, 3], [1, 5], [2, 4], [3, 6], [4, 7], [5, 1], [6, 0], [7, 2]]
-      },
-      {
-        title: "The Master's Knot",
-        nodes: [{x: 0.1, y: 0.3}, {x: 0.5, y: 0.1}, {x: 0.9, y: 0.3}, {x: 0.8, y: 0.7}, {x: 0.5, y: 0.9}, {x: 0.2, y: 0.7}, {x: 0.4, y: 0.4}, {x: 0.6, y: 0.4}, {x: 0.5, y: 0.6}],
-        edges: [[0, 7], [1, 8], [2, 6], [3, 7], [4, 6], [5, 8], [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]
-      }
-    ];
-
-    // --- STATE VARIABLES ---
-    let currentLevelIndex = 0;
-    let nodes = [];
-    let edges = [];
-    let isDragging = false;
-    let dragNodeIndex = null;
-    let boardRect = null;
-    let isLevelComplete = false;
-
-    // --- DOM ELEMENTS ---
-    const boardEl = document.getElementById('game-board');
-    const nodesContainer = document.getElementById('nodes-container');
-    const canvas = document.getElementById('lines-canvas');
-    const ctx = canvas.getContext('2d');
-    const levelIndicator = document.getElementById('level-indicator');
-    const levelTitle = document.getElementById('level-title');
-    const levelStatus = document.getElementById('level-status');
-    const victoryModal = document.getElementById('victory-modal');
-    const victoryCard = document.getElementById('victory-card');
-
-    // --- INITIALIZATION ---
-    function initGame() {
-      window.addEventListener('resize', handleResize);
-      
-      // Touch and Mouse Global Listeners
-      document.addEventListener('mousemove', onDrag);
-      document.addEventListener('touchmove', onDrag, { passive: false });
-      document.addEventListener('mouseup', onDragEnd);
-      document.addEventListener('touchend', onDragEnd);
-
-      loadLevel(0);
-    }
-
-    function handleResize() {
-      // Keep canvas resolution crisp
-      boardRect = boardEl.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = boardRect.width * dpr;
-      canvas.height = boardRect.height * dpr;
-      ctx.scale(dpr, dpr);
-      
-      renderDOMNodes();
-      drawLines();
-    }
-
-    function loadLevel(index) {
-      if (index >= LEVELS.length) {
-        alert("You have achieved total harmony. All gardens are clear.");
-        index = 0;
-      }
-
-      currentLevelIndex = index;
-      isLevelComplete = false;
-      
-      // Update UI Text
-      levelIndicator.textContent = currentLevelIndex + 1;
-      levelTitle.textContent = LEVELS[currentLevelIndex].title;
-      levelStatus.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Tangled';
-      levelStatus.className = "text-sm font-medium text-tangled mt-1 transition-colors duration-300";
-      
-      // Deep copy level data so we don't mutate the original constants
-      nodes = LEVELS[currentLevelIndex].nodes.map(n => ({...n}));
-      edges = [...LEVELS[currentLevelIndex].edges];
-
-      boardRect = boardEl.getBoundingClientRect();
-      
-      createDOMNodes();
-      handleResize();
-    }
-
-    function createDOMNodes() {
-      nodesContainer.innerHTML = '';
-      nodes.forEach((node, i) => {
-        const el = document.createElement('div');
-        el.className = 'node fade-enter';
-        
-        // Staggered entry animation
-        setTimeout(() => {
-          el.classList.add('fade-enter-active');
-        }, i * 50);
-
-        // Bind Drag Events
-        el.addEventListener('mousedown', (e) => onDragStart(e, i));
-        el.addEventListener('touchstart', (e) => onDragStart(e, i), { passive: false });
-
-        nodesContainer.appendChild(el);
-      });
-    }
-
-    // --- INTERACTION LOGIC ---
-    function onDragStart(e, index) {
-      if (isLevelComplete) return;
-      if (e.type === 'touchstart') e.preventDefault(); // Prevent scroll
-      
-      isDragging = true;
-      dragNodeIndex = index;
-      
-      const el = nodesContainer.children[index];
-      el.classList.add('dragging');
-    }
-
-    function onDrag(e) {
-      if (!isDragging || dragNodeIndex === null || isLevelComplete) return;
-      if (e.type === 'touchmove') e.preventDefault();
-
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-      // Calculate new percentage based on board bounds
-      let newX = (clientX - boardRect.left) / boardRect.width;
-      let newY = (clientY - boardRect.top) / boardRect.height;
-
-      // Keep inside bounds (with a small margin so nodes don't clip)
-      const margin = 0.05;
-      newX = Math.max(margin, Math.min(1 - margin, newX));
-      newY = Math.max(margin, Math.min(1 - margin, newY));
-
-      nodes[dragNodeIndex].x = newX;
-      nodes[dragNodeIndex].y = newY;
-
-      renderDOMNodes();
-      drawLines();
-    }
-
-    function onDragEnd() {
-      if (!isDragging) return;
-      
-      if (dragNodeIndex !== null) {
-        nodesContainer.children[dragNodeIndex].classList.remove('dragging');
-      }
-      
-      isDragging = false;
-      dragNodeIndex = null;
-      
-      checkVictoryCondition();
-    }
-
-    // --- RENDERING ---
-    function renderDOMNodes() {
-      const w = boardRect.width;
-      const h = boardRect.height;
-      
-      nodes.forEach((node, i) => {
-        const el = nodesContainer.children[i];
-        if (el) {
-          el.style.left = `${node.x * w}px`;
-          el.style.top = `${node.y * h}px`;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
         }
-      });
-    }
 
-    function drawLines() {
-      ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio||1), canvas.height / (window.devicePixelRatio||1));
-      
-      const w = boardRect.width;
-      const h = boardRect.height;
-      const intersectingEdges = getIntersectingEdges();
+        function playSound(type) {
+            if (!audioEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
 
-      edges.forEach((edge, index) => {
-        const n1 = nodes[edge[0]];
-        const n2 = nodes[edge[1]];
-        
-        const isTangled = intersectingEdges.has(index);
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
 
-        ctx.beginPath();
-        ctx.moveTo(n1.x * w, n1.y * h);
-        ctx.lineTo(n2.x * w, n2.y * h);
-        
-        // Styling the silk threads
-        ctx.lineWidth = isTangled ? 3 : 4;
-        ctx.lineCap = 'round';
-        
-        if (isLevelComplete) {
-          ctx.strokeStyle = '#00b894'; // Harmony Green
-        } else {
-          ctx.strokeStyle = isTangled ? '#e17055' : '#d1c7b9'; // Terracotta or Sand
+            if (type === 'pluck') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(150, now + 0.1);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'harmony') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554.37, now + 0.12);
+                osc.frequency.setValueAtTime(659.25, now + 0.24);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.6);
+                osc.start(now);
+                osc.stop(now + 0.6);
+            }
         }
-        
-        ctx.stroke();
-      });
 
-      // Update Node border colors visually
-      const domNodes = Array.from(nodesContainer.children);
-      if (isLevelComplete) {
-        domNodes.forEach(el => el.classList.add('harmony'));
-      } else {
-        domNodes.forEach(el => el.classList.remove('harmony'));
-      }
-    }
-
-    // --- MATH & LOGIC ---
-    // CCW (Counter-Clockwise) check for line intersection
-    function ccw(A, B, C) {
-      return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
-    }
-
-    function doIntersect(p1, p2, p3, p4) {
-      // Lines sharing a node do not "intersect" for the purpose of this game
-      if (p1 === p3 || p1 === p4 || p2 === p3 || p2 === p4) return false;
-      return (ccw(p1, p3, p4) !== ccw(p2, p3, p4)) && (ccw(p1, p2, p3) !== ccw(p1, p2, p4));
-    }
-
-    function getIntersectingEdges() {
-      const intersections = new Set();
-      for (let i = 0; i < edges.length; i++) {
-        for (let j = i + 1; j < edges.length; j++) {
-          const p1 = nodes[edges[i][0]];
-          const p2 = nodes[edges[i][1]];
-          const p3 = nodes[edges[j][0]];
-          const p4 = nodes[edges[j][1]];
-          
-          if (doIntersect(p1, p2, p3, p4)) {
-            intersections.add(i);
-            intersections.add(j);
-          }
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('audio-btn');
+            btn.innerHTML = audioEnabled ? '<i class="fas fa-volume-high text-sm"></i>' : '<i class="fas fa-volume-xmark text-sm text-red-400"></i>';
         }
-      }
-      return intersections;
-    }
 
-    function checkVictoryCondition() {
-      const intersectingEdges = getIntersectingEdges();
-      
-      if (intersectingEdges.size === 0) {
-        isLevelComplete = true;
-        drawLines(); // One final draw to turn everything green
-        
-        levelStatus.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Harmony';
-        levelStatus.className = "text-sm font-bold text-harmony mt-1 transition-colors duration-300";
-        
-        setTimeout(showVictoryModal, 600);
-      } else {
-        levelStatus.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Tangled';
-        levelStatus.className = "text-sm font-medium text-tangled mt-1 transition-colors duration-300";
-      }
-    }
+        // --- GAME DATA: 20 Escalating Levels ---
+        const LEVELS = [
+            { title: "The Simple Cross", nodes: [{x: 0.3, y: 0.3}, {x: 0.7, y: 0.3}, {x: 0.3, y: 0.7}, {x: 0.7, y: 0.7}], edges: [[0, 3], [1, 2], [0, 1], [2, 3]] },
+            { title: "The Star", nodes: [{x: 0.5, y: 0.2}, {x: 0.8, y: 0.8}, {x: 0.2, y: 0.4}, {x: 0.8, y: 0.4}, {x: 0.2, y: 0.8}], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]] },
+            { title: "The Hexagon Snare", nodes: [{x: 0.3, y: 0.2}, {x: 0.7, y: 0.2}, {x: 0.8, y: 0.5}, {x: 0.7, y: 0.8}, {x: 0.3, y: 0.8}, {x: 0.2, y: 0.5}], edges: [[0, 3], [1, 4], [2, 5], [0, 1], [3, 4]] },
+            { title: "The Woven Basket", nodes: [{x: 0.5, y: 0.1}, {x: 0.9, y: 0.5}, {x: 0.5, y: 0.9}, {x: 0.1, y: 0.5}, {x: 0.4, y: 0.4}, {x: 0.6, y: 0.4}, {x: 0.6, y: 0.6}, {x: 0.4, y: 0.6}], edges: [[0, 6], [0, 7], [1, 4], [1, 7], [2, 4], [2, 5], [3, 5], [3, 6], [4,5], [5,6], [6,7], [7,4]] },
+            { title: "The Double Prism", nodes: [{x: 0.2, y: 0.2}, {x: 0.5, y: 0.2}, {x: 0.8, y: 0.2}, {x: 0.35, y: 0.5}, {x: 0.65, y: 0.5}, {x: 0.2, y: 0.8}, {x: 0.5, y: 0.8}, {x: 0.8, y: 0.8}], edges: [[0, 4], [1, 3], [1, 5], [2, 4], [3, 6], [4, 7], [5, 1], [6, 0], [7, 2]] },
+            { title: "The Master's Knot", nodes: [{x: 0.1, y: 0.3}, {x: 0.5, y: 0.1}, {x: 0.9, y: 0.3}, {x: 0.8, y: 0.7}, {x: 0.5, y: 0.9}, {x: 0.2, y: 0.7}, {x: 0.4, y: 0.4}, {x: 0.6, y: 0.4}, {x: 0.5, y: 0.6}], edges: [[0, 7], [1, 8], [2, 6], [3, 7], [4, 6], [5, 8], [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]] },
+            { title: "The Octagon Web", nodes: [{x: 0.5, y: 0.1}, {x: 0.8, y: 0.2}, {x: 0.9, y: 0.5}, {x: 0.8, y: 0.8}, {x: 0.5, y: 0.9}, {x: 0.2, y: 0.8}, {x: 0.1, y: 0.5}, {x: 0.2, y: 0.2}, {x: 0.5, y: 0.5}], edges: [[0, 2], [2, 4], [4, 6], [6, 0], [1, 3], [3, 5], [5, 7], [7, 1], [0, 8], [4, 8]] },
+            { title: "The Tangled Triangle", nodes: [{x: 0.2, y: 0.2}, {x: 0.8, y: 0.2}, {x: 0.5, y: 0.8}, {x: 0.5, y: 0.4}, {x: 0.3, y: 0.6}, {x: 0.7, y: 0.6}], edges: [[0, 1], [1, 2], [2, 0], [0, 3], [1, 4], [2, 5], [3, 4], [4, 5], [5, 3]] },
+            { title: "The Crystal Lattice", nodes: [{x: 0.3, y: 0.2}, {x: 0.7, y: 0.2}, {x: 0.9, y: 0.5}, {x: 0.7, y: 0.8}, {x: 0.3, y: 0.8}, {x: 0.1, y: 0.5}, {x: 0.5, y: 0.5}], edges: [[0, 2], [1, 3], [2, 4], [3, 5], [4, 0], [5, 1], [0, 6], [2, 6], [4, 6]] },
+            { title: "The Spiral Helix", nodes: [{x: 0.5, y: 0.1}, {x: 0.8, y: 0.3}, {x: 0.9, y: 0.7}, {x: 0.6, y: 0.9}, {x: 0.2, y: 0.8}, {x: 0.1, y: 0.4}, {x: 0.4, y: 0.2}], edges: [[0, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 0], [0, 3], [1, 4]] },
+            { title: "The Interlocking Rings", nodes: [{x: 0.2, y: 0.3}, {x: 0.4, y: 0.2}, {x: 0.6, y: 0.2}, {x: 0.8, y: 0.3}, {x: 0.8, y: 0.7}, {x: 0.6, y: 0.8}, {x: 0.4, y: 0.8}, {x: 0.2, y: 0.7}], edges: [[0, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7], [6, 0], [7, 1], [0, 4]] },
+            { title: "The Geometric Web", nodes: [{x: 0.5, y: 0.1}, {x: 0.8, y: 0.3}, {x: 0.9, y: 0.7}, {x: 0.5, y: 0.9}, {x: 0.1, y: 0.7}, {x: 0.2, y: 0.3}, {x: 0.5, y: 0.5}], edges: [[0, 2], [1, 3], [2, 4], [3, 5], [4, 0], [5, 1], [0, 3], [1, 4], [2, 5]] },
+            { title: "The Mystic Star", nodes: [{x: 0.5, y: 0.1}, {x: 0.7, y: 0.4}, {x: 0.9, y: 0.5}, {x: 0.7, y: 0.6}, {x: 0.5, y: 0.9}, {x: 0.3, y: 0.6}, {x: 0.1, y: 0.5}, {x: 0.3, y: 0.4}], edges: [[0, 3], [1, 4], [2, 5], [3, 6], [4, 7], [5, 0], [6, 1], [7, 2]] },
+            { title: "The Maze of Thorns", nodes: [{x: 0.2, y: 0.2}, {x: 0.5, y: 0.1}, {x: 0.8, y: 0.2}, {x: 0.9, y: 0.5}, {x: 0.8, y: 0.8}, {x: 0.5, y: 0.9}, {x: 0.2, y: 0.8}, {x: 0.1, y: 0.5}, {x: 0.5, y: 0.5}], edges: [[0, 3], [1, 4], [2, 5], [3, 6], [4, 7], [5, 0], [6, 1], [7, 2], [8, 0], [8, 4]] },
+            { title: "The Celestial Core", nodes: [{x: 0.3, y: 0.3}, {x: 0.7, y: 0.3}, {x: 0.9, y: 0.6}, {x: 0.5, y: 0.9}, {x: 0.1, y: 0.6}, {x: 0.5, y: 0.2}], edges: [[0, 2], [1, 3], [2, 4], [3, 0], [4, 1], [5, 0], [5, 1], [5, 2], [5, 3], [5, 4]] },
+            { title: "The Labyrinthine Vine", nodes: [{x: 0.1, y: 0.2}, {x: 0.4, y: 0.1}, {x: 0.8, y: 0.2}, {x: 0.9, y: 0.6}, {x: 0.6, y: 0.9}, {x: 0.2, y: 0.8}, {x: 0.5, y: 0.5}], edges: [[0, 2], [1, 3], [2, 4], [3, 5], [4, 0], [5, 1], [6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5]] },
+            { title: "The Grand Pavilion", nodes: [{x: 0.2, y: 0.2}, {x: 0.5, y: 0.1}, {x: 0.8, y: 0.2}, {x: 0.8, y: 0.5}, {x: 0.8, y: 0.8}, {x: 0.5, y: 0.9}, {x: 0.2, y: 0.8}, {x: 0.2, y: 0.5}, {x: 0.4, y: 0.4}, {x: 0.6, y: 0.6}], edges: [[0, 3], [1, 4], [2, 5], [3, 6], [4, 7], [5, 0], [8, 0], [8, 2], [9, 4], [9, 6]] },
+            { title: "The Ancient Root", nodes: [{x: 0.3, y: 0.1}, {x: 0.7, y: 0.1}, {x: 0.9, y: 0.4}, {x: 0.8, y: 0.8}, {x: 0.2, y: 0.8}, {x: 0.1, y: 0.4}, {x: 0.5, y: 0.5}], edges: [[0, 2], [1, 3], [2, 4], [3, 5], [4, 0], [5, 1], [6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5]] },
+            { title: "The Infinite Arbor", nodes: [{x: 0.2, y: 0.2}, {x: 0.5, y: 0.1}, {x: 0.8, y: 0.2}, {x: 0.9, y: 0.5}, {x: 0.8, y: 0.8}, {x: 0.5, y: 0.9}, {x: 0.2, y: 0.8}, {x: 0.1, y: 0.5}, {x: 0.3, y: 0.5}, {x: 0.7, y: 0.5}], edges: [[0, 3], [1, 4], [2, 5], [3, 6], [4, 7], [5, 0], [8, 0], [8, 2], [9, 5], [9, 7], [8, 9]] },
+            { title: "The Ultimate Mandala", nodes: [{x: 0.5, y: 0.1}, {x: 0.75, y: 0.25}, {x: 0.9, y: 0.5}, {x: 0.75, y: 0.75}, {x: 0.5, y: 0.9}, {x: 0.25, y: 0.75}, {x: 0.1, y: 0.5}, {x: 0.25, y: 0.25}, {x: 0.5, y: 0.5}], edges: [[0, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7], [6, 0], [7, 1], [0, 8], [2, 8], [4, 8], [6, 8]] }
+        ];
 
-    // --- GAME FLOW ---
-    function showVictoryModal() {
-      victoryModal.classList.remove('opacity-0', 'pointer-events-none');
-      victoryCard.classList.remove('scale-95');
-    }
+        // --- STATE VARIABLES ---
+        let currentLevelIndex = 0;
+        let nodes = [];
+        let edges = [];
+        let isDragging = false;
+        let dragNodeIndex = null;
+        let boardRect = null;
+        let isLevelComplete = false;
 
-    function hideVictoryModal() {
-      victoryModal.classList.add('opacity-0', 'pointer-events-none');
-      victoryCard.classList.add('scale-95');
-    }
+        // --- DOM ELEMENTS ---
+        const boardEl = document.getElementById('game-board');
+        const nodesContainer = document.getElementById('nodes-container');
+        const canvas = document.getElementById('lines-canvas');
+        const ctx = canvas.getContext('2d');
+        const levelIndicator = document.getElementById('level-indicator');
+        const levelTitle = document.getElementById('level-title');
+        const levelStatus = document.getElementById('level-status');
+        const victoryModal = document.getElementById('victory-modal');
+        const victoryCard = document.getElementById('victory-card');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalPrimaryBtn = document.getElementById('modal-primary-btn');
 
-    function nextLevel() {
-      hideVictoryModal();
-      setTimeout(() => {
-        loadLevel(currentLevelIndex + 1);
-      }, 300);
-    }
+        // --- INITIALIZATION ---
+        function initGame() {
+            window.addEventListener('resize', handleResize);
+            
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('touchmove', onDrag, { passive: false });
+            document.addEventListener('mouseup', onDragEnd);
+            document.addEventListener('touchend', onDragEnd);
 
-    function resetLevel() {
-      loadLevel(currentLevelIndex);
-    }
+            loadLevel(0);
+        }
 
-    // Start engine
-    window.onload = initGame;
-  </script>
+        function handleResize() {
+            boardRect = boardEl.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = boardRect.width * dpr;
+            canvas.height = boardRect.height * dpr;
+            ctx.scale(dpr, dpr);
+            
+            renderDOMNodes();
+            drawLines();
+        }
+
+        function loadLevel(index) {
+            if (index >= LEVELS.length) {
+                showMasterVictoryScreen();
+                return;
+            }
+
+            currentLevelIndex = index;
+            isLevelComplete = false;
+            
+            levelIndicator.textContent = currentLevelIndex + 1;
+            levelTitle.textContent = LEVELS[currentLevelIndex].title;
+            levelStatus.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Tangled';
+            levelStatus.className = "text-sm font-medium text-tangled mt-1 transition-colors duration-300";
+            
+            nodes = LEVELS[currentLevelIndex].nodes.map(n => ({...n}));
+            edges = [...LEVELS[currentLevelIndex].edges];
+
+            boardRect = boardEl.getBoundingClientRect();
+            
+            createDOMNodes();
+            handleResize();
+        }
+
+        function createDOMNodes() {
+            nodesContainer.innerHTML = '';
+            nodes.forEach((node, i) => {
+                const el = document.createElement('div');
+                el.className = 'node fade-enter';
+                
+                setTimeout(() => {
+                    el.classList.add('fade-enter-active');
+                }, i * 40);
+
+                el.addEventListener('mousedown', (e) => onDragStart(e, i));
+                el.addEventListener('touchstart', (e) => onDragStart(e, i), { passive: false });
+
+                nodesContainer.appendChild(el);
+            });
+        }
+
+        // --- INTERACTION LOGIC ---
+        function onDragStart(e, index) {
+            if (isLevelComplete) return;
+            if (e.type === 'touchstart') e.preventDefault();
+            
+            isDragging = true;
+            dragNodeIndex = index;
+            playSound('pluck');
+            
+            const el = nodesContainer.children[index];
+            if(el) el.classList.add('dragging');
+        }
+
+        function onDrag(e) {
+            if (!isDragging || dragNodeIndex === null || isLevelComplete) return;
+            if (e.type === 'touchmove') e.preventDefault();
+
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            let newX = (clientX - boardRect.left) / boardRect.width;
+            let newY = (clientY - boardRect.top) / boardRect.height;
+
+            const margin = 0.05;
+            newX = Math.max(margin, Math.min(1 - margin, newX));
+            newY = Math.max(margin, Math.min(1 - margin, newY));
+
+            nodes[dragNodeIndex].x = newX;
+            nodes[dragNodeIndex].y = newY;
+
+            renderDOMNodes();
+            drawLines();
+        }
+
+        function onDragEnd() {
+            if (!isDragging) return;
+            
+            if (dragNodeIndex !== null && nodesContainer.children[dragNodeIndex]) {
+                nodesContainer.children[dragNodeIndex].classList.remove('dragging');
+            }
+            
+            isDragging = false;
+            dragNodeIndex = null;
+            
+            checkVictoryCondition();
+        }
+
+        // --- RENDERING ---
+        function renderDOMNodes() {
+            const w = boardRect.width;
+            const h = boardRect.height;
+            
+            nodes.forEach((node, i) => {
+                const el = nodesContainer.children[i];
+                if (el) {
+                    el.style.left = `${node.x * w}px`;
+                    el.style.top = `${node.y * h}px`;
+                }
+            });
+        }
+
+        function drawLines() {
+            ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio||1), canvas.height / (window.devicePixelRatio||1));
+            
+            const w = boardRect.width;
+            const h = boardRect.height;
+            const intersectingEdges = getIntersectingEdges();
+
+            edges.forEach((edge, index) => {
+                const n1 = nodes[edge[0]];
+                const n2 = nodes[edge[1]];
+                
+                const isTangled = intersectingEdges.has(index);
+
+                ctx.beginPath();
+                ctx.moveTo(n1.x * w, n1.y * h);
+                ctx.lineTo(n2.x * w, n2.y * h);
+                
+                ctx.lineWidth = isTangled ? 3 : 4;
+                ctx.lineCap = 'round';
+                
+                if (isLevelComplete) {
+                    ctx.strokeStyle = '#00b894';
+                } else {
+                    ctx.strokeStyle = isTangled ? '#e17055' : '#d1c7b9';
+                }
+                
+                ctx.stroke();
+            });
+
+            const domNodes = Array.from(nodesContainer.children);
+            if (isLevelComplete) {
+                domNodes.forEach(el => el.classList.add('harmony'));
+            } else {
+                domNodes.forEach(el => el.classList.remove('harmony'));
+            }
+        }
+
+        // --- MATH & LOGIC ---
+        function ccw(A, B, C) {
+            return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
+        }
+
+        function doIntersect(p1, p2, p3, p4) {
+            if (p1 === p3 || p1 === p4 || p2 === p3 || p2 === p4) return false;
+            return (ccw(p1, p3, p4) !== ccw(p2, p3, p4)) && (ccw(p1, p2, p3) !== ccw(p1, p2, p4));
+        }
+
+        function getIntersectingEdges() {
+            const intersections = new Set();
+            for (let i = 0; i < edges.length; i++) {
+                for (let j = i + 1; j < edges.length; j++) {
+                    const p1 = nodes[edges[i][0]];
+                    const p2 = nodes[edges[i][1]];
+                    const p3 = nodes[edges[j][0]];
+                    const p4 = nodes[edges[j][1]];
+                    
+                    if (doIntersect(p1, p2, p3, p4)) {
+                        intersections.add(i);
+                        intersections.add(j);
+                    }
+                }
+            }
+            return intersections;
+        }
+
+        function checkVictoryCondition() {
+            const intersectingEdges = getIntersectingEdges();
+            
+            if (intersectingEdges.size === 0) {
+                isLevelComplete = true;
+                drawLines();
+                playSound('harmony');
+                
+                levelStatus.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Harmony';
+                levelStatus.className = "text-sm font-bold text-harmony mt-1 transition-colors duration-300";
+                
+                setTimeout(showVictoryModal, 500);
+            } else {
+                levelStatus.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Tangled';
+                levelStatus.className = "text-sm font-medium text-tangled mt-1 transition-colors duration-300";
+            }
+        }
+
+        // --- GAME FLOW & RESULTS SCREEN ---
+        function showVictoryModal() {
+            modalIcon.className = "w-20 h-20 bg-harmony/10 rounded-full flex items-center justify-center mx-auto mb-6 text-harmony text-3xl";
+            modalIcon.innerHTML = '<i class="fas fa-seedling"></i>';
+            modalTitle.textContent = "Harmony Found";
+            modalDesc.textContent = `Garden ${currentLevelIndex + 1} is at absolute peace. Ready for the next arrangement?`;
+            modalPrimaryBtn.textContent = "Enter Next Garden";
+            modalPrimaryBtn.onclick = nextLevel;
+
+            victoryModal.classList.remove('opacity-0', 'pointer-events-none');
+            victoryCard.classList.remove('scale-95');
+        }
+
+        function showMasterVictoryScreen() {
+            modalIcon.className = "w-20 h-20 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-500 text-3xl";
+            modalIcon.innerHTML = '<i class="fas fa-trophy"></i>';
+            modalTitle.textContent = "Master Gardener!";
+            modalDesc.textContent = "Magnificent! You successfully untangled all 20 knot gardens and achieved total harmony.";
+            
+            const actionsContainer = document.getElementById('modal-actions');
+            actionsContainer.innerHTML = `
+                <button onclick="loadLevel(0); hideVictoryModal();" class="w-full py-3.5 bg-amber-500 text-slate-950 font-extrabold rounded-xl hover:bg-amber-400 active:scale-95 transition-all shadow-lg uppercase text-sm tracking-wider mb-2">
+                    <i class="fas fa-rotate-right mr-2"></i> Play Again (Level 1)
+                </button>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="arcade.html" class="py-3 bg-zen-100 hover:bg-zen-200 text-zen-900 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-decoration-none">
+                        <i class="fas fa-gamepad text-zen-800"></i> Arcade Hub
+                    </a>
+                    <a href="chroma-shift.html" class="py-3 bg-zen-100 hover:bg-zen-200 text-zen-900 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-decoration-none">
+                        <i class="fas fa-microchip text-cyan-600"></i> Chroma Shift
+                    </a>
+                </div>
+                <button onclick="shareScore()" class="w-full py-2.5 bg-zen-50 hover:bg-zen-100 border border-zen-200 text-zen-800 font-bold rounded-xl text-xs transition-all mt-1">
+                    <i class="fas fa-share-nodes mr-2"></i> Share Victory
+                </button>
+            `;
+
+            victoryModal.classList.remove('opacity-0', 'pointer-events-none');
+            victoryCard.classList.remove('scale-95');
+        }
+
+        function hideVictoryModal() {
+            victoryModal.classList.add('opacity-0', 'pointer-events-none');
+            victoryCard.classList.add('scale-95');
+        }
+
+        function nextLevel() {
+            hideVictoryModal();
+            setTimeout(() => {
+                loadLevel(currentLevelIndex + 1);
+            }, 300);
+        }
+
+        function resetLevel() {
+            loadLevel(currentLevelIndex);
+        }
+
+        function shareScore() {
+            const shareData = {
+                title: 'The Knot Garden on QuizRealm',
+                text: `I just mastered all 20 levels of The Knot Garden on QuizRealm! Can you find harmony?`,
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Victory link copied to clipboard!');
+            }
+        }
+
+        window.onload = initGame;
+    </script>
 </body>
 </html>
