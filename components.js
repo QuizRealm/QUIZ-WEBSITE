@@ -210,6 +210,10 @@ function getQuizHeaderMarkup() {
                     <i class="fas fa-gamepad text-pink-400 text-lg mb-0.5"></i>
                 </a>
 
+                <a href="/duel.html" class="flex flex-col items-center justify-center w-8">
+                    <i class="fas fa-bolt text-pink-400 text-lg mb-0.5"></i>
+                </a>
+
                
 
                 <a href="/profile.html" class="relative w-8 h-8 rounded-full border border-white/20 p-[1px]">
