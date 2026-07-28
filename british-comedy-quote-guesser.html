@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <!-- Google AdSense Verification -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6205081520399538" crossorigin="anonymous"></script>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- ADVANCED SEO METADATA -->
+    <title>British Comedy Quote Guesser | UK Sitcom Trivia | QuizRealm</title>
+    <meta name="description" content="Play the British Comedy Quote Guesser on QuizRealm. Test your knowledge of classic UK sitcoms, panel shows, and legendary characters across 20 levels." />
+    <meta name="keywords" content="British comedy quiz, UK sitcom trivia, Peep Show quiz, Father Ted trivia, British TV game, QuizRealm Arcade" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.thequizrealm.com/british-comedy-quote-guesser.html" />
+
+    <!-- STRUCTURED DATA FOR GOOGLE INDEXING -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "British Comedy Quote Guesser",
+      "description": "A rapid-fire trivia game where players match iconic quotes to legendary British comedy characters.",
+      "genre": ["Trivia", "Comedy", "TV"],
+      "playMode": "SinglePlayer",
+      "applicationCategory": "GameApplication"
+    }
+    </script>
+
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&family=Bangers&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        show: ['Bangers', 'cursive']
+                    },
+                    colors: {
+                        studio: {
+                            bg: '#09090b',
+                            panel: '#18181b',
+                            pink: '#ec4899',
+                            cyan: '#06b6d4',
+                            yellow: '#f59e0b'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+                        'spotlight': 'spotlight 4s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' }
+                        },
+                        spotlight: {
+                            '0%': { boxShadow: '0 0 30px rgba(236, 72, 153, 0.2)' },
+                            '100%': { boxShadow: '0 0 60px rgba(6, 182, 212, 0.3)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #09090b;
+            color: #f8fafc;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            /* TV Studio Gradient Background */
+            background-image: 
+                radial-gradient(ellipse at top right, rgba(236, 72, 153, 0.15), transparent 40%),
+                radial-gradient(ellipse at bottom left, rgba(6, 182, 212, 0.15), transparent 40%);
+        }
+
+        /* 
+         * CUSTOM BUTTON SHAPE: Parallelograms 
+         * Breaking the mold from rounded rectangles 
+         */
+        .buzzer-btn {
+            clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+            background: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+            border: 2px solid #3f3f46;
+            color: #e2e8f0;
+            font-weight: 700;
+            padding: 18px 24px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .buzzer-btn:hover {
+            background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
+            border-color: #22d3ee;
+            color: #ffffff;
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .buzzer-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Action Buttons (Skips/Next) */
+        .action-clip {
+            clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+        }
+
+        /* The Cue Card for the quote */
+        .cue-card {
+            background: #ffffff;
+            color: #09090b;
+            border-radius: 4px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            position: relative;
+            /* Subtle paper texture */
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' fill='%23fff'/%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+        
+        .cue-card::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 2px dashed #e2e8f0;
+            pointer-events: none;
+        }
+
+        /* SEO Article Styling */
+        .seo-content h2 { font-size: 1.75rem; font-weight: 800; color: #fff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .seo-content h3 { font-size: 1.25rem; font-weight: 700; color: #ec4899; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .seo-content p { color: #94a3b8; font-size: 1.05rem; margin-bottom: 1.25rem; line-height: 1.8; }
+        .seo-content ul { list-style-type: disc; padding-left: 1.5rem; color: #94a3b8; margin-bottom: 1.25rem; }
+        .seo-content li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <!-- Studio Navigation -->
+    <header class="w-full max-w-3xl mx-auto px-6 pt-8 flex justify-between items-center z-20">
+        <div class="flex items-center gap-4">
+            <a href="uk-trivia-games-hub.html" class="w-10 h-10 rounded-full bg-studio-panel border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all text-slate-300 shadow-md">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-studio-pink block">QuizRealm Studio 1</span>
+                <h1 class="text-sm font-extrabold text-white uppercase tracking-wider">Comedy Quote Guesser</h1>
+            </div>
+        </div>
+        <button onclick="toggleAudio()" id="audio-btn" class="w-10 h-10 rounded-full bg-studio-panel border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all text-studio-cyan shadow-md" title="Toggle Sound">
+            <i class="fas fa-volume-high text-xs"></i>
+        </button>
+    </header>
+
+    <!-- Main Studio Floor -->
+    <main class="w-full max-w-2xl mx-auto px-4 flex-grow flex flex-col items-center justify-center py-8 z-10 relative">
+
+        <!-- ========================================== -->
+        <!-- SCREEN 1: THE WARM-UP (START PAGE)         -->
+        <!-- ========================================== -->
+        <div id="screen-start" class="w-full bg-studio-panel/50 border border-white/10 p-8 md:p-12 text-center rounded-3xl animate-slide-up backdrop-blur-md">
+            <div class="inline-block p-4 bg-gradient-to-br from-studio-pink to-studio-cyan rounded-full mb-6 shadow-lg shadow-pink-500/20">
+                <i class="fas fa-microphone-lines text-4xl text-white"></i>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-show tracking-wide text-white mb-3" style="text-shadow: 2px 2px 0 #ec4899;">WHO SAID IT?</h2>
+            <p class="text-slate-400 mb-8 max-w-md mx-auto text-base leading-relaxed">
+                Step up to the podium. We'll show you an iconic quote from a classic British comedy or sitcom. You hit the buzzer for the correct character.
+            </p>
+
+            <button onclick="startGame()" class="action-clip w-full sm:w-auto px-16 py-4 bg-gradient-to-r from-studio-pink to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-lg transition-all shadow-lg shadow-pink-500/30 uppercase tracking-widest">
+                Start The Show
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 2: ON AIR (ACTIVE GAMEBOARD)        -->
+        <!-- ========================================== -->
+        <div id="screen-game" class="w-full hidden">
+            
+            <!-- Broadcast Header -->
+            <div class="flex justify-between items-end mb-6 px-2">
+                <div class="flex items-center gap-3 bg-studio-panel border border-white/10 px-4 py-2 rounded-lg">
+                    <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                    <span class="text-xs font-bold text-white uppercase tracking-widest">Round <span id="level-display" class="text-studio-cyan text-lg">1</span><span class="text-slate-500">/20</span></span>
+                </div>
+                <div class="bg-studio-panel border border-white/10 px-4 py-2 rounded-lg text-right">
+                    <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest block leading-none">Score</span>
+                    <span id="score-display" class="text-xl font-black text-studio-pink leading-none">0</span>
+                </div>
+            </div>
+
+            <!-- The Cue Card (The Quote) -->
+            <div id="cue-card-container" class="cue-card p-8 md:p-12 text-center mb-8 animate-spotlight">
+                <i class="fas fa-quote-left text-3xl text-slate-300 absolute top-6 left-6"></i>
+                <h3 id="quote-text" class="text-2xl md:text-3xl font-black text-slate-900 leading-snug mt-4 relative z-10">
+                    Loading quote...
+                </h3>
+            </div>
+
+            <!-- Validation Feedback (Hidden default) -->
+            <div id="feedback-text" class="text-center h-8 font-bold text-lg tracking-wider opacity-0 transition-opacity uppercase mb-4">
+                CORRECT!
+            </div>
+
+            <!-- Buzzer Options Grid -->
+            <div id="options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <!-- Options injected via JS -->
+            </div>
+
+            <!-- Skip / Action Bar -->
+            <div class="flex justify-between items-center pt-4 border-t border-white/10">
+                <button onclick="skipLevel()" class="action-clip px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold uppercase tracking-widest transition-colors">
+                    Skip Quote <i class="fas fa-forward ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 3: END OF BROADCAST (RESULTS)       -->
+        <!-- ========================================== -->
+        <div id="screen-results" class="w-full bg-studio-panel/80 border border-white/10 p-8 md:p-12 text-center rounded-3xl hidden animate-slide-up backdrop-blur-md">
+            <div class="w-20 h-20 bg-gradient-to-br from-studio-cyan to-blue-600 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-lg shadow-cyan-500/30">
+                <i class="fas fa-tv"></i>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-show tracking-wide text-white mb-2" style="text-shadow: 2px 2px 0 #06b6d4;">END OF BROADCAST!</h2>
+            <p id="rank-text" class="text-slate-400 mb-8 font-medium">You survived the panel show.</p>
+
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-black/50 border border-white/5 rounded-xl p-4">
+                    <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Final Score</span>
+                    <span id="final-score" class="text-3xl font-black text-studio-pink">0</span>
+                </div>
+                <div class="bg-black/50 border border-white/5 rounded-xl p-4">
+                    <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Correct Answers</span>
+                    <span class="text-3xl font-black text-studio-cyan"><span id="final-correct">0</span>/20</span>
+                </div>
+            </div>
+
+            <div class="space-y-4 max-w-sm mx-auto">
+                <button onclick="resetGame()" class="action-clip w-full py-4 bg-white text-black hover:bg-slate-200 font-bold text-lg transition-all shadow-lg uppercase tracking-widest">
+                    Play Again
+                </button>
+                <button onclick="shareScore()" class="action-clip w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-share-nodes text-studio-pink"></i> Share Score
+                </button>
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <a href="uk-trivia-games-hub.html" class="action-clip bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 text-xs font-bold text-center uppercase tracking-widest text-decoration-none">
+                        UK Hub
+                    </a>
+                    <a href="arcade.html" class="action-clip bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 text-xs font-bold text-center uppercase tracking-widest text-decoration-none">
+                        Main Arcade
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- SEO Content Section -->
+    <section class="w-full bg-[#040405] border-t border-white/5 mt-12 py-16 seo-content z-10">
+        <div class="max-w-3xl mx-auto px-6">
+            <h2>British Comedy Quote Guesser: Test Your Sitcom Knowledge</h2>
+            <p>Welcome to the <strong>British Comedy Quote Guesser</strong> in the QuizRealm UK Hub. From the awkward brilliance of <em>The Office UK</em> to the chaotic energy of <em>The Inbetweeners</em> and <em>Father Ted</em>, British television has produced some of the most iconic one-liners in history.</p>
+            
+            <h3>How the Panel Show Works</h3>
+            <p>Step up to the podium and test your memory against 20 rounds of classic quotes:</p>
+            <ul>
+                <li><strong>Read the Cue Card:</strong> We present a famous (or delightfully obscure) quote from a British comedy.</li>
+                <li><strong>Hit the Buzzer:</strong> You have four character options. Click the slanted buzzer button corresponding to the character who originally delivered the line.</li>
+                <li><strong>Earn Your Title:</strong> Build your score to achieve the rank of "Panel Show Champion" or suffer the shame of "Audience Member."</li>
+            </ul>
+
+            <h3>Explore More UK Hub & Arcade Games</h3>
+            <p>Finished the broadcast? Switch channels and try our other British culture games:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                <a href="uk-trivia-games-hub.html" class="p-4 rounded-xl bg-studio-panel border border-white/5 hover:border-studio-pink transition-all text-decoration-none block">
+                    <span class="text-xs text-studio-pink uppercase font-bold block mb-1">Regional Hub</span>
+                    <h4 class="text-white font-bold text-sm">UK Hub</h4>
+                </a>
+                <a href="british-slang-word-ladder.html" class="p-4 rounded-xl bg-studio-panel border border-white/5 hover:border-emerald-400 transition-all text-decoration-none block">
+                    <span class="text-xs text-emerald-400 uppercase font-bold block mb-1">Linguistics</span>
+                    <h4 class="text-white font-bold text-sm">Slang Word Ladder</h4>
+                </a>
+                <a href="uk-royalty-red-flag-duel.html" class="p-4 rounded-xl bg-studio-panel border border-white/5 hover:border-amber-400 transition-all text-decoration-none block">
+                    <span class="text-xs text-amber-400 uppercase font-bold block mb-1">History</span>
+                    <h4 class="text-white font-bold text-sm">Royalty Red Flags</h4>
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+
+<!-- ============================================================================== -->
+<!-- 💬 GAME 2: BRITISH SLANG - SEO BLOCK 1 -->
+<!-- Target Keywords: British slang dictionary, UK vernacular, Cockney rhyming slang -->
+<!-- ============================================================================== -->
+<article class="seo-block p-8 bg-[#0f172a] border border-slate-700 rounded-3xl mb-8 text-slate-300 leading-relaxed shadow-xl">
+    <header class="mb-6 border-b border-slate-700 pb-4">
+        <span class="text-xs font-mono text-emerald-400 uppercase tracking-widest">Linguistics & Dialects</span>
+        <h2 class="text-3xl font-black text-white mt-2 mb-4">The Rich Tapestry of British Slang: A Linguistic Journey</h2>
+    </header>
+    <div class="space-y-6 text-base">
+        <p>The English language, as spoken in the United Kingdom, is one of the most vibrant, chaotic, and rapidly evolving linguistic ecosystems on earth. While standard "Queen's English" (or King's English) forms the grammatical backbone, it is the rich, dense layer of regional slang that gives British communication its unique color and vitality. Understanding British slang is not merely about learning new vocabulary; it is about unlocking the cultural history, class dynamics, and regional pride of the British Isles. This linguistic diversity is exactly what powers the challenge of the British Slang Word Ladder.</p>
+
+        <p>To truly grasp the complexity of UK vernacular, one must understand that "British slang" is not a monolith. It is a massive collection of hyper-local dialects that have bled into the mainstream consciousness over decades. A word that is common currency in the pubs of Newcastle might be entirely incomprehensible to a commuter in central London. However, thanks to the homogenizing effects of television, pop music, and the internet, many regional terms have achieved national—and even global—recognition.</p>
+
+        <h3 class="text-xl font-bold text-white mt-8 mb-3 text-emerald-400">The Four Pillars of Modern UK Slang</h3>
+        <p>The modern British lexicon is built upon several foundational pillars, each contributing its own distinct flavor to the language. Let's break down the primary sources of the slang you will encounter in our linguistic puzzles:</p>
+
+        <ul class="list-disc list-inside space-y-3 my-6 pl-4">
+            <li><strong class="text-white">Cockney Rhyming Slang:</strong> Originating in the East End of London in the mid-19th century, this was initially a cryptographic "cant" used by market traders and criminals to confuse the police. It works by replacing a word with a rhyming phrase, and then dropping the rhyming word. For example, "stairs" becomes "apples and pears," which is then shortened to just "apples" ("I'm going up the apples"). While less common today, remnants like "porkies" (pork pies = lies) remain mainstream.</li>
+            <li><strong class="text-white">Northern and Scottish Dialects:</strong> The industrial north of England and Scotland have contributed immensely to the national slang. Words like "bairn" (child), "radge" (crazy or violent), and "pure belter" (excellent) showcase the phonetic harshness and warmth of the northern vocabulary.</li>
+            <li><strong class="text-white">Multicultural London English (MLE):</strong> The most significant development in 21st-century British slang. MLE is a sociolect that emerged in the late 20th century, heavily influenced by Jamaican, West African, and South Asian immigrant communities. Words like "peng" (attractive), "innit" (isn't it/agreement), and "mandem" (group of friends) originated here before being popularized globally by the UK Grime and Drill music scenes.</li>
+            <li><strong class="text-white">Class-Based Idioms:</strong> The UK’s rigid class system has generated unique vocabularies. Upper-class "posh" slang features terms like "spiffing" and "rah," while working-class vernacular gave us foundational terms like "bloke" (man), "knackered" (exhausted), and "skint" (bankrupt).</li>
+        </ul>
+
+        <p>When you play the British Slang Word Ladder, you are navigating this complex linguistic web. Translating a standard phrase like "extremely pleased" into the slang term "CHUFFED" requires an understanding of tone and context. It is a testament to the fact that language is never static. It is a living, breathing entity that reflects the migration, humor, and resilience of its people. Mastering this vocabulary not only helps you ace trivia nights but allows you to appreciate the nuanced brilliance of British television, cinema, and literature.</p>
+    </div>
+</article>
+
+
+<!-- ============================================================================== -->
+<!-- 💬 GAME 2: BRITISH SLANG - SEO BLOCK 2 -->
+<!-- Target Keywords: Word ladder solver, brain training words, lateral thinking -->
+<!-- ============================================================================== -->
+<article class="seo-block p-8 bg-[#0f172a] border border-slate-700 rounded-3xl mb-8 text-slate-300 leading-relaxed shadow-xl">
+    <header class="mb-6 border-b border-slate-700 pb-4">
+        <span class="text-xs font-mono text-emerald-400 uppercase tracking-widest">Cognitive Puzzles</span>
+        <h2 class="text-3xl font-black text-white mt-2 mb-4">The Science of Word Ladders: Neuroplasticity and Lateral Thinking</h2>
+    </header>
+    <div class="space-y-6 text-base">
+        <p>The "Word Ladder" is one of the most elegant and enduring puzzle formats ever conceived. Invented by none other than Lewis Carroll, the author of <em>Alice's Adventures in Wonderland</em>, on Christmas Day in 1877, the game was originally dubbed "Doublets." Carroll's premise was simple yet maddeningly brilliant: transform one word into another by altering exactly one letter at a time, with every intermediate step forming a valid English word. While it appears to be a simple parlor trick, the Word Ladder is actually a rigorous exercise in lateral thinking and cognitive flexibility.</p>
+
+        <p>In our modern iteration—the British Slang Ladder—we have adapted Carroll's concept to test both vocabulary and cultural knowledge. But regardless of the specific format, engaging with word ladders provides substantial, scientifically documented benefits to the human brain. To understand why, we must look at how the brain processes language and solves spatial-linguistic problems.</p>
+
+        <h3 class="text-xl font-bold text-white mt-8 mb-3 text-emerald-400">Forcing the Brain off Autopilot</h3>
+        <p>When we read or write standard text, our brains operate heavily on predictive autopilot. We rely on common grammatical structures and familiar word associations to process language quickly. We rarely analyze words on a granular, letter-by-letter level. A word ladder violently disrupts this autopilot mode. It forces the brain to deconstruct a word into its fundamental phonemes and graphemes.</p>
+
+        <p>If you are trying to bridge the gap between "COLD" and "WARM," your brain cannot rely on semantic meaning. Instead, it must engage the prefrontal cortex—the area responsible for complex problem solving and executive function—to run a brute-force search of your mental dictionary. You must test potential letter substitutions: <em>Can COLD become CORD? Yes. Can CORD become CARD? Yes. Can CARD become WARD? Yes. Can WARD become WARM? Yes.</em> This process of mental trial-and-error strengthens neural pathways associated with working memory and cognitive agility.</p>
+
+        <blockquote class="my-8 border-l-4 border-emerald-500 pl-6 py-2 bg-slate-800/30 rounded-r-xl italic text-lg text-white/90">
+            "A word ladder is essentially a cryptographic maze. It strips away the meaning of language and forces the brain to navigate the pure mathematics of spelling, demanding intense lateral thinking."
+        </blockquote>
+
+        <p>Furthermore, word ladders significantly enhance "lexical access speed"—the rate at which you can retrieve a specific word from your vocabulary based on strict constraints. This is a critical cognitive skill that tends to degrade as we age, leading to the frustrating "tip-of-the-tongue" phenomenon. By regularly playing constrained linguistic games, you are actively exercising your lexical retrieval systems, keeping your vocabulary accessible and sharp.</p>
+        
+        <p>When combined with the challenge of translating standard definitions into obscure British slang, our Slang Ladder provides a dual-layered cognitive workout. You are simultaneously testing your cultural semantic memory and your granular spelling agility. It is Lewis Carroll's 19th-century brilliance supercharged for the modern digital arcade, offering a fun, frictionless way to keep your mind dangerously sharp.</p>
+    </div>
+</article>
+
+
+
+    <quiz-footer></quiz-footer>
+
+    <!-- Game Logic -->
+    <script>
+        // --- AUDIO SYSTEM ---
+        let audioEnabled = true;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!audioEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'buzzer') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(80, now + 0.3);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'ding') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, now); // A5
+                osc.frequency.setValueAtTime(1108.73, now + 0.1); // C#6
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'skip') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.linearRampToValueAtTime(200, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('audio-btn');
+            btn.innerHTML = audioEnabled ? '<i class="fas fa-volume-high text-xs"></i>' : '<i class="fas fa-volume-xmark text-xs text-slate-500"></i>';
+        }
+
+        // --- 20 BRITISH COMEDY LEVELS ---
+        const LEVELS = [
+            { quote: "Four naan, Jeremy? Four? That's insane.", correct: "Mark Corrigan", wrong: ["David Brent", "Basil Fawlty", "Moss"] },
+            { quote: "Have you tried turning it off and on again?", correct: "Roy Trenneman", wrong: ["Jay Cartwright", "Del Boy", "Super Hans"] },
+            { quote: "Don't mention the war!", correct: "Basil Fawlty", wrong: ["Edmund Blackadder", "Father Ted", "Alan Partridge"] },
+            { quote: "Bus wankers!", correct: "Jay Cartwright", wrong: ["Simon Cooper", "Neil Sutherland", "Will McKenzie"] },
+            { quote: "I have a cunning plan.", correct: "Baldrick", wrong: ["Rodney Trotter", "Trigger", "Manuel"] },
+            { quote: "This time next year, we'll be millionaires!", correct: "Del Boy", wrong: ["David Brent", "Mark Corrigan", "Basil Fawlty"] },
+            { quote: "Hair is everything, Anthony!", correct: "Fleabag", wrong: ["Nessa", "Lauren Cooper", "Geraldine Granger"] },
+            { quote: "These are small... but the ones out there are far away.", correct: "Father Dougal", wrong: ["Father Ted", "Father Jack", "Bishop Brennan"] },
+            { quote: "I’m the only gay in the village.", correct: "Daffyd Thomas", wrong: ["Lou Todd", "Andy Pipkin", "Vicky Pollard"] },
+            { quote: "Computer says no.", correct: "Carol Beer", wrong: ["Lauren Cooper", "Nan", "Nessa"] },
+            { quote: "Nobody tells me nothin'.", correct: "PC Danny Butterman", wrong: ["Nicholas Angel", "Shaun", "Ed"] },
+            { quote: "I look like a pencil.", correct: "Fleabag", wrong: ["Claire", "Godmother", "Belinda"] },
+            { quote: "People say I'm the best boss. They go, 'Oh, we've never worked in a place like this before'.", correct: "David Brent", wrong: ["Gareth Keenan", "Alan Partridge", "Mark Corrigan"] },
+            { quote: "Smeg head.", correct: "Arnold Rimmer", wrong: ["Dave Lister", "Kryten", "Cat"] },
+            { quote: "A-ha!", correct: "Alan Partridge", wrong: ["David Brent", "Basil Fawlty", "Edmund Blackadder"] },
+            { quote: "I hear you're a racist now, Father!", correct: "Colm", wrong: ["Father Ted", "Father Dougal", "Mrs. Doyle"] },
+            { quote: "It's just a flesh wound.", correct: "The Black Knight", wrong: ["King Arthur", "Brian", "Tim the Enchanter"] },
+            { quote: "Ooh, friend! Football friend!", correct: "Simon Cooper", wrong: ["Jay Cartwright", "Will McKenzie", "Neil Sutherland"] },
+            { quote: "You wouldn't let me do it, would you? You'd never let me do it.", correct: "Super Hans", wrong: ["Mark Corrigan", "Jeremy Usborne", "Alan Johnson"] },
+            { quote: "Oh! What's occurring?", correct: "Nessa Jenkins", wrong: ["Stacey Shipman", "Bryn West", "Gavin Shipman"] }
+        ];
+
+        // Game State
+        let currentLevel = 0;
+        let score = 0;
+        let correctCount = 0;
+        let isLocked = false;
+
+        // DOM Elements
+        const screenStart = document.getElementById('screen-start');
+        const screenGame = document.getElementById('screen-game');
+        const screenResults = document.getElementById('screen-results');
+        
+        const levelDisplayEl = document.getElementById('level-display');
+        const scoreDisplayEl = document.getElementById('score-display');
+        const quoteTextEl = document.getElementById('quote-text');
+        const optionsGridEl = document.getElementById('options-grid');
+        const feedbackTextEl = document.getElementById('feedback-text');
+        const cueCardEl = document.getElementById('cue-card-container');
+
+        function startGame() {
+            currentLevel = 0;
+            score = 0;
+            correctCount = 0;
+            isLocked = false;
+            
+            scoreDisplayEl.textContent = '0';
+            feedbackTextEl.style.opacity = '0';
+
+            screenStart.classList.add('hidden');
+            screenResults.classList.add('hidden');
+            screenGame.classList.remove('hidden');
+
+            loadLevel();
+        }
+
+        function loadLevel() {
+            if (currentLevel >= LEVELS.length) {
+                endGame();
+                return;
+            }
+
+            isLocked = false;
+            feedbackTextEl.style.opacity = '0';
+            const data = LEVELS[currentLevel];
+
+            // Animate cue card
+            cueCardEl.classList.remove('animate-slide-up');
+            void cueCardEl.offsetWidth; // Trigger reflow
+            cueCardEl.classList.add('animate-slide-up');
+
+            levelDisplayEl.textContent = currentLevel + 1;
+            quoteTextEl.textContent = `"${data.quote}"`;
+
+            // Prepare options (1 correct + 3 wrong)
+            let options = [{ text: data.correct, isCorrect: true }];
+            data.wrong.forEach(w => options.push({ text: w, isCorrect: false }));
+            
+            // Shuffle options
+            options.sort(() => 0.5 - Math.random());
+
+            renderOptions(options);
+        }
+
+        function renderOptions(options) {
+            optionsGridEl.innerHTML = '';
+            
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "buzzer-btn";
+                btn.textContent = opt.text;
+                btn.onclick = () => handleAnswer(opt.isCorrect, btn);
+                optionsGridEl.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(isCorrect, btnElement) {
+            if (isLocked) return;
+            isLocked = true;
+
+            // Visual feedback on all buttons
+            const allBtns = optionsGridEl.querySelectorAll('button');
+            allBtns.forEach(b => {
+                b.disabled = true;
+                b.style.opacity = '0.5';
+            });
+
+            btnElement.style.opacity = '1';
+
+            if (isCorrect) {
+                playSound('ding');
+                score += 150;
+                correctCount++;
+                scoreDisplayEl.textContent = score;
+                
+                btnElement.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                btnElement.style.borderColor = '#34d399';
+                
+                feedbackTextEl.textContent = "CORRECT!";
+                feedbackTextEl.className = "text-center h-8 font-show text-2xl tracking-wider opacity-100 transition-opacity uppercase mb-4 text-emerald-400";
+            } else {
+                playSound('buzzer');
+                cueCardEl.classList.add('animate-shake');
+                setTimeout(() => cueCardEl.classList.remove('animate-shake'), 400);
+
+                btnElement.style.background = 'linear-gradient(135deg, #e11d48 0%, #9f1239 100%)';
+                btnElement.style.borderColor = '#fb7185';
+                
+                // Highlight correct answer
+                const correctText = LEVELS[currentLevel].correct;
+                allBtns.forEach(b => {
+                    if (b.textContent === correctText) {
+                        b.style.opacity = '1';
+                        b.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                        b.style.borderColor = '#34d399';
+                    }
+                });
+
+                feedbackTextEl.textContent = "WRONG!";
+                feedbackTextEl.className = "text-center h-8 font-show text-2xl tracking-wider opacity-100 transition-opacity uppercase mb-4 text-red-500";
+            }
+
+            setTimeout(() => {
+                currentLevel++;
+                loadLevel();
+            }, 1500);
+        }
+
+        function skipLevel() {
+            if (isLocked) return;
+            playSound('skip');
+            currentLevel++;
+            loadLevel();
+        }
+
+        function endGame() {
+            screenGame.classList.add('hidden');
+            screenResults.classList.remove('hidden');
+
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-correct').textContent = correctCount;
+
+            let rank = "";
+            if (correctCount >= 18) rank = "Panel Show Champion!";
+            else if (correctCount >= 14) rank = "Seasoned Comedian";
+            else if (correctCount >= 8) rank = "Heckler";
+            else rank = "Audience Member";
+
+            document.getElementById('rank-text').textContent = `Rank Achieved: ${rank}`;
+        }
+
+        function resetGame() {
+            startGame();
+        }
+
+        function shareScore() {
+            const shareData = {
+                title: 'British Comedy Quote Guesser',
+                text: `I scored ${score} and guessed ${correctCount}/20 classic British sitcom quotes on QuizRealm!`,
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Score link copied to clipboard!');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <!-- Google AdSense Verification -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6205081520399538" crossorigin="anonymous"></script>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- ADVANCED SEO METADATA -->
+    <title>Premier League Legends Puzzle | Football Trivia Game | QuizRealm</title>
+    <meta name="description" content="Play the Premier League Legends Puzzle on QuizRealm. Guess the iconic football players from their clues in this fun, free sports trivia game." />
+    <meta name="keywords" content="Premier League trivia, football quiz, soccer player guessing game, sports pub quiz, English football legends, free browser games" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.thequizrealm.com/premier-league-legends.html" />
+
+    <!-- STRUCTURED DATA FOR GOOGLE INDEXING -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "Premier League Legends Puzzle",
+      "description": "A sports trivia puzzle where players guess iconic Premier League player surnames based on clues across 20 levels.",
+      "genre": ["Sports", "Trivia", "Puzzle"],
+      "playMode": "SinglePlayer",
+      "applicationCategory": "GameApplication"
+    }
+    </script>
+
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    },
+                    colors: {
+                        stadium: {
+                            bg: '#020617', // Very dark slate/navy
+                            card: '#0f172a', // Dark slate
+                            border: '#1e293b', // Lighter slate border
+                            gold: '#fbbf24', // Premium gold
+                            blue: '#2563eb' // Sports blue
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out forwards',
+                        'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            /* Subtle stadium spotlight effect */
+            background-image: 
+                radial-gradient(circle at 15% 0%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 100%, rgba(251, 191, 36, 0.08) 0%, transparent 50%);
+        }
+
+        .sports-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border-radius: 1.5rem;
+        }
+
+        /* The empty boxes where answers go */
+        .answer-slot {
+            width: 42px;
+            height: 52px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        @media (min-width: 640px) {
+            .answer-slot {
+                width: 52px;
+                height: 64px;
+                font-size: 1.75rem;
+            }
+        }
+        .answer-slot.filled {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            transform: scale(1.05);
+        }
+
+        /* The letters players can tap */
+        .letter-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #f8fafc;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+        }
+        @media (min-width: 640px) {
+            .letter-btn { font-size: 1.5rem; }
+        }
+        .letter-btn:hover:not(:disabled) {
+            background: #2563eb;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        .letter-btn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+        .letter-btn.used {
+            opacity: 0.2;
+            cursor: not-allowed;
+            transform: scale(0.95);
+            background: #0f172a;
+        }
+
+        /* Custom scrollbar for history */
+        .history-scroll::-webkit-scrollbar { width: 6px; }
+        .history-scroll::-webkit-scrollbar-track { background: #0f172a; }
+        .history-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+        /* SEO Article Styling */
+        .seo-content h2 { font-size: 1.75rem; font-weight: 800; color: #fff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .seo-content h3 { font-size: 1.25rem; font-weight: 700; color: #fbbf24; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .seo-content p { color: #94a3b8; font-size: 1.05rem; margin-bottom: 1.25rem; line-height: 1.8; }
+        .seo-content ul { list-style-type: disc; padding-left: 1.5rem; color: #94a3b8; margin-bottom: 1.25rem; }
+        .seo-content li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <!-- Top Navigation -->
+    <header class="w-full max-w-2xl mx-auto px-6 pt-6 flex justify-between items-center z-20">
+        <div class="flex items-center gap-3">
+            <a href="uk-trivia-games-hub.html" class="w-10 h-10 rounded-xl bg-stadium-card border border-stadium-border flex items-center justify-center hover:bg-slate-800 transition-all text-slate-300">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <span class="text-[10px] font-bold tracking-widest uppercase text-stadium-gold block">Sports Trivia</span>
+                <h1 class="text-sm font-extrabold text-white">Premier League Legends</h1>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="toggleAudio()" id="audio-btn" class="w-10 h-10 rounded-xl bg-stadium-card border border-stadium-border flex items-center justify-center hover:bg-slate-800 transition-all text-slate-300" title="Toggle Sound">
+                <i class="fas fa-volume-high text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="w-full max-w-2xl mx-auto px-4 flex-grow flex flex-col items-center justify-center py-8 z-10">
+
+        <!-- ========================================== -->
+        <!-- SCREEN 1: START PAGE                       -->
+        <!-- ========================================== -->
+        <div id="screen-start" class="w-full sports-card p-8 text-center animate-fade-in">
+            <div class="w-20 h-20 bg-blue-600/20 text-blue-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-6 border-2 border-blue-500/50">
+                <i class="fas fa-futbol"></i>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-white mb-4">Guess The Legend</h2>
+            <p class="text-slate-400 mb-8 max-w-md mx-auto text-base leading-relaxed">
+                We give you a clue about an iconic Premier League player. Tap the scrambled letters to spell their surname. Can you complete all 20 levels?
+            </p>
+            
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 text-left mb-8 max-w-sm mx-auto">
+                <h3 class="font-bold text-white mb-2 text-sm uppercase tracking-wider"><i class="fas fa-list-ul mr-2 text-stadium-gold"></i> Rules</h3>
+                <ul class="text-sm text-slate-400 space-y-2">
+                    <li>&bull; Read the player clue carefully.</li>
+                    <li>&bull; Tap the letters to fill the boxes.</li>
+                    <li>&bull; Use a hint or skip the level if you get stuck.</li>
+                </ul>
+            </div>
+
+            <button onclick="startGame()" class="w-full md:w-auto md:px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg rounded-xl transition-all shadow-lg shadow-blue-600/30">
+                Play Now
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 2: ACTIVE GAMEBOARD                 -->
+        <!-- ========================================== -->
+        <div id="screen-game" class="w-full hidden animate-fade-in">
+            
+            <!-- Stats Header -->
+            <div class="flex justify-between items-center mb-4 px-2">
+                <div class="text-left">
+                    <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest block">Player</span>
+                    <span class="text-lg font-black text-white"><span id="level-display" class="text-stadium-gold">1</span> / 20</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest block">Score</span>
+                    <span id="score-display" class="text-lg font-black text-white">0</span>
+                </div>
+            </div>
+
+            <div class="sports-card p-6 md:p-8 w-full">
+                
+                <!-- Clue Area -->
+                <div class="text-center mb-8">
+                    <span class="inline-block px-3 py-1 bg-slate-800 border border-slate-700 rounded-full text-xs font-bold text-stadium-gold uppercase tracking-widest mb-4">
+                        Who is this?
+                    </span>
+                    <p id="clue-text" class="text-lg md:text-xl font-bold text-white leading-relaxed max-w-md mx-auto">
+                        Loading player clue...
+                    </p>
+                </div>
+
+                <!-- Answer Boxes -->
+                <div id="answer-slots" class="flex flex-wrap justify-center gap-2 mb-8 min-h-[64px]">
+                    <!-- Boxes injected here by JS -->
+                </div>
+
+                <!-- Controls: Backspace, Clear, Hint, Skip -->
+                <div class="flex flex-wrap justify-center gap-2 mb-8">
+                    <button onclick="backspaceLetter()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold transition-colors">
+                        <i class="fas fa-delete-left mr-1"></i> Undo
+                    </button>
+                    <button onclick="clearSelection()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold transition-colors">
+                        Clear
+                    </button>
+                    <button onclick="hintLetter()" class="px-4 py-2.5 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/20 text-sm font-bold transition-colors">
+                        <i class="fas fa-lightbulb mr-1"></i> Hint
+                    </button>
+                    <button onclick="skipLevel()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 text-sm font-bold transition-colors ml-auto">
+                        Skip <i class="fas fa-forward ml-1"></i>
+                    </button>
+                </div>
+
+                <!-- Letter Selection Grid -->
+                <div id="letter-grid" class="grid grid-cols-6 sm:grid-cols-7 gap-2 md:gap-3 w-full max-w-md mx-auto mb-6">
+                    <!-- Letters injected here by JS -->
+                </div>
+
+                <!-- Submit Button -->
+                <button onclick="checkAnswer()" class="w-full py-4 bg-stadium-gold hover:bg-yellow-400 text-slate-900 font-black text-lg rounded-xl transition-all shadow-lg shadow-yellow-500/20">
+                    Check Answer
+                </button>
+            </div>
+            
+            <!-- History of found players -->
+            <div class="mt-6 sports-card p-5">
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Players Found</h4>
+                <div id="found-history" class="flex flex-wrap gap-2 max-h-24 overflow-y-auto history-scroll pr-2">
+                    <span class="text-xs text-slate-600 italic">No players guessed yet.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 3: END GAME / RESULTS               -->
+        <!-- ========================================== -->
+        <div id="screen-results" class="w-full sports-card p-8 text-center hidden animate-fade-in">
+            <div class="w-20 h-20 bg-stadium-gold/20 text-stadium-gold rounded-full flex items-center justify-center text-4xl mx-auto mb-6 border-2 border-stadium-gold/50">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-white mb-2">Full Time!</h2>
+            <p class="text-slate-400 mb-8">You've completed all 20 fixtures.</p>
+
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                    <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Final Score</span>
+                    <span id="final-score" class="text-3xl font-black text-white">0</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                    <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Players Skipped</span>
+                    <span id="final-skips" class="text-3xl font-black text-red-400">0</span>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="resetGame()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg rounded-xl transition-all shadow-lg shadow-blue-600/30">
+                    Play Again
+                </button>
+                <button onclick="shareScore()" class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-share-nodes text-stadium-gold"></i> Share Score
+                </button>
+                <a href="uk-trivia-games-hub.html" class="w-full py-3.5 bg-transparent border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 mt-2 block">
+                    Return to UK Hub
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- SEO Content Section -->
+    <section class="w-full max-w-3xl mx-auto px-6 py-12 border-t border-slate-800 seo-content z-10 bg-stadium-bg">
+        <h2>About The Premier League Legends Puzzle</h2>
+        <p>Welcome to the <strong>Premier League Legends Puzzle</strong>, a bespoke sports trivia challenge built for the QuizRealm UK Hub. Designed for football fans and pub quiz enthusiasts, this game tests your knowledge of the greatest players to ever grace English top-flight football.</p>
+        
+        <h3>How to Play & Pub Quiz Strategy</h3>
+        <p>Whether you are a casual fan or a dedicated pundit, this game format mimics the classic "Who Am I?" sports round found in traditional British pub quizzes:</p>
+        <ul>
+            <li><strong>Read the Clue:</strong> Evaluate career highlights, iconic moments, club associations, and shirt numbers.</li>
+            <li><strong>Build the Surname:</strong> Use the scrambled letter bank to construct the player's last name. The letters provided include exactly what you need, plus a few random decoys.</li>
+            <li><strong>Manage Skips & Hints:</strong> If a clue stumps you, use a hint to reveal the next correct letter, or use the Skip button to pass the player entirely (though skipping costs you points!).</li>
+        </ul>
+
+        <h3>Explore More UK Hub & Arcade Games</h3>
+        <p>Finished the full 90 minutes here? Check out our other British culture and sports games:</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <a href="uk-trivia-games-hub.html" class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-stadium-gold/40 transition-all text-decoration-none block">
+                <span class="text-xs text-stadium-gold uppercase font-bold block mb-1">Regional Hub</span>
+                <h4 class="text-white font-bold text-sm">UK & Commonwealth Hub</h4>
+            </a>
+            <a href="british-slang-word-ladder.html" class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 transition-all text-decoration-none block">
+                <span class="text-xs text-emerald-400 uppercase font-bold block mb-1">Word Game</span>
+                <h4 class="text-white font-bold text-sm">British Slang Ladder</h4>
+            </a>
+            <a href="arcade.html" class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500/40 transition-all text-decoration-none block">
+                <span class="text-xs text-blue-400 uppercase font-bold block mb-1">Main Lobby</span>
+                <h4 class="text-white font-bold text-sm">Arcade Hub</h4>
+            </a>
+        </div>
+    </section>
+
+
+
+
+
+<!-- ============================================================================== -->
+<!-- 🎭 GAME 4: BRITISH COMEDY - SEO BLOCK 1 -->
+<!-- Target Keywords: British comedy history, UK sitcoms, dry humor TV -->
+<!-- ============================================================================== -->
+<article class="seo-block p-8 bg-[#0f172a] border border-slate-700 rounded-3xl mb-8 text-slate-300 leading-relaxed shadow-xl">
+    <header class="mb-6 border-b border-slate-700 pb-4">
+        <span class="text-xs font-mono text-pink-500 uppercase tracking-widest">Television Culture</span>
+        <h2 class="text-3xl font-black text-white mt-2 mb-4">The Anatomy of British Cringe: Why UK Sitcoms Are Globally Iconic</h2>
+    </header>
+    <div class="space-y-6 text-base">
+        <p>British television comedy occupies a unique and revered space in global pop culture. While American sitcoms traditionally lean toward aspirational characters, high-gloss production values, and uplifting moral resolutions, British comedy wallows in the mud of everyday failure. From the manic incompetence of Basil Fawlty to the agonizing social awkwardness of Mark Corrigan, the UK sitcom has mastered the art of the "cringe." This distinctive cultural fingerprint is exactly what makes the British Comedy Quote Guesser so incredibly challenging and hilarious.</p>
+
+        <p>To understand why British humor resonates so deeply, we have to look at the psychological makeup of the characters. The classic British comedy protagonist is almost exclusively a loser. They are trapped by their own neuroses, thwarted by the rigid British class system, and constantly striving for a dignity they will never achieve. There is no triumph at the end of the episode; the status quo of misery is always maintained. This is not a bleak worldview, but rather a comforting realism. The British audience does not want to see characters succeed; they want to see characters fail in ways that mirror their own quiet, internal anxieties.</p>
+
+        <h3 class="text-xl font-bold text-white mt-8 mb-3 text-pink-500">The Masters of Awkwardness</h3>
+        <p>Several key shows have defined this genre, providing the iconic quotes that fuel modern trivia and internet culture:</p>
+
+        <dl class="space-y-4 my-6 p-6 bg-slate-800/50 rounded-2xl border border-slate-700">
+            <div>
+                <dt class="font-bold text-white text-lg">Fawlty Towers (1975–1979)</dt>
+                <dd class="text-sm mt-1">John Cleese’s Basil Fawlty set the blueprint. Basil is a man who despises his guests, fears his wife, and constantly lies to maintain a facade of upper-middle-class respectability. The humor derives entirely from the inevitable, spectacular collapse of his lies. His manic scream of "Don't mention the war!" remains one of the most famous quotes in television history.</dd>
+            </div>
+            <div>
+                <dt class="font-bold text-white text-lg">The Office UK (2001–2003)</dt>
+                <dd class="text-sm mt-1">Ricky Gervais and Stephen Merchant pioneered the "mockumentary" format, removing the laugh track entirely to amplify the excruciating silence of social failure. David Brent’s desperate need to be loved by his subordinates results in a masterclass of cringe comedy, creating a new standard for realism in sitcoms.</dd>
+            </div>
+            <div>
+                <dt class="font-bold text-white text-lg">Peep Show (2003–2015)</dt>
+                <dd class="text-sm mt-1">Shot from the first-person perspective with audible internal monologues, Peep Show exposed the darkest, most pathetic thoughts of its protagonists, Mark and Jez. It elevated the cringe genre by proving that our internal monologue is often far worse than our external actions, giving us legendary quotes like "Four naan, Jeremy? That's insane."</dd>
+            </div>
+        </dl>
+
+        <p>Another crucial element of British comedy is the production format. Unlike American shows that historically pumped out 24 episodes a season with a team of writers, British sitcoms are typically written by one or two creators and consist of brief 6-episode seasons. This limited run prevents the characters from evolving, ensures tight, high-quality writing, and leaves the audience desperate for more. It also means that almost every line of dialogue is essential, highly polished, and ultimately, quotable.</p>
+        
+        <p>When you play our Quote Guesser, you are testing your fluency in this specific language of failure and irony. Identifying whether a horrific piece of advice came from Super Hans or Jay Cartwright requires an intimate understanding of the characters' unique brands of delusion. It is a celebration of the underdog, the awkward silence, and the unparalleled brilliance of British dry wit.</p>
+    </div>
+</article>
+
+
+<!-- ============================================================================== -->
+<!-- 🎭 GAME 4: BRITISH COMEDY - SEO BLOCK 2 -->
+<!-- Target Keywords: Sitcom catchphrases, pop culture quotes, memory and comedy -->
+<!-- ============================================================================== -->
+<article class="seo-block p-8 bg-[#0f172a] border border-slate-700 rounded-3xl mb-8 text-slate-300 leading-relaxed shadow-xl">
+    <header class="mb-6 border-b border-slate-700 pb-4">
+        <span class="text-xs font-mono text-pink-500 uppercase tracking-widest">Media Psychology</span>
+        <h2 class="text-3xl font-black text-white mt-2 mb-4">The Anatomy of a Catchphrase: Why TV Quotes Stick in Our Brains</h2>
+    </header>
+    <div class="space-y-6 text-base">
+        <p>Walk into a modern workplace, a pub, or a university campus in the UK, and you will inevitably hear people communicating entirely in quotes. From shouting "Bus wankers!" at a passing friend to sighing "Computer says no" when technology fails, television catchphrases have effectively become a secondary dialect in British culture. But what elevates a simple line of dialogue into a cultural phenomenon? And why is our ability to recall these quotes—as tested in the British Comedy Quote Guesser—so incredibly sharp?</p>
+
+        <p>The power of the catchphrase lies in the psychology of social signaling and semantic compression. A great comedic quote acts as a linguistic shortcut. When you use a quote from <em>The IT Crowd</em> ("Have you tried turning it off and on again?"), you are not just making a joke about computers; you are instantly communicating a shared cultural framework with the listener. You are signaling that you consume the same media, share the same sense of humor, and belong to the same "in-group." Recognizing and deploying these quotes is a highly efficient way to build rapid social rapport.</p>
+
+        <h3 class="text-xl font-bold text-white mt-8 mb-3 text-pink-500">The Three Rules of a Legendary Catchphrase</h3>
+        <p>Not every funny line becomes a catchphrase. For a quote to transcend the television screen and enter the cultural lexicon, it usually adheres to three specific linguistic and comedic rules:</p>
+
+        <ul class="list-none space-y-4 my-6 p-6 bg-slate-800/50 rounded-2xl border border-slate-700">
+            <li class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center shrink-0 font-bold">1</div>
+                <div>
+                    <strong class="text-white block text-lg">Versatility in Everyday Life</strong>
+                    <p class="text-sm mt-1">The best quotes can be seamlessly applied to mundane, daily situations. When <em>Gavin & Stacey's</em> Nessa asks, "Oh! What's occurring?", it isn't just a funny character quirk; it is a highly functional greeting that viewers can adopt effortlessly in their own lives.</p>
+                </div>
+            </li>
+            <li class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center shrink-0 font-bold">2</div>
+                <div>
+                    <strong class="text-white block text-lg">Rhythmic and Phonetic Punch</strong>
+                    <p class="text-sm mt-1">Catchphrases have a distinct cadence. They are often short, punchy, and utilize strong consonant sounds. Consider Alan Partridge's "A-ha!" or Del Boy's "Lovely jubbly." They roll off the tongue easily, making them satisfying to repeat out loud.</p>
+                </div>
+            </li>
+            <li class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center shrink-0 font-bold">3</div>
+                <div>
+                    <strong class="text-white block text-lg">The Power of the Absurd Pivot</strong>
+                    <p class="text-sm mt-1">Many iconic British quotes rely on absurd non-sequiturs that break the expected flow of conversation. Father Dougal’s explanation of perspective in <em>Father Ted</em> ("These are small... but the ones out there are far away") is memorable because of its sheer, brilliant stupidity.</p>
+                </div>
+            </li>
+        </ul>
+
+        <p>From a neuroscientific perspective, television quotes are encoded in our brains much like song lyrics. Because sitcoms rely heavily on repetition—with characters delivering their signature lines in multiple episodes across years of broadcasting—the phrases are burned into our semantic memory through spaced repetition. Furthermore, because we watch these shows in a state of relaxation and amusement, the emotional tagging attached to the memory makes it highly durable.</p>
+        
+        <p>Playing a trivia game centered around these quotes is an exercise in cultural nostalgia. When the prompt flashes on the screen, your brain doesn't just read the words; it replays the audio of the character's voice, the visual of the scene, and the memory of the first time you laughed at it. It is a brilliant, joyful way to exercise your recall abilities while celebrating the absolute pinnacle of British television writing.</p>
+    </div>
+</article>
+
+
+
+
+
+
+    <quiz-footer></quiz-footer>
+
+    <!-- Game Logic -->
+    <script>
+        // Simple Audio Feedback
+        let audioEnabled = true;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!audioEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'tap') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'success') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.1);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } else if (type === 'skip') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.linearRampToValueAtTime(200, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('audio-btn');
+            btn.innerHTML = audioEnabled ? '<i class="fas fa-volume-high text-xs"></i>' : '<i class="fas fa-volume-xmark text-xs text-red-400"></i>';
+        }
+
+        // --- 20 PREMIER LEAGUE LEGENDS LEVELS ---
+        const LEVELS = [
+            { answer: "HENRY", clue: "Arsenal Invincible striker, legendary #14 who terrorized defenses." },
+            { answer: "SHEARER", clue: "The all-time Premier League top goalscorer (260 goals) and Newcastle icon." },
+            { answer: "LAMPARD", clue: "Chelsea's legendary midfielder, famous for arriving late in the box to score." },
+            { answer: "GERRARD", clue: "Liverpool captain, the talisman behind the Miracle of Istanbul." },
+            { answer: "AGUERO", clue: "Manchester City icon who scored the famous 93:20 title-winning goal." },
+            { answer: "ROONEY", clue: "Manchester United and England's record-breaking bulldog of a striker." },
+            { answer: "CANTONA", clue: "The enigmatic French 'King' of Old Trafford, famous for his popped collar." },
+            { answer: "BERGKAMP", clue: "The Non-Flying Dutchman, author of that impossible Newcastle spin-turn goal." },
+            { answer: "DROGBA", clue: "Chelsea powerhouse who dominated cup finals and terrified center-backs." },
+            { answer: "RONALDO", clue: "Portuguese winger who erupted into a world-class forward at Man Utd." },
+            { answer: "SALAH", clue: "Liverpool's prolific 'Egyptian King' lighting up the right wing." },
+            { answer: "DEBRUYNE", clue: "Manchester City's Belgian midfield maestro and assist king." },
+            { answer: "KANTE", clue: "Relentless defensive midfielder who won back-to-title titles with Leicester & Chelsea." },
+            { answer: "VIEIRA", clue: "Arsenal's indomitable central midfield enforcer and long-time captain." },
+            { answer: "SCHOLES", clue: "Manchester United metronome, highly praised by Xavi and Zidane." },
+            { answer: "TERRY", clue: "Chelsea's ultimate captain, leader, and rock-solid defender." },
+            { answer: "FERDINAND", clue: "Elegantly composed, ball-playing Manchester United center-back." },
+            { answer: "CECH", clue: "Legendary helmet-wearing goalkeeper who kept records for Chelsea." },
+            { answer: "KANE", clue: "Tottenham talisman, elite finisher, and prolific England captain." },
+            { answer: "SON", clue: "Spurs' electric South Korean winger and Puskas Award winner." }
+        ];
+
+        // Game State Variables
+        let currentLevel = 0;
+        let score = 0;
+        let skipsUsed = 0;
+        let foundPlayers = [];
+        let currentGuess = []; // Array of objects {char: 'A', originalIndex: 5}
+        let scrambledLetters = []; // Array of objects {char: 'A', used: false}
+
+        // DOM Elements
+        const screenStart = document.getElementById('screen-start');
+        const screenGame = document.getElementById('screen-game');
+        const screenResults = document.getElementById('screen-results');
+        
+        const levelDisplayEl = document.getElementById('level-display');
+        const scoreDisplayEl = document.getElementById('score-display');
+        const clueTextEl = document.getElementById('clue-text');
+        const answerSlotsEl = document.getElementById('answer-slots');
+        const letterGridEl = document.getElementById('letter-grid');
+        const foundHistoryEl = document.getElementById('found-history');
+
+        function startGame() {
+            currentLevel = 0;
+            score = 0;
+            skipsUsed = 0;
+            foundPlayers = [];
+            
+            scoreDisplayEl.textContent = '0';
+            foundHistoryEl.innerHTML = '<span class="text-xs text-slate-600 italic">No players guessed yet.</span>';
+
+            screenStart.classList.add('hidden');
+            screenResults.classList.add('hidden');
+            screenGame.classList.remove('hidden');
+
+            loadLevel();
+        }
+
+        function loadLevel() {
+            if (currentLevel >= LEVELS.length) {
+                endGame();
+                return;
+            }
+
+            currentGuess = [];
+            const data = LEVELS[currentLevel];
+
+            levelDisplayEl.textContent = currentLevel + 1;
+            clueTextEl.textContent = data.clue;
+
+            // Prepare letters: Answer + decoys
+            const ansArr = data.answer.split('');
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            let pool = [...ansArr];
+            // Add 4-6 decoy letters depending on length to make it challenging but not crowded
+            const targetLength = Math.max(12, ansArr.length + 4); 
+            
+            while (pool.length < targetLength) {
+                const randChar = alphabet[Math.floor(Math.random() * alphabet.length)];
+                pool.push(randChar);
+            }
+            
+            // Shuffle pool
+            pool.sort(() => 0.5 - Math.random());
+            scrambledLetters = pool.map((char) => ({ char: char, used: false }));
+
+            renderSlots();
+            renderLetterGrid();
+        }
+
+        function renderSlots() {
+            answerSlotsEl.innerHTML = '';
+            const ansLen = LEVELS[currentLevel].answer.length;
+
+            for (let i = 0; i < ansLen; i++) {
+                const slot = document.createElement('div');
+                slot.className = "answer-slot";
+                
+                if (currentGuess[i]) {
+                    slot.textContent = currentGuess[i].char;
+                    slot.classList.add('filled');
+                } else {
+                    slot.textContent = '';
+                }
+                
+                // Allow tapping a filled slot to remove that specific letter
+                if (currentGuess[i]) {
+                    slot.onclick = () => removeLetterAtIndex(i);
+                    slot.style.cursor = "pointer";
+                }
+
+                answerSlotsEl.appendChild(slot);
+            }
+        }
+
+        function renderLetterGrid() {
+            letterGridEl.innerHTML = '';
+
+            scrambledLetters.forEach((letterObj, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `letter-btn ${letterObj.used ? 'used' : ''}`;
+                btn.textContent = letterObj.char;
+                btn.disabled = letterObj.used;
+                btn.onclick = () => selectLetter(idx);
+                letterGridEl.appendChild(btn);
+            });
+        }
+
+        function selectLetter(idx) {
+            const ansLen = LEVELS[currentLevel].answer.length;
+            if (currentGuess.length >= ansLen) return; // Boxes full
+
+            playSound('tap');
+            const letterObj = scrambledLetters[idx];
+            letterObj.used = true;
+
+            currentGuess.push({ char: letterObj.char, originalIndex: idx });
+            renderSlots();
+            renderLetterGrid();
+        }
+
+        function backspaceLetter() {
+            if (currentGuess.length === 0) return;
+            playSound('tap');
+            const removed = currentGuess.pop();
+            scrambledLetters[removed.originalIndex].used = false;
+            renderSlots();
+            renderLetterGrid();
+        }
+
+        function removeLetterAtIndex(index) {
+            if (index < 0 || index >= currentGuess.length) return;
+            playSound('tap');
+            const removed = currentGuess[index];
+            scrambledLetters[removed.originalIndex].used = false;
+            // Remove exactly that index and shift rest
+            currentGuess.splice(index, 1);
+            renderSlots();
+            renderLetterGrid();
+        }
+
+        function clearSelection() {
+            if (currentGuess.length === 0) return;
+            playSound('tap');
+            currentGuess = [];
+            scrambledLetters.forEach(l => l.used = false);
+            renderSlots();
+            renderLetterGrid();
+        }
+
+        function hintLetter() {
+            const data = LEVELS[currentLevel];
+            const nextIdx = currentGuess.length;
+            if (nextIdx >= data.answer.length) return; // Full
+
+            const targetChar = data.answer[nextIdx];
+            // Find an unused letter in the grid that matches
+            const tileIdx = scrambledLetters.findIndex(l => l.char === targetChar && !l.used);
+            
+            if (tileIdx !== -1) {
+                playSound('tap');
+                scrambledLetters[tileIdx].used = true;
+                currentGuess.push({ char: targetChar, originalIndex: tileIdx });
+                // Small penalty for hint
+                score = Math.max(0, score - 10);
+                scoreDisplayEl.textContent = score;
+                
+                renderSlots();
+                renderLetterGrid();
+            }
+        }
+
+        function skipLevel() {
+            playSound('skip');
+            skipsUsed++;
+            currentLevel++;
+            loadLevel();
+        }
+
+        function checkAnswer() {
+            const data = LEVELS[currentLevel];
+            const guessWord = currentGuess.map(g => g.char).join('');
+
+            if (guessWord === data.answer) {
+                playSound('success');
+                
+                // Base score + length bonus
+                const pointsEarned = 100 + (data.answer.length * 10);
+                score += pointsEarned;
+                scoreDisplayEl.textContent = score;
+
+                // Add to history
+                foundPlayers.push(data.answer);
+                if (foundPlayers.length === 1) {
+                    foundHistoryEl.innerHTML = ''; // Clear empty message
+                }
+                const badge = document.createElement('span');
+                badge.className = 'px-3 py-1.5 rounded-lg bg-blue-600/20 border border-blue-500/30 text-blue-400 font-bold text-xs';
+                badge.textContent = data.answer;
+                foundHistoryEl.appendChild(badge);
+
+                // Flash slots green visually
+                answerSlotsEl.childNodes.forEach(slot => {
+                    slot.style.borderColor = '#10b981';
+                    slot.style.color = '#10b981';
+                    slot.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                });
+
+                // Move to next after brief pause
+                setTimeout(() => {
+                    currentLevel++;
+                    loadLevel();
+                }, 800);
+
+            } else {
+                playSound('error');
+                answerSlotsEl.classList.add('animate-shake');
+                
+                // Flash slots red
+                answerSlotsEl.childNodes.forEach(slot => {
+                    if (slot.classList.contains('filled')) {
+                        slot.style.borderColor = '#ef4444';
+                        slot.style.color = '#ef4444';
+                        slot.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                    }
+                });
+
+                setTimeout(() => {
+                    answerSlotsEl.classList.remove('animate-shake');
+                    // Reset slot colors back to gold
+                    renderSlots(); 
+                }, 400);
+            }
+        }
+
+        function endGame() {
+            screenGame.classList.add('hidden');
+            screenResults.classList.remove('hidden');
+
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-skips').textContent = skipsUsed;
+        }
+
+        function resetGame() {
+            startGame();
+        }
+
+        function shareScore() {
+            const shareData = {
+                title: 'Premier League Legends on QuizRealm',
+                text: `I scored ${score} points and guessed ${foundPlayers.length} legends on QuizRealm! Think you know football?`,
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Score link copied to clipboard!');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -103,21 +103,32 @@
       transition: all 0.3s ease;
     }
     .arcade-card:hover .card-img-wrapper::after {
-      background: rgba(2, 6, 23, 0.7); /* Darkens on hover to pop button */
+      background: rgba(2, 6, 23, 0.7);
     }
 
     /* Filtering Animation Classes */
     .game-item { transition: opacity 0.4s ease, transform 0.4s ease; }
     .game-hidden { opacity: 0; transform: scale(0.9); pointer-events: none; position: absolute; visibility: hidden; }
 
-    /* Hide scrollbar for category menu */
+    /* Hide scrollbar for horizontal scrolling menus */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    .hub-scroll-container {
+        display: flex;
+        overflow-x: auto;
+        gap: 1.25rem;
+        padding-bottom: 1.5rem;
+        scroll-snap-type: x mandatory;
+    }
+    .hub-scroll-container > a {
+        scroll-snap-align: start;
+        flex: 0 0 280px;
+    }
   </style>
 </head>
 
 <body class="flex flex-col antialiased">
-  <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
@@ -133,12 +144,9 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 h-auto md:h-[400px]">
-        
-        <!-- Main Feature (2 Columns Wide) -->
         <a href="lumina-valley.html" class="group relative rounded-3xl overflow-hidden md:col-span-2 border border-white/10 hover:border-accentGold/50 transition-colors">
           <img src="assets/lumina-valley.png" alt="Lumina Valley" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-          
           <div class="absolute bottom-0 left-0 p-8 w-full flex justify-between items-end">
             <div>
               <span class="inline-block px-3 py-1 bg-amber-500/20 border border-amber-500/50 text-amber-400 text-[10px] font-bold uppercase tracking-widest rounded-full mb-3 backdrop-blur-md">Premium Puzzle</span>
@@ -151,9 +159,7 @@
           </div>
         </a>
 
-        <!-- Side Features (Stacked) -->
         <div class="grid grid-rows-2 gap-4 lg:gap-6 h-[400px] md:h-full">
-          
           <a href="timeline-history.html" class="group relative rounded-3xl overflow-hidden border border-white/10 hover:border-accentCyan/50 transition-colors">
             <img src="assets/timeline.png" alt="History Timeline" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
@@ -173,7 +179,6 @@
               <p class="text-slate-400 text-xs">Analog wave matching synthesizer.</p>
             </div>
           </a>
-
         </div>
       </div>
     </section>
@@ -197,14 +202,11 @@
     <section class="max-w-[1400px] mx-auto px-4 pb-14">
       <div id="game-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
 
-        <!-- GAME CARD TEMPLATE (Replicated for all 24 games) -->
-        
-        <!-- LOGIC / ZEN -->
+        <!-- ORIGINAL GAMES -->
         <a href="chroma-shift.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="logic">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/chroma-shift.png" alt="Chroma Shift" class="w-full h-full object-cover">
             <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-cyan-400 backdrop-blur-md">Logic</span></div>
-            <!-- Hover Play Button -->
             <div class="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div class="bg-cyan-500 text-black font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(34,211,238,0.5)]">Play Now</div>
             </div>
@@ -217,7 +219,6 @@
           </div>
         </a>
 
-        <!-- ZEN / LOGIC -->
         <a href="knot-garden.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="zen,logic">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/knot-garden.png" alt="The Knot Garden" class="w-full h-full object-cover">
@@ -234,7 +235,6 @@
           </div>
         </a>
 
-        <!-- CASUAL / SOCIAL -->
         <a href="intuition-engine.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="casual">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/intuition-engine.png" alt="Intuition Engine" class="w-full h-full object-cover">
@@ -251,7 +251,6 @@
           </div>
         </a>
 
-        <!-- CASUAL -->
         <a href="rank-it.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="casual">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/rank-it.png" alt="Rank It" class="w-full h-full object-cover">
@@ -268,7 +267,6 @@
           </div>
         </a>
 
-        <!-- SPEED -->
         <a href="rapid.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="speed">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/rapid.png" alt="Rapid Fire" class="w-full h-full object-cover">
@@ -285,7 +283,6 @@
           </div>
         </a>
 
-        <!-- WORDS / DAILY -->
         <a href="spelling.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="words,daily">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/spellingbee.png" alt="Spelling Bee" class="w-full h-full object-cover">
@@ -302,13 +299,12 @@
           </div>
         </a>
 
-        <!-- LOGIC -->
         <a href="fusion-core.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="logic">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/LOGIC.png" alt="Logic League" class="w-full h-full object-cover">
-            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-green-400 backdrop-blur-md">Logic</span></div>
+            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-cyan-400 backdrop-blur-md">Logic</span></div>
             <div class="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div class="bg-green-400 text-black font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(74,222,128,0.5)]">Play Now</div>
+              <div class="bg-cyan-400 text-black font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(34,211,238,0.5)]">Play Now</div>
             </div>
           </div>
           <div class="p-4 flex-1 flex flex-col justify-between">
@@ -319,7 +315,6 @@
           </div>
         </a>
 
-        <!-- WORDS -->
         <a href="word-ladder.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="words">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/wordladder.png" alt="Word Ladder" class="w-full h-full object-cover">
@@ -336,7 +331,6 @@
           </div>
         </a>
 
-        <!-- CASUAL / TRIVIA -->
         <a href="euro-history-trivia.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="casual">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/euro-history.png" alt="Euro History" class="w-full h-full object-cover">
@@ -353,7 +347,6 @@
           </div>
         </a>
 
-        <!-- DAILY / WORDS -->
         <a href="mini-crossword.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="daily,words">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/minicrossword.png" alt="Mini Crossword" class="w-full h-full object-cover">
@@ -370,7 +363,6 @@
           </div>
         </a>
 
-        <!-- LOGIC -->
         <a href="nexus.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="logic">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/connections.png" alt="Connections" class="w-full h-full object-cover">
@@ -387,7 +379,6 @@
           </div>
         </a>
 
-        <!-- LOGIC -->
         <a href="cryptex.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="logic">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/cryptex.png" alt="Cryptex" class="w-full h-full object-cover">
@@ -404,7 +395,6 @@
           </div>
         </a>
 
-        <!-- WORDS / SOCIAL -->
         <a href="minigames.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="words,casual">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/pictionary.png" alt="Pictionary" class="w-full h-full object-cover">
@@ -421,7 +411,6 @@
           </div>
         </a>
 
-        <!-- WORDS -->
         <a href="hangman.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="words">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/hangman.png" alt="Hangman" class="w-full h-full object-cover">
@@ -438,7 +427,6 @@
           </div>
         </a>
 
-        <!-- LOGIC / SPEED -->
         <a href="odd-one-out.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="logic,speed">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/oddoneout.png" alt="Odd One Out" class="w-full h-full object-cover">
@@ -455,7 +443,6 @@
           </div>
         </a>
 
-        <!-- LOGIC -->
         <a href="two-truths-trap.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="logic">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/twotruths.png" alt="Two Truths" class="w-full h-full object-cover">
@@ -472,7 +459,6 @@
           </div>
         </a>
 
-        <!-- DAILY / LOGIC -->
         <a href="which-came-first.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="daily,logic">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/whichcamefirst.png" alt="Which Came First" class="w-full h-full object-cover">
@@ -489,7 +475,6 @@
           </div>
         </a>
 
-        <!-- LOGIC -->
         <a href="tango-logic.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="logic">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/tango.png" alt="Tango" class="w-full h-full object-cover">
@@ -506,7 +491,6 @@
           </div>
         </a>
 
-        <!-- CASUAL / LOGIC -->
         <a href="orbital-game.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="casual,logic">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/map_roads.png" alt="Geography Data" class="w-full h-full object-cover">
@@ -523,13 +507,12 @@
           </div>
         </a>
 
-        <!-- SPEED -->
         <a href="color-mixer.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="speed">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/color-mixer.png" alt="Color Mixer" class="w-full h-full object-cover">
-            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-indigo-400 backdrop-blur-md">Artistic</span></div>
+            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-red-400 backdrop-blur-md">Artistic</span></div>
             <div class="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div class="bg-indigo-400 text-white font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(129,140,248,0.5)]">Play Now</div>
+              <div class="bg-red-400 text-white font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(248,113,113,0.5)]">Play Now</div>
             </div>
           </div>
           <div class="p-4 flex-1 flex flex-col justify-between">
@@ -540,13 +523,12 @@
           </div>
         </a>
 
-        <!-- WORDS -->
         <a href="crossword.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="words">
           <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl">
             <img src="assets/crossword.png" alt="Crossworlds" class="w-full h-full object-cover">
-            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-purple-400 backdrop-blur-md">General</span></div>
+            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-yellow-400 backdrop-blur-md">General</span></div>
             <div class="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div class="bg-purple-500 text-white font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(168,85,247,0.5)]">Play Now</div>
+              <div class="bg-yellow-400 text-black font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(250,204,21,0.5)]">Play Now</div>
             </div>
           </div>
           <div class="p-4 flex-1 flex flex-col justify-between">
@@ -557,7 +539,371 @@
           </div>
         </a>
 
+        <!-- ============================================== -->
+        <!-- 4 UNIVERSAL NEW GAMES INJECTED INTO GRID       -->
+        <!-- ============================================== -->
+        
+        <a href="quiz-superhero-visual.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="casual">
+          <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl bg-slate-800">
+            <img src="assets/superhero-screenshot.png" alt="Superhero Screenshot" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-casual.jpg'">
+            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-accentPurple backdrop-blur-md">Cinema</span></div>
+            <div class="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div class="bg-accentPurple text-white font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(192,132,252,0.5)]">Play Now</div>
+            </div>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="text-white font-arcade text-xl uppercase tracking-wide">Superhero Screenshot</h3>
+              <p class="text-slate-400 text-xs mt-1.5 line-clamp-2">Name the comic book movie from a single visual frame.</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="bollywood-frame-guesser.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="casual">
+          <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl bg-slate-800">
+            <img src="assets/bollywood.png" alt="Bollywood" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-india.jpg'">
+            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-accentPurple backdrop-blur-md">Cinema</span></div>
+            <div class="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div class="bg-accentPurple text-white font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(192,132,252,0.5)]">Play Now</div>
+            </div>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="text-white font-arcade text-xl uppercase tracking-wide">Badly Explained Bollywood</h3>
+              <p class="text-slate-400 text-xs mt-1.5 line-clamp-2">Guess the blockbuster from an incredibly poor plot summary.</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="quiz-xmas-persona.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="casual">
+          <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl bg-slate-800">
+            <img src="assets/xmas-movie.png" alt="Xmas Movie" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-xmas.jpg'">
+            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-accentPurple backdrop-blur-md">Holiday</span></div>
+            <div class="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div class="bg-accentPurple text-white font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(192,132,252,0.5)]">Play Now</div>
+            </div>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="text-white font-arcade text-xl uppercase tracking-wide">Christmas Movie Guesser</h3>
+              <p class="text-slate-400 text-xs mt-1.5 line-clamp-2">Match the festive frame to the holiday classic.</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="quiz-dc-vs-marvel.html" class="game-item block arcade-card glass-panel rounded-2xl flex flex-col group relative" data-category="casual">
+          <div class="card-img-wrapper relative aspect-video overflow-hidden rounded-t-2xl bg-slate-800">
+            <img src="assets/marvel-dc.png" alt="DC vs Marvel" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-gotham.jpg'">
+            <div class="absolute top-3 left-3 z-10"><span class="px-2.5 py-1 bg-black/60 border border-white/20 rounded-md text-[9px] font-bold tracking-widest uppercase text-accentPurple backdrop-blur-md">Cinema</span></div>
+            <div class="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div class="bg-accentPurple text-white font-bold uppercase tracking-widest text-xs px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(192,132,252,0.5)]">Play Now</div>
+            </div>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="text-white font-arcade text-xl uppercase tracking-wide">Team DC vs. Marvel</h3>
+              <p class="text-slate-400 text-xs mt-1.5 line-clamp-2">Rate 10 movies and we reveal your true comic allegiance.</p>
+            </div>
+          </div>
+        </a>
+
       </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- NEW SECTION: REGIONAL & THEMED HUBS            -->
+    <!-- ============================================== -->
+    <section class="max-w-[1400px] mx-auto px-4 pb-20 border-t border-white/10 pt-12">
+        <div class="text-center mb-10">
+            <h2 class="font-arcade text-3xl md:text-4xl text-white uppercase tracking-wider">Regional & Themed Hubs</h2>
+            <p class="text-slate-400 font-sans text-sm mt-2">Explore specialized collections of games and trivia.</p>
+        </div> 
+
+        <!-- 🇬🇧 THE UK HUB -->
+        <div class="mb-10">
+            <h3 class="text-white font-bold uppercase tracking-widest mb-4 flex items-center gap-2"><span class="text-xl">🇬🇧</span> The UK & Commonwealth Hub</h3>
+            <div class="hub-scroll-container">
+                <a href="premier-league-legends.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/pl-legends.png" alt="Premier League Puzzle" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-uk.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Premier League Legends</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Decrypt the surnames of legendary English football icons.</p>
+                    </div>
+                </a>
+                <a href="british-slang-word-ladder.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/uk-slang.png" alt="UK Slang" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-uk.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">British Slang Ladder</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Build UK slang words from standard definitions.</p>
+                    </div>
+                </a>
+                <a href="uk-royalty-red-flag-duel.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/uk-royalty.png" alt="UK Royalty" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-uk.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Royalty Red Flag</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Judge historical madness. Is it a fact or fake gossip?</p>
+                    </div>
+                </a>
+                <a href="british-comedy-quote-guesser.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/brit-comedy.png" alt="British Comedy" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-uk.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">British Comedy Quotes</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Buzzer game testing your UK sitcom knowledge.</p>
+                    </div>
+                </a>
+                <a href="uk-geography-split-second.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/uk-geo.png" alt="UK Geography" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-uk.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">UK Geography Split-Second</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Pinpoint British landmarks before the radar clock expires.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 🇮🇳 THE INDIA HUB -->
+        <div class="mb-10">
+            <h3 class="text-white font-bold uppercase tracking-widest mb-4 flex items-center gap-2"><span class="text-xl">🇮🇳</span> The India Hub</h3>
+            <div class="hub-scroll-container">
+                <a href="cricket-split-second.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/ind-cricket.png" alt="India Cricket" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-india.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">IND Cricket Split-Second</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Identify historic Indian cricket moments in under 10 seconds.</p>
+                    </div>
+                </a>
+                <a href="hinglish-word-ladder.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/hinglish.png" alt="Hinglish Ladder" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-india.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Hinglish Word Ladder</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Master the fusion language of the Indian subcontinent.</p>
+                    </div>
+                </a>
+                <a href="indian-epics-cryptex.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/epics-cryptex.png" alt="Epics Cryptex" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-india.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">The Epics Cryptex</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Crack the code of Indian mythology and history.</p>
+                    </div>
+                </a>
+                <a href="desi-red-flag-duel.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/desi-redflag.png" alt="Desi Red Flag" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-india.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">"Desi" Red Flag Duel</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Judge extreme Indian dating and cultural scenarios.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 🇵🇰 THE PAKISTAN HUB -->
+        <div class="mb-10">
+            <h3 class="text-white font-bold uppercase tracking-widest mb-4 flex items-center gap-2"><span class="text-xl">🇵🇰</span> The Pakistan Hub</h3>
+            <div class="hub-scroll-container">
+                <a href="pakistani-drama-guesser.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/pak-drama.png" alt="Pak Drama" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-pak.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Pakistani Drama Guesser</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Match the iconic dialogue to the legendary soap opera.</p>
+                    </div>
+                </a>
+                <a href="pakistan-cricket-split-second.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/pak-cricket.png" alt="Pak Cricket" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-pak.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">PAK Cricket Split-Second</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Identify historic Pakistani cricket moments against the clock.</p>
+                    </div>
+                </a>
+                <a href="urdu-slang-word-ladder.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/urdu.png" alt="Urdu Slang" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-pak.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Urdu Slang Ladder</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Climb the linguistic ladder of modern Pakistani street culture.</p>
+                    </div>
+                </a>
+                <a href="indus-valley-cryptex.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/indus-cryptex.png" alt="Indus Cryptex" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-pak.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Indus Valley Cryptex</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Decrypt the historical secrets of Pakistan's heritage.</p>
+                    </div>
+                </a>
+                <a href="rishta-auntie-red-flag.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/rishta.png" alt="Rishta Auntie" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-pak.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Rishta Auntie Red Flag</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Survive the ultimate Pakistani matchmaking judgment game.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 🦇 GOTHAM CITY HUB -->
+        <div class="mb-10">
+            <h3 class="text-white font-bold uppercase tracking-widest mb-4 flex items-center gap-2"><span class="text-xl">🦇</span> Gotham City & Superhero Hub</h3>
+            <div class="hub-scroll-container">
+                <a href="quiz-batman-trivia.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/batman.png" alt="Batman Trivia" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-gotham.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Impossible Batman Trivia</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Only 1 in 50 fans get 100%. Are you the Dark Knight?</p>
+                    </div>
+                </a>
+                <a href="quiz-superman-legacy.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/superman.png" alt="Superman" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-gotham.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Ultimate Superman Legacy</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Prepare for the new era. Test your Kryptonian lore.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ⚽ REAL MADRID HUB -->
+        <div class="mb-10">
+            <h3 class="text-white font-bold uppercase tracking-widest mb-4 flex items-center gap-2"><span class="text-xl">⚽</span> Kings of Europe: Real Madrid Hub</h3>
+            <div class="hub-scroll-container">
+                <a href="real-madrid-quiz.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/rm-quiz.png" alt="Real Madrid" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-rm.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Ultimate Real Madrid</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">The definitive general knowledge test for Madridistas.</p>
+                    </div>
+                </a>
+                <a href="real-madrid-history.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/rm-history.png" alt="RM History" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-rm.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">RM History Challenge</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Test your knowledge of the Kings of Europe's heritage.</p>
+                    </div>
+                </a>
+                <a href="Sacred-Ground.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/rm-future.png" alt="Bernabeu" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-rm.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Sacred Ground</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Santiago Bernabéu geography and architecture trivia.</p>
+                    </div>
+                </a>
+                <a href="real-madrid-kits.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/rm-kits.png" alt="Kits" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-rm.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Iconic Kits & Eras</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Visual memory test spanning decades of iconic jerseys.</p>
+                    </div>
+                </a>
+                <a href="real-player-analysis.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/rm-legends.png" alt="Legends" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-rm.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Player Analysis</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Deep dive into the stats and profiles of legendary Galácticos.</p>
+                    </div>
+                </a>
+                <a href="real-timeline.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/rm-timeline.png" alt="Timeline" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-rm.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">The Real Madrid Timeline</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Chronological sequencing puzzle for hardcore historians.</p>
+                    </div>
+                </a>
+                <a href="real-madrid-future.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/rm-future.png" alt="Future" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-rm.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Future of Los Blancos</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Test your knowledge of the current squad and academy prospects.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 🎄 THE HOLIDAY HUB -->
+        <div class="mb-10">
+            <h3 class="text-white font-bold uppercase tracking-widest mb-4 flex items-center gap-2"><span class="text-xl">🎄</span> The Holiday & Christmas Hub</h3>
+            <div class="hub-scroll-container">
+                <a href="quiz-xmas-persona.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/naughty-nice.png" alt="Naughty Nice" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-xmas.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Naughty or Nice Duel</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Judge winter behaviors. Are they getting coal this year?</p>
+                    </div>
+                </a>
+                <a href="Splitsecond.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/holiday-split.png" alt="Holiday Split" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-xmas.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Holiday Split-Second</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Winter pop culture speed test. Act fast.</p>
+                    </div>
+                </a>
+                <a href="quiz-xmas-quotes.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/festive-ladder.png" alt="Festive Quotes" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-xmas.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Festive Quotes</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Decode global holiday slang and traditions.</p>
+                    </div>
+                </a>
+                <a href="quiz-xmas-songs.html" class="block arcade-card glass-panel rounded-2xl flex flex-col group relative">
+                    <div class="card-img-wrapper relative h-32 overflow-hidden rounded-t-2xl bg-slate-800">
+                        <img src="assets/carol-cryptex.png" alt="Carol Cryptex" class="w-full h-full object-cover" onerror="this.src='assets/placeholder-xmas.jpg'">
+                    </div>
+                    <div class="p-4 flex-1">
+                        <h4 class="text-white font-arcade text-lg uppercase">Carol Lyric Cryptex</h4>
+                        <p class="text-slate-400 text-[10px] mt-1 line-clamp-2">Crack the cipher using missing Christmas song lyrics.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
     </section>
 
     <!-- Custom JavaScript for Filtering -->
@@ -568,9 +914,7 @@
 
         filterBtns.forEach(btn => {
           btn.addEventListener('click', () => {
-            // Remove active state from all
             filterBtns.forEach(b => b.classList.remove('active', 'text-white'));
-            // Add active state to clicked
             btn.classList.add('active', 'text-white');
 
             const filterValue = btn.getAttribute('data-filter');
@@ -579,14 +923,12 @@
               const categories = item.getAttribute('data-category').split(',');
               
               if (filterValue === 'all' || categories.includes(filterValue)) {
-                item.style.display = 'flex'; // maintain flex layout
-                // small delay for smooth re-flow before fading in
+                item.style.display = 'flex';
                 setTimeout(() => {
                   item.classList.remove('game-hidden');
                 }, 10);
               } else {
                 item.classList.add('game-hidden');
-                // Wait for animation to finish before removing from layout
                 setTimeout(() => {
                   if(item.classList.contains('game-hidden')) {
                     item.style.display = 'none';
@@ -600,7 +942,7 @@
     </script>
 
     <!-- SEO + VALUE SECTION -->
-    <section class="max-w-[1400px] mx-auto px-4 pb-20 mt-10">
+    <section class="max-w-[1400px] mx-auto px-4 pb-20 mt-10 border-t border-white/10 pt-12">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="glass-panel rounded-3xl p-7 md:p-10 border border-white/10 lg:col-span-8">
           <div class="font-arcade text-[11px] uppercase tracking-widest text-slate-400 mb-3">Why this arcade works</div>
@@ -712,15 +1054,9 @@
         </div>
     </div>
   </div>
-<!-- ==========================================
-     QUIZREALM PREMIUM SEO INTERNAL LINKING HUB
-     ========================================== -->
+
 <section class="max-w-[1400px] mx-auto px-4 py-16 space-y-12 border-t border-white/5 mt-10 font-sans">
     
-    <!-- 
-      BOX 1: THE SPLIT-PANEL (Focus: Logic & Cognitive Training) 
-      SEO Value: Ranks for "logic puzzles", "brain training", "browser games"
-    -->
     <div class="flex flex-col md:flex-row bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
         <div class="md:w-2/5 bg-gradient-to-br from-brand-blue/20 to-slate-900 p-8 md:p-10 flex flex-col justify-center relative overflow-hidden">
             <i class="fas fa-brain absolute -bottom-10 -right-10 text-9xl text-brand-blue/10"></i>
@@ -733,51 +1069,47 @@
             </p>
         </div>
         <div class="md:w-3/5 p-6 md:p-10 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-900/50">
-            <a href="/fusion-core.html" class="group p-4 rounded-2xl border border-slate-800 hover:bg-slate-800/50 hover:border-slate-600 transition-all">
+            <a href="fusion-core.html" class="group p-4 rounded-2xl border border-slate-800 hover:bg-slate-800/50 hover:border-slate-600 transition-all">
                 <h3 class="text-white font-bold text-sm mb-1 group-hover:text-brand-blue transition-colors">Logic League Setup</h3>
                 <p class="text-xs text-slate-500 line-clamp-2">Deduce hidden variables using strict binary constraints and logic grids.</p>
             </a>
-            <a href="/cryptex.html" class="group p-4 rounded-2xl border border-slate-800 hover:bg-slate-800/50 hover:border-slate-600 transition-all">
+            <a href="cryptex.html" class="group p-4 rounded-2xl border border-slate-800 hover:bg-slate-800/50 hover:border-slate-600 transition-all">
                 <h3 class="text-white font-bold text-sm mb-1 group-hover:text-brand-blue transition-colors">Cryptex Decryption</h3>
                 <p class="text-xs text-slate-500 line-clamp-2">A masterclass in vocabulary and deduction. Crack the 5-letter code.</p>
             </a>
-            <a href="/tango-logic.html" class="group p-4 rounded-2xl border border-slate-800 hover:bg-slate-800/50 hover:border-slate-600 transition-all">
+            <a href="tango-logic.html" class="group p-4 rounded-2xl border border-slate-800 hover:bg-slate-800/50 hover:border-slate-600 transition-all">
                 <h3 class="text-white font-bold text-sm mb-1 group-hover:text-brand-blue transition-colors">Tango Math Matrix</h3>
                 <p class="text-xs text-slate-500 line-clamp-2">Balance the sun and moon symbols in this relaxing mathematical matrix.</p>
             </a>
-            <a href="/nexus.html" class="group p-4 rounded-2xl border border-slate-800 hover:bg-slate-800/50 hover:border-slate-600 transition-all">
+            <a href="nexus.html" class="group p-4 rounded-2xl border border-slate-800 hover:bg-slate-800/50 hover:border-slate-600 transition-all">
                 <h3 class="text-white font-bold text-sm mb-1 group-hover:text-brand-blue transition-colors">Connections & Lateral</h3>
                 <p class="text-xs text-slate-500 line-clamp-2">Group 16 seemingly random items into 4 distinct, hidden categories.</p>
             </a>
         </div>
     </div>
 
-    <!-- 
-      BOX 2: THE DATA GRID (Focus: Pop Culture & Fandom Hubs)
-      SEO Value: Ranks for "Marvel trivia", "DC quizzes", "Rick and Morty lore"
-    -->
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-10 shadow-xl">
         <div class="text-center max-w-2xl mx-auto mb-8">
             <h2 class="text-2xl font-extrabold text-white mb-2">Deep Lore & Fandom Archives</h2>
             <p class="text-sm text-slate-400">Skip the generic general knowledge. Dive into specialized trivia hubs dedicated to the most expansive cinematic universes, comic book genealogies, and sci-fi dimensions.</p>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <a href="/marvel.html" class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-950 border border-slate-800 hover:-translate-y-1 hover:border-red-500/50 transition-all group">
+            <a href="marvel.html" class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-950 border border-slate-800 hover:-translate-y-1 hover:border-red-500/50 transition-all group">
                 <div class="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fas fa-spider text-xl"></i></div>
                 <h3 class="text-white font-bold text-sm mb-1">Marvel Multiverse</h3>
                 <span class="text-[10px] text-slate-500 uppercase tracking-widest">MCU & Comics</span>
             </a>
-            <a href="/hero-hub.html" class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-950 border border-slate-800 hover:-translate-y-1 hover:border-blue-500/50 transition-all group">
+            <a href="hero-hub.html" class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-950 border border-slate-800 hover:-translate-y-1 hover:border-blue-500/50 transition-all group">
                 <div class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fas fa-bat text-xl"></i></div>
                 <h3 class="text-white font-bold text-sm mb-1">DC Archives</h3>
                 <span class="text-[10px] text-slate-500 uppercase tracking-widest">Gotham Trivia</span>
             </a>
-            <a href="/rickandmortyhub.html" class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-950 border border-slate-800 hover:-translate-y-1 hover:border-green-500/50 transition-all group">
+            <a href="rickandmortyhub.html" class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-950 border border-slate-800 hover:-translate-y-1 hover:border-green-500/50 transition-all group">
                 <div class="w-12 h-12 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fas fa-flask text-xl"></i></div>
                 <h3 class="text-white font-bold text-sm mb-1">Rick & Morty</h3>
                 <span class="text-[10px] text-slate-500 uppercase tracking-widest">Sci-Fi Lore</span>
             </a>
-            <a href="/quiz-superman-legacy.html" class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-950 border border-slate-800 hover:-translate-y-1 hover:border-yellow-500/50 transition-all group">
+            <a href="quiz-superman-legacy.html" class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-950 border border-slate-800 hover:-translate-y-1 hover:border-yellow-500/50 transition-all group">
                 <div class="w-12 h-12 rounded-full bg-yellow-500/10 text-yellow-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fas fa-meteor text-xl"></i></div>
                 <h3 class="text-white font-bold text-sm mb-1">Superman Legacy</h3>
                 <span class="text-[10px] text-slate-500 uppercase tracking-widest">Krypton History</span>
@@ -785,10 +1117,6 @@
         </div>
     </div>
 
-    <!-- 
-      BOX 3: THE HORIZONTAL BANNER (Focus: Personality Tests & Psychology)
-      SEO Value: Ranks for "personality quizzes", "which character are you", "psych evals"
-    -->
     <div class="bg-gradient-to-r from-indigo-900 to-purple-900 rounded-3xl p-8 md:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 border border-purple-500/30">
         <div class="md:w-1/2 text-left">
             <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-2">The Identity Lab</h2>
@@ -796,20 +1124,20 @@
                 Move beyond right and wrong answers. Our personality funnels and psychological scanners use behavioral choice algorithms to match you with fictional archetypes and analyze your hidden traits.
             </p>
             <div class="flex flex-wrap gap-2">
-                <a href="/AVATAR_TRIBE.html" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-xs font-bold text-white transition-colors">Na'vi Tribe Match</a>
-                <a href="/friendsperson.html" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-xs font-bold text-white transition-colors">Sitcom Persona</a>
-                <a href="/toxic-analysis.html" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-xs font-bold text-white transition-colors">Red Flag Scanner</a>
+                <a href="AVATAR_TRIBE.html" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-xs font-bold text-white transition-colors">Na'vi Tribe Match</a>
+                <a href="friendsperson.html" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-xs font-bold text-white transition-colors">Sitcom Persona</a>
+                <a href="toxic-analysis.html" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-xs font-bold text-white transition-colors">Red Flag Scanner</a>
             </div>
         </div>
         <div class="md:w-1/2 grid grid-cols-1 gap-3 w-full">
-            <a href="/mind-blowers.html" class="flex items-center gap-4 bg-black/20 hover:bg-black/40 p-4 rounded-2xl border border-white/10 transition-colors">
+            <a href="mind-blowers.html" class="flex items-center gap-4 bg-black/20 hover:bg-black/40 p-4 rounded-2xl border border-white/10 transition-colors">
                 <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-300"><i class="fas fa-head-side-virus"></i></div>
                 <div>
                     <h4 class="text-white font-bold text-sm">Mind Blowers & Dilemmas</h4>
                     <p class="text-xs text-indigo-300">Test your moral alignment with impossible choices.</p>
                 </div>
             </a>
-            <a href="/cronenberg-match.html" class="flex items-center gap-4 bg-black/20 hover:bg-black/40 p-4 rounded-2xl border border-white/10 transition-colors">
+            <a href="cronenberg-match.html" class="flex items-center gap-4 bg-black/20 hover:bg-black/40 p-4 rounded-2xl border border-white/10 transition-colors">
                 <div class="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-300"><i class="fas fa-dna"></i></div>
                 <div>
                     <h4 class="text-white font-bold text-sm">Genetic Sci-Fi Match</h4>
@@ -819,10 +1147,6 @@
         </div>
     </div>
 
-    <!-- 
-      BOX 4: THE WIDE CARDS (Focus: Speed & Arcade Gameplay)
-      SEO Value: Ranks for "fast mini games", "speed trivia", "quick web games"
-    -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between">
             <div>
@@ -833,15 +1157,15 @@
                 <p class="text-sm text-slate-400 mb-6">Built for short, adrenaline-pumping sessions. These mini-games test your reaction times, quick recall, and ability to perform under a ticking clock.</p>
             </div>
             <div class="space-y-3">
-                <a href="/rapid.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
+                <a href="rapid.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
                     <span class="text-sm font-semibold text-white">Rapid Fire Trivia</span>
                     <i class="fas fa-arrow-right text-slate-600 text-xs"></i>
                 </a>
-                <a href="/odd-one-out.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
+                <a href="odd-one-out.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
                     <span class="text-sm font-semibold text-white">Odd One Out Visuals</span>
                     <i class="fas fa-arrow-right text-slate-600 text-xs"></i>
                 </a>
-                <a href="/mini-crossword.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
+                <a href="mini-crossword.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
                     <span class="text-sm font-semibold text-white">Daily 5x5 Crossword</span>
                     <i class="fas fa-arrow-right text-slate-600 text-xs"></i>
                 </a>
@@ -857,15 +1181,15 @@
                 <p class="text-sm text-slate-400 mb-6">Test your grasp of history. Order monumental events correctly, deduce bizarre facts, and figure out exactly what happened when.</p>
             </div>
             <div class="space-y-3">
-                <a href="/timeline-history.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
+                <a href="timeline-history.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
                     <span class="text-sm font-semibold text-white">The History Timeline</span>
                     <i class="fas fa-arrow-right text-slate-600 text-xs"></i>
                 </a>
-                <a href="/euro-history-trivia.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
+                <a href="euro-history-trivia.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
                     <span class="text-sm font-semibold text-white">Euro History Deduction</span>
                     <i class="fas fa-arrow-right text-slate-600 text-xs"></i>
                 </a>
-                <a href="/which-came-first.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
+                <a href="which-came-first.html" class="flex justify-between items-center p-3 rounded-xl hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
                     <span class="text-sm font-semibold text-white">Which Came First?</span>
                     <i class="fas fa-arrow-right text-slate-600 text-xs"></i>
                 </a>
@@ -873,10 +1197,6 @@
         </div>
     </div>
 
-    <!-- 
-      BOX 5: THE APP-STORE SHOWCASE (Focus: Premium Visual/Audio Games)
-      SEO Value: Ranks for "relaxing browser games", "aesthetic web puzzles", "analog synth game"
-    -->
     <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
         <div class="p-6 md:p-8 border-b border-slate-800 flex justify-between items-center">
             <div>
@@ -892,7 +1212,7 @@
                 </div>
                 <h3 class="text-white font-bold text-sm mb-2">Resonance</h3>
                 <p class="text-xs text-slate-500 mb-4 flex-grow">An analog synthesizer simulator. Match audio frequencies and waveforms perfectly.</p>
-                <a href="/resonance-puzzle.html" class="text-xs font-bold text-cyan-400 hover:text-cyan-300">Play Now &rarr;</a>
+                <a href="resonance-puzzle.html" class="text-xs font-bold text-cyan-400 hover:text-cyan-300">Play Now &rarr;</a>
             </div>
 
             <div class="p-6 hover:bg-slate-800/30 transition-colors flex flex-col items-start">
@@ -901,7 +1221,7 @@
                 </div>
                 <h3 class="text-white font-bold text-sm mb-2">The Knot Garden</h3>
                 <p class="text-xs text-slate-500 mb-4 flex-grow">A relaxing, zen planar graph puzzle. Uncross the silk threads to achieve harmony.</p>
-                <a href="/knot-garden.html" class="text-xs font-bold text-emerald-400 hover:text-emerald-300">Play Now &rarr;</a>
+                <a href="knot-garden.html" class="text-xs font-bold text-emerald-400 hover:text-emerald-300">Play Now &rarr;</a>
             </div>
 
             <div class="p-6 hover:bg-slate-800/30 transition-colors flex flex-col items-start">
@@ -910,7 +1230,7 @@
                 </div>
                 <h3 class="text-white font-bold text-sm mb-2">Lumina Valley</h3>
                 <p class="text-xs text-slate-500 mb-4 flex-grow">Rotate beautiful bronze mirrors to guide morning sunlight into dormant lotus flowers.</p>
-                <a href="/lumina-valley.html" class="text-xs font-bold text-amber-400 hover:text-amber-300">Play Now &rarr;</a>
+                <a href="lumina-valley.html" class="text-xs font-bold text-amber-400 hover:text-amber-300">Play Now &rarr;</a>
             </div>
 
             <div class="p-6 hover:bg-slate-800/30 transition-colors flex flex-col items-start">
@@ -919,7 +1239,7 @@
                 </div>
                 <h3 class="text-white font-bold text-sm mb-2">Chroma Shift</h3>
                 <p class="text-xs text-slate-500 mb-4 flex-grow">A neon cyber-logic puzzle. Trigger spatial color waves to synchronize the grid.</p>
-                <a href="/chroma-shift.html" class="text-xs font-bold text-fuchsia-400 hover:text-fuchsia-300">Play Now &rarr;</a>
+                <a href="chroma-shift.html" class="text-xs font-bold text-fuchsia-400 hover:text-fuchsia-300">Play Now &rarr;</a>
             </div>
 
         </div>

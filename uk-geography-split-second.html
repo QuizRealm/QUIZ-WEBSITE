@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-ML3F7KLZ');</script>
+    
+    <!-- Google AdSense Verification -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6205081520399538" crossorigin="anonymous"></script>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script src="components.js" defer></script>
+    <script type="module" src="assets/ux-core.js"></script> 
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- ADVANCED SEO METADATA -->
+    <title>UK Geography Split-Second | Speed Map Trivia | QuizRealm</title>
+    <meta name="description" content="Play UK Geography Split-Second on QuizRealm. Test your knowledge of British landmarks, counties, and regions against a rapid-fire radar clock." />
+    <meta name="keywords" content="UK geography quiz, British landmarks trivia, speed map game, UK counties quiz, geography trivia online, QuizRealm Arcade" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.thequizrealm.com/uk-geography-split-second.html" />
+
+    <!-- STRUCTURED DATA FOR GOOGLE INDEXING -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "UK Geography Split-Second",
+      "description": "A fast-paced geography trivia game where players locate UK landmarks and counties against a draining timer.",
+      "genre": ["Educational", "Trivia", "Geography"],
+      "playMode": "SinglePlayer",
+      "applicationCategory": "GameApplication"
+    }
+    </script>
+
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
+                    },
+                    colors: {
+                        radar: {
+                            bg: '#020617', // Very dark slate
+                            panel: '#0f172a', // Map panel
+                            green: '#10b981', // Radar bright green
+                            darkgreen: '#064e3b', // Radar dark
+                            cyan: '#06b6d4', // Map grid cyan
+                            alert: '#f59e0b' // Warning amber
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'slide-in': 'slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'radar-sweep': 'sweep 4s linear infinite',
+                        'pulse-fast': 'pulseFast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideIn: {
+                            '0%': { opacity: '0', transform: 'translateY(30px) scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
+                        },
+                        sweep: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        },
+                        pulseFast: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.5' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* High-Tech Map Grid Background */
+        .map-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        /* Radar Sweep Effect */
+        .radar-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 150vw;
+            height: 150vw;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 70%, rgba(16, 185, 129, 0.1) 100%);
+            animation: sweep 8s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .radar-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 0 40px rgba(6, 78, 59, 0.5), inset 0 0 20px rgba(16, 185, 129, 0.05);
+            border-radius: 1.5rem;
+        }
+
+        /* 
+         * CUSTOM BUTTON SHAPE: Octagons 
+         * Completely distinct from previous games 
+         */
+        .octagon-btn {
+            clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px);
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(6, 182, 212, 0.3);
+            color: #e2e8f0;
+            font-weight: 700;
+            padding: 18px 16px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .octagon-btn:hover:not(:disabled) {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: #06b6d4;
+            color: #ffffff;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .octagon-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .octagon-btn.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #10b981;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+        }
+
+        .octagon-btn.wrong {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        /* Timer Bar */
+        .timer-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        .timer-fill {
+            height: 100%;
+            background: #10b981;
+            width: 100%;
+            transition: width 0.1s linear, background-color 0.3s;
+        }
+        .timer-fill.warning { background: #f59e0b; }
+        .timer-fill.danger { background: #ef4444; }
+
+        /* SEO Article Styling */
+        .seo-content h2 { font-size: 1.75rem; font-weight: 800; color: #fff; margin-top: 2.5rem; margin-bottom: 1rem; }
+        .seo-content h3 { font-size: 1.25rem; font-weight: 700; color: #10b981; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .seo-content p { color: #94a3b8; font-size: 1.05rem; margin-bottom: 1.25rem; line-height: 1.8; }
+        .seo-content ul { list-style-type: disc; padding-left: 1.5rem; color: #94a3b8; margin-bottom: 1.25rem; }
+        .seo-content li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ML3F7KLZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <quiz-header></quiz-header>
+
+    <!-- Background Elements -->
+    <div class="map-bg"></div>
+    <div class="radar-container"></div>
+
+    <!-- Top Navigation -->
+    <header class="w-full max-w-3xl mx-auto px-6 pt-8 flex justify-between items-center z-20 relative">
+        <div class="flex items-center gap-4">
+            <a href="uk-trivia-games-hub.html" class="w-10 h-10 rounded-full bg-radar-panel border border-radar-green/30 flex items-center justify-center hover:bg-radar-green/20 transition-all text-radar-green shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <span class="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-radar-cyan block">UK Hub Map System</span>
+                <h1 class="text-sm font-extrabold text-white uppercase tracking-wider">Geography Split-Second</h1>
+            </div>
+        </div>
+        <button onclick="toggleAudio()" id="audio-btn" class="w-10 h-10 rounded-full bg-radar-panel border border-radar-cyan/30 flex items-center justify-center hover:bg-radar-cyan/20 transition-all text-radar-cyan shadow-[0_0_15px_rgba(6,182,212,0.2)]" title="Toggle Sound">
+            <i class="fas fa-volume-high text-sm"></i>
+        </button>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="w-full max-w-2xl mx-auto px-4 flex-grow flex flex-col items-center justify-center py-8 z-10 relative">
+
+        <!-- ========================================== -->
+        <!-- SCREEN 1: THE BRIEFING (START PAGE)        -->
+        <!-- ========================================== -->
+        <div id="screen-start" class="w-full radar-card p-8 md:p-12 text-center animate-slide-in">
+            <div class="inline-block p-5 bg-radar-darkgreen/40 border-2 border-radar-green rounded-full mb-6 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
+                <i class="fas fa-location-crosshairs text-4xl text-radar-green animate-pulse-fast"></i>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">SPLIT-SECOND</h2>
+            <p class="text-slate-400 mb-8 max-w-md mx-auto text-base leading-relaxed">
+                A rapid-fire UK geographical targeting system. Identify the correct county, country, or region for the given landmark before the radar clock expires.
+            </p>
+
+            <div class="bg-black/40 border border-white/10 rounded-xl p-5 mb-8 text-left max-w-sm mx-auto">
+                <h3 class="text-radar-alert font-mono text-sm font-bold uppercase tracking-widest mb-3 flex items-center">
+                    <i class="fas fa-triangle-exclamation mr-2"></i> Mission Parameters
+                </h3>
+                <ul class="text-sm text-slate-300 space-y-2 font-medium font-mono">
+                    <li>&bull; <span class="text-white">10 Seconds</span> per coordinate.</li>
+                    <li>&bull; <span class="text-white">Timeouts</span> count as a missed target.</li>
+                    <li>&bull; <span class="text-white">20 Locations</span> to pinpoint.</li>
+                </ul>
+            </div>
+
+            <button onclick="startGame()" class="octagon-btn bg-radar-green/20 border-radar-green text-radar-green hover:bg-radar-green hover:text-white font-black text-lg uppercase tracking-widest w-full sm:w-auto sm:px-16 py-4 mx-auto">
+                Initiate Radar
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 2: ACTIVE RADAR (GAMEBOARD)         -->
+        <!-- ========================================== -->
+        <div id="screen-game" class="w-full hidden">
+            
+            <div class="flex justify-between items-end mb-4 px-2 font-mono">
+                <div>
+                    <span class="text-[10px] text-radar-cyan uppercase font-bold tracking-widest block">Waypoint</span>
+                    <span class="text-xl font-black text-white"><span id="level-display" class="text-radar-green">1</span> / 20</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-radar-cyan uppercase font-bold tracking-widest block">Score</span>
+                    <span id="score-display" class="text-xl font-black text-white">0</span>
+                </div>
+            </div>
+
+            <div class="radar-card p-6 md:p-10 w-full mb-6 relative overflow-hidden">
+                
+                <!-- Timer Bar -->
+                <div class="timer-track">
+                    <div id="timer-bar" class="timer-fill"></div>
+                </div>
+
+                <!-- Location Coordinate -->
+                <div class="text-center mb-10 relative z-10">
+                    <span class="inline-block px-4 py-1.5 bg-black/50 border border-white/10 text-slate-300 rounded-full text-[10px] font-mono font-bold uppercase tracking-[0.2em] mb-4 shadow-sm">
+                        <i class="fas fa-satellite-dish text-radar-cyan mr-1"></i> Target Acquired
+                    </span>
+                    <h3 id="location-text" class="text-3xl md:text-4xl font-black text-white leading-tight">
+                        Loading coordinate...
+                    </h3>
+                </div>
+
+                <!-- Answer Options Grid (Octagons) -->
+                <div id="options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 relative z-10">
+                    <!-- Options injected via JS -->
+                </div>
+
+                <!-- Action Bar -->
+                <div class="flex justify-between items-center pt-4 border-t border-white/10 mt-6">
+                    <button onclick="skipLevel()" class="px-6 py-2.5 bg-black/40 hover:bg-black/60 border border-white/10 text-slate-400 text-xs font-mono font-bold uppercase tracking-widest transition-colors rounded-lg flex items-center">
+                        Abort Target <i class="fas fa-forward ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 3: MISSION DEBRIEF (RESULTS)        -->
+        <!-- ========================================== -->
+        <div id="screen-results" class="w-full radar-card p-8 md:p-12 text-center hidden animate-slide-in">
+            <div class="w-20 h-20 bg-radar-cyan/20 border-2 border-radar-cyan text-radar-cyan rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-[0_0_30px_rgba(6,182,212,0.4)]">
+                <i class="fas fa-globe-americas"></i>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-white mb-2 uppercase tracking-wide">Radar Offline</h2>
+            <p id="rank-text" class="text-radar-cyan font-mono text-sm mb-8 uppercase tracking-widest">Mission Complete</p>
+
+            <div class="grid grid-cols-3 gap-3 mb-8">
+                <div class="bg-black/50 border border-white/10 rounded-xl p-4">
+                    <span class="text-[9px] uppercase font-mono font-bold text-slate-400 block mb-1">Score</span>
+                    <span id="final-score" class="text-2xl font-black text-white">0</span>
+                </div>
+                <div class="bg-black/50 border border-white/10 rounded-xl p-4">
+                    <span class="text-[9px] uppercase font-mono font-bold text-slate-400 block mb-1">Correct</span>
+                    <span class="text-2xl font-black text-radar-green"><span id="final-correct">0</span>/20</span>
+                </div>
+                <div class="bg-black/50 border border-white/10 rounded-xl p-4">
+                    <span class="text-[9px] uppercase font-mono font-bold text-slate-400 block mb-1">Missed</span>
+                    <span id="final-missed" class="text-2xl font-black text-red-400">0</span>
+                </div>
+            </div>
+
+            <div class="space-y-4 max-w-sm mx-auto">
+                <button onclick="resetGame()" class="octagon-btn bg-radar-green/20 border-radar-green text-radar-green hover:bg-radar-green hover:text-white font-black text-lg uppercase tracking-widest w-full py-4">
+                    Re-Engage Radar
+                </button>
+                <button onclick="shareScore()" class="octagon-btn bg-white/5 border-white/20 text-white hover:bg-white/10 font-bold uppercase tracking-widest text-sm w-full py-3.5 flex items-center justify-center gap-2">
+                    <i class="fas fa-share-nodes text-radar-cyan"></i> Transmit Score
+                </button>
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <a href="uk-trivia-games-hub.html" class="octagon-btn bg-black/40 border-white/10 text-slate-300 py-3 text-xs font-mono uppercase tracking-widest text-decoration-none hover:text-white">
+                        UK Hub
+                    </a>
+                    <a href="arcade.html" class="octagon-btn bg-black/40 border-white/10 text-slate-300 py-3 text-xs font-mono uppercase tracking-widest text-decoration-none hover:text-white">
+                        Arcade
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- SEO Content Section -->
+    <section class="w-full bg-[#030712] border-t border-white/5 mt-12 py-16 seo-content z-10 relative">
+        <div class="max-w-3xl mx-auto px-6">
+            <h2>UK Geography Split-Second: Speed Map Trivia</h2>
+            <p>Welcome to <strong>UK Geography Split-Second</strong> in the QuizRealm UK Hub. This high-tech ordnance survey game tests your mental map of the British Isles. From the craggy peaks of the Scottish Highlands to the coastal shores of Cornwall, how well do you know the counties and regions of the United Kingdom?</p>
+            
+            <h3>How the Radar System Works</h3>
+            <p>You must rely on quick reflexes and sharp geographical knowledge to survive the radar sweep:</p>
+            <ul>
+                <li><strong>Target Acquired:</strong> A famous UK landmark, city, or natural wonder will appear on your scanner.</li>
+                <li><strong>The 10-Second Window:</strong> You have exactly 10 seconds to select the correct constituent country, county, or region from the four octagonal waypoints.</li>
+                <li><strong>Timeout Penalty:</strong> If the green radar bar depletes before you make a choice, the target is considered missed, and you forfeit the points.</li>
+            </ul>
+
+            <h3>Explore More UK Hub & Arcade Games</h3>
+            <p>If you've mastered the map, test your logic and cultural knowledge across our other hubs:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                <a href="uk-trivia-games-hub.html" class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-radar-green transition-all text-decoration-none block">
+                    <span class="text-xs text-radar-green font-mono uppercase font-bold block mb-1">Regional Hub</span>
+                    <h4 class="text-white font-bold text-sm">UK Hub</h4>
+                </a>
+                <a href="british-comedy-quote-guesser.html" class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-pink-400 transition-all text-decoration-none block">
+                    <span class="text-xs text-pink-400 font-mono uppercase font-bold block mb-1">TV Trivia</span>
+                    <h4 class="text-white font-bold text-sm">Sitcom Quotes</h4>
+                </a>
+                <a href="premier-league-legends.html" class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-400 transition-all text-decoration-none block">
+                    <span class="text-xs text-blue-400 font-mono uppercase font-bold block mb-1">Sports</span>
+                    <h4 class="text-white font-bold text-sm">Football Legends</h4>
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+
+
+<!-- ============================================================================== -->
+<!-- 👑 GAME 3: ROYAL RED FLAGS - SEO BLOCK 1 -->
+<!-- Target Keywords: British monarchs history, royal scandals, Tudor history -->
+<!-- ============================================================================== -->
+<article class="seo-block p-8 bg-[#0f172a] border border-slate-700 rounded-3xl mb-8 text-slate-300 leading-relaxed shadow-xl">
+    <header class="mb-6 border-b border-slate-700 pb-4">
+        <span class="text-xs font-mono text-amber-500 uppercase tracking-widest">Historical Archives</span>
+        <h2 class="text-3xl font-black text-white mt-2 mb-4">The Most Scandalous Monarchs in British History</h2>
+    </header>
+    <div class="space-y-6 text-base">
+        <p>To study the history of the British monarchy is to dive into a centuries-long soap opera filled with betrayal, excess, madness, and ruthless ambition. While modern royals are bound by strict PR protocols and constitutional limitations, the kings and queens of antiquity operated with absolute, terrifying power. It is this era of unchecked authority that provides the thrilling foundation for our UK Royalty Red Flag Duel. When a single individual holds the power of life, death, and national religion, their personal "red flags" are not just relationship dealbreakers—they are matters of historical catastrophe.</p>
+
+        <p>The concept of a "red flag" implies a warning sign of toxic behavior. By modern standards, almost every medieval and early-modern monarch would be considered a walking hazard. But a select few stand out in the historical record for behavior so shocking, bizarre, or cruel that it strains belief. Distinguishing the truth of these actions from later historical propaganda is the ultimate test for any amateur historian.</p>
+
+        <h3 class="text-xl font-bold text-white mt-8 mb-3 text-amber-500">The Hall of Infamy</h3>
+        <p>Let us examine three of the most notoriously scandalous figures in the British royal lineage, whose actions frequently appear as prime subjects in historical trivia and deduction games:</p>
+
+        <div class="overflow-x-auto my-6">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-800 text-white border-b border-slate-600">
+                        <th class="p-4 font-semibold">The Monarch</th>
+                        <th class="p-4 font-semibold">The Era</th>
+                        <th class="p-4 font-semibold">The Ultimate "Red Flags"</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-700">
+                    <tr class="hover:bg-slate-800/50 transition-colors">
+                        <td class="p-4 font-bold text-white">King Henry VIII</td>
+                        <td class="p-4 text-sm">Tudor (1509–1547)</td>
+                        <td class="p-4 text-sm">The quintessential toxic partner. Obsessed with securing a male heir, he broke England away from the Catholic Church just to secure an annulment. He famously married six times, executed two of his wives (Anne Boleyn and Catherine Howard) on highly dubious charges of treason and adultery, and executed some of his closest advisors, including Thomas Cromwell and Thomas More.</td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/50 transition-colors">
+                        <td class="p-4 font-bold text-white">King George IV</td>
+                        <td class="p-4 text-sm">Hanoverian (1820–1830)</td>
+                        <td class="p-4 text-sm">A man defined by gluttony, financial ruin, and vanity. As Prince Regent, his debts were so astronomical that Parliament had to bail him out multiple times. He secretly and illegally married a Catholic commoner, Maria Fitzherbert, only to legally marry Princess Caroline of Brunswick for money—a woman he loathed so much he famously banned her from attending his own coronation.</td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/50 transition-colors">
+                        <td class="p-4 font-bold text-white">Queen Mary I</td>
+                        <td class="p-4 text-sm">Tudor (1553–1558)</td>
+                        <td class="p-4 text-sm">Driven by a fanatical desire to reverse the English Reformation and restore Catholicism, Mary enacted brutal heresy laws. Over her short five-year reign, she ordered the burning at the stake of over 280 religious dissenters, earning her the enduring and grim moniker "Bloody Mary" and ensuring her legacy would be one of terror.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>Evaluating these monarchs requires us to look beyond the simplistic labels of "good" or "evil." Henry VIII, for all his marital tyranny, was a brilliant naval strategist who established the modern Royal Navy. George IV was a patron of the arts who left behind magnificent architecture, including the Royal Pavilion in Brighton. History is rarely black and white, which makes it the perfect playground for deduction games.</p>
+        
+        <p>When you play the Royalty Red Flag Duel, you must ask yourself: Did King John actually lose the Crown Jewels in a swamp? (Yes, he did). Did Queen Victoria have a servant specifically to help her in the bathroom? (No, that was the Tudor "Groom of the Stool"). By forcing you to separate verified fact from historical fiction, we challenge not just your trivia knowledge, but your understanding of human nature at the absolute zenith of power.</p>
+    </div>
+</article>
+
+
+<!-- ============================================================================== -->
+<!-- 👑 GAME 3: ROYAL RED FLAGS - SEO BLOCK 2 -->
+<!-- Target Keywords: Historical fact vs fiction, royal gossip, propaganda history -->
+<!-- ============================================================================== -->
+<article class="seo-block p-8 bg-[#0f172a] border border-slate-700 rounded-3xl mb-8 text-slate-300 leading-relaxed shadow-xl">
+    <header class="mb-6 border-b border-slate-700 pb-4">
+        <span class="text-xs font-mono text-amber-500 uppercase tracking-widest">Historical Epistemology</span>
+        <h2 class="text-3xl font-black text-white mt-2 mb-4">Historical Fact vs. Court Gossip: How Propaganda Wrote the History Books</h2>
+    </header>
+    <div class="space-y-6 text-base">
+        <p>Winston Churchill famously noted that "History is written by the victors." But in the context of the British monarchy, history was rarely just written; it was aggressively engineered, manipulated, and propagandized. When playing a deduction game like the UK Royalty Red Flag Duel, the challenge lies not only in knowing the facts but in recognizing that many accepted "facts" were actually highly successful smear campaigns concocted centuries ago. The line between historical truth and court gossip is incredibly blurred.</p>
+
+        <p>Before the invention of the printing press, independent journalism, or the internet, the reigning monarch had near-total control over the narrative of their reign. If a king usurped the throne, his first order of business was to hire chroniclers and playwrights to legitimize his claim and demonize his predecessor. The most famous example of this is King Richard III. For centuries, Richard was depicted as a hunchbacked, malicious villain who murdered his two young nephews (the Princes in the Tower) in cold blood. This narrative was cemented into the cultural consciousness by William Shakespeare's famous play.</p>
+
+        <h3 class="text-xl font-bold text-white mt-8 mb-3 text-amber-500">The Power of the Tudor Propaganda Machine</h3>
+        <p>However, modern historians urge caution. Shakespeare was writing during the reign of Queen Elizabeth I, the granddaughter of Henry VII—the man who defeated and killed Richard III at the Battle of Bosworth. It was politically essential for the Tudor dynasty to portray Richard as an absolute monster to justify Henry VII's usurpation of the crown. While it is highly probable Richard had his nephews eliminated, the cartoonish villainy attributed to him was largely a product of state-sponsored Tudor propaganda.</p>
+
+        <p>This manipulation of truth extends to the queens of history as well. Consider Anne Boleyn, Henry VIII's second wife. When Henry tired of her and sought to marry Jane Seymour, his chief minister Thomas Cromwell orchestrated a spectacular downfall. Anne was accused of adultery, incest, and witchcraft. The charges were almost certainly fabricated to provide legal grounds for her execution. Yet, the gossip was recorded in state papers, blurring the truth for generations of historians. What was essentially a fatal political divorce was recorded as a grand, salacious scandal.</p>
+
+        <blockquote class="my-8 border-l-4 border-amber-500 pl-6 py-2 bg-slate-800/30 rounded-r-xl italic text-lg text-white/90">
+            "To decipher historical trivia is to act as a detective at a centuries-old crime scene, constantly asking: Who wrote this document, and what did they stand to gain from this narrative?"
+        </blockquote>
+
+        <p>When evaluating the outrageous claims in our trivia games, you must employ this skeptical epistemology. If a claim sounds too perfectly villainous or entirely absurd—like the rumor that King Edward II was assassinated with a red-hot iron poker—you must trace its origin. In Edward's case, the horrific story was likely invented years after his death by his political enemies to mock his rumored bisexuality and paint his demise as a twisted form of poetic justice. It is widely regarded by modern scholars as historical myth, despite being repeated as fact in countless textbooks.</p>
+        
+        <p>The thrill of historical trivia lies in this detective work. It teaches us to question our sources and recognize that "fake news" and "cancel culture" are not modern inventions; they have been the primary weapons of royal courts for a millennia. By testing your ability to spot the fake gossip amidst the real red flags, you are engaging in the true work of a historian.</p>
+    </div>
+</article>
+
+
+
+
+    <quiz-footer></quiz-footer>
+
+    <!-- Game Logic -->
+    <script>
+        // --- AUDIO SYSTEM ---
+        let audioEnabled = true;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!audioEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'ping') { // Radar start
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, now); // A5
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else if (type === 'success') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } else if (type === 'timeout') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(100, now);
+                osc.frequency.setValueAtTime(80, now + 0.3);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('audio-btn');
+            btn.innerHTML = audioEnabled ? '<i class="fas fa-volume-high text-sm"></i>' : '<i class="fas fa-volume-xmark text-sm text-slate-500"></i>';
+        }
+
+        // --- 20 UK GEOGRAPHY LEVELS ---
+        const LEVELS = [
+            { location: "White Cliffs of Dover", answer: "Kent", options: ["Kent", "Cornwall", "Sussex", "Devon"] },
+            { location: "Loch Ness", answer: "Scottish Highlands", options: ["Scottish Highlands", "Fife", "Aberdeenshire", "Lothian"] },
+            { location: "Stonehenge", answer: "Wiltshire", options: ["Wiltshire", "Somerset", "Dorset", "Hampshire"] },
+            { location: "Giant's Causeway", answer: "County Antrim", options: ["County Antrim", "County Down", "County Derry", "Tyrone"] },
+            { location: "Snowdonia (Eryri)", answer: "Gwynedd", options: ["Gwynedd", "Powys", "Clwyd", "Dyfed"] },
+            { location: "Lake Windermere", answer: "Cumbria", options: ["Cumbria", "Lancashire", "North Yorkshire", "Cheshire"] },
+            { location: "Arthur's Seat", answer: "Edinburgh", options: ["Edinburgh", "Glasgow", "Stirling", "Dundee"] },
+            { location: "The Eden Project", answer: "Cornwall", options: ["Cornwall", "Devon", "Somerset", "Dorset"] },
+            { location: "Angel of the North", answer: "Tyne and Wear", options: ["Tyne and Wear", "County Durham", "Northumberland", "Cumbria"] },
+            { location: "Cheddar Gorge", answer: "Somerset", options: ["Somerset", "Gloucestershire", "Wiltshire", "Devon"] },
+            { location: "Ben Nevis", answer: "Scottish Highlands", options: ["Scottish Highlands", "Perthshire", "Argyll", "Borders"] },
+            { location: "The Needles", answer: "Isle of Wight", options: ["Isle of Wight", "Isle of Man", "Anglesey", "Guernsey"] },
+            { location: "Hadrian's Wall", answer: "Northumberland", options: ["Northumberland", "Cumbria", "Tyne and Wear", "Borders"] },
+            { location: "The Cotswolds", answer: "Gloucestershire", options: ["Gloucestershire", "Oxfordshire", "Warwickshire", "Wiltshire"] },
+            { location: "Land's End", answer: "Cornwall", options: ["Cornwall", "Devon", "Pembrokeshire", "Somerset"] },
+            { location: "John o' Groats", answer: "Caithness", options: ["Caithness", "Sutherland", "Ross-shire", "Inverness"] },
+            { location: "Mount Snowdon", answer: "Gwynedd", options: ["Gwynedd", "Powys", "Conwy", "Ceredigion"] },
+            { location: "Durdle Door", answer: "Dorset", options: ["Dorset", "Devon", "Cornwall", "Hampshire"] },
+            { location: "The Broads", answer: "Norfolk", options: ["Norfolk", "Suffolk", "Cambridgeshire", "Essex"] },
+            { location: "Sherwood Forest", answer: "Nottinghamshire", options: ["Nottinghamshire", "Derbyshire", "Leicestershire", "Yorkshire"] }
+        ];
+
+        // Game State
+        let currentLevel = 0;
+        let score = 0;
+        let correctCount = 0;
+        let missedCount = 0;
+        let isLocked = false;
+        
+        // Timer State
+        let timerInterval;
+        let timeLeft = 100; // representing 10.0 seconds (100 ticks of 100ms)
+        const MAX_TIME = 100;
+
+        // DOM Elements
+        const screenStart = document.getElementById('screen-start');
+        const screenGame = document.getElementById('screen-game');
+        const screenResults = document.getElementById('screen-results');
+        
+        const levelDisplayEl = document.getElementById('level-display');
+        const scoreDisplayEl = document.getElementById('score-display');
+        const locationTextEl = document.getElementById('location-text');
+        const optionsGridEl = document.getElementById('options-grid');
+        const timerBarEl = document.getElementById('timer-bar');
+
+        function startGame() {
+            currentLevel = 0;
+            score = 0;
+            correctCount = 0;
+            missedCount = 0;
+            isLocked = false;
+            
+            scoreDisplayEl.textContent = '0';
+
+            screenStart.classList.add('hidden');
+            screenResults.classList.add('hidden');
+            screenGame.classList.remove('hidden');
+
+            loadLevel();
+        }
+
+        function loadLevel() {
+            if (currentLevel >= LEVELS.length) {
+                endGame();
+                return;
+            }
+
+            isLocked = false;
+            playSound('ping');
+            const data = LEVELS[currentLevel];
+
+            levelDisplayEl.textContent = currentLevel + 1;
+            locationTextEl.textContent = data.location;
+
+            // Prepare and shuffle options
+            let options = [...data.options];
+            options.sort(() => 0.5 - Math.random());
+
+            renderOptions(options, data.answer);
+            startTimer();
+        }
+
+        function renderOptions(options, correctAnswer) {
+            optionsGridEl.innerHTML = '';
+            
+            options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "octagon-btn";
+                btn.innerHTML = `<span class="relative z-10">${opt}</span>`;
+                btn.onclick = () => handleAnswer(opt === correctAnswer, btn, correctAnswer);
+                optionsGridEl.appendChild(btn);
+            });
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = MAX_TIME;
+            updateTimerUI();
+
+            timerInterval = setInterval(() => {
+                if (isLocked) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                
+                timeLeft -= 1;
+                updateTimerUI();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 100); // 100ms ticks = 10 seconds total
+        }
+
+        function updateTimerUI() {
+            const percentage = (timeLeft / MAX_TIME) * 100;
+            timerBarEl.style.width = `${percentage}%`;
+
+            timerBarEl.classList.remove('warning', 'danger');
+            if (percentage <= 25) {
+                timerBarEl.classList.add('danger');
+            } else if (percentage <= 50) {
+                timerBarEl.classList.add('warning');
+            }
+        }
+
+        function handleAnswer(isCorrect, btnElement, correctAnswer) {
+            if (isLocked) return;
+            isLocked = true;
+            clearInterval(timerInterval);
+
+            const allBtns = optionsGridEl.querySelectorAll('button');
+            allBtns.forEach(b => {
+                b.disabled = true;
+                b.style.opacity = '0.5';
+            });
+
+            btnElement.style.opacity = '1';
+
+            if (isCorrect) {
+                playSound('success');
+                // Score based on speed remaining
+                const speedBonus = Math.floor(timeLeft / 2);
+                score += (100 + speedBonus);
+                correctCount++;
+                scoreDisplayEl.textContent = score;
+                
+                btnElement.classList.add('correct');
+            } else {
+                playSound('error');
+                missedCount++;
+                btnElement.classList.add('wrong');
+                
+                // Highlight correct answer
+                allBtns.forEach(b => {
+                    if (b.textContent === correctAnswer) {
+                        b.style.opacity = '1';
+                        b.classList.add('correct');
+                    }
+                });
+            }
+
+            setTimeout(() => {
+                currentLevel++;
+                loadLevel();
+            }, 1200);
+        }
+
+        function handleTimeout() {
+            if (isLocked) return;
+            isLocked = true;
+            playSound('timeout');
+            missedCount++;
+
+            const correctAnswer = LEVELS[currentLevel].answer;
+            const allBtns = optionsGridEl.querySelectorAll('button');
+            
+            allBtns.forEach(b => {
+                b.disabled = true;
+                b.style.opacity = '0.5';
+                if (b.textContent === correctAnswer) {
+                    b.style.opacity = '1';
+                    b.classList.add('correct');
+                }
+            });
+
+            setTimeout(() => {
+                currentLevel++;
+                loadLevel();
+            }, 1500);
+        }
+
+        function skipLevel() {
+            if (isLocked) return;
+            clearInterval(timerInterval);
+            isLocked = true;
+            missedCount++;
+            playSound('error');
+            currentLevel++;
+            loadLevel();
+        }
+
+        function endGame() {
+            screenGame.classList.add('hidden');
+            screenResults.classList.remove('hidden');
+
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-correct').textContent = correctCount;
+            document.getElementById('final-missed').textContent = missedCount;
+
+            let rank = "";
+            if (correctCount >= 18) rank = "Master Cartographer";
+            else if (correctCount >= 14) rank = "Expert Navigator";
+            else if (correctCount >= 8) rank = "Lost Tourist";
+            else rank = "Broken Compass";
+
+            document.getElementById('rank-text').textContent = `Rank: ${rank}`;
+        }
+
+        function resetGame() {
+            startGame();
+        }
+
+        function shareScore() {
+            const shareData = {
+                title: 'UK Geography Split-Second',
+                text: `I scored ${score} and pinned ${correctCount}/20 UK locations on QuizRealm! Think your geography is better?`,
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Score link copied to clipboard!');
+            }
+        }
+    </script>
+</body>
+</html>
