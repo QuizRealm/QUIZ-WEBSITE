@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tartus Trial | The Syrian Archives</title>
+  <meta name="description" content="Explore the Templar Coast, ancient Phoenician ruins, and Arwad Island. Pass this 7-step trial to unlock Tartus on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgFortress: '#0F172A', /* Deep Navy */
+            bgSurface: '#1E293B', /* Slate Surface */
+            accentCyan: '#06B6D4', /* Templar Cyan */
+            accentGold: '#EAB308', /* Fortress Gold */
+            textLight: '#F8FAFC',
+            textMuted: '#94A3B8'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0F172A; color: #F8FAFC; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Subtle Stone & Sea Pattern */
+    .tartus-pattern {
+      background-image: 
+        radial-gradient(circle at 10% 90%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(234, 179, 8, 0.04) 0%, transparent 40%);
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Fixed Viewport Constraints */
+    .game-container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Templar Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      background: rgba(30, 41, 59, 0.6);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #06B6D4; background: rgba(6, 182, 212, 0.1); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(6, 182, 212, 0.2); border-color: #06B6D4; color: #67E8F9; 
+    }
+    .option-btn.wrong { 
+      background: rgba(239, 68, 68, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Cyan Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #06B6D4; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; box-shadow: 0 0 10px #06B6D4; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1rem;
+      background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Cards */
+    .seo-card {
+      background: #1E293B; border: 1px solid rgba(6, 182, 212, 0.15); border-radius: 1.5rem;
+      padding: 2.5rem; transition: all 0.4s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(6, 182, 212, 0.5); box-shadow: 0 15px 30px rgba(15, 23, 42, 0.8); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentCyan selection:text-bgFortress">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="tartus-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#0F172A]/80 backdrop-blur-lg border-b border-accentCyan/10 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentCyan flex items-center justify-center text-bgFortress transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentCyan hover:text-bgFortress hover:border-accentCyan transition-all flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentCyan/10 text-accentCyan flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(6,182,212,0.15)] border border-accentCyan/20">
+        <i class="fas fa-ship text-4xl"></i>
+      </div>
+      
+      <span class="text-accentCyan text-xs font-bold uppercase tracking-widest mb-2 block">Tartus Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">The Templar Coast</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Explore the historic coastal strip featuring pristine islands, ancient Phoenician ruins, and massive Crusader fortifications. Pass this trial to unlock Tartus.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface/60 p-4 rounded-xl border border-accentCyan/10 mb-8 backdrop-blur-sm">
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-water text-accentCyan mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentCyan mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentCyan mr-1"></i> Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentCyan text-bgFortress rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[0_5px_20px_rgba(6,182,212,0.2)]">
+        Inspect the Coast
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Query <span id="ui-current-q" class="text-accentCyan text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-bgSurface/90 backdrop-blur-md border border-accentCyan/20 rounded-2xl p-5 md:p-8 shadow-2xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading coastal records...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-bgFortress mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm md:text-base text-textMuted leading-relaxed mb-8 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-bgFortress bg-accentCyan font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(6,182,212,0.3)]">
+            Continue Inspection
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Trial Concluded</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-white/10 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentCyan">0</span><span class="text-2xl text-textMuted">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-bgFortress font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(6,182,212,0.3)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#090D16] border-t border-white/5 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentCyan font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of Tartus & The Templar Coast</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          A historic coastal strip featuring pristine islands, ancient Phoenician ruins, and massive Crusader fortifications. Dive into the historical records of the Templar Coast below.
+        </p>
+      </div>
+
+      <!-- Templar Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- The Templar Coast (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentCyan/10 flex items-center justify-center text-accentCyan border border-accentCyan/20 group-hover:bg-accentCyan group-hover:text-bgFortress transition-colors">
+              <i class="fas fa-shield-alt text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Templar Coast & Crusader Fortifications</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The coastal governorate of Tartus is historically celebrated as a cornerstone of the Crusader states, heavily shaped by military monastic orders like the Knights Templar and the Knights Hospitaller. Because this historic coastal strip acted as the primary maritime lifeline supplying European reinforcements and trade to the Kingdom of Jerusalem, it was heavily fortified with some of the most sophisticated military architecture ever conceived. Massive stone curtain walls, deep rock-cut ditches, and towering keep towers were constructed along the rocky shores to protect Christian shipping lanes from inland Muslim counter-offensives.</p>
+            <p>The city of Tartus itself (known to medieval Europeans as Tortosa) featured a magnificent cathedral dedicated to Our Lady of Tortosa, widely considered one of the finest achievements of medieval Gothic architecture in the entire Near East. The Templars utilized the city's coastal fortifications as an impregnable base, integrating naval supply lines directly with land defenses. Unlocking Tartus on your map connects you directly to this dramatic era of medieval military monasticism, where religion, commerce, and total fortification converged along the blue Mediterranean waves.</p>
+          </div>
+        </article>
+
+        <!-- Arwad Island -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentCyan/10 flex items-center justify-center text-accentCyan border border-accentCyan/20 group-hover:bg-accentCyan group-hover:text-bgFortress transition-colors">
+              <i class="fas fa-water text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Arwad Island: The Only Syrian Island</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Just a few kilometers off the coast of Tartus lies Arwad (ancient Arados), holding the unique geographical distinction of being the only inhabited island in all of Syria. Mentioned in ancient Egyptian Amarna letters and Assyrian royal inscriptions, Arwad was a fiercely independent Phoenician maritime city-state.</p>
+            <p>Protected by the natural sea barrier, its ancient Phoenician builders constructed massive sea walls of giant megalithic blocks to withstand winter storms and naval blockades. In medieval times, the Templars maintained Arwad as their final offshore stronghold long after mainland fortresses had fallen, before finally evacuating in 1302.</p>
+          </div>
+        </article>
+
+        <!-- Margat Castle -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgFortress transition-colors">
+              <i class="fas fa-mountain text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Margat Castle: Fortress in the Sky</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Perched dramatically on a dark volcanic basalt ridge high above the coastal plain near Baniyas sits Margat Castle (Qal'at al-Marqab), famously known as the "Fortress in the Sky." Acquired by the Knights Hospitaller in 1186, its massive black basalt walls dominate the horizon.</p>
+            <p>Margat was so vast and heavily garrisoned that it could house a thousand soldiers alongside massive stables and administrative halls. Its sweeping round tower acted as an invincible artillery platform, allowing the Hospitallers to command absolute control over both land routes and coastal waters.</p>
+          </div>
+        </article>
+
+        <!-- Phoenician Ruins -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentCyan/10 flex items-center justify-center text-accentCyan border border-accentCyan/20 group-hover:bg-accentCyan group-hover:text-bgFortress transition-colors">
+              <i class="fas fa-landmark text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Ancient Phoenician Roots</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Long before the arrival of the Templars and Crusaders, the coastal strip of Tartus was a thriving center of Phoenician civilization. Sites like Amrit (ancient Marathus) reveal stunning pre-classical architecture, including massive monumental rock-cut tombs (*megaliths*) and an open-air temple featuring a sacred water basin.</p>
+            <p>These ancient Phoenician engineers mastered coastal quarrying and maritime trade, establishing the foundational maritime infrastructure that would be utilized, adapted, and fought over by every subsequent empire for the next three thousand years.</p>
+          </div>
+        </article>
+
+        <!-- The Coastal Strip (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgFortress transition-colors">
+              <i class="fas fa-anchor text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Maritime Significance of Tortosa</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The historical significance of Tartus cannot be overstated. As the primary continental port facing Arwad Island, it formed a dual urban defense system where naval fleets could anchor safely behind natural reefs and island breakwaters. When the Crusader states were slowly compressed by Islamic armies under Zengi, Nur al-Din, and Baibars, Tartus acted as the ultimate northern refuge for retreating European military orders.</p>
+            <p>Today, the modern city of Tartus gracefully blends its medieval Crusader cathedral and ancient stone walls with vibrant Mediterranean seaside life, while Arwad Island remains a living museum where fishermen build wooden boats by hand in narrow alleys untouched by modern cars. Unlocking Tartus on your interactive map connects you directly to this unique insular and coastal heritage—completing your journey across the magnificent shores of the Levant.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-white/5 py-12 relative z-10 mt-12">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentCyan flex items-center justify-center text-bgFortress">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentCyan transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentCyan transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentCyan transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentCyan transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentCyan transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentCyan transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentCyan transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentCyan transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Tartus - The Templar Coast) ---
+    const triviaData = [
+      {
+        question: "What is the defining historical nickname of the Tartus governorate along the Mediterranean coast?",
+        options: ["The Golden Shore", "The Templar Coast", "The Spice Strand", "The Phoenician Basin"],
+        correct: 1,
+        explanation: "Correct! Tartus is historically known as 'The Templar Coast' due to its heavy fortification and strategic maritime dominance by military monastic orders."
+      },
+      {
+        question: "What is the name of the impregnable island fortress located just a few kilometers off the coast of Tartus?",
+        options: ["Cyprus", "Arwad Island", "Ruad Minor", "Krak Isle"],
+        correct: 1,
+        explanation: "Spot on! Arwad Island (ancient Arados) is a historic Phoenician maritime city and the only inhabited island in all of Syria."
+      },
+      {
+        question: "What unique geographical distinction does Arwad Island hold in Syria?",
+        options: ["It is the highest point above sea level", "It is the only Syrian island", "It is the only volcanic island", "It is an artificial floating island"],
+        correct: 1,
+        explanation: "Yes! Arwad holds the unique distinction of being the only inhabited island in the entire country of Syria."
+      },
+      {
+        question: "Which massive Crusader fortification overlooking the coastal plain is famously known as the 'Fortress in the Sky'?",
+        options: ["Margat Castle (Qal'at al-Marqab)", "Krak des Chevaliers", "Saladin's Castle", "Tortosa Keep"],
+        correct: 0,
+        explanation: "Correct! Margat Castle is perched on a dark volcanic basalt ridge high above the coast, earning its legendary moniker as the 'Fortress in the Sky'."
+      },
+      {
+        question: "Besides medieval Crusader fortifications, what ancient ruins famously dot the coastal strip of Tartus, featuring rock-cut megalithic tombs?",
+        options: ["Roman Colosseum ruins", "Ancient Phoenician ruins", "Greek Parthenon temples", "Babylonian ziggurats"],
+        correct: 1,
+        explanation: "Spot on! Sites like Amrit reveal stunning pre-classical ancient Phoenician ruins, including monumental rock-cut tombs and open-air water temples."
+      },
+      {
+        question: "Which military monastic order famously maintained Arwad Island as their final offshore stronghold before evacuating in 1302?",
+        options: ["The Knights Hospitaller", "The Teutonic Knights", "The Knights Templar", "The Order of Saint Lazarus"],
+        correct: 2,
+        explanation: "Yes! The Knights Templar maintained Arwad as their final offshore base on the mainland coast long after inland fortresses had fallen."
+      },
+      {
+        question: "What primary geographic feature defines the Tartus governorate according to historical archives?",
+        options: ["A dry desert basin", "A historic coastal strip featuring pristine islands and Crusader fortifications", "A high altitude volcanic plateau", "A dense tropical rainforest"],
+        correct: 1,
+        explanation: "Perfect! Tartus is defined as a historic coastal strip featuring pristine islands, ancient Phoenician ruins, and massive Crusader fortifications."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-accentCyan/20 rounded-full text-center leading-8 mr-3 text-xs text-accentCyan font-black shrink-0 border border-accentCyan/50">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentCyan text-bgFortress shadow-[0_0_20px_rgba(6,182,212,0.4)] border-2 border-cyan-300";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Fortress Secured";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentCyan";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] border-2 border-red-300";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Breached Defense";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "Coast Conquered";
+        rSub.innerText = "Trial Passed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentCyan";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(6,182,212,0.3)] bg-accentCyan/10 border-2 border-accentCyan";
+        rIcon.className = "fas fa-ship text-4xl text-accentCyan";
+        rDesc.innerHTML = "You have successfully navigated the Templar Coast. <strong>Tartus has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-tartus.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-bgFortress bg-accentCyan font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(6,182,212,0.3)] hover:-translate-y-1 hover:bg-white";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('tartus')) { mapProgress.push('tartus'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Defenses Hold";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-shield-alt text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. The Templar Coast remains locked. Read the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Trial <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Tartus Templar Coast Trial in the Syrian Archives! Can you conquer the coast?`;
+      if (navigator.share) { navigator.share({ title: 'Tartus Trial', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " " + window.location.href); }
+    }
+  </script>
+</body>
+</html>

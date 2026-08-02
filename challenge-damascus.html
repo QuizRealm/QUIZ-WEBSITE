@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journey into Damascus | The Syrian Archives</title>
+  <meta name="description" content="Embark on a fun and interactive journey into the heart of Damascus. Answer 7 questions to unlock the Jasmine City on your interactive map!" />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Nunito', 'sans-serif'], // Switched to Nunito for a friendlier, clearer, bubbly read
+          },
+          colors: {
+            bgIvory: '#FDFBF7',
+            bgCream: '#F3EFE6',
+            accentEmerald: '#059669',
+            accentGold: '#D4AF37',
+            textDark: '#1C1917',
+            textMuted: '#57534E'
+          },
+          animation: {
+            'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+            'slide-up': 'slideUp 0.4s ease-out forwards',
+            'bounce-soft': 'bounceSoft 2s infinite'
+          },
+          keyframes: {
+            popIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+            slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            bounceSoft: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-5px)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #FDFBF7; color: #1C1917; -webkit-tap-highlight-color: transparent; }
+    
+    /* Beautiful Subtle Background Pattern */
+    .damascus-pattern {
+      background-image: radial-gradient(#D4AF37 0.5px, transparent 0.5px), radial-gradient(#D4AF37 0.5px, #FDFBF7 0.5px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      opacity: 0.15;
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; }
+    .game-screen.active { display: flex; animation: slideUp 0.5s ease-out forwards; }
+
+    /* Fun, Friendly Option Buttons */
+    .option-btn {
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border-width: 2px;
+    }
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      border-color: #D4AF37;
+      background-color: #FFF;
+      box-shadow: 0 10px 20px rgba(212, 175, 55, 0.15);
+    }
+    .option-btn:disabled { cursor: default; opacity: 0.6; }
+    .option-btn.correct { 
+      background-color: #ECFDF5; border-color: #059669; color: #064E3B; 
+      transform: scale(1.02); opacity: 1; box-shadow: 0 10px 25px rgba(5, 150, 105, 0.2); z-index: 10;
+    }
+    .option-btn.wrong { 
+      background-color: #FEF2F2; border-color: #DC2626; color: #991B1B; opacity: 1;
+    }
+
+    /* Progress Bar */
+    .progress-bar-container { background: #E7E5E4; border-radius: 99px; overflow: hidden; height: 12px; }
+    .progress-fill { background: linear-gradient(90deg, #059669, #34D399); transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); height: 100%; }
+
+    /* SEO Bento Box */
+    .seo-card {
+      background: #FFFFFF; border: 1px solid #E7E5E4; border-radius: 24px;
+      padding: 2.5rem; transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .seo-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #D4AF37; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="damascus-pattern"></div>
+
+  <!-- Global Header (Light & Elegant) -->
+  <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8 py-3 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-accentEmerald flex items-center justify-center text-white transition-transform duration-300 group-hover:rotate-12">
+          <i class="fas fa-crown text-xl"></i>
+        </div>
+        <span class="font-serif text-2xl font-bold tracking-wide text-accentEmerald">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2.5 bg-bgCream border border-gray-200 rounded-full text-sm font-bold text-textDark hover:bg-accentEmerald hover:text-white transition-colors flex items-center gap-2 shadow-sm">
+        <i class="fas fa-map-marked-alt"></i> <span class="hidden sm:inline">Exit to Map</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <main class="w-full max-w-4xl mx-auto px-4 py-8 md:py-16 relative z-10 min-h-[75vh] flex flex-col justify-center">
+
+    <!-- SCREEN 1: START (Happy & Welcoming) -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-24 h-24 rounded-full bg-emerald-50 text-accentEmerald flex items-center justify-center mb-6 shadow-lg border-4 border-white animate-bounce-soft">
+        <i class="fas fa-seedling text-5xl"></i>
+      </div>
+      
+      <span class="text-accentGold text-sm font-extrabold uppercase tracking-widest mb-3 block">Damascus Governorate</span>
+      <h1 class="font-serif text-5xl md:text-6xl font-black text-textDark mb-6 leading-tight">Unlock the Jasmine City</h1>
+      
+      <p class="text-textMuted text-lg md:text-xl leading-relaxed mb-10 max-w-2xl font-medium">
+        Welcome to the oldest continuously inhabited capital in the world! To open the ancient gates of Damascus on your map, you must prove your knowledge in this fun, interactive journey.
+      </p>
+
+      <div class="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-xl w-full max-w-xl mb-10 text-left">
+        <h3 class="font-bold text-lg mb-4 text-accentEmerald"><i class="fas fa-scroll mr-2"></i> How to Play:</h3>
+        <ul class="space-y-4 font-medium text-textMuted">
+          <li class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded-full bg-accentGold/20 text-accentGold flex items-center justify-center font-bold">1</div>
+            Answer 7 fun questions about the history and culture of Damascus.
+          </li>
+          <li class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded-full bg-accentGold/20 text-accentGold flex items-center justify-center font-bold">2</div>
+            Score at least 5 out of 7 to pass the challenge. (Don't worry, you can retry!)
+          </li>
+          <li class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded-full bg-accentEmerald/20 text-accentEmerald flex items-center justify-center font-bold"><i class="fas fa-unlock"></i></div>
+            Win the game to permanently illuminate Damascus on your Interactive Map!
+          </li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full sm:w-2/3 md:w-1/2 px-8 py-5 bg-accentEmerald text-white rounded-2xl font-extrabold text-xl uppercase tracking-wider hover:bg-emerald-500 hover:shadow-[0_15px_30px_rgba(5,150,105,0.3)] transition-all hover:-translate-y-1">
+        Start Journey <i class="fas fa-arrow-right ml-2"></i>
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY -->
+    <div id="screen-game" class="game-screen flex-col w-full max-w-3xl mx-auto">
+      
+      <!-- Top HUD -->
+      <div class="flex justify-between items-end mb-3 px-2">
+        <div class="w-2/3">
+          <span class="text-sm font-extrabold text-textMuted mb-2 block">Question <span id="ui-current-q" class="text-accentEmerald text-lg">1</span> of 7</span>
+          <div class="progress-bar-container w-full shadow-inner">
+            <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+          </div>
+        </div>
+        <div class="text-right bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
+          <span class="text-xs uppercase tracking-widest text-textMuted font-bold block">Score</span>
+          <span id="ui-score" class="text-2xl font-black text-accentGold">0</span>
+        </div>
+      </div>
+
+      <!-- Question Box -->
+      <div class="bg-white border border-gray-100 rounded-[2rem] p-6 md:p-10 shadow-xl relative mt-4">
+        <h2 id="question-text" class="font-serif text-2xl md:text-3xl lg:text-4xl text-textDark font-bold mb-8 leading-snug text-center">
+          Loading question...
+        </h2>
+        
+        <div id="options-grid" class="flex flex-col gap-4">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- Dynamic Feedback Overlay (Playful & Clear) -->
+        <div id="feedback-box" class="hidden mt-8 p-6 rounded-2xl shadow-lg border-2 animate-pop-in">
+          <div class="flex items-center gap-4 mb-3">
+            <div id="feedback-icon-bg" class="w-12 h-12 rounded-full flex items-center justify-center text-2xl text-white shadow-md">
+              <i id="feedback-icon" class="fas"></i>
+            </div>
+            <h4 id="feedback-title" class="font-black text-2xl">Feedback</h4>
+          </div>
+          <p id="feedback-desc" class="text-base md:text-lg text-textMuted font-medium leading-relaxed">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="mt-6 w-full py-4 rounded-xl text-white font-bold text-lg tracking-wide transition-transform hover:-translate-y-1 shadow-md">
+            Next Question <i class="fas fa-chevron-right ml-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS (Celebratory or Encouraging) -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-animation" class="mb-6 animate-bounce-soft">
+        <img id="result-img" src="" alt="Result" class="w-40 h-40 object-contain drop-shadow-2xl">
+      </div>
+      
+      <span id="result-subtitle" class="text-sm font-extrabold uppercase tracking-widest mb-2 block">Status</span>
+      <h2 id="result-title" class="font-serif text-5xl md:text-6xl font-black text-textDark mb-4">Title</h2>
+      
+      <div class="bg-white px-10 py-6 rounded-3xl shadow-lg border border-gray-100 mb-8 inline-block">
+        <div class="text-7xl font-sans font-black text-accentEmerald">
+          <span id="result-score">0</span><span class="text-4xl text-gray-300">/7</span>
+        </div>
+        <span class="block mt-2 text-sm font-bold text-textMuted uppercase tracking-widest">Final Score</span>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-xl mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 w-full max-w-lg mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-white font-extrabold text-lg rounded-2xl transition-all shadow-xl hover:-translate-y-1">
+          Primary Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white text-textDark border-2 border-gray-200 hover:border-accentGold hover:text-accentGold font-bold text-lg rounded-2xl transition-all shadow-sm">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+      <a href="syria-interactive-map.html" class="mt-8 text-sm text-textMuted font-bold hover:text-accentEmerald transition-colors flex items-center justify-center gap-2">
+        <i class="fas fa-arrow-left"></i> Return to Interactive Map
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-white border-t border-gray-200 py-24 px-4 md:px-8 relative z-10">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentGold font-extrabold tracking-widest uppercase text-sm mb-3 block">Encyclopedia</span>
+        <h2 class="font-serif text-4xl md:text-5xl text-accentEmerald font-black mb-6">The Archives of Damascus</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-lg md:text-xl font-medium leading-relaxed">
+          Before taking the trial—or to deepen your knowledge after conquering it—explore the rich, majestic history of the world's most enduring urban landscape. Discover the secrets of the Jasmine City below.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Card 1 (Large) -->
+        <article class="seo-card lg:col-span-2">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-accentEmerald shadow-sm">
+              <i class="fas fa-city text-2xl"></i>
+            </div>
+            <h3 class="font-serif text-3xl md:text-4xl text-textDark font-bold">The Cradle of Urbanity</h3>
+          </div>
+          <div class="text-textMuted text-base leading-relaxed columns-1 md:columns-2 gap-10 text-justify font-medium">
+            <p class="mb-4">Damascus holds a title that is almost mythical in its historical weight: it is widely celebrated as the oldest continuously inhabited capital city in the world. Archaeological excavations at Tell Ramad, located on the immediate outskirts of the city, have uncovered undeniable evidence of human settlements dating all the way back to the third millennium BC. Unlike other ancient megalopolises of the ancient world—such as Babylon in Mesopotamia or Memphis in Egypt—which eventually fell into dust, ruin, and abandonment, Damascus survived every epoch by constantly absorbing, adapting to, and outliving the empires that sought to claim it. Originally founded as an Aramean settlement known as Dimashq, it rapidly grew into a crucial, life-saving node in the network of caravan routes crossing the vast Syrian Desert.</p>
+            <p>This unbroken, staggering chain of human occupation means that the physical soil of Damascus is literally built upon deep layers of history. An urban planner or a casual tourist walking the winding, jasmine-scented streets of the Old City today is unknowingly walking directly on top of Aramean foundations, Roman engineering, Byzantine Christian masonry, and Islamic medieval architecture. The city's extraordinary survival wasn't purely a matter of impregnable military walls or impenetrable might, but rather its absolute geographic necessity. Damascus was an indispensable oasis that provided life, fresh water, and vital commerce on the very edge of the brutal, unforgiving desert.</p>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="seo-card">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm">
+              <i class="fas fa-water text-2xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl text-textDark font-bold">Hydrology of the Barada</h3>
+          </div>
+          <div class="text-textMuted text-base leading-relaxed text-justify font-medium">
+            <p class="mb-4">The existence, wealth, and beauty of Damascus are entirely owed to a singular geological phenomenon: the Barada River. Flowing swiftly and purely out of the rugged Anti-Lebanon mountain range, the Barada descends into the dry basin of Damascus and violently fans out into seven distinct branches. This natural hydrological network created the *Ghouta*, a massive, incredibly fertile green oasis that historically encircled the city, providing an endless supply of apricots, pomegranates, and walnuts.</p>
+            <p>This endless supply of fresh water dictated the unique architecture of the city. The famous Damascene courtyard houses (*Ahwash*) were built as inward-facing paradises. High stone walls blocked the dusty street heat, while the interior courtyards were heavily shaded by citrus and jasmine trees. At the center of every courtyard was a bubbling fountain fed directly by the Barada, functioning as a brilliant thermodynamic air-conditioning system that cooled the household during the brutal summer months.</p>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="seo-card">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-accentGold shadow-sm">
+              <i class="fas fa-mosque text-2xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl text-textDark font-bold">The Umayyad Golden Age</h3>
+          </div>
+          <div class="text-textMuted text-base leading-relaxed text-justify font-medium">
+            <p class="mb-4">In 661 AD, Damascus reached its absolute geopolitical zenith when it was selected as the glorious capital of the Umayyad Caliphate. From this city, the Caliphs ruled an empire of staggering proportions, stretching from the Iberian Peninsula (modern-day Spain) in the west to the Indus Valley in the east. To reflect this supreme, unprecedented power, Caliph Al-Walid I commissioned the construction of the Great Umayyad Mosque in 706 AD.</p>
+            <p>The mosque remains an architectural masterpiece of the medieval world. Constructed on a holy site that previously housed an ancient Aramean temple to Hadad, a colossal Roman temple to Jupiter, and a Byzantine basilica, it represents the ultimate historical layering of faith. The mosque still houses a beautiful shrine famously believed to hold the head of John the Baptist. Its massive courtyard walls were adorned with breathtaking glass and gold mosaics depicting an aniconic, lush vision of paradise.</p>
+          </div>
+        </article>
+
+        <!-- Card 4 (Large) -->
+        <article class="seo-card lg:col-span-2">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-red-600 shadow-sm">
+              <i class="fas fa-road text-2xl"></i>
+            </div>
+            <h3 class="font-serif text-3xl md:text-4xl text-textDark font-bold">Roman Infrastructure & The Via Recta</h3>
+          </div>
+          <div class="text-textMuted text-base leading-relaxed columns-1 md:columns-2 gap-10 text-justify font-medium">
+            <p class="mb-4">When the Roman Empire annexed Damascus in 64 BC under the command of Pompey the Great, they immediately began restructuring the ancient city according to their strict, highly logical, grid-based urban planning systems. The most enduring, famous legacy of this imperial occupation is the *Decumanus Maximus*, the primary east-west axis road that carved straight through the bustling heart of the urban center. In biblical literature, specifically in the Acts of the Apostles regarding the dramatic conversion of Saint Paul, this road is famously and eternally referred to as "The Street Called Straight" (*Via Recta*).</p>
+            <p>Astoundingly, today, this exact road still exists as Midhat Pasha Souq and Bab Sharqi street. It remains the bustling, vibrant, commercial spine of the Old City, packed with vendors selling spices, silks, and copperwares. The Romans also heavily fortified the city's perimeter, establishing the grand foundations for the famous seven ancient gates of Damascus. These gates—such as Bab Tuma (Gate of Thomas) and Bab Sharqi (Eastern Gate)—were originally dedicated to planetary deities in the classical era and remain the primary, awe-inspiring entry points piercing the thick medieval walls that still protect the old urban core to this day.</p>
+          </div>
+        </article>
+
+        <!-- Card 5 -->
+        <article class="seo-card">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 shadow-sm">
+              <i class="fas fa-shield-alt text-2xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl text-textDark font-bold">The Citadel & Saladin</h3>
+          </div>
+          <div class="text-textMuted text-base leading-relaxed text-justify font-medium">
+            <p class="mb-4">Unlike many ancient cities where the primary fortress is elevated on an unscalable mountain, the Citadel of Damascus sits firmly on flat ground at the northwest corner of the Old City. Fully fortified during the turbulent Crusader period by the Seljuk ruler Nur al-Din and later expanded by the Ayyubids, it was a crucial, heavily garrisoned stronghold in defending the Islamic heartland from Frankish invasions.</p>
+            <p>Just outside the towering walls of the Umayyad Mosque lies the incredibly modest mausoleum of Salah ad-Din (Saladin). As the legendary 12th-century Sultan of Egypt and Syria, he successfully recaptured Jerusalem from the Crusaders in 1187. Despite his vast wealth, empire, and global power, he left behind virtually no personal fortune, having given it all away in charity. His resting place in Damascus remains a powerful, moving symbol of chivalry and regional defense.</p>
+          </div>
+        </article>
+
+        <!-- Card 6 -->
+        <article class="seo-card">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 shadow-sm">
+              <i class="fas fa-hammer text-2xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl text-textDark font-bold">Master Artisans & Steel</h3>
+          </div>
+          <div class="text-textMuted text-base leading-relaxed text-justify font-medium">
+            <p class="mb-4">The global reputation of Damascus was heavily forged not just by its politicians, but by its master artisans. In the medieval era, European Crusaders returning from the Levant brought back terrifying and awe-inspiring stories of "Damascus Steel." The swords forged in the city were legendary for their incredible sharpness, unbreakable resilience, and the distinctive, flowing, water-like banding patterns across the blade—a metallurgical secret now lost to time.</p>
+            <p>Beyond unmatched weaponry, the city's weavers were so proficient that the intricate, reversible patterned textiles they created became known globally as "Damask." Today, this joyful spirit of commerce and elite craftsmanship survives beautifully in the massive, iron-roofed Al-Hamidiyah Souq, where the scent of cardamom coffee, fresh silk, and hammered brass still fills the air, echoing thousands of years of uninterrupted human trade and happiness.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer (Light Theme) -->
+  <footer class="bg-bgIvory border-t border-gray-200 py-12 relative z-10">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded-lg bg-accentEmerald flex items-center justify-center text-white">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-textDark">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm font-medium">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics. Bringing history to life through play.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-textDark font-bold uppercase tracking-widest text-xs mb-4">Sitemap Index</h4>
+          <ul class="space-y-2 text-sm font-medium text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentEmerald transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentEmerald transition-colors">Categories</a></li>
+            <li><a href="encyclopedia.html" class="hover:text-accentEmerald transition-colors">Encyclopedia</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-textDark font-bold uppercase tracking-widest text-xs mb-4">Platform Data</h4>
+          <ul class="space-y-2 text-sm font-medium text-textMuted">
+            <li><a href="about.html" class="hover:text-accentEmerald transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentEmerald transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentEmerald transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-textMuted font-bold">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentEmerald transition-colors text-lg"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentEmerald transition-colors text-lg"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Fun, Fact-Based, 7 Questions) ---
+    const triviaData = [
+      {
+        question: "Damascus is famously celebrated by historians and travelers around the globe as being what?",
+        options: ["The largest desert oasis in the Middle East", "The oldest continuously inhabited capital on Earth", "The first city to use paper money", "The birthplace of the maritime alphabet"],
+        correct: 1,
+        explanation: "Correct! Archaeological evidence at Tell Ramad on the outskirts of Damascus shows continuous human settlement dating back to the third millennium BC, making it the oldest continuously inhabited capital!"
+      },
+      {
+        question: "What is the name of the life-giving river that flows from the mountains and fans out to create the lush gardens of Damascus?",
+        options: ["The Euphrates River", "The Tigris River", "The Barada River", "The Orontes River"],
+        correct: 2,
+        explanation: "Beautifully done! The Barada River is the absolute lifeblood of Damascus. It splits into seven branches, feeding the city's famous courtyard fountains and the surrounding Ghouta orchards."
+      },
+      {
+        question: "If you walk through the Old City today, you will cross a famous ancient Roman road mentioned in biblical texts. What is it called?",
+        options: ["The Appian Way", "The Street Called Straight", "The Silk Route", "The King's Highway"],
+        correct: 1,
+        explanation: "Spot on! The 'Via Recta' or 'Street Called Straight' was built by the Romans. It's mentioned in the Acts of the Apostles and is still a bustling market street today!"
+      },
+      {
+        question: "The breathtaking Umayyad Mosque is built on a site that has seen many religions. Whose shrine is famously located inside its main prayer hall?",
+        options: ["Saint Paul", "Saint Peter", "John the Baptist", "Saint George"],
+        correct: 2,
+        explanation: "Correct! Before it was a mosque, the site was a Byzantine basilica dedicated to John the Baptist. His shrine remains peacefully inside the mosque to this day."
+      },
+      {
+        question: "Just outside the Umayyad Mosque rests a legendary, chivalrous 12th-century Sultan who defended the region. Who is he?",
+        options: ["Suleiman the Magnificent", "Saladin (Salah ad-Din)", "Harun al-Rashid", "Nur al-Din"],
+        correct: 1,
+        explanation: "Yes! Saladin, who famously recaptured Jerusalem in 1187, rests here. Despite his vast empire, he gave away all his personal wealth to charity and was buried in a modest tomb."
+      },
+      {
+        question: "Medieval Damascus was globally legendary for crafting a specific item featuring beautiful, water-like banding patterns. What was it?",
+        options: ["Damascus Steel Swords", "Damascus Longbows", "Damascus Glassware", "Damascus Gunpowder"],
+        correct: 0,
+        explanation: "Nailed it! Damascus steel was legendary for its incredible sharpness and stunning flowing patterns. The exact metallurgical method to forge it became a famous lost secret."
+      },
+      {
+        question: "The ancient, thick defensive walls of the Old City of Damascus traditionally feature how many historical gates?",
+        options: ["Five", "Seven", "Nine", "Twelve"],
+        correct: 1,
+        explanation: "Perfect! There are seven historical gates (like Bab Tuma and Bab Sharqi). The Romans originally dedicated them to the seven classical planets!"
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    // DOM Elements
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackBox = document.getElementById('feedback-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackIconBg = document.getElementById('feedback-icon-bg');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+    const nextBtn = document.getElementById('next-btn');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startGame() {
+      currentQuestion = 0;
+      score = 0;
+      uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackBox.classList.add('hidden');
+      feedbackBox.classList.remove('animate-pop-in');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 md:py-5 px-6 bg-gray-50 border-gray-200 rounded-2xl text-left text-textDark font-sans font-bold text-lg';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-white border border-gray-200 rounded-full text-center leading-7 mr-3 text-sm text-textMuted shadow-sm">${['A','B','C','D'][index]}</span> ${opt}`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      // Disable all buttons and fade them out slightly
+      allBtns.forEach(b => {
+        b.disabled = true;
+        if(b !== btnElement) b.style.opacity = '0.5';
+      });
+
+      // UI Feedback on buttons
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++;
+        uiScore.innerText = score;
+        
+        feedbackIcon.className = "fas fa-star";
+        feedbackIconBg.className = "w-12 h-12 rounded-full flex items-center justify-center text-2xl text-white shadow-md bg-accentEmerald";
+        feedbackBox.className = "mt-8 p-6 rounded-2xl shadow-lg border-2 animate-pop-in border-accentEmerald/30 bg-emerald-50 block";
+        feedbackTitle.innerText = "Brilliant!";
+        feedbackTitle.className = "font-black text-2xl text-accentEmerald";
+        nextBtn.className = "mt-6 w-full py-4 rounded-xl text-white font-extrabold text-lg tracking-wide transition-transform hover:-translate-y-1 shadow-md bg-accentEmerald hover:bg-emerald-500";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct'); // Show actual correct answer
+        allBtns[q.correct].style.opacity = '1';
+        
+        feedbackIcon.className = "fas fa-times";
+        feedbackIconBg.className = "w-12 h-12 rounded-full flex items-center justify-center text-2xl text-white shadow-md bg-red-500";
+        feedbackBox.className = "mt-8 p-6 rounded-2xl shadow-lg border-2 animate-pop-in border-red-200 bg-red-50 block";
+        feedbackTitle.innerText = "Not Quite!";
+        feedbackTitle.className = "font-black text-2xl text-red-600";
+        nextBtn.className = "mt-6 w-full py-4 rounded-xl text-white font-extrabold text-lg tracking-wide transition-transform hover:-translate-y-1 shadow-md bg-textDark hover:bg-black";
+      }
+
+      // Show Explanation
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      // Scroll to feedback
+      setTimeout(() => {
+        feedbackBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) {
+        loadQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rImg = document.getElementById('result-img');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        // PASS (Happy & Majestic)
+        rTitle.innerText = "The Gates Open!";
+        rSub.innerText = "Journey Successful";
+        rSub.className = "text-sm font-extrabold uppercase tracking-widest mb-2 block text-accentEmerald";
+        
+        // Beautiful SVG placeholder for success (A glowing key or gate)
+        rImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23059669'%3E%3Cpath d='M12 2C9.243 2 7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8c0-1.103-.897-2-2-2h-1V7c0-2.757-2.243-5-5-5zm0 2c1.654 0 3 1.346 3 3v3H9V7c0-1.654 1.346-3 3-3zm-1 12v-3h2v3h-2z'/%3E%3C/svg%3E";
+        
+        rDesc.innerHTML = "Absolutely magnificent! You have proven your knowledge of the Imperial Axis. <strong>Damascus has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-damascus.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-accentEmerald font-extrabold text-lg rounded-2xl transition-all shadow-[0_10px_20px_rgba(5,150,105,0.3)] hover:-translate-y-1 hover:bg-emerald-500";
+
+        // --- CORE MAP UNLOCK LOGIC ---
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('damascus')) {
+          mapProgress.push('damascus');
+          localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress));
+        }
+
+      } else {
+        // FAIL (Encouraging)
+        rTitle.innerText = "The Gates Remain Closed";
+        rSub.innerText = "Journey Incomplete";
+        rSub.className = "text-sm font-extrabold uppercase tracking-widest mb-2 block text-accentGold";
+        
+        // Beautiful SVG placeholder for retry
+        rImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4AF37'%3E%3Cpath d='M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z'/%3E%3C/svg%3E";
+
+        rDesc.innerHTML = "You need a score of at least <strong>5</strong> to open the ancient gates. Review the encyclopedia cards below and try again!";
+        
+        btnPrimary.innerHTML = 'Retry Journey <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#";
+        btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-textDark font-extrabold text-lg rounded-2xl transition-all shadow-xl hover:-translate-y-1 hover:bg-black";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Damascus Journey in the Syrian Archives! Can you unlock the Jasmine City?`;
+      if (navigator.share) {
+        navigator.share({ title: 'Damascus Journey', text: text, url: window.location.href });
+      } else {
+        alert("Copy this to share with your friends: " + text + " " + window.location.href);
+      }
+    }
+  </script>
+</body>
+</html>

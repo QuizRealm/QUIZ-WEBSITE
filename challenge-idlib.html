@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Idlib Trial | The Syrian Archives</title>
+  <meta name="description" content="Explore the Ebla archives and the Byzantine Dead Cities. Pass this 7-step trial to unlock Idlib on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgOlive: '#070E06', /* Deep Olive Night */
+            bgSurface: '#111C10', /* Stone Surface */
+            accentLime: '#84CC16', /* Archaeological Lime */
+            accentGold: '#EAB308', /* Tablet Gold */
+            textLight: '#F7FEE7',
+            textMuted: '#BEF264'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #070E06; color: #F7FEE7; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Subtle Olive & Stone Pattern */
+    .idlib-pattern {
+      background-image: 
+        radial-gradient(circle at 15% 85%, rgba(132, 204, 22, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 15%, rgba(234, 179, 8, 0.04) 0%, transparent 40%);
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Fixed Viewport Constraints */
+    .game-container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(132, 204, 22, 0.2);
+      background: rgba(17, 28, 16, 0.6);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #84CC16; background: rgba(132, 204, 22, 0.1); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(132, 204, 22, 0.2); border-color: #84CC16; color: #BEF264; 
+    }
+    .option-btn.wrong { 
+      background: rgba(239, 68, 68, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #84CC16; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; box-shadow: 0 0 10px #84CC16; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1rem;
+      background: rgba(7, 14, 6, 0.96); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(132, 204, 22, 0.3);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Cards */
+    .seo-card {
+      background: #111C10; border: 1px solid rgba(132, 204, 22, 0.15); border-radius: 1.5rem;
+      padding: 2.5rem; transition: all 0.4s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(132, 204, 22, 0.5); box-shadow: 0 15px 30px rgba(7, 14, 6, 0.8); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentLime selection:text-bgOlive">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="idlib-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#070E06]/80 backdrop-blur-lg border-b border-accentLime/10 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentLime flex items-center justify-center text-bgOlive transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentLime hover:text-bgOlive hover:border-accentLime transition-all flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentLime/10 text-accentLime flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(132,204,22,0.15)] border border-accentLime/20">
+        <i class="fas fa-tablet text-4xl"></i>
+      </div>
+      
+      <span class="text-accentLime text-xs font-bold uppercase tracking-widest mb-2 block">Idlib Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">The Dead Cities & Ebla</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Unearth 17,000 Bronze Age clay tablets and explore abandoned Byzantine villas. Pass this trial to permanently unlock Idlib on your map.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface/60 p-4 rounded-xl border border-accentLime/10 mb-8 backdrop-blur-sm">
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-tablet text-accentLime mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentLime mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentLime mr-1"></i> Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentLime text-bgOlive rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[0_5px_20px_rgba(132,204,22,0.2)]">
+        Examine the Archives
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Query <span id="ui-current-q" class="text-accentLime text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-bgSurface/90 backdrop-blur-md border border-accentLime/20 rounded-2xl p-5 md:p-8 shadow-2xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading archaeological logs...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-bgOlive mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm md:text-base text-textMuted leading-relaxed mb-8 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-bgOlive bg-accentLime font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(132,204,22,0.3)]">
+            Continue Excavation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Trial Concluded</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-white/10 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentLime">0</span><span class="text-2xl text-textMuted">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-bgOlive font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(132,204,22,0.3)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#040803] border-t border-white/5 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentLime font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of Idlib: Ebla & The Dead Cities</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          An agricultural heartland containing Ebla—one of the oldest kingdoms in the world—and hundreds of abandoned late-antique Byzantine "Dead Cities" dotting the limestone massif. Explore the records below.
+        </p>
+      </div>
+
+      <!-- Idlib Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Ebla Archives (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentLime/10 flex items-center justify-center text-accentLime border border-accentLime/20 group-hover:bg-accentLime group-hover:text-bgOlive transition-colors">
+              <i class="fas fa-tablet text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Ebla Archives & 17,000 Clay Tablets</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The Idlib governorate holds one of the most astonishing archaeological treasures in human history at Tell Mardikh, ancient Ebla. Discovered in 1964 by an Italian archaeological mission led by Dr. Paolo Matthiae, Ebla revealed itself as a massive, highly sophisticated Bronze Age superpower that flourished between 3000 BC and 2300 BC. Prior to this excavation, historians believed northern Syria during the early Bronze Age was sparsely populated by unorganized pastoral tribes. Ebla shattered that assumption, proving that a complex urban empire had dominated trade routes across the Fertile Crescent.</p>
+            <p>The crown jewel of the Ebla excavation occurred in 1974–1975 when archaeologists unearthed the royal palace archive room. Inside lay over 17,000 cuneiform clay tablets and fragments perfectly preserved by the fire that destroyed the city around 2300 BC. Written primarily in Eblaite (an archaic Semitic language) using Sumerian logograms, these administrative and diplomatic documents recorded international treaties, economic exchanges, textile production lists, and royal court decrees. Most remarkably, the archive included bilingual lexical lists—essentially ancient Sumerian-Eblaite dictionaries—which allowed linguists to decode a previously lost human language and illuminated the rich linguistic tapestry of the ancient Near East.</p>
+          </div>
+        </article>
+
+        <!-- The Dead Cities -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentLime/10 flex items-center justify-center text-accentLime border border-accentLime/20 group-hover:bg-accentLime group-hover:text-bgOlive transition-colors">
+              <i class="fas fa-landmark text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Dead Cities of Jebel al-Zawiya</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Scattered across the rolling limestone hills of the Idlib governorate (specifically the Jabal al-Zawiya massif) are over 700 abandoned settlements collectively known as the "Dead Cities" (*Al-Modon al-Mayyita*). Dating from the 1st to the 7th centuries AD during the Roman and Byzantine periods, these ancient villages were not destroyed by war or cataclysmic earthquakes; rather, they were peacefully abandoned over centuries due to shifting trade routes and political transitions.</p>
+            <p>Because the region is composed entirely of hard limestone, the inhabitants built everything out of solid stone without mortar. Consequently, entire two-story Byzantine villas, public baths, churches, wine presses, and olive mills still stand almost completely intact today, offering modern historians an immaculate, untouched window into late-antique rural domestic life in the Mediterranean.</p>
+          </div>
+        </article>
+
+        <!-- Serjilla -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgOlive transition-colors">
+              <i class="fas fa-archway text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Serjilla: The Model Byzantine Village</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Among the hundreds of Dead Cities, Serjilla stands out as one of the best-preserved and most thoroughly studied examples. Walking through Serjilla feels like stepping into a frozen 6th-century village. You can clearly inspect communal bathhouses, grand porticoed villas, and ancient wine-pressing vats cut directly into the bedrock.</p>
+            <p>The architecture displays an astonishing level of artistic refinement, featuring carved stone lintels, decorative crosses, and arched balconies that demonstrate the incredible prosperity enjoyed by these Christian farming communities prior to the 7th-century Islamic conquests.</p>
+          </div>
+        </article>
+
+        <!-- Olive Oil Economy -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentLime/10 flex items-center justify-center text-accentLime border border-accentLime/20 group-hover:bg-accentLime group-hover:text-bgOlive transition-colors">
+              <i class="fas fa-seedling text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Ancient Olive & Wine Production</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">The secret behind the staggering wealth of the Dead Cities was agricultural specialization. The limestone plateau of Idlib was exceptionally well-suited for two specific commodities: olives and grapes. Thousands of stone screw-presses found across the ruins indicate a massive, industrialized export economy supplying olive oil and wine to the wider Byzantine Empire.</p>
+            <p>To this day, the Idlib governorate remains the premier agricultural heartland for olive cultivation in Syria, boasting ancient groves that have been continuously tended for nearly two millennia, preserving an unbroken rural tradition across the limestone hills.</p>
+          </div>
+        </article>
+
+        <!-- The Limestone Massif (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgOlive transition-colors">
+              <i class="fas fa-mountain text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Geological Architecture of Northern Syria</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The unique physical survival of Idlib's archaeological sites is entirely a gift of geology. Known geographically as the Northern Limestone Massif, this upland region consists of thick layers of high-quality limestone sitting directly beneath the surfacesoil. When ancient builders needed stone for houses, churches, or tombs, they simply quarried it directly from the ground where the building was intended to stand. This minimized transport costs and produced exceptionally durable structures.</p>
+            <p>Furthermore, because the region lacks major river valleys that encouraged later destructive urban expansions, these ancient farming villages were left undisturbed on their rocky ridges when populations shifted during the early medieval period. Unlocking Idlib on your interactive map connects you directly to this quiet, monumental stone heritage—revealing how ancient agricultural enterprise and limestone geology combined to preserve an entire civilization in stone. It is a profound reminder that human history is etched not just in royal palaces, but in the enduring stone homes of ordinary rural communities.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-white/5 py-12 relative z-10 mt-12">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentLime flex items-center justify-center text-bgOlive">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentLime transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentLime transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentLime transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentLime transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentLime transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentLime transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentLime transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentLime transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Idlib - Ebla & Dead Cities) ---
+    const triviaData = [
+      {
+        question: "What is the name of the ancient Bronze Age city located at Tell Mardikh in Idlib where a massive royal archive was discovered?",
+        options: ["Ugarit", "Ebla", "Mari", "Palmyra"],
+        correct: 1,
+        explanation: "Correct! Ebla (Tell Mardikh) was a powerful Bronze Age kingdom that flourished in northern Syria, discovered in 1964 by Italian archaeologists."
+      },
+      {
+        question: "In 1974–1975, archaeologists in Ebla unearthed a royal palace room containing approximately how many cuneiform clay tablets?",
+        options: ["About 500 tablets", "About 3,500 tablets", "Over 17,000 tablets and fragments", "Exactly 50,000 tablets"],
+        correct: 2,
+        explanation: "Spot on! Over 17,000 cuneiform clay tablets and fragments were discovered perfectly preserved by the fire that destroyed ancient Ebla around 2300 BC."
+      },
+      {
+        question: "The discovery of bilingual lexical lists (dictionary tablets) inside the Ebla archives helped linguists decode which ancient language?",
+        options: ["Eblaite", "Hieroglyphic Egyptian", "Linear B", "Latin"],
+        correct: 0,
+        explanation: "Yes! The bilingual lists matched Sumerian logograms with Eblaite, allowing modern scholars to decode the previously unknown archaic Semitic language."
+      },
+      {
+        question: "What is the collective term for the more than 700 abandoned late-antique Byzantine settlements dotting the limestone hills of Idlib?",
+        options: ["The Lost Valleys", "The Dead Cities", "The Stone Towers", "The Ghost Villages"],
+        correct: 1,
+        explanation: "Correct! Known as 'Al-Modon al-Mayyita' (The Dead Cities), these villages date from the 1st to 7th centuries AD and feature remarkably intact stone architecture."
+      },
+      {
+        question: "Why did the Byzantine settlements known as the Dead Cities become abandoned over time?",
+        options: ["A massive volcanic eruption", "Peaceful abandonment due to shifting trade routes and political transitions", "Complete destruction by a tsunami", "A severe ice age"],
+        correct: 1,
+        explanation: "Spot on! These villages were never destroyed by war or cataclysm; they were peacefully abandoned over centuries as regional trade and political networks shifted."
+      },
+      {
+        question: "What specific geological material was utilized almost exclusively to construct the homes, villas, and churches of the Dead Cities?",
+        options: ["Red clay brick", "Solid limestone quarried directly from the ground", "Volcanic basalt blocks", "Sandstone and timber"],
+        correct: 1,
+        explanation: "Yes! The region sits atop a thick Northern Limestone Massif. Builders quarried the stone directly where buildings stood, creating incredibly durable structures."
+      },
+      {
+        question: "What primary agricultural commodities formed the foundation of the immense wealth and export economy of Idlib's ancient settlements?",
+        options: ["Silk and spices", "Olive oil and wine", "Dates and cotton", "Gold and silver"],
+        correct: 1,
+        explanation: "Perfect! Thousands of stone screw-presses found across the ruins indicate a massive, industrialized export economy specializing in high-grade olive oil and wine."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-accentLime/20 rounded-full text-center leading-8 mr-3 text-xs text-accentLime font-black shrink-0 border border-accentLime/50">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentLime text-bgOlive shadow-[0_0_20px_rgba(132,204,22,0.4)] border-2 border-lime-300";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Archive Decoded";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentLime";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] border-2 border-red-300";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Tablet Fragmented";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "Archives Unsealed";
+        rSub.innerText = "Trial Passed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentLime";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(132,204,22,0.3)] bg-accentLime/10 border-2 border-accentLime";
+        rIcon.className = "fas fa-tablet text-4xl text-accentLime";
+        rDesc.innerHTML = "You have successfully excavated the Ebla archives. <strong>Idlib has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-idlib.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-bgOlive bg-accentLime font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(132,204,22,0.3)] hover:-translate-y-1 hover:bg-white";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('idlib')) { mapProgress.push('idlib'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Buried in Stone";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-landmark text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. The Dead Cities remain sealed. Read the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Trial <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Idlib Ebla & Dead Cities Trial in the Syrian Archives! Can you decode the archives?`;
+      if (navigator.share) { navigator.share({ title: 'Idlib Trial', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " " + window.location.href); }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hama River Trial | The Syrian Archives</title>
+  <meta name="description" content="Navigate the Orontes River and the colossal wooden waterwheels of Hama. Pass this 7-step trial to unlock the Hama Governorate on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgRiver: '#041514', /* Deep Orontes Night */
+            bgSurface: '#0B2927', /* Submerged Teal */
+            accentTeal: '#14B8A6', /* Aquamarine Water */
+            accentWood: '#D97706', /* Wet Wood/Amber */
+            textLight: '#F0FDFA',
+            textMuted: '#99F6E4'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+            'water-flow': 'waterFlow 10s linear infinite'
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+            waterFlow: { '0%': { backgroundPosition: '0 0' }, '100%': { backgroundPosition: '100% 100%' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #041514; color: #F0FDFA; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Flowing Water Background Pattern */
+    .river-pattern {
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.05) 0%, transparent 50%),
+        linear-gradient(45deg, rgba(4, 21, 20, 1) 25%, rgba(11, 41, 39, 0.5) 50%, rgba(4, 21, 20, 1) 75%);
+      background-size: 200% 200%;
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      animation: waterFlow 15s ease-in-out infinite alternate;
+    }
+
+    /* Fixed Viewport Constraints */
+    .game-container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Elegant Aquatic Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(20, 184, 166, 0.15);
+      background: rgba(11, 41, 39, 0.6);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #14B8A6; background: rgba(20, 184, 166, 0.1); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(217, 119, 6, 0.15); border-color: #D97706; color: #FBBF24; 
+    }
+    .option-btn.wrong { 
+      background: rgba(220, 38, 38, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Liquid Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #14B8A6; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; box-shadow: 0 0 10px #14B8A6; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1rem;
+      background: rgba(4, 21, 20, 0.95); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(20, 184, 166, 0.3);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Aquatic Cards */
+    .seo-card {
+      background: #0B2927; border: 1px solid rgba(20, 184, 166, 0.1); border-radius: 1.5rem;
+      padding: 2.5rem; transition: all 0.4s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(20, 184, 166, 0.4); box-shadow: 0 15px 30px rgba(4, 21, 20, 0.8); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentTeal selection:text-bgRiver">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="river-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#041514]/80 backdrop-blur-lg border-b border-accentTeal/10 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentTeal flex items-center justify-center text-bgRiver transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentTeal hover:text-bgRiver hover:border-accentTeal transition-all flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER (Fixed to Viewport to prevent scrolling) -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentTeal/10 text-accentTeal flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(20,184,166,0.15)] border border-accentTeal/20">
+        <i class="fas fa-dharmachakra text-4xl animate-[spin_10s_linear_infinite]"></i>
+      </div>
+      
+      <span class="text-accentTeal text-xs font-bold uppercase tracking-widest mb-2 block">Hama Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">The Orontes Flow</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Navigate the currents of the rebellious river. Prove your knowledge of the colossal wooden waterwheels and the ancient ruins of Apamea to unlock the Orontes Basin.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface/50 p-4 rounded-xl border border-accentTeal/10 mb-8 backdrop-blur-sm">
+        <div>
+          <span class="block text-[10px] text-accentTeal/70 uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-water text-accentTeal mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-accentTeal/70 uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentTeal mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-accentTeal/70 uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentTeal mr-1"></i> Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentTeal text-bgRiver rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[0_5px_20px_rgba(20,184,166,0.2)]">
+        Enter the River
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY (Zero-shift fixed layout) -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-accentTeal/70">Current <span id="ui-current-q" class="text-accentTeal text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-accentTeal/70">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-bgSurface/80 backdrop-blur-md border border-accentTeal/20 rounded-2xl p-5 md:p-8 shadow-2xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading river archives...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-bgRiver mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm md:text-base text-textMuted leading-relaxed mb-8 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-bgRiver bg-accentTeal font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(20,184,166,0.2)]">
+            Continue Flow
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Current Settled</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-accentTeal/20 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentTeal">0</span><span class="text-2xl text-accentTeal/50">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-bgRiver font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(20,184,166,0.2)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#030d0c] border-t border-accentTeal/10 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentTeal font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of the Orontes Basin</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          The Hama Governorate thrives on the waters of a rebellious river. Dive into the historical records below to understand the monumental engineering of the Norias, the grandeur of classical Apamea, and the legacy of the Ayyubid kings.
+        </p>
+      </div>
+
+      <!-- Aquatic Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- The Rebellious River (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentTeal/10 flex items-center justify-center text-accentTeal border border-accentTeal/20 group-hover:bg-accentTeal group-hover:text-bgRiver transition-colors">
+              <i class="fas fa-water text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Rebellious River</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">Geographically, the lifeline of the Hama governorate is the Orontes River. In Arabic, this river is famously known as *Nahr al-Asi*, which translates directly to "The Rebel River." It earned this evocative title due to its highly unusual geographical behavior: unlike almost every other major river system in the Levant which flows predominantly southward toward the sea or the desert basins, the Orontes stubbornly flows from south to north. Originating in the high springs of the Lebanese Bekaa Valley, it cuts northward through the Syrian landscape, nourishing the cities of Homs and Hama before dramatically turning west into the Mediterranean Sea.</p>
+            <p>This "rebellious" northern flow carved a deep, fertile gorge through the limestone plateau of western Syria. Because the riverbed was cut so deeply into the earth, traditional gravity-fed irrigation trenches were entirely useless to the early farmers who settled on the high banks above. The water was abundant and fast-flowing, but trapped far below the agricultural land that desperately needed it. To survive and thrive in this specific biome, the inhabitants of Hama had to invent a mechanical solution to lift the rebellious river out of its gorge. That solution changed the course of medieval engineering forever.</p>
+          </div>
+        </article>
+
+        <!-- The Norias -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentWood/10 flex items-center justify-center text-accentWood border border-accentWood/20 group-hover:bg-accentWood group-hover:text-bgRiver transition-colors">
+              <i class="fas fa-dharmachakra text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Norias of Hama</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">To solve the geographic challenge of the deep river gorge, engineers constructed the *Norias*—colossal, wooden waterwheels. Built entirely of heavy, water-resistant woods like apricot, walnut, and poplar, these wheels operated purely on hydropower. The fast-flowing current of the Orontes pushed against wooden paddles at the bottom of the wheel, turning the massive structure.</p>
+            <p>Attached to the rim of the wheels were wooden box-like buckets. As the wheel dipped into the river, the buckets filled with water. The rotation lifted the water sometimes over twenty meters into the air, emptying it into high stone aqueducts at the apex of the turn, which then carried the water throughout the city's mosques, hammams, and high-elevation gardens.</p>
+          </div>
+        </article>
+
+        <!-- The Acoustic Signature -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentTeal/10 flex items-center justify-center text-accentTeal border border-accentTeal/20 group-hover:bg-accentTeal group-hover:text-bgRiver transition-colors">
+              <i class="fas fa-music text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Acoustic Signature</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">The Norias are not just visual marvels; they provide Hama with a haunting, distinct acoustic signature. Because the massive wooden axles rub directly against hard wooden or stone bearings under the immense weight of the water-laden wheels, they produce a continuous, deep, rhythmic groaning sound.</p>
+            <p>For centuries, the citizens of Hama have fallen asleep to the song of the Norias. Of the roughly 30 wheels that historically existed, 17 remain today. The largest and most famous is the *Al-Mohammediyeh*, dating back to the 14th century, whose massive 21-meter diameter makes it one of the largest ancient waterwheels ever constructed on Earth.</p>
+          </div>
+        </article>
+
+        <!-- Apamea (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentWood/10 flex items-center justify-center text-accentWood border border-accentWood/20 group-hover:bg-accentWood group-hover:text-bgRiver transition-colors">
+              <i class="fas fa-columns text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Grandeur of Apamea</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">Northwest of Hama lies the breathtaking archaeological site of Apamea. Originally founded by the Seleucid king Seleucus I Nicator in 300 BC, the city was named after his Persian wife, Apama. During the Hellenistic period, it served as the military backbone of the empire. Benefiting from the lush pastures of the Orontes valley, Apamea was the empire's primary stud farm, famously housing over 30,000 royal mares and 300 war elephants imported from India.</p>
+            <p>However, the architectural ruins visible today are overwhelmingly from the Roman and Byzantine periods. The absolute centerpiece of Apamea is its *Cardo Maximus* (the main north-south colonnaded street). Stretching for nearly two kilometers, it is one of the longest and most magnificent continuous colonnades in the entire classical world. What makes the street an architectural masterpiece is not just its staggering length, but the intricate design of the columns themselves. Unlike standard, smooth classical pillars, many of the columns in Apamea feature highly complex, spiraling, twisted fluting, creating a dynamic visual rhythm that shifts beautifully as the Mediterranean sun moves across the sky.</p>
+          </div>
+        </article>
+
+        <!-- The Ayyubid Legacy -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentTeal/10 flex items-center justify-center text-accentTeal border border-accentTeal/20 group-hover:bg-accentTeal group-hover:text-bgRiver transition-colors">
+              <i class="fas fa-shield-alt text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Ayyubid Legacy</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">During the medieval period, Hama achieved immense strategic importance during the Crusades. The legendary Kurdish Sultan, Saladin (founder of the Ayyubid dynasty), placed his powerful nephew, Al-Muzaffar Umar, in control of the city. Under Ayyubid rule, Hama experienced a massive golden age of architecture, fortification, and agricultural expansion.</p>
+            <p>This lineage produced one of the city's most famous sons, Abu al-Fida. A warrior, prince, geographer, and historian, Abu al-Fida ruled Hama in the 14th century. He was a brilliant patron of the arts and sciences, ensuring that Hama was not just a military stronghold against Frankish and Mongol invasions, but a luminous center of Islamic scholarship and engineering.</p>
+          </div>
+        </article>
+
+        <!-- The Ghab Plain -->
+        <article class="seo-card group lg:col-span-3">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentWood/10 flex items-center justify-center text-accentWood border border-accentWood/20 group-hover:bg-accentWood group-hover:text-bgRiver transition-colors">
+              <i class="fas fa-seedling text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl text-white font-bold">The Agrarian Riches of the Ghab Plain</h3>
+          </div>
+          <div class="text-textMuted text-sm md:text-base leading-relaxed text-justify">
+            <p>North of the city of Hama, the Orontes River historically expanded into the massive Al-Ghab Plain. For centuries, this area was a vast, shallow swamp—a treacherous, malarial marshland that was nearly impassable and impossible to farm. However, in the mid-20th century, a monumental engineering project successfully drained the swamps, revealing some of the most incredibly fertile soil in the entire Middle East. Today, the Ghab Plain is the agricultural powerhouse of western Syria, producing vast quantities of wheat, cotton, sugar beets, and sunflowers, proving that the relationship between the people of Hama and the defiant waters of the Orontes continues to shape the survival and prosperity of the Levant to this very day.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-accentTeal/10 py-12 relative z-10 mt-12">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentTeal flex items-center justify-center text-bgRiver">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentTeal transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentTeal transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentTeal transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentTeal transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentTeal transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentTeal transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-accentTeal/10 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentTeal transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentTeal transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Hama & Orontes) ---
+    const triviaData = [
+      {
+        question: "Hama is globally famous for its colossal, ancient wooden waterwheels. What is the traditional Arabic term for these engineering marvels?",
+        options: ["Qanats", "Norias", "Shadufs", "Saqiyas"],
+        correct: 1,
+        explanation: "Correct! The Norias are colossal wooden waterwheels designed to lift water from the deep gorge of the river up into the city's stone aqueducts."
+      },
+      {
+        question: "Through which major Syrian city does the Orontes River flow uniquely from south to north, powering these giant waterwheels?",
+        options: ["Damascus", "Aleppo", "Hama", "Deir ez-Zor"],
+        correct: 2,
+        explanation: "The Orontes (Al-Asi) flows 'rebelliously' south-to-north through Hama before turning west to the Mediterranean, providing the hydro-power for the Norias."
+      },
+      {
+        question: "What specific material are the giant Norias constructed from, which creates their famous, haunting, groaning acoustic signature?",
+        options: ["Bronze", "Heavy Iron", "Limestone Blocks", "Water-Resistant Wood"],
+        correct: 3,
+        explanation: "They are built entirely of heavy woods like apricot, walnut, and poplar. The friction of the wooden axles turning under massive weight causes their famous groaning sound."
+      },
+      {
+        question: "Northwest of Hama lies an ancient Roman-era city famous for having one of the longest continuous colonnaded streets (Cardo Maximus) in the world. What is its name?",
+        options: ["Palmyra", "Apamea", "Bosra", "Ugarit"],
+        correct: 1,
+        explanation: "Apamea features a breathtaking two-kilometer-long Cardo Maximus, uniquely famous for its spiraling, twisted fluted columns."
+      },
+      {
+        question: "During the Hellenistic period, the lush pastures near Apamea were utilized by the Seleucid Empire primarily as what?",
+        options: ["A naval shipyard", "A massive royal stud farm for cavalry and war elephants", "A gold mining colony", "A desert prison camp"],
+        correct: 1,
+        explanation: "Benefiting from the fertile Orontes valley, Apamea served as the empire's primary military stud farm, reportedly housing 30,000 royal mares and 300 war elephants."
+      },
+      {
+        question: "During the medieval era, Hama was heavily fortified by the Ayyubid dynasty. Which legendary 12th-century Sultan founded this dynasty?",
+        options: ["Nur al-Din", "Baibars", "Saladin", "Harun al-Rashid"],
+        correct: 2,
+        explanation: "Saladin (Salah ad-Din) founded the Ayyubid dynasty and placed his powerful nephew in control of Hama, initiating a golden age of architecture for the city."
+      },
+      {
+        question: "In the 20th century, a massive engineering project completely transformed the Ghab Plain north of Hama from a treacherous, malarial swamp into what?",
+        options: ["A massive hydroelectric dam", "The agricultural powerhouse and breadbasket of western Syria", "An international airport", "A protected desert nature reserve"],
+        correct: 1,
+        explanation: "By draining the marshes of the Al-Ghab plain, engineers revealed incredibly fertile soil, turning the region into a massive agricultural center for wheat and cotton."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-accentTeal/20 rounded-full text-center leading-8 mr-3 text-xs text-accentTeal font-black shrink-0 border border-accentTeal/50">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentWood text-white shadow-[0_0_20px_rgba(217,119,6,0.4)] border-2 border-yellow-400";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Current Navigated";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentWood";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] border-2 border-red-300";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Swept Away";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "The Basin Secured";
+        rSub.innerText = "Trial Passed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentWood";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(217,119,6,0.3)] bg-accentWood/10 border-2 border-accentWood";
+        rIcon.className = "fas fa-dharmachakra text-4xl text-accentWood";
+        rDesc.innerHTML = "You have proven your mastery over the Orontes current. <strong>Hama has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-hama.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-bgRiver bg-accentTeal font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(20,184,166,0.2)] hover:-translate-y-1 hover:bg-white";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('hama')) { mapProgress.push('hama'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Lost in the Flow";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-water text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. The Norias remain locked. Review the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Trial <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Hama River Trial in the Syrian Archives! Can you navigate the Orontes?`;
+      if (navigator.share) { navigator.share({ title: 'Hama Trial', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " " + window.location.href); }
+    }
+  </script>
+</body>
+</html>

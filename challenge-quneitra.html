@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Quneitra Trial | The Syrian Archives</title>
+  <meta name="description" content="Explore the strategic heights of Quneitra and Lake Ram. Pass this final 7-step trial to complete and unlock Quneitra on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgHighland: '#0B192C', /* Deep Highland Slate */
+            bgSurface: '#1E293B', /* Strategic Surface */
+            accentBlue: '#3B82F6', /* Royal Blue */
+            accentGold: '#F59E0B', /* Highland Gold */
+            textLight: '#F8FAFC',
+            textMuted: '#93C5FD'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B192C; color: #F8FAFC; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Subtle Highland Pattern */
+    .quneitra-pattern {
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.04) 0%, transparent 40%);
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Fixed Viewport Constraints */
+    .game-container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      background: rgba(30, 41, 59, 0.6);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #3B82F6; background: rgba(59, 130, 246, 0.1); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(59, 130, 246, 0.2); border-color: #3B82F6; color: #93C5FD; 
+    }
+    .option-btn.wrong { 
+      background: rgba(239, 68, 68, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Blue Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #3B82F6; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; box-shadow: 0 0 10px #3B82F6; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1rem;
+      background: rgba(11, 25, 44, 0.96); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Cards */
+    .seo-card {
+      background: #1E293B; border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 1.5rem;
+      padding: 2.5rem; transition: all 0.4s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.5); box-shadow: 0 15px 30px rgba(11, 25, 44, 0.8); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentBlue selection:text-bgHighland">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="quneitra-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#0B192C]/80 backdrop-blur-lg border-b border-accentBlue/10 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentBlue flex items-center justify-center text-white transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentBlue hover:text-white hover:border-accentBlue transition-all flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentBlue/10 text-accentBlue flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(59,130,246,0.15)] border border-accentBlue/20">
+        <i class="fas fa-binoculars text-4xl"></i>
+      </div>
+      
+      <span class="text-accentBlue text-xs font-bold uppercase tracking-widest mb-2 block">Quneitra Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">The Strategic Heights</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Explore the commanding ridges of the Golan plateau, volcanic crater lakes, and ancient highland ruins. Pass this final trial to complete your map.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface/60 p-4 rounded-xl border border-accentBlue/10 mb-8 backdrop-blur-sm">
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-binoculars text-accentBlue mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentBlue mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentBlue mr-1"></i> Final Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentBlue text-white rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-blue-600 transition-all shadow-[0_5px_20px_rgba(59,130,246,0.3)]">
+        Survey the Heights
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Query <span id="ui-current-q" class="text-accentBlue text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-bgSurface/90 backdrop-blur-md border border-accentBlue/20 rounded-2xl p-5 md:p-8 shadow-2xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading highland records...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-white mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm md:text-base text-textMuted leading-relaxed mb-8 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-white bg-accentBlue font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(59,130,246,0.3)]">
+            Continue Survey
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Trial Concluded</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-white/10 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentBlue">0</span><span class="text-2xl text-textMuted">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-white bg-accentBlue font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(59,130,246,0.3)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#070E17] border-t border-white/5 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentBlue font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of Quneitra & The Golan Heights</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          The southwestern plateau of Syria is defined by volcanic craters, commanding military elevations overlooking the Damascus basin, and ancient highland ruins. Explore the historical records below.
+        </p>
+      </div>
+
+      <!-- Quneitra Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Strategic Heights (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentBlue/10 flex items-center justify-center text-accentBlue border border-accentBlue/20 group-hover:bg-accentBlue group-hover:text-white transition-colors">
+              <i class="fas fa-binoculars text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Strategic Elevation Overlooking Damascus</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The Quneitra governorate occupies one of the most fiercely contested and strategically vital geographical wedges in the Middle East. Rising steeply from the Jordan Rift Valley, the plateau forms an elevated volcanic barrier that commands a sweeping, unbroken line-of-sight across the entire Damascus basin to the east and down toward northern Israel and Jordan to the south and west. Throughout antiquity, any empire controlling these heights held absolute tactical superiority over southern Syria.</p>
+            <p>From Hellenistic generals and Roman legions to medieval Crusaders and modern armies, military commanders recognized that holding Quneitra meant controlling the gateway to the Syrian interior. The terrain is characterized by rugged volcanic cones (tells) such as Tel Abu Nida, which act natural observation posts. Unlocking Quneitra on your map grants you complete mastery over the final high frontier of the Levant.</p>
+          </div>
+        </article>
+
+        <!-- Lake Ram -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentBlue/10 flex items-center justify-center text-accentBlue border border-accentBlue/20 group-hover:bg-accentBlue group-hover:text-white transition-colors">
+              <i class="fas fa-water text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Lake Ram: The Volcanic Crater Lake</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">One of the most fascinating natural geological wonders in Quneitra is Lake Ram (*Birket Ram*), a deep, perfectly circular body of water nestled inside the caldera of an extinct volcanic cone.</p>
+            <p>Fed exclusively by underground subterranean springs and winter snowmelt rather than surface rivers, Lake Ram has inspired local folklore for millennia. Ancient legends whispered that the lake had no bottom, while modern hydrologists prize it as a pristine geological relic of the region's intense volcanic history.</p>
+          </div>
+        </article>
+
+        <!-- Volcanic Geology -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgHighland transition-colors">
+              <i class="fas fa-volcano text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Volcanic Soil & Highland Orchards</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Like neighboring As-Suwayda, the Quneitra plateau is blanketed in thick layers of porous basaltic lava flows and rich volcanic ash. This specialized soil, combined with heavy winter precipitation and cool high-altitude summer temperatures, creates a unique microclimate.</p>
+            <p>The plateau is famous across Syria for producing exceptional highland agriculture, particularly sprawling orchards of sweet apples, cherries, and plums that thrive in the mineral-rich volcanic earth.</p>
+          </div>
+        </article>
+
+        <!-- Ancient Ruins -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentBlue/10 flex items-center justify-center text-accentBlue border border-accentBlue/20 group-hover:bg-accentBlue group-hover:text-white transition-colors">
+              <i class="fas fa-landmark text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Ancient Ruins & Byzantine Monasteries</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Beneath its modern geopolitical prominence, Quneitra is deeply layered with ancient history. Archaeological surveys across the ridge have uncovered Hellenistic farming estates, Roman milestone roads connecting Caesarea to Damascus, and early Byzantine monastic ruins carved from the basalt stone.</p>
+            <p>These ancient settlements demonstrate that the highlands were long prized not just for military defense, but as a prosperous agrarian and trading community linking the Mediterranean coast to the interior.</p>
+          </div>
+        </article>
+
+        <!-- The Final Frontier (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgHighland transition-colors">
+              <i class="fas fa-flag text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Completion of the Syrian Archives</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The city of Quneitra itself stands as a powerful historical monument. Heavily damaged during the mid-20th century conflicts, the abandoned old city was left standing as a striking ghost town adjacent to the modern administrative center, bearing witness to the turbulent modern history of the Levant. Yet, surrounding the ruins, the natural beauty of the volcanic plateau endures, with its green pastures, grazing cattle, and sparkling crater lakes.</p>
+            <p>By conquering this final trial, you have successfully unlocked all 14 governorates of Syria on your interactive map, completing the entire QuizRealm Syrian Archives project! From the jasmine courtyards of Damascus to the high volcanic ridges of Quneitra, your digital map is now fully illuminated.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-white/5 py-12 relative z-10 mt-12">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentBlue flex items-center justify-center text-white">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentBlue transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentBlue transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentBlue transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentBlue transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentBlue transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentBlue transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentBlue transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentBlue transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Quneitra - Strategic Heights & Golan) ---
+    const triviaData = [
+      {
+        question: "What primary geographical advantage has made the Quneitra governorate historically crucial in military and trade strategy?",
+        options: ["It sits on a deep river delta", "It forms an elevated volcanic plateau commanding a sweeping line-of-sight over the Damascus basin", "It is the only natural harbor in southern Syria", "It guards the only gold mines in the region"],
+        correct: 1,
+        explanation: "Correct! Quneitra's high elevation provides absolute tactical observation and strategic dominance over the entire Damascus basin to the east."
+      },
+      {
+        question: "What is the name of the deep, perfectly circular body of water nestled inside an extinct volcanic crater in the region?",
+        options: ["Lake Assad", "Lake Ram (Birket Ram)", "Lake Qattinah", "The Dead Sea"],
+        correct: 1,
+        explanation: "Spot on! Lake Ram is a pristine volcanic crater lake fed exclusively by underground springs and winter snowmelt."
+      },
+      {
+        question: "What specialized soil type blankets the Quneitra plateau, making it exceptionally fertile for apple and cherry orchards?",
+        options: ["Sandy desert dunes", "Porous basaltic lava flows and rich volcanic ash", "White chalky limestone", "Clay river silt"],
+        correct: 1,
+        explanation: "Yes! The rich volcanic ash and porous basalt earth create a unique mineral-rich microclimate ideal for highland fruit orchards."
+      },
+      {
+        question: "What tactical purpose do volcanic cones (tells) like Tel Abu Nida serve across the Quneitra landscape?",
+        options: ["They act as natural observation posts and artillery lookouts", "They are used for deep underground mining", "They serve as giant rainwater cisterns", "They mark ancient burial sites"],
+        correct: 0,
+        explanation: "Correct! The rugged volcanic hills act as natural elevated observation posts dominating the plateau."
+      },
+      {
+        question: "In ancient history, what major empire constructed milestone roads connecting Caesarea directly to Damascus through these highlands?",
+        options: ["The Persian Empire", "The Roman Empire", "The Ottoman Empire", "The Assyrian Empire"],
+        correct: 1,
+        explanation: "Spot on! Roman engineers built strategic milestone roads across the heights, connecting Mediterranean ports to the interior capital."
+      },
+      {
+        question: "What is the modern symbolic status of the abandoned old city of Quneitra?",
+        options: ["It has been converted into a modern ski resort", "It stands as a striking historical monument bearing witness to modern conflict", "It is an active industrial manufacturing zone", "It is a protected botanical garden"],
+        correct: 1,
+        explanation: "Yes! The heavily damaged old city was left standing as a striking historical monument adjacent to the modern administrative center."
+      },
+      {
+        question: "By conquering this final trial, how many total governorates of Syria will you have successfully unlocked on your interactive map?",
+        options: ["7 Governorates", "10 Governorates", "14 Governorates", "20 Governorates"],
+        correct: 2,
+        explanation: "Perfect! Unlocking Quneitra completes all 14 governorates, fully illuminating your interactive map of Syria!"
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-accentBlue/20 rounded-full text-center leading-8 mr-3 text-xs text-accentBlue font-black shrink-0 border border-accentBlue/50">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentBlue text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] border-2 border-blue-300";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Heights Secured";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentBlue";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] border-2 border-red-300";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Fog on the Ridge";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "Map Completed!";
+        rSub.innerText = "All 14 Governorates Unlocked"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentBlue";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(59,130,246,0.4)] bg-accentBlue/10 border-2 border-accentBlue";
+        rIcon.className = "fas fa-crown text-4xl text-accentBlue";
+        rDesc.innerHTML = "Magnificent! You have conquered the final trial and successfully unlocked all 14 governorates. <strong>Your Syrian Archives map is 100% complete</strong>.";
+        
+        btnPrimary.innerHTML = 'Return to Complete Map <i class="fas fa-map-marked-alt ml-2"></i>';
+        btnPrimary.href = "syria-interactive-map.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-accentBlue font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(59,130,246,0.3)] hover:-translate-y-1 hover:bg-blue-600";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('quneitra')) { mapProgress.push('quneitra'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Heights Lost";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-lock text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. Quneitra remains locked. Read the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Trial <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I just unlocked all 14 governorates and completed the Syrian Archives on QuizRealm! Can you conquer the map?`;
+      if (navigator.share) { navigator.share({ title: 'Quneitra Trial - Map Complete', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " " + window.location.href); }
+    }
+  </script>
+</body>
+</html>

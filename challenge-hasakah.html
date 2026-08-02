@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Al-Hasakah Trial | The Syrian Archives</title>
+  <meta name="description" content="Explore the prehistoric Tell Halaf culture and the Khabur River valley. Pass this 7-step trial to unlock Al-Hasakah on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgHasakah: '#120D08', /* Deep Earth Gold Night */
+            bgSurface: '#1F1710', /* Harvest Surface */
+            accentAmber: '#F59E0B', /* Fertile Wheat Amber */
+            accentBronze: '#D97706', /* Deep Harvest Bronze */
+            textLight: '#FEF3C7',
+            textMuted: '#FDE68A'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #120D08; color: #FEF3C7; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Subtle Wheat & Earth Pattern */
+    .hasakah-pattern {
+      background-image: 
+        radial-gradient(circle at 10% 90%, rgba(245, 158, 11, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(217, 119, 6, 0.04) 0%, transparent 40%);
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Fixed Viewport Constraints */
+    .game-container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      background: rgba(31, 23, 16, 0.6);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #F59E0B; background: rgba(245, 158, 11, 0.1); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(245, 158, 11, 0.2); border-color: #F59E0B; color: #FDE68A; 
+    }
+    .option-btn.wrong { 
+      background: rgba(239, 68, 68, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Amber Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #F59E0B; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; box-shadow: 0 0 10px #F59E0B; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1rem;
+      background: rgba(18, 13, 8, 0.96); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Cards */
+    .seo-card {
+      background: #1F1710; border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 1.5rem;
+      padding: 2.5rem; transition: all 0.4s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(245, 158, 11, 0.5); box-shadow: 0 15px 30px rgba(18, 13, 8, 0.8); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentAmber selection:text-bgHasakah">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="hasakah-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#120D08]/80 backdrop-blur-lg border-b border-accentAmber/10 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentAmber flex items-center justify-center text-bgHasakah transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentAmber hover:text-bgHasakah hover:border-accentAmber transition-all flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentAmber/10 text-accentAmber flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(245,158,11,0.15)] border border-accentAmber/20">
+        <i class="fas fa-wheat-awn text-4xl"></i>
+      </div>
+      
+      <span class="text-accentAmber text-xs font-bold uppercase tracking-widest mb-2 block">Al-Hasakah Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">The Upper Jazira Breadbasket</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Explore the prehistoric Tell Halaf culture and the Khabur River valley. Pass this trial to permanently unlock Al-Hasakah on your map.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface/60 p-4 rounded-xl border border-accentAmber/10 mb-8 backdrop-blur-sm">
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-wheat-awn text-accentAmber mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentAmber mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentAmber mr-1"></i> Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentAmber text-bgHasakah rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[0_5px_20px_rgba(245,158,11,0.2)]">
+        Harvest the Plains
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Query <span id="ui-current-q" class="text-accentAmber text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-bgSurface/90 backdrop-blur-md border border-accentAmber/20 rounded-2xl p-5 md:p-8 shadow-2xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading Jazira records...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-bgHasakah mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm md:text-base text-textMuted leading-relaxed mb-8 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-bgHasakah bg-accentAmber font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(245,158,11,0.3)]">
+            Continue Harvest
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Trial Concluded</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-white/10 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentAmber">0</span><span class="text-2xl text-textMuted">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-bgHasakah font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(245,158,11,0.3)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#0A0704] border-t border-white/5 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentAmber font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of Al-Hasakah & The Upper Jazira</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          The northeastern corner of Syria, known as the Upper Jazira, is an ancient agricultural breadbasket watered by the Khabur River and shaped by prehistoric Neolithic cultures. Explore the historical records below.
+        </p>
+      </div>
+
+      <!-- Hasakah Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Tell Halaf (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentAmber/10 flex items-center justify-center text-accentAmber border border-accentAmber/20 group-hover:bg-accentAmber group-hover:text-bgHasakah transition-colors">
+              <i class="fas fa-seedling text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">Tell Halaf & The Prehistoric Halaf Culture</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The Al-Hasakah governorate holds a profound place in world archaeology through Tell Halaf, the type site for the remarkable Neolithic "Halaf culture" that flourished around 6000–5000 BC. Excavated initially by the German diplomat and archaeologist Max von Oppenheim in the early 20th century, Tell Halaf revealed an advanced prehistoric society that mastered fine ceramics, metallurgy, and specialized village architecture. The pottery of the Halaf culture is internationally renowned for its exquisite, highly sophisticated polychrome geometric and animal motifs, painted in rich brown, black, and orange on creamy backgrounds.</p>
+            <p>Beyond pottery, the site uncovered monumental basalt orthostats and stone sculptures featuring mythological creatures, sphinxes, and deities that decorated the palaces of later Aramaean rulers of Guzana (Tell Halaf) during the early Iron Age. Unlocking Al-Hasakah on your map connects you directly to the dawn of settled agricultural civilization in upper Mesopotamia, where prehistoric artisans first elevated pottery into high art.</p>
+          </div>
+        </article>
+
+        <!-- The Khabur River -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentAmber/10 flex items-center justify-center text-accentAmber border border-accentAmber/20 group-hover:bg-accentAmber group-hover:text-bgHasakah transition-colors">
+              <i class="fas fa-water text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Khabur River Valley</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">The geographical lifeline of Al-Hasakah is the Khabur River, a major perennial tributary of the Euphrates. Fed by numerous karstic springs in the northern mountains along the Turkish border, the Khabur river valley created a lush, green oasis across the dry plains of the Upper Jazira.</p>
+            <p>For millennia, this river basin supported intensive agriculture, giving rise to dozens of ancient mound settlements (*tells*) that dot the landscape. In biblical history, the Khabur valley is famously associated with the rivers of Gozan, where Israelite exiles were resettled following the Assyrian conquest of Samaria in the 8th century BC.</p>
+          </div>
+        </article>
+
+        <!-- The Multi-Ethnic Mosaic -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentBronze/10 flex items-center justify-center text-accentBronze border border-accentBronze/20 group-hover:bg-accentBronze group-hover:text-bgHasakah transition-colors">
+              <i class="fas fa-users text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">A Multi-Cultural Mosaic</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Culturally, Al-Hasakah is one of the most diverse and fascinating regions in the entire Middle East. Often described as a vibrant ethnic and linguistic mosaic, the governorate is home to deep-rooted communities of Arabs, Kurds, Assyrians (Syriac Christians), Armenians, and Turkmen.</p>
+            <p>Many Assyrian communities reside directly along the banks of the Khabur River in historic villages, preserving ancient Aramaic dialects and Christian traditions that stretch back over a millennium, enriching the cultural fabric of the Upper Jazira.</p>
+          </div>
+        </article>
+
+        <!-- The Agricultural Breadbasket -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentAmber/10 flex items-center justify-center text-accentAmber border border-accentAmber/20 group-hover:bg-accentAmber group-hover:text-bgHasakah transition-colors">
+              <i class="fas fa-wheat-awn text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Modern Breadbasket</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">In modern economic geography, Al-Hasakah is universally designated as Syria's primary agricultural breadbasket. Benefiting from higher annual rainfall than the southern desert regions and extensive irrigation from the Khabur and Euphrates basins, the vast plains produce massive yields of high-quality wheat and cotton.</p>
+            <p>These golden wheat fields stretch as far as the eye can see, supplying domestic food security and anchoring the regional economy of northeastern Syria for generations.</p>
+          </div>
+        </article>
+
+        <!-- The Upper Jazira (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentBronze/10 flex items-center justify-center text-accentBronze border border-accentBronze/20 group-hover:bg-accentBronze group-hover:text-bgHasakah transition-colors">
+              <i class="fas fa-globe-asia text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">Aram-Naharaim: The Land Between Rivers</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">Historically, the Al-Hasakah region formed the heart of Upper Mesopotamia, known in biblical and ancient texts as *Aram-Naharaim* ("Aram of the Two Rivers"—referring to the area between the Euphrates and the Tigris). This strategic plain acted as the northern gateway connecting Anatolia, Assyria, and the Levant. Empires fought fiercely for control of its grain silos, copper mines, and caravan paths, leaving behind a rich archaeological tapestry buried beneath hundreds of fertile agricultural mounds.</p>
+            <p>Today, unlocking Al-Hasakah on your interactive map connects you directly to the agricultural and prehistoric roots of northeastern Syria—completing your comprehensive archive of the Jazira plains. From the painted pottery of Tell Halaf to the golden wheat fields of the Khabur valley, the breadbasket stands fully mapped.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-white/5 py-12 relative z-10 mt-12">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentAmber flex items-center justify-center text-bgHasakah">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentAmber transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentAmber transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentAmber transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentAmber transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentAmber transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentAmber transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentAmber transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentAmber transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Al-Hasakah - Jazira & Tell Halaf) ---
+    const triviaData = [
+      {
+        question: "What is the name of the prehistoric Neolithic type site in Al-Hasakah famous for its exquisite painted polychrome pottery?",
+        options: ["Tell Halaf", "Tell Mardikh", "Mari", "Ugarit"],
+        correct: 0,
+        explanation: "Correct! Tell Halaf is the type site for the prehistoric Halaf culture (6000–5000 BC), renowned worldwide for its sophisticated geometric and animal pottery motifs."
+      },
+      {
+        question: "What is the name of the major perennial river that waters Al-Hasakah's fertile plains, acting as a vital Euphrates tributary?",
+        options: ["The Tigris River", "The Khabur River", "The Orontes River", "The Barada River"],
+        correct: 1,
+        explanation: "Spot on! The Khabur River creates a lush green oasis across the dry plains of the Upper Jazira, supporting ancient and modern agriculture."
+      },
+      {
+        question: "In modern economic geography, what title is universally given to the Al-Hasakah governorate across Syria?",
+        options: ["The Oil Capital", "The Agricultural Breadbasket", "The Mountain Mining Center", "The Textile Hub"],
+        correct: 1,
+        explanation: "Yes! Al-Hasakah is Syria's primary agricultural breadbasket, producing massive yields of high-quality wheat and cotton across its vast golden plains."
+      },
+      {
+        question: "During the early Iron Age, what was the name of the Aramaean kingdom that had its capital at Tell Halaf?",
+        options: ["Guzana", "Carchemish", "Mitanni", "Urartu"],
+        correct: 0,
+        explanation: "Correct! Guzana was an important Aramaean kingdom centered at Tell Halaf, famous for its basalt palace sculptures and orthostats."
+      },
+      {
+        question: "In biblical history and ancient geography, what term is frequently used to describe the region between the Euphrates and Tigris rivers where Al-Hasakah is located?",
+        options: ["Canaan", "Aram-Naharaim (Upper Mesopotamia)", "The Levant", "Phrygia"],
+        correct: 1,
+        explanation: "Spot on! Al-Hasakah formed the heart of Upper Mesopotamia, known anciently as Aram-Naharaim ('Aram of the Two Rivers')."
+      },
+      {
+        question: "Which historic Christian community has resided for centuries directly along the banks of the Khabur River, preserving ancient Aramaic dialects?",
+        options: ["Coptic Christians", "Assyrians (Syriac Christians)", "Maronite Christians", "Armenian Catholics"],
+        correct: 1,
+        explanation: "Yes! Historic Assyrian communities live along the Khabur River, preserving ancient Syriac language and traditions stretching back over a millennium."
+      },
+      {
+        question: "Which German diplomat and archaeologist initiated the famous excavations at Tell Halaf in the early 20th century?",
+        options: ["Heinrich Schliemann", "Max von Oppenheim", "Robert Koldewey", "Leonard Woolley"],
+        correct: 1,
+        explanation: "Perfect! Max von Oppenheim discovered the prehistoric Halaf culture and the Iron Age palace sculptures at Tell Halaf between 1911 and 1929."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-accentAmber/20 rounded-full text-center leading-8 mr-3 text-xs text-accentAmber font-black shrink-0 border border-accentAmber/50">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentAmber text-bgHasakah shadow-[0_0_20px_rgba(245,158,11,0.4)] border-2 border-amber-300";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Harvest Successful";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentAmber";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] border-2 border-red-300";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Crop Withered";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "Plains Harvested";
+        rSub.innerText = "Trial Passed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentAmber";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(245,158,11,0.3)] bg-accentAmber/10 border-2 border-accentAmber";
+        rIcon.className = "fas fa-wheat-awn text-4xl text-accentAmber";
+        rDesc.innerHTML = "You have successfully harvested the Jazira plains. <strong>Al-Hasakah has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-hasakah.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-bgHasakah bg-accentAmber font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(245,158,11,0.3)] hover:-translate-y-1 hover:bg-white";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('hasakah')) { mapProgress.push('hasakah'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Drought Conditions";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-lock text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. The breadbasket remains locked. Read the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Trial <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Al-Hasakah Jazira Trial in the Syrian Archives! Can you harvest the plains?`;
+      if (navigator.share) { navigator.share({ title: 'Al-Hasakah Trial', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " " + window.location.href); }
+    }
+  </script>
+</body>
+</html>

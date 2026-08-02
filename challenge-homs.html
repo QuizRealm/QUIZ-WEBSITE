@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Palmyra Trial | The Syrian Archives</title>
+  <meta name="description" content="Enter the Syrian Desert. Prove your knowledge of Queen Zenobia and Palmyra to unlock the Homs Governorate on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgNight: '#08080C',
+            bgSurface: '#12121A',
+            accentGold: '#F5A623', /* Sandstone/Desert Gold */
+            accentPurple: '#6B21A8', /* Imperial Roman/Palmyrene Purple */
+            textLight: '#F3F4F6',
+            textMuted: '#9CA3AF'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #08080C; color: #F3F4F6; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Desert Stardust Background Pattern */
+    .desert-pattern {
+      background-image: radial-gradient(#F5A623 0.7px, transparent 0.7px);
+      background-size: 36px 36px;
+      opacity: 0.07;
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Keep Game Screen Fixed within Viewport */
+    .game-container {
+      min-height: calc(100vh - 80px); /* Account for header */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Elegant Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #F5A623; background: rgba(245, 166, 35, 0.05); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(245, 166, 35, 0.15); border-color: #F5A623; color: #F5A623; 
+    }
+    .option-btn.wrong { 
+      background: rgba(239, 68, 68, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #F5A623; transition: width 0.4s ease; height: 100%; box-shadow: 0 0 10px #F5A623; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1.5rem;
+      background: rgba(18, 18, 26, 0.95); backdrop-filter: blur(10px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(245, 166, 35, 0.2);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Cards */
+    .seo-card {
+      background: #12121A; border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem;
+      padding: 2rem; transition: transform 0.3s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(245, 166, 35, 0.3); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentGold selection:text-bgNight">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="desert-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#08080C]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentGold flex items-center justify-center text-bgNight transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentGold hover:text-bgNight hover:border-accentGold transition-colors flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER (Fixed to Viewport to prevent scrolling) -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentGold/10 text-accentGold flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(245,166,35,0.15)] border border-accentGold/20">
+        <i class="fas fa-sun text-4xl"></i>
+      </div>
+      
+      <span class="text-accentGold text-xs font-bold uppercase tracking-widest mb-2 block">Homs Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">Bride of the Desert</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Step into the shifting sands of the Syrian steppe. Prove your knowledge of Queen Zenobia, Crusader castles, and the ancient caravan trade to permanently unlock the central desert.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface p-4 rounded-xl border border-white/5 mb-8">
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-list-ul text-accentGold mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentGold mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentGold mr-1"></i> Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentGold text-bgNight rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[0_5px_20px_rgba(245,166,35,0.2)]">
+        Enter the Sands
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY (Designed to fit perfectly on mobile) -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Query <span id="ui-current-q" class="text-accentGold text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas (Relative positioning for absolute feedback overlay) -->
+      <div class="bg-bgSurface border border-white/5 rounded-2xl p-5 md:p-8 shadow-xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading ancient records...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-bgNight mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm text-textMuted leading-relaxed mb-6 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-bgNight bg-accentGold font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(245,166,35,0.2)]">
+            Continue Journey
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Trial Concluded</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-white/10 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentGold">0</span><span class="text-2xl text-textMuted">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-bgNight font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(245,166,35,0.2)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#040406] border-t border-white/5 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentGold font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of Homs & Palmyra</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          The Homs Governorate is a massive expanse bridging the lush western mountains to the deep eastern desert. Read below to understand the monumental history of the caravan kings, the warrior queen, and the crusader fortresses.
+        </p>
+      </div>
+
+      <!-- Desert Asymmetrical Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Zenobia (Large) -->
+        <article class="seo-card lg:col-span-2">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20">
+              <i class="fas fa-chess-queen text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">Queen Zenobia's Rebellion</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">No figure dominates the mythology and history of the Syrian Desert quite like Queen Zenobia (Bat Zabbai). Born in the 3rd century AD during a period of massive political instability known as the Crisis of the Third Century, Zenobia took power as the regent of Palmyra following the assassination of her husband, Odaenathus. Under her brilliant, aggressive leadership, Palmyra transformed from a wealthy but compliant Roman client state into a fiercely independent eastern empire.</p>
+            <p>Taking advantage of Rome's internal fracturing, Zenobia launched a stunning military campaign. Her heavily armored desert cavalry swept south, conquering Egypt, the breadbasket of the ancient world. She then pushed north, seizing vast swaths of Anatolia (modern Turkey). For a brief, shining moment, the Palmyrene Empire controlled the most vital trade routes and agricultural centers of the Mediterranean. She famously declared herself Empress, minting coins featuring her own face without the authorization of the Roman Emperor. Though Emperor Aurelian eventually defeated her forces in 272 AD, dragging her back to Rome in golden chains, her legacy as the ultimate warrior queen remains an indelible, romanticized pillar of Levantine identity.</p>
+          </div>
+        </article>
+
+        <!-- Caravan Trade -->
+        <article class="seo-card">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20">
+              <i class="fas fa-camel text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Wealth of the Caravans</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Palmyra, locally known as Tadmur, did not generate its fabulous wealth from agriculture; it was entirely born of logistics. It sat perfectly in the arid expanse between the Roman Empire to the west and the Parthian (later Sassanid Persian) Empire to the east.</p>
+            <p>By securing the desert wells and offering armed escorts to massive merchant caravans crossing the treacherous steppe, Palmyra effectively taxed the entire flow of global luxury goods. Silk from China, spices from India, and pearls from the Arabian Gulf all passed through Palmyrene hands, generating the unbelievable capital required to build the monumental stone city in the middle of a barren wasteland.</p>
+          </div>
+        </article>
+
+        <!-- The Great Colonnade -->
+        <article class="seo-card">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20">
+              <i class="fas fa-columns text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Great Colonnade</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">The architectural manifestation of Palmyra's wealth is best witnessed in the Great Colonnade. Unlike typical Roman streets, this monumental avenue stretched for over a kilometer and was not perfectly straight; it elegantly angled to connect the city's major temples and administrative buildings.</p>
+            <p>What makes the Colonnade unique is that halfway up each towering Corinthian column is a protruding stone bracket. These brackets were designed to hold bronze statues honoring the wealthy merchants, caravan leaders, and civic benefactors who funded the city's construction—a fascinating celebration of capitalistic enterprise over traditional imperial or religious dedication.</p>
+          </div>
+        </article>
+
+        <!-- Temple of Bel -->
+        <article class="seo-card">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20">
+              <i class="fas fa-monument text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Temple of Bel</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">The Temple of Bel was the religious epicenter of ancient Palmyra, dedicated to the Mesopotamian god of storms and fertility. Dedicated in 32 AD, its architecture is a masterclass in cultural synthesis, representing the melting pot of the desert crossroads.</p>
+            <p>While the exterior of the temple features classic Greco-Roman colonnades and monumental stone masonry, the interior spatial arrangement—specifically the inclusion of a flat roof for stargazing rituals and asymmetrical cult niches—is profoundly Semitic and Eastern. It stood as a physical testament to a society that operated seamlessly between two clashing superpowers.</p>
+          </div>
+        </article>
+
+        <!-- Krak des Chevaliers (Large) -->
+        <article class="seo-card lg:col-span-2">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20">
+              <i class="fas fa-chess-tower text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">Krak des Chevaliers</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">Moving far west from the desert sands of Palmyra, the Homs Governorate encompasses the rugged coastal mountain ranges. Perched atop a highly strategic 650-meter-high hill lies Krak des Chevaliers (Qal'at al-Hosn), universally acknowledged by military historians as the most perfectly preserved and formidable Crusader castle in the world. Originally the site of a small Kurdish fort, the location was given to the Knights Hospitaller in 1142, who spent the next century expanding it into an impenetrable military masterpiece.</p>
+            <p>The fortress is a textbook example of concentric castle design. It features two distinct, massive defensive walls separated by a steep ditch. If an invading army somehow breached the massive outer wall, they found themselves trapped in a kill-zone, exposed to devastating archer crossfire from the even higher inner walls. The castle was practically an independent city, featuring a massive Gothic chapel, soaring vaulted halls, granaries, and aqueducts. It successfully withstood numerous sieges by legendary commanders, including Saladin himself, before finally falling to the Mamluk Sultan Baibars in 1271 after a 36-day siege.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-white/5 py-12 relative z-10">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentGold flex items-center justify-center text-bgNight">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentGold transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentGold transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentGold transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentGold transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentGold transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentGold transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentGold transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentGold transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Homs & Palmyra) ---
+    const triviaData = [
+      {
+        question: "In the 3rd century AD, which legendary Warrior Queen ruled Palmyra and launched a massive rebellion against the Roman Empire?",
+        options: ["Queen Cleopatra", "Queen Nefertiti", "Queen Zenobia", "Queen Boudica"],
+        correct: 2,
+        explanation: "Queen Zenobia (Bat Zabbai) conquered Egypt and Anatolia, declaring independence from Rome before Emperor Aurelian finally defeated her in 272 AD."
+      },
+      {
+        question: "Palmyra generated its unbelievable wealth not through farming, but by controlling and taxing what?",
+        options: ["Gold mines in the desert", "Maritime shipping on the coast", "Caravan trade routes across the desert", "The production of silk"],
+        correct: 2,
+        explanation: "Palmyra sat perfectly between the Roman and Persian empires. By offering armed escorts and water to massive merchant caravans, they taxed the global flow of luxury goods."
+      },
+      {
+        question: "What is the historical nickname universally given to the ancient oasis city of Palmyra?",
+        options: ["The Pearl of the East", "The Bride of the Desert", "The City of Pillars", "The Golden Gate"],
+        correct: 1,
+        explanation: "Because it sat as a beautiful, wealthy oasis in the middle of the harsh, barren Syrian steppe, it was romantically dubbed 'The Bride of the Desert'."
+      },
+      {
+        question: "The 'Great Colonnade' in Palmyra features unique protruding stone brackets halfway up the columns. What were these brackets used for?",
+        options: ["To hold oil lamps", "To support a wooden roof", "To hold bronze statues of wealthy merchants", "To tether camels"],
+        correct: 2,
+        explanation: "In a unique celebration of commerce, the brackets held bronze statues honoring the wealthy caravan leaders and civic benefactors who funded the city."
+      },
+      {
+        question: "Located in the western part of the Homs governorate, which fortress is widely considered the most formidable Crusader castle in the world?",
+        options: ["Saladin's Castle", "Krak des Chevaliers", "Margat Castle", "Aleppo Citadel"],
+        correct: 1,
+        explanation: "Krak des Chevaliers is a masterpiece of concentric castle design. Held by the Knights Hospitaller, it successfully withstood numerous sieges for over a century."
+      },
+      {
+        question: "The Temple of Bel in Palmyra is an architectural masterpiece because it perfectly blends traditional Greco-Roman masonry with what other style?",
+        options: ["Egyptian", "Semitic and Eastern", "Gothic", "Byzantine"],
+        correct: 1,
+        explanation: "The temple perfectly illustrates Palmyra's status as a crossroads. It features Roman exterior columns but an asymmetrical, Semitic interior spatial arrangement."
+      },
+      {
+        question: "Which major river flows through the western Homs governorate and is famously dammed at Lake Qattinah and Al-Rastan?",
+        options: ["The Euphrates River", "The Tigris River", "The Barada River", "The Orontes River"],
+        correct: 3,
+        explanation: "The Orontes River (Asi) flows uniquely from south to north through western Syria, providing vital agricultural irrigation to the Homs and Hama regions."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-white/10 rounded-full text-center leading-8 mr-3 text-xs text-accentGold font-black shrink-0">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentGold text-bgNight shadow-[0_0_20px_rgba(245,166,35,0.4)]";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Historically Accurate";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentGold";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Lost to the Sands";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      // Delay to show the correct/wrong colors briefly before overlay pops
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "The Desert Awakens";
+        rSub.innerText = "Trial Passed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentGold";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(245,166,35,0.3)] bg-accentGold/10 border-2 border-accentGold";
+        rIcon.className = "fas fa-monument text-4xl text-accentGold";
+        rDesc.innerHTML = "You have proven worthy of Zenobia's legacy. <strong>Homs & Palmyra have been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-homs.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-bgNight bg-accentGold font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(245,166,35,0.2)] hover:-translate-y-1 hover:bg-white";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('homs')) { mapProgress.push('homs'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Lost to History";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-skull text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. The desert guards its secrets. Read the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Trial <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Palmyra Desert Trial in the Syrian Archives! Can you survive the sands?`;
+      if (navigator.share) { navigator.share({ title: 'Palmyra Trial', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " " + window.location.href); }
+    }
+  </script>
+</body>
+</html>

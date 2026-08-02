@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Rif Dimashq Trial | The Syrian Archives</title>
+  <meta name="description" content="Explore ancient Maaloula, Mount Hermon, and the cliffside monasteries of Rif Dimashq. Pass this 7-step trial to unlock Rif Dimashq on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgMountain: '#0F172A', /* Deep Mountain Slate */
+            bgSurface: '#1E293B', /* Alpine Surface */
+            accentEmerald: '#10B981', /* Forest Emerald */
+            accentSky: '#38BDF8', /* Alpine Sky Blue */
+            textLight: '#F0FDF4',
+            textMuted: '#CBD5E1'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0F172A; color: #F0FDF4; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Subtle Mountain & Forest Pattern */
+    .rif-pattern {
+      background-image: 
+        radial-gradient(circle at 10% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Fixed Viewport Constraints */
+    .game-container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      background: rgba(30, 41, 59, 0.6);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #10B981; background: rgba(16, 185, 129, 0.1); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(16, 185, 129, 0.2); border-color: #10B981; color: #6EE7B7; 
+    }
+    .option-btn.wrong { 
+      background: rgba(239, 68, 68, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Emerald Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #10B981; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; box-shadow: 0 0 10px #10B981; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1rem;
+      background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Cards */
+    .seo-card {
+      background: #1E293B; border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 1.5rem;
+      padding: 2.5rem; transition: all 0.4s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.5); box-shadow: 0 15px 30px rgba(15, 23, 42, 0.8); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentEmerald selection:text-bgMountain">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="rif-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#0F172A]/80 backdrop-blur-lg border-b border-accentEmerald/10 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentEmerald flex items-center justify-center text-bgMountain transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentEmerald hover:text-bgMountain hover:border-accentEmerald transition-all flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentEmerald/10 text-accentEmerald flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(16,185,129,0.15)] border border-accentEmerald/20">
+        <i class="fas fa-tree text-4xl"></i>
+      </div>
+      
+      <span class="text-accentEmerald text-xs font-bold uppercase tracking-widest mb-2 block">Rif Dimashq Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">The Green Mantle & Mountains</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Explore ancient Maaloula, Mount Hermon, and the cliffside sanctuaries of Rif Dimashq. Pass this trial to permanently unlock Rif Dimashq on your map.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface/60 p-4 rounded-xl border border-accentEmerald/10 mb-8 backdrop-blur-sm">
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-tree text-accentEmerald mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentEmerald mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentEmerald mr-1"></i> Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentEmerald text-bgMountain rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[0_5px_20px_rgba(16,185,129,0.2)]">
+        Ascend the Mountains
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Query <span id="ui-current-q" class="text-accentEmerald text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-bgSurface/90 backdrop-blur-md border border-accentEmerald/20 rounded-2xl p-5 md:p-8 shadow-2xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading mountain records...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-bgMountain mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm md:text-base text-textMuted leading-relaxed mb-8 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-bgMountain bg-accentEmerald font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(16,185,129,0.3)]">
+            Continue Ascent
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Trial Concluded</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-white/10 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentEmerald">0</span><span class="text-2xl text-textMuted">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-bgMountain font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(16,185,129,0.3)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#090E17] border-t border-white/5 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentEmerald font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of Rif Dimashq</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          The ring surrounding Damascus is a breathtaking tapestry of snowy peaks, deep mountain gorges, ancient Christian monastic villages, and the fertile green Ghouta oasis. Explore the historical records below.
+        </p>
+      </div>
+
+      <!-- Rif Dimashq Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Maaloula (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentEmerald/10 flex items-center justify-center text-accentEmerald border border-accentEmerald/20 group-hover:bg-accentEmerald group-hover:text-bgMountain transition-colors">
+              <i class="fas fa-language text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">Maaloula & The Living Aramaic Language</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">Tucked into a dramatic, sheer cliffside in the Anti-Lebanon mountains north of Damascus lies the ancient Christian village of Maaloula. The name itself derives from the Aramaic word *Ma`luha*, meaning "entrance" or "gateway." Maaloula is internationally celebrated by linguists, historians, and theologians as one of the very last places on Earth where Western Neo-Aramaic—the spoken dialect of Jesus Christ and his disciples—is still actively spoken by the local inhabitants in daily life.</p>
+            <p>Carved directly into the pink limestone cliffs are two of the oldest monastic sanctuaries in Christendom: the Convent of Saint Thecla (*Mar Taqla*) and the Monastery of Saints Sergius and Bacchus (*Mar Sarkis*). According to local Christian tradition, when Saint Thecla was pursued by Roman soldiers, a massive cliff miraculously split open to allow her escape through a breathtaking narrow gorge known as the *Faj* (canyon). Unlocking Rif Dimashq connects you directly to this profound linguistic and spiritual sanctuary.</p>
+          </div>
+        </article>
+
+        <!-- Mount Hermon -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentEmerald/10 flex items-center justify-center text-accentEmerald border border-accentEmerald/20 group-hover:bg-accentEmerald group-hover:text-bgMountain transition-colors">
+              <i class="fas fa-mountain text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Mount Hermon (Jabal al-Shaykh)</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Towering over the southwestern border of Rif Dimashq is Mount Hermon (*Jabal al-Shaykh*, meaning "Mountain of the Old Man," referencing its snow-capped peak resembling white hair). Standing at 2,814 meters, it is the highest peak in the Anti-Lebanon range.</p>
+            <p>Hermon acts as the primary hydrological engine of the entire southern Levant. Its deep winter snowpack slowly melts through the spring and summer, feeding underground aquifers that supply the headwaters of the Jordan River and numerous springs across the Damascus basin.</p>
+          </div>
+        </article>
+
+        <!-- Sednaya -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentSky/10 flex items-center justify-center text-accentSky border border-accentSky/20 group-hover:bg-accentSky group-hover:text-bgMountain transition-colors">
+              <i class="fas fa-place-of-worship text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Cliffside Sanctuaries of Sednaya</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Perched high on a rocky crag overlooking the plains north of Damascus is the ancient town of Sednaya, home to the Convent of Our Lady of Sednaya (*Saydnaya*). Dating back to 547 AD under Emperor Justinian, it is one of the oldest and most revered pilgrimage sites in the Christian East.</p>
+            <p>Housing a famous icon of the Virgin Mary known as the *Shahidana* (The Supposedly Miraculous), the convent has drawn pilgrims of various faiths for over fifteen centuries seeking spiritual solace, healing, and divine protection.</p>
+          </div>
+        </article>
+
+        <!-- The Ghouta Oasis -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentEmerald/10 flex items-center justify-center text-accentEmerald border border-accentEmerald/20 group-hover:bg-accentEmerald group-hover:text-bgMountain transition-colors">
+              <i class="fas fa-seedling text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Green Mantle of the Ghouta</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Encircling Damascus and spanning deep into Rif Dimashq is the *Ghouta*, a legendary agricultural oasis fed by the branching canals of the Barada River. For millennia, this massive green belt provided the capital with fresh fruits, vegetables, and timber.</p>
+            <p>Described by medieval travelers as an earthly paradise where orchards of apricots, plums, and walnuts stretched unbroken to the horizon, the Ghouta represents the harmonious engineering of water distribution in an arid Levantine environment.</p>
+          </div>
+        </article>
+
+        <!-- Mountain Resorts (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentSky/10 flex items-center justify-center text-accentSky border border-accentSky/20 group-hover:bg-accentSky group-hover:text-bgMountain transition-colors">
+              <i class="fas fa-wind text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Anti-Lebanon Valleys: Bloudan & Zabadani</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">High up in the Anti-Lebanon mountain valleys, towns like Bloudan and Zabadani have served for generations as the premier summer resort havens for the Levant. Benefiting from high elevations that offer cool, crisp mountain air even during the hottest July afternoons, these towns are famous for their cliffside restaurants, natural mineral springs, and sprawling apple and cherry orchards.</p>
+            <p>The geography of Rif Dimashq is a breathtaking study in contrasts: from the frozen summit of Mount Hermon and the limestone canyons of Maaloula to the lush irrigation channels of the Ghouta. Unlocking Rif Dimashq on your interactive map completes your mastery of the capital's surrounding sanctuary ring—preserving the mountain heritage of ancient Syria.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-white/5 py-12 relative z-10 mt-12">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentEmerald flex items-center justify-center text-bgMountain">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentEmerald transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentEmerald transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentEmerald transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentEmerald transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentEmerald transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentEmerald transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentEmerald transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentEmerald transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Rif Dimashq - Maaloula, Mount Hermon, Ghouta) ---
+    const triviaData = [
+      {
+        question: "What makes the mountain village of Maaloula in Rif Dimashq internationally famous among linguists and historians?",
+        options: ["It is the oldest gold-mining town", "It is one of the last places on Earth where Western Neo-Aramaic is spoken", "It is the birthplace of algebra", "It is the highest altitude settlement"],
+        correct: 1,
+        explanation: "Correct! Maaloula is famous worldwide because its inhabitants still actively speak Western Neo-Aramaic, the spoken dialect of Jesus Christ."
+      },
+      {
+        question: "What is the name of the highest peak in the Anti-Lebanon range, located on the southwestern border of Rif Dimashq?",
+        options: ["Mount Lebanon", "Mount Hermon (Jabal al-Shaykh)", "Jabal al-Zawiya", "Mount Cassius"],
+        correct: 1,
+        explanation: "Spot on! Mount Hermon (Jabal al-Shaykh) stands at 2,814 meters, acting as the primary hydrological engine supplying southern Levantine springs."
+      },
+      {
+        question: "According to Christian tradition in Maaloula, what miraculously opened to allow Saint Thecla to escape Roman soldiers?",
+        options: ["A subterranean boat tunnel", "A sheer cliffside gorge (the Faj)", "A massive stone bridge", "A hidden castle gate"],
+        correct: 1,
+        explanation: "Yes! Tradition holds that the cliff miraculously split open, creating the breathtaking narrow gorge (*Faj*) that allowed Saint Thecla to escape."
+      },
+      {
+        question: "Located on a rocky crag north of Damascus, the Convent of Our Lady of Sednaya dates back to which Byzantine emperor in 547 AD?",
+        options: ["Constantine the Great", "Justinian I", "Theodosius II", "Heraclius"],
+        correct: 1,
+        explanation: "Correct! The Convent of Sednaya was founded in 547 AD under Emperor Justinian, remaining one of the most revered pilgrimage sites in Christendom."
+      },
+      {
+        question: "What is the name of the massive, legendary agricultural green belt surrounding Damascus and spanning Rif Dimashq?",
+        options: ["The Jazira Plain", "The Ghouta Oasis", "The Ghab Plain", "The Hauran Basin"],
+        correct: 0, // Wait, option index 1 is Ghouta Oasis in options list? Let's check options below.
+        // Options for this question: 0: The Jazira Plain, 1: The Ghouta Oasis, 2: The Ghab Plain, 3: The Hauran Basin. Correct is 1.
+        options: ["The Jazira Plain", "The Ghouta Oasis", "The Ghab Plain", "The Hauran Basin"],
+        correct: 1,
+        explanation: "Spot on! The Ghouta is the massive agricultural green belt fed by the branching canals of the Barada River."
+      },
+      {
+        question: "Which mountain resort town in the Anti-Lebanon valleys is famous for its cool mountain air, springs, and cherry orchards?",
+        options: ["Bloudan", "Palmyra", "Bosra", "Qamishli"],
+        correct: 0,
+        explanation: "Yes! Bloudan has served for generations as a premier summer resort haven, offering crisp mountain air and stunning valley views."
+      },
+      {
+        question: "What does the local Aramaic name of Maaloula ('Ma`luha') translate to in English?",
+        options: ["The Holy Mountain", "Entrance or Gateway", "The White Spring", "Hidden Valley"],
+        correct: 1,
+        explanation: "Perfect! The name Maaloula derives from the Aramaic word meaning 'entrance' or 'gateway', referencing the dramatic mountain pass."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-accentEmerald/20 rounded-full text-center leading-8 mr-3 text-xs text-accentEmerald font-black shrink-0 border border-accentEmerald/50">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentEmerald text-bgMountain shadow-[0_0_20px_rgba(16,185,129,0.4)] border-2 border-emerald-300";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Summit Reached";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentEmerald";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] border-2 border-red-300";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Slipped on Stone";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "Sanctuary Unlocked";
+        rSub.innerText = "Trial Passed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentEmerald";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(16,185,129,0.3)] bg-accentEmerald/10 border-2 border-accentEmerald";
+        rIcon.className = "fas fa-tree text-4xl text-accentEmerald";
+        rDesc.innerHTML = "You have successfully ascended the Anti-Lebanon range. <strong>Rif Dimashq has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-rif.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-bgMountain bg-accentEmerald font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(16,185,129,0.3)] hover:-translate-y-1 hover:bg-white";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('rif')) { mapProgress.push('rif'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Fog on the Mountain";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-lock text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. The mountain sanctuaries remain locked. Read the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Trial <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Rif Dimashq Mountain Trial in the Syrian Archives! Can you ascend the peaks?`;
+      if (navigator.share) { navigator.share({ title: 'Rif Dimashq Trial', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " + window.location.href"); }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Latakia Maritime Trial | The Syrian Archives</title>
+  <meta name="description" content="Sail into the ancient coastal history of Latakia and Ugarit. Pass this 7-step trial to unlock the Latakia Governorate on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgOcean: '#0B132B', /* Deep Mediterranean Night */
+            bgSurface: '#1C2541', /* Maritime Navy */
+            accentTeal: '#0D9488', /* Seafoam Teal */
+            accentBronze: '#D97706', /* Ancient Bronze */
+            textLight: '#E0F2FE',
+            textMuted: '#93C5FD'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+            'wave-slow': 'waveMotion 8s ease-in-out infinite alternate'
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+            waveMotion: { '0%': { transform: translateY(0) }, '100%': { transform: translateY(-4px) } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B132B; color: #E0F2FE; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Subtle Nautical Wave Pattern */
+    .nautical-pattern {
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(13, 148, 136, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(30, 58, 138, 0.15) 0%, transparent 50%);
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Fixed Viewport Constraints */
+    .game-container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Maritime Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(13, 148, 136, 0.2);
+      background: rgba(28, 37, 65, 0.6);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #0D9488; background: rgba(13, 148, 136, 0.1); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(13, 148, 136, 0.2); border-color: #0D9488; color: #5EEAD4; 
+    }
+    .option-btn.wrong { 
+      background: rgba(239, 68, 68, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Ocean Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #0D9488; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; box-shadow: 0 0 10px #0D9488; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1rem;
+      background: rgba(11, 19, 43, 0.96); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(13, 148, 136, 0.3);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Maritime Cards */
+    .seo-card {
+      background: #1C2541; border: 1px solid rgba(13, 148, 136, 0.15); border-radius: 1.5rem;
+      padding: 2.5rem; transition: all 0.4s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(13, 148, 136, 0.5); box-shadow: 0 15px 30px rgba(11, 19, 43, 0.8); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentTeal selection:text-bgOcean">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="nautical-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#0B132B]/80 backdrop-blur-lg border-b border-accentTeal/10 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentTeal flex items-center justify-center text-bgOcean transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentTeal hover:text-bgOcean hover:border-accentTeal transition-all flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER (Fixed to Viewport to prevent scrolling) -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentTeal/10 text-accentTeal flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(13,148,136,0.15)] border border-accentTeal/20">
+        <i class="fas fa-anchor text-4xl"></i>
+      </div>
+      
+      <span class="text-accentTeal text-xs font-bold uppercase tracking-widest mb-2 block">Latakia Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">The Maritime Frontier</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Sail into the western shores of the Levant. Prove your knowledge of Ugaritic alphabets, Phoenician ports, and mountain strongholds to permanently unlock the coast.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface/60 p-4 rounded-xl border border-accentTeal/10 mb-8 backdrop-blur-sm">
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-water text-accentTeal mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentTeal mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentTeal mr-1"></i> Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentTeal text-bgOcean rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[0_5px_20px_rgba(13,148,136,0.2)]">
+        Weigh Anchor
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY (Zero-shift fixed layout) -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Query <span id="ui-current-q" class="text-accentTeal text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-bgSurface/90 backdrop-blur-md border border-accentTeal/20 rounded-2xl p-5 md:p-8 shadow-2xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading maritime logs...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-bgOcean mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm md:text-base text-textMuted leading-relaxed mb-8 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-bgOcean bg-accentTeal font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(13,148,136,0.3)]">
+            Continue Voyage
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Voyage Concluded</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-white/10 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentTeal">0</span><span class="text-2xl text-textMuted">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-bgOcean font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(13,148,136,0.3)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#070C1B] border-t border-white/5 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentTeal font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of Latakia & Ugarit</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          The western edge of Syria is a lush, mountainous Mediterranean frontier. Explore the historical records below to uncover the birthplace of the alphabet, the naval dominance of the Phoenicians, and the rugged mountain fortresses of the Crusades.
+        </p>
+      </div>
+
+      <!-- Maritime Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Ugarit (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentTeal/10 flex items-center justify-center text-accentTeal border border-accentTeal/20 group-hover:bg-accentTeal group-hover:text-bgOcean transition-colors">
+              <i class="fas fa-font text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">Ugarit: Birthplace of the Alphabet</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">Just north of modern Latakia lie the silent, monumental ruins of Ugarit (modern Ras Shamra). While the site was a thriving Bronze Age Canaanite port city that traded extensively with Egypt, Cyprus, and the Aegean, its greatest contribution to human history was entirely intellectual. In the 14th century BC, local Ugaritic scribes accomplished something revolutionary: they stripped away the immense, suffocating complexity of thousands of Mesopotamian cuneiform logograms and invented the world's very first linear, phonetic alphabet.</p>
+            <p>Unlike earlier writing systems that required memorizing hundreds of distinct syllable symbols or pictures, the Ugaritic script utilized just 30 simple cuneiform signs representing individual consonants. This radical democratization of literacy meant that reading and writing were no longer restricted to an elite guild of specialized temple scribes. This phonetic breakthrough directly influenced the Phoenician alphabet, which subsequently evolved into Greek, Latin, Cyrillic, and Arabic scripts. Every time you read a sentence today, you are utilizing an intellectual framework whose foundational mechanics were polished in the royal archives of ancient Ugarit.</p>
+          </div>
+        </article>
+
+        <!-- The Baal Cycle -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentTeal/10 flex items-center justify-center text-accentTeal border border-accentTeal/20 group-hover:bg-accentTeal group-hover:text-bgOcean transition-colors">
+              <i class="fas fa-book-open text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Epic Baal Cycle</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">The clay tablets excavated from the library of Ugarit preserved some of the most extraordinary mythological epics of the ancient Near East, most notably the *Baal Cycle*. These poetic texts detail the epic struggles of Baal, the Canaanite god of storm, rain, and fertility.</p>
+            <p>In the epics, Baal battles Yam, the chaotic god of the sea, and Mot, the god of death and sterility. These tales provide modern historians with profound insights into Canaanite religious thought, offering poetic explanations for the brutal seasonal droughts and life-giving autumn rains of the Mediterranean coast.</p>
+          </div>
+        </article>
+
+        <!-- Saladin's Castle -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentBronze/10 flex items-center justify-center text-accentBronze border border-accentBronze/20 group-hover:bg-accentBronze group-hover:text-bgOcean transition-colors">
+              <i class="fas fa-mountain text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Saladin's Castle</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">High in the rugged Al-Ansariyah mountains overlooking Latakia sits Qal'at Salah al-Din (Saladin's Castle), an impenetrable medieval fortress originally fortified by the Byzantines and later expanded by the Crusaders before falling to Saladin in 1188.</p>
+            <p>The castle's most astonishing engineering feature is a massive, 28-meter-deep ravine trench carved directly out of solid limestone by Byzantine quarrymen. Leaving a single, freestanding 15-meter-high needle of rock in the center to support a drawbridge, this colossal ditch made the fortress completely immune to medieval siege engines.</p>
+          </div>
+        </article>
+
+        <!-- Citrus and Olive Groves -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentTeal/10 flex items-center justify-center text-accentTeal border border-accentTeal/20 group-hover:bg-accentTeal group-hover:text-bgOcean transition-colors">
+              <i class="fas fa-lemon text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Coastal Orchards</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Unlike the arid interior or the desert steppe of central Syria, the Latakia governorate enjoys a classic, wet Mediterranean climate. Heavy winter rains and mild sea breezes create rolling hillsides covered in dense pine forests and sprawling orchards.</p>
+            <p>This region is the primary agricultural powerhouse for citrus fruit production in the Levant. Vast groves of sweet oranges, lemons, mandarins, and ancient gnarled olive trees cascade down the steep mountain slopes toward the blue sea, filling the coastal air with fresh floral and citrus aromas.</p>
+          </div>
+        </article>
+
+        <!-- Phoenician Seafaring (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentBronze/10 flex items-center justify-center text-accentBronze border border-accentBronze/20 group-hover:bg-accentBronze group-hover:text-bgOcean transition-colors">
+              <i class="fas fa-ship text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Phoenician Maritime Legacy</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The rugged coastline of Latakia was the northern domain of the great Phoenician maritime civilization. While southern Phoenician city-states like Tyre and Sidon focused on Mediterranean trade, the northern coastal ports acted as vital links between naval merchants and the immense overland caravan routes leading out of Mesopotamia and Anatolia. Using sturdy timber harvested from the dense cedar and pine forests of the coastal mountains, these master shipbuilders constructed advanced biremes and triremes that dominated the Mediterranean waves.</p>
+            <p>These sailors were not merely merchants; they were master cartographers who navigated by the North Star (known to ancient sailors as the "Phoenician Star"). They established trading posts across the entire Mediterranean basin, exporting cedar wood, purple dye extracted from murex snails, and fine olive oil. Unlocking Latakia on your map connects you directly to this brave, sea-faring heritage—reminding us that Syria's historical footprint extends far beyond the desert sands and into the very waves that wash upon the shores of Europe and Africa.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-white/5 py-12 relative z-10 mt-12">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentTeal flex items-center justify-center text-bgOcean">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentTeal transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentTeal transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentTeal transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentTeal transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentTeal transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentTeal transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentTeal transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentTeal transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Latakia & Ugarit) ---
+    const triviaData = [
+      {
+        question: "Just north of Latakia lie the ruins of Ugarit, where scribes revolutionized human communication in the 14th century BC by inventing what?",
+        options: ["The first paper currency", "The world's first linear, phonetic alphabet", "The decimal mathematical system", "The first maritime compass"],
+        correct: 1,
+        explanation: "Correct! Ugaritic scribes stripped away complex cuneiform logograms to create a simple 30-letter phonetic alphabet, revolutionizing global literacy."
+      },
+      {
+        question: "The clay tablets excavated at Ugarit preserved famous Canaanite mythological epics detailing the storms and battles of which storm god?",
+        options: ["Baal", "Mot", "Yam", "Resheph"],
+        correct: 0,
+        explanation: "Spot on! The 'Baal Cycle' details the epic struggles of Baal, the god of storm and fertility, against the forces of sea and death."
+      },
+      {
+        question: "High in the mountains overlooking Latakia sits Qal'at Salah al-Din. What massive engineering feature did Byzantines carve to protect it?",
+        options: ["An underground submarine drydock", "A 28-meter-deep limestone ravine trench with a freestanding rock needle", "A series of flooded moats fed by the sea", "A double-layered stone dome"],
+        correct: 1,
+        explanation: "Yes! Quarrymen carved a massive 28-meter trench directly out of solid limestone, leaving a single 15-meter rock needle to hold the drawbridge."
+      },
+      {
+        question: "Unlike the arid interior of Syria, what climatic and agricultural profile defines the Latakia coastal governorate?",
+        options: ["A frozen alpine tundra", "A wet Mediterranean climate rich in pine forests and citrus orchards", "A flat sandy desert prone to dust storms", "A tropical rainforest ecosystem"],
+        correct: 1,
+        explanation: "Correct! Latakia enjoys a lush Mediterranean climate, producing vast quantities of oranges, lemons, olives, and dense pine greenery."
+      },
+      {
+        question: "The ancient coastal region of Latakia was the northern domain of what great seafaring civilization famous for trading purple dye and cedar?",
+        options: ["The Minoans", "The Phoenicians", "The Romans", "The Carthaginians"],
+        correct: 1,
+        explanation: "Correct! The Phoenicians dominated these waters, utilizing timber from the coastal mountains to build advanced merchant and war vessels."
+      },
+      {
+        question: "Ancient sailors navigating the Mediterranean from these coastal ports famously oriented their ships using what celestial body, often called the 'Phoenician Star'?",
+        options: ["The North Star (Polaris)", "Sirius", "Betelgeuse", "The Pleiadescluster"],
+        correct: 0,
+        explanation: "Spot on! Phoenician master cartographers were the first to reliably navigate by the North Star, which Greek sailors subsequently referred to as the 'Phoenician Star'."
+      },
+      {
+        question: "Saladin captured Qal'at Salah al-Din from the Crusaders in what historic year after an intense siege utilizing mangonels?",
+        options: ["1099 AD", "1187 AD", "1188 AD", "1291 AD"],
+        correct: 2,
+        explanation: "Yes! Following his victory at Jerusalem in 1187, Saladin turned his forces north and captured the mountain fortress in July 1188."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-accentTeal/20 rounded-full text-center leading-8 mr-3 text-xs text-accentTeal font-black shrink-0 border border-accentTeal/50">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentTeal text-bgOcean shadow-[0_0_20px_rgba(13,148,136,0.4)] border-2 border-teal-300";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Smooth Waters";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentTeal";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] border-2 border-red-300";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Rough Seas";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "Harbor Reached";
+        rSub.innerText = "Trial Passed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentTeal";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(13,148,136,0.3)] bg-accentTeal/10 border-2 border-accentTeal";
+        rIcon.className = "fas fa-anchor text-4xl text-accentTeal";
+        rDesc.innerHTML = "You have successfully navigated the maritime archives. <strong>Latakia has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-latakia.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-bgOcean bg-accentTeal font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(13,148,136,0.3)] hover:-translate-y-1 hover:bg-white";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('latakia')) { mapProgress.push('latakia'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Shipwrecked";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-water text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. The coastal ports remain shrouded in mist. Read the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Voyage <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Latakia Maritime Trial in the Syrian Archives! Can you navigate the coast?`;
+      if (navigator.share) { navigator.share({ title: 'Latakia Trial', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " " + window.location.href); }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aleppo Trial | The Syrian Archives</title>
+  <meta name="description" content="Embark on a culinary and historical journey into Aleppo. Answer 7 questions about the Silk Road terminus to unlock the Northern Gateway!" />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Lora', 'serif'], // Elegant, editorial serif for Aleppo
+            sans: ['Quicksand', 'sans-serif'], // Round, friendly, modern sans
+          },
+          colors: {
+            bgWarm: '#FEFCF8',
+            bgCard: '#FFFFFF',
+            accentRed: '#C53030', /* Aleppo Pepper Red */
+            accentSaffron: '#F59E0B', /* Warm Amber/Saffron */
+            textDark: '#292524',
+            textMuted: '#78716C'
+          },
+          animation: {
+            'fade-scale': 'fadeScale 0.5s ease-out forwards',
+            'slide-left': 'slideLeft 0.4s ease-out forwards',
+            'float-slow': 'floatSoft 3s ease-in-out infinite'
+          },
+          keyframes: {
+            fadeScale: { '0%': { opacity: '0', transform: 'scale(0.98) translateY(10px)' }, '100%': { opacity: '1', transform: 'scale(1) translateY(0)' } },
+            slideLeft: { '0%': { opacity: '0', transform: 'translateX(20px)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },
+            floatSoft: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #FEFCF8; color: #292524; -webkit-tap-highlight-color: transparent; }
+    
+    /* Levantine Geometric Tile Pattern Background */
+    .aleppo-pattern {
+      background-color: #FEFCF8;
+      background-image: 
+        radial-gradient(circle at 100% 150%, #FEFCF8 24%, #FFF 25%, #FFF 28%, #FEFCF8 29%, #FEFCF8 36%, #FFF 36%, #FFF 40%, transparent 40%, transparent),
+        radial-gradient(circle at 0 150%, #FEFCF8 24%, #FFF 25%, #FFF 28%, #FEFCF8 29%, #FEFCF8 36%, #FFF 36%, #FFF 40%, transparent 40%, transparent),
+        radial-gradient(circle at 50% 100%, #FFF 10%, #FEFCF8 11%, #FEFCF8 23%, #FFF 24%, #FFF 30%, #FEFCF8 31%, #FEFCF8 43%, #FFF 44%, #FFF 50%, #FEFCF8 51%, #FEFCF8 100%),
+        radial-gradient(circle at 100% 50%, #FFF 5%, #FEFCF8 6%, #FEFCF8 15%, #FFF 16%, #FFF 20%, #FEFCF8 21%, #FEFCF8 30%, #FFF 31%, #FFF 35%, #FEFCF8 36%, #FEFCF8 100%),
+        radial-gradient(circle at 0 50%, #FFF 5%, #FEFCF8 6%, #FEFCF8 15%, #FFF 16%, #FFF 20%, #FEFCF8 21%, #FEFCF8 30%, #FFF 31%, #FFF 35%, #FEFCF8 36%, #FEFCF8 100%);
+      background-size: 60px 60px;
+      opacity: 0.4;
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; }
+    .game-screen.active { display: flex; animation: fadeScale 0.5s ease-out forwards; }
+
+    /* Warm Market Buttons */
+    .spice-btn {
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-width: 2px;
+      border-color: #F5F5F4;
+    }
+    .spice-btn:hover:not(:disabled) {
+      transform: translateY(-4px) scale(1.01);
+      border-color: #F59E0B;
+      background-color: #FFF;
+      box-shadow: 0 12px 24px rgba(245, 158, 11, 0.15);
+    }
+    .spice-btn:disabled { cursor: default; opacity: 0.5; }
+    .spice-btn.correct { 
+      background-color: #FEF2F2; border-color: #C53030; color: #7F1D1D; 
+      transform: scale(1.03); opacity: 1; box-shadow: 0 10px 25px rgba(197, 48, 48, 0.25); z-index: 10;
+    }
+    .spice-btn.wrong { 
+      background-color: #F3F4F6; border-color: #9CA3AF; color: #57534E; opacity: 1;
+    }
+
+    /* Spicy Progress Bar */
+    .progress-bar-container { background: #E7E5E4; border-radius: 99px; overflow: hidden; height: 14px; }
+    .progress-fill { background: linear-gradient(90deg, #F59E0B, #C53030); transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); height: 100%; border-radius: 99px; }
+
+    /* Editorial SEO Cards */
+    .editorial-card {
+      background: #FFFFFF; border: 1px solid #F5F5F4; border-radius: 16px;
+      padding: 2.5rem; transition: all 0.4s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+    .editorial-card:hover { transform: translateY(-5px); box-shadow: 0 25px 40px rgba(197, 48, 48, 0.08); border-color: #FCA5A5; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="aleppo-pattern"></div>
+
+  <!-- Global Header (Warm Theme) -->
+  <header class="bg-white/90 backdrop-blur-lg border-b border-orange-100 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8 py-3 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-full bg-accentRed flex items-center justify-center text-white transition-transform duration-300 group-hover:scale-110">
+          <i class="fas fa-crown text-xl"></i>
+        </div>
+        <span class="font-serif text-2xl font-bold tracking-wide text-accentRed">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-6 py-2.5 bg-orange-50 border border-orange-200 rounded-full text-sm font-bold text-accentRed hover:bg-accentRed hover:text-white transition-colors flex items-center gap-2 shadow-sm">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline">Return to Map</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <main class="w-full max-w-4xl mx-auto px-4 py-8 md:py-16 relative z-10 min-h-[75vh] flex flex-col justify-center">
+
+    <!-- SCREEN 1: START (Appetizing & Majestic) -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      
+      <div class="relative w-28 h-28 mb-6 animate-float-slow">
+        <div class="absolute inset-0 bg-accentSaffron/20 rounded-full blur-xl"></div>
+        <div class="relative w-full h-full rounded-full bg-white text-accentRed flex items-center justify-center shadow-xl border-4 border-orange-50">
+          <i class="fas fa-utensils text-4xl"></i>
+        </div>
+      </div>
+      
+      <span class="text-accentSaffron text-sm font-extrabold uppercase tracking-widest mb-3 block">Aleppo Governorate</span>
+      <h1 class="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-textDark mb-6 leading-tight">The Silk Road <br><span class="text-accentRed italic">Kitchen</span></h1>
+      
+      <p class="text-textMuted text-lg md:text-xl leading-relaxed mb-10 max-w-2xl font-medium">
+        Welcome to the undisputed gastronomic and commercial capital of the Levant! To illuminate the Northern Gateway on your map, you must navigate this delicious 7-question journey through Aleppo’s heritage.
+      </p>
+
+      <div class="bg-white p-6 md:p-8 rounded-[2rem] border border-orange-100 shadow-lg w-full max-w-xl mb-10 text-left">
+        <h3 class="font-bold text-xl mb-5 text-accentRed"><i class="fas fa-fire-alt mr-2"></i> The Recipe for Success:</h3>
+        <ul class="space-y-4 font-medium text-textMuted text-lg">
+          <li class="flex items-start gap-4">
+            <div class="w-8 h-8 mt-0.5 rounded-full bg-orange-100 text-accentSaffron flex items-center justify-center font-bold shrink-0">1</div>
+            <p>Savor 7 unique questions regarding Aleppo's food, citadel, and ancient markets.</p>
+          </li>
+          <li class="flex items-start gap-4">
+            <div class="w-8 h-8 mt-0.5 rounded-full bg-orange-100 text-accentSaffron flex items-center justify-center font-bold shrink-0">2</div>
+            <p>You must achieve a flavorful score of <strong>5 out of 7</strong> to conquer the trial.</p>
+          </li>
+          <li class="flex items-start gap-4">
+            <div class="w-8 h-8 mt-0.5 rounded-full bg-red-100 text-accentRed flex items-center justify-center font-bold shrink-0"><i class="fas fa-gem"></i></div>
+            <p>Victory permanently unlocks the Aleppo Vault on your Interactive Map!</p>
+          </li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full sm:w-2/3 md:w-1/2 px-8 py-5 bg-accentRed text-white rounded-2xl font-extrabold text-xl uppercase tracking-wider hover:bg-red-800 shadow-[0_10px_30px_rgba(197,48,48,0.3)] transition-all hover:-translate-y-1">
+        Begin Tasting <i class="fas fa-arrow-right ml-2"></i>
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY -->
+    <div id="screen-game" class="game-screen flex-col w-full max-w-3xl mx-auto">
+      
+      <!-- Spicy Top HUD -->
+      <div class="flex justify-between items-end mb-4 px-2">
+        <div class="w-2/3">
+          <span class="text-sm font-extrabold text-textMuted mb-2 block uppercase tracking-widest">Taste <span id="ui-current-q" class="text-accentRed text-lg">1</span> / 7</span>
+          <div class="progress-bar-container w-full shadow-inner">
+            <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+          </div>
+        </div>
+        <div class="text-right bg-white px-5 py-2 rounded-2xl shadow-sm border border-orange-100">
+          <span class="text-xs uppercase tracking-widest text-textMuted font-bold block mb-0.5">Rating</span>
+          <span id="ui-score" class="text-2xl font-black text-accentRed">0</span>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-white border border-orange-50 rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative mt-4">
+        
+        <!-- Decorative subtle icon -->
+        <i class="fas fa-pepper-hot absolute top-6 right-8 text-6xl text-orange-50 opacity-50 pointer-events-none"></i>
+
+        <h2 id="question-text" class="font-serif text-2xl md:text-3xl lg:text-4xl text-textDark font-bold mb-8 leading-snug relative z-10">
+          Loading culinary secrets...
+        </h2>
+        
+        <div id="options-grid" class="flex flex-col gap-4 relative z-10">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- Dynamic Feedback Overlay (Warm & Engaging) -->
+        <div id="feedback-box" class="hidden mt-8 p-6 rounded-3xl shadow-xl border-2 animate-slide-left relative z-10">
+          <div class="flex items-center gap-4 mb-3">
+            <div id="feedback-icon-bg" class="w-12 h-12 rounded-full flex items-center justify-center text-2xl text-white shadow-md shrink-0">
+              <i id="feedback-icon" class="fas"></i>
+            </div>
+            <h4 id="feedback-title" class="font-black text-2xl">Feedback</h4>
+          </div>
+          <p id="feedback-desc" class="text-base md:text-lg text-textMuted font-medium leading-relaxed mt-2">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="mt-6 w-full py-4 rounded-xl text-white font-bold text-lg tracking-wide transition-transform hover:-translate-y-1 shadow-lg bg-accentRed hover:bg-red-800">
+            Next Dish <i class="fas fa-chevron-right ml-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS (Festive & Generous) -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-animation" class="mb-6 animate-float-slow">
+        <div id="result-icon-container" class="w-32 h-32 rounded-full flex items-center justify-center shadow-2xl border-4">
+          <i id="result-icon" class="fas text-6xl"></i>
+        </div>
+      </div>
+      
+      <span id="result-subtitle" class="text-sm font-extrabold uppercase tracking-widest mb-2 block">Status</span>
+      <h2 id="result-title" class="font-serif text-5xl md:text-6xl font-bold text-textDark mb-4">Title</h2>
+      
+      <div class="bg-white px-12 py-8 rounded-[2rem] shadow-xl border border-orange-50 mb-8 inline-block">
+        <div class="text-7xl font-sans font-black text-accentRed">
+          <span id="result-score">0</span><span class="text-4xl text-gray-300">/7</span>
+        </div>
+        <span class="block mt-2 text-sm font-bold text-accentSaffron uppercase tracking-widest">Final Rating</span>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-xl mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 w-full max-w-lg mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-white font-extrabold text-lg rounded-2xl transition-all shadow-xl hover:-translate-y-1">
+          Primary Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white text-textDark border-2 border-gray-200 hover:border-accentRed hover:text-accentRed font-bold text-lg rounded-2xl transition-all shadow-sm">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+      <a href="syria-interactive-map.html" class="mt-8 text-sm text-textMuted font-bold hover:text-accentRed transition-colors flex items-center justify-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to the Interactive Map
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SPICE MARKET EDITORIAL SEO SECTION (1500+ Words) -->
+  <!-- ========================================== -->
+  <section class="w-full bg-white border-t border-orange-100 py-24 px-4 md:px-8 relative z-10">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentSaffron font-extrabold tracking-widest uppercase text-sm mb-3 block">Historical Encyclopedia</span>
+        <h2 class="font-serif text-4xl md:text-5xl text-accentRed font-bold mb-6">The Archives of Aleppo</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-lg md:text-xl font-medium leading-relaxed">
+          Prepare your palate and mind. Before undertaking the challenge—or to savor your victory—delve deep into the culinary, commercial, and architectural masterpieces that define the capital of the north.
+        </p>
+      </div>
+
+      <!-- Staggered Editorial Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        
+        <!-- Block 1: The Culinary Capital (Spans 8 cols) -->
+        <article class="editorial-card md:col-span-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-accentRed shadow-sm">
+              <i class="fas fa-fire text-2xl"></i>
+            </div>
+            <h3 class="font-serif text-3xl md:text-4xl text-textDark font-bold">The Gastronomic Pinnacle of the Levant</h3>
+          </div>
+          <div class="text-textMuted text-base leading-relaxed text-justify font-medium space-y-4">
+            <p>To speak of Aleppo without beginning with its food is to miss the very soul of the city. Among epicureans, chefs, and historians across the Middle East, Aleppo (*Halab*) is universally recognized as the undisputed culinary capital of the region. This prestigious title was not born overnight, nor was it the product of isolation. Rather, it is the direct result of Aleppo's historic geographic positioning as the ultimate western terminus of the ancient Silk Road.</p>
+            <p>For millennia, merchants traversing from China, India, Persia, and Central Asia unloaded their exotic cargo in the sprawling markets of Aleppo before the goods were shipped across the Mediterranean to Europe. This relentless, centuries-long influx of global trade meant that Aleppine kitchens had first access to the world's most prized spices: Chinese cinnamon, Indian cardamom, Persian saffron, and Southeast Asian nutmeg. But the genius of Aleppine cuisine lies not just in access to ingredients, but in its unparalleled mastery of flavor balancing.</p>
+            <p>Unlike other regional cuisines that lean heavily into either pure savory or pure heat, Aleppo perfected the sweet-and-sour (*agrodolce*) flavor profile. This is achieved through the masterful, meticulous blending of tart, thick pomegranate molasses (*dibs rumman*), the citrusy bite of ground sumac, the delicate floral notes of rose water, and the slow, fruity, complex warmth of the native Aleppo pepper (*Fليفلة حلبية*). This pepper, which is semi-dried and heavily oiled, delivers a rich, earthy heat that enhances rather than destroys the palate, making it a highly prized ingredient in Michelin-starred kitchens globally today.</p>
+          </div>
+        </article>
+
+        <!-- Block 2: Kebab Karaz (Spans 4 cols) -->
+        <article class="editorial-card md:col-span-4 bg-orange-50/50 border-orange-100">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-accentSaffron shadow-sm border border-orange-100">
+              <i class="fas fa-utensils text-2xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl text-textDark font-bold">The Cherry Kebab Masterpiece</h3>
+          </div>
+          <div class="text-textMuted text-base leading-relaxed text-justify font-medium space-y-4">
+            <p>If there is one dish that perfectly encapsulates the Aleppine philosophy of flavor, it is *Kebab Karaz* (Cherry Kebab). While outsiders might find the combination of fruit and meat unusual, in Aleppo, it is the ultimate expression of culinary refinement.</p>
+            <p>This aristocratic dish requires a specific, tart, dark red cherry known as the St. Lucie cherry (*wshem*), which grows exclusively in the rocky terrain surrounding the city. The cherries are stewed down into a thick, deeply tart, and slightly sweet ruby-red syrup, heavily spiced with cinnamon and allspice. Small, rich meatballs made from finely ground, fat-laced lamb are then simmered directly in this velvet sauce. The dish is traditionally served over triangles of flatbread to soak up the juices, garnished heavily with toasted pine nuts and fresh parsley. It is a dish that tastes of empire, wealth, and profound historical synthesis.</p>
+          </div>
+        </article>
+
+        <!-- Block 3: The Citadel (Spans 12 cols - Full Width) -->
+        <article class="editorial-card md:col-span-12">
+          <div class="flex flex-col lg:flex-row gap-8 items-center">
+            <div class="w-full lg:w-1/3">
+              <div class="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center text-stone-700 shadow-inner mb-6">
+                <i class="fas fa-chess-rook text-3xl"></i>
+              </div>
+              <h3 class="font-serif text-3xl md:text-4xl text-textDark font-bold mb-4">The Mighty Citadel of Aleppo</h3>
+              <p class="text-accentRed font-bold uppercase tracking-widest text-sm mb-4">Medieval Military Engineering at its Peak</p>
+            </div>
+            <div class="w-full lg:w-2/3 text-textMuted text-base leading-relaxed text-justify font-medium columns-1 md:columns-2 gap-8">
+              <p>Dominating the skyline from the exact center of the city is the Citadel of Aleppo, arguably the oldest, largest, and most magnificent medieval castle in the world. What makes the Citadel visually astounding is its foundation. It does not sit on a standard mountain; it rests upon a colossal, elliptical hill that is partially natural but was massively artificially scarped (steepened) by human hands over thousands of years. The sides of the hill were historically faced with glistening white limestone blocks to make it completely unscalable by invading armies.</p>
+              <p>The site has been of monumental importance since at least the 3rd millennium BC, when it functioned as a temple to the ancient storm god Hadad. However, the staggering limestone fortress visible today was primarily constructed during the Ayyubid dynasty in the 12th and 13th centuries, famously under the rule of Saladin's son, Ghazi. The military engineering is flawless. To enter the fortress, an invading force would have to cross a massive stone bridge over a deep moat, navigate a complex, multi-story fortified gatehouse featuring seven heavy doors, survive boiling oil dropped from murder holes (*machicolations*), and fight up a pitch-black, right-angled stairwell designed to trap and disorient them.</p>
+              <p>Inside, it was not merely a military garrison, but a fully functioning royal city containing opulent palaces, bathhouses (*hammams*), mosques, and deep subterranean granaries capable of outlasting years-long sieges. It successfully repelled Crusaders and withstood massive assaults, standing today as a breathtaking symbol of northern Syrian resilience.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Block 4: Souk al-Madina (Spans 6 cols) -->
+        <article class="editorial-card md:col-span-6">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 shadow-sm">
+              <i class="fas fa-store text-2xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-textDark font-bold">Souk al-Madina</h3>
+          </div>
+          <div class="text-textMuted text-base leading-relaxed text-justify font-medium space-y-4">
+            <p>At the base of the Citadel lies the commercial engine of the city: *Souk al-Madina*. This is not a standard marketplace; it is the largest covered historic market in the world, boasting over 13 kilometers (8 miles) of winding, vaulted stone alleys. For centuries, this labyrinth was the very heartbeat of global commerce.</p>
+            <p>The souk is highly organized into specialized districts (*khans*). A merchant from Venice might visit the *Souk al-Dhahab* to purchase intricate gold jewelry, then walk to the *Souk al-Harir* to buy Chinese silks, before finalizing trade in the *Souk al-Attarine*, the spice market where mountains of vibrant crimson sumac, golden turmeric, and green za'atar filled the air with an intoxicating, heavy perfume. The heavy stone vaulted ceilings provided vital shade from the brutal summer sun and shelter from winter rains, allowing commerce to thrive 365 days a year.</p>
+          </div>
+        </article>
+
+        <!-- Block 5: Laurel Soap & Tarab (Spans 6 cols) -->
+        <article class="editorial-card md:col-span-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-green-600 shadow-sm">
+                <i class="fas fa-leaf text-2xl"></i>
+              </div>
+              <h3 class="font-serif text-2xl md:text-3xl text-textDark font-bold">Laurel Soap & Tarab</h3>
+            </div>
+            <div class="text-textMuted text-base leading-relaxed text-justify font-medium space-y-4">
+              <p>Beyond food and architecture, Aleppo gave the world two other massive cultural exports. The first is *Ghar* (Aleppo Soap). Historians believe Aleppo soap to be the first hard bar soap ever manufactured by humanity, dating back over 2,000 years. Crafted using a meticulous, slow-boiled mixture of pure local olive oil, lye, and the highly prized, antibacterial laurel berry oil, the soap is poured into massive vats, cut by hand, and stacked in towering geometric towers to cure and age for up to nine months until the outside turns a warm golden brown.</p>
+              <p>The second export is auditory: *Tarab*. Aleppo is recognized as the capital of traditional Arabic classical music. It is the home of the *Muwashshah*, a complex, poetic musical form originating in Andalusia but preserved and perfected in Aleppo. The city's famous vocalists, known for their powerful, emotionally devastating performances, aim to induce *Tarab*—a state of intense, ecstatic musical enchantment and emotional surrender in the listener, proving that the soul of Aleppo is as deeply poetic as it is fiercely commercial.</p>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer (Light Theme) -->
+  <footer class="bg-bgWarm border-t border-gray-200 py-12 relative z-10">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded-lg bg-accentRed flex items-center justify-center text-white">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-textDark">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm font-medium">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics. Bringing history to life through play.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-textDark font-bold uppercase tracking-widest text-xs mb-4">Sitemap Index</h4>
+          <ul class="space-y-2 text-sm font-medium text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentRed transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentRed transition-colors">Categories</a></li>
+            <li><a href="encyclopedia.html" class="hover:text-accentRed transition-colors">Encyclopedia</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-textDark font-bold uppercase tracking-widest text-xs mb-4">Platform Data</h4>
+          <ul class="space-y-2 text-sm font-medium text-textMuted">
+            <li><a href="about.html" class="hover:text-accentRed transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentRed transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentRed transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-textMuted font-bold">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentRed transition-colors text-lg"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentRed transition-colors text-lg"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Fun, Fact-Based, 7 Questions for Aleppo) ---
+    const triviaData = [
+      {
+        question: "Aleppo's historical wealth and incredible culinary diversity were born primarily from its position as the western terminus of what ancient trade route?",
+        options: ["The Spice Route across the Sahara", "The Silk Road from China and India", "The Trans-Saharan Gold Route", "The Royal Road to Persia"],
+        correct: 1,
+        explanation: "Correct! Aleppo was the ultimate western hub of the Silk Road. Exotic spices from Asia poured into the city, creating its unmatched, deeply complex culinary profile."
+      },
+      {
+        question: "Aleppine cuisine is famous for mastering the 'agrodolce' (sweet-and-sour) flavor profile. Which tart, thick fruit syrup is heavily used to achieve this?",
+        options: ["Date Molasses", "Fig Nectar", "Pomegranate Molasses", "Tamarind Glaze"],
+        correct: 2,
+        explanation: "Deliciously right! Pomegranate molasses (dibs rumman) provides the essential, deep, tart acidity that perfectly balances the rich, fatty meats in Aleppine cooking."
+      },
+      {
+        question: "What is the name of the aristocratic, famous Aleppine dish consisting of rich lamb meatballs simmered in a tart, dark red fruit sauce?",
+        options: ["Kebab Hindi", "Kebab Karaz (Cherry Kebab)", "Kebab Halabi", "Kebab Batinjan (Eggplant Kebab)"],
+        correct: 1,
+        explanation: "Spot on! Kebab Karaz utilizes a specific, sour St. Lucie cherry grown in the region. It is the ultimate expression of Aleppo's sweet-and-savory culinary philosophy."
+      },
+      {
+        question: "Sitting dramatically in the center of the city is the mighty Citadel of Aleppo. What is geographically unique about its foundation?",
+        options: ["It is built entirely on a floating island", "It is built inside a massive volcano crater", "It is built on a massive, artificially steepened hill", "It is suspended over the Euphrates river"],
+        correct: 2,
+        explanation: "Correct! The Citadel sits on a massive elliptical hill that was artificially scarped (steepened) and faced with limestone by humans over millennia, making it practically unscalable."
+      },
+      {
+        question: "At the base of the Citadel lies 'Souk al-Madina', historically the commercial heartbeat of global trade. What is remarkable about it?",
+        options: ["It is entirely underground in caves", "It is the largest covered historic market in the world (13km)", "It operates entirely on water canals", "It only sells gold and diamonds"],
+        correct: 1,
+        explanation: "Yes! Boasting over 13 kilometers of vaulted stone alleys, Souk al-Madina is the largest covered historic market on Earth, sheltering merchants from sun and rain for centuries."
+      },
+      {
+        question: "Aleppo gave the world what is widely believed to be the first hard bar soap in human history. What unique oil gives it its green-brown color and antibacterial properties?",
+        options: ["Almond Oil", "Argan Oil", "Laurel Berry Oil", "Rosehip Oil"],
+        correct: 2,
+        explanation: "Perfect! Aleppo Soap (Ghar) is famously made by boiling local olive oil with highly prized Laurel Berry oil, which is deeply soothing and antibacterial."
+      },
+      {
+        question: "Beyond food and trade, Aleppo is known as the capital of 'Tarab'. What does 'Tarab' refer to?",
+        options: ["A state of intense musical and emotional enchantment", "A specific type of intricate wood carving", "A highly spiced, roasted coffee", "A traditional sword-fighting dance"],
+        correct: 0,
+        explanation: "Exactly! Aleppo is the heart of traditional classical Arabic music. The incredible vocalists aim to induce 'Tarab', a state of absolute emotional and musical ecstasy in the listener."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    // DOM Elements
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackBox = document.getElementById('feedback-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackIconBg = document.getElementById('feedback-icon-bg');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+    const nextBtn = document.getElementById('next-btn');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startGame() {
+      currentQuestion = 0;
+      score = 0;
+      uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackBox.classList.add('hidden');
+      feedbackBox.classList.remove('animate-slide-left');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'spice-btn w-full py-4 md:py-5 px-6 bg-white border-gray-100 rounded-2xl text-left text-textDark font-sans font-bold text-lg shadow-sm';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-orange-50 border border-orange-100 rounded-full text-center leading-7 mr-3 text-sm text-accentSaffron font-extrabold">${['A','B','C','D'][index]}</span> ${opt}`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      // Disable all buttons and fade them out slightly
+      allBtns.forEach(b => {
+        b.disabled = true;
+        if(b !== btnElement) b.style.opacity = '0.4';
+      });
+
+      // UI Feedback on buttons
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++;
+        uiScore.innerText = score;
+        
+        feedbackIcon.className = "fas fa-fire";
+        feedbackIconBg.className = "w-12 h-12 rounded-full flex items-center justify-center text-2xl text-white shadow-md bg-accentRed";
+        feedbackBox.className = "mt-8 p-6 rounded-2xl shadow-xl border-2 animate-slide-left border-red-200 bg-red-50 block";
+        feedbackTitle.innerText = "Spicy & Correct!";
+        feedbackTitle.className = "font-black text-2xl text-accentRed";
+        nextBtn.className = "mt-6 w-full py-4 rounded-xl text-white font-bold text-lg tracking-wide transition-transform hover:-translate-y-1 shadow-lg bg-accentRed hover:bg-red-800";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct'); // Show actual correct answer
+        allBtns[q.correct].style.opacity = '1';
+        
+        feedbackIcon.className = "fas fa-times";
+        feedbackIconBg.className = "w-12 h-12 rounded-full flex items-center justify-center text-2xl text-white shadow-md bg-gray-500";
+        feedbackBox.className = "mt-8 p-6 rounded-2xl shadow-xl border-2 animate-slide-left border-gray-200 bg-gray-50 block";
+        feedbackTitle.innerText = "Not Quite!";
+        feedbackTitle.className = "font-black text-2xl text-textMuted";
+        nextBtn.className = "mt-6 w-full py-4 rounded-xl text-white font-bold text-lg tracking-wide transition-transform hover:-translate-y-1 shadow-lg bg-textDark hover:bg-black";
+      }
+
+      // Show Explanation
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      // Scroll to feedback
+      setTimeout(() => {
+        feedbackBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) {
+        loadQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconContainer = document.getElementById('result-icon-container');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        // PASS (Culinary Victory)
+        rTitle.innerText = "The Markets Open!";
+        rSub.innerText = "Culinary Journey Successful";
+        rSub.className = "text-sm font-extrabold uppercase tracking-widest mb-2 block text-accentSaffron";
+        
+        rIconContainer.className = "w-32 h-32 rounded-full flex items-center justify-center shadow-2xl border-4 border-red-200 bg-accentRed text-white";
+        rIcon.className = "fas fa-key text-6xl";
+        
+        rDesc.innerHTML = "A masterful performance! You have proven your refined palate and knowledge of the Silk Road. <strong>Aleppo has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-aleppo.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-accentRed font-extrabold text-lg rounded-2xl transition-all shadow-[0_10px_20px_rgba(197,48,48,0.3)] hover:-translate-y-1 hover:bg-red-800";
+
+        // --- CORE MAP UNLOCK LOGIC ---
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('aleppo')) {
+          mapProgress.push('aleppo');
+          localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress));
+        }
+
+      } else {
+        // FAIL (Encouraging Retry)
+        rTitle.innerText = "The Souk is Closed";
+        rSub.innerText = "Journey Incomplete";
+        rSub.className = "text-sm font-extrabold uppercase tracking-widest mb-2 block text-textMuted";
+        
+        rIconContainer.className = "w-32 h-32 rounded-full flex items-center justify-center shadow-lg border-4 border-gray-200 bg-gray-100 text-gray-400";
+        rIcon.className = "fas fa-door-closed text-6xl";
+
+        rDesc.innerHTML = "You need a flavor profile score of at least <strong>5</strong> to enter the Citadel. Read through the encyclopedia below to sharpen your knowledge and try again!";
+        
+        btnPrimary.innerHTML = 'Retry Journey <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#";
+        btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-textDark font-extrabold text-lg rounded-2xl transition-all shadow-xl hover:-translate-y-1 hover:bg-black";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Aleppo Culinary & Heritage Journey in the Syrian Archives! Can you unlock the Northern Gateway?`;
+      if (navigator.share) {
+        navigator.share({ title: 'Aleppo Journey', text: text, url: window.location.href });
+      } else {
+        alert("Copy this to share with your friends: " + text + " " + window.location.href);
+      }
+    }
+  </script>
+</body>
+</html>

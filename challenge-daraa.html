@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Daraa Trial | The Syrian Archives</title>
+  <meta name="description" content="Explore Roman Bosra and the fertile Houran plain. Pass this 7-step trial to unlock Daraa on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgBasalt: '#121212', /* Deep Basalt Night */
+            bgSurface: '#1E1E1E', /* Dark Stone Surface */
+            accentCrimson: '#B91C1C', /* Roman Crimson */
+            accentGold: '#CA8A04', /* Basalt Gold */
+            textLight: '#F5F5F4',
+            textMuted: '#A8A29E'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #121212; color: #F5F5F4; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Subtle Basalt Pattern */
+    .daraa-pattern {
+      background-image: 
+        radial-gradient(circle at 10% 90%, rgba(185, 28, 28, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(202, 138, 4, 0.04) 0%, transparent 40%);
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Fixed Viewport Constraints */
+    .game-container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(185, 28, 28, 0.2);
+      background: rgba(30, 30, 30, 0.6);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #B91C1C; background: rgba(185, 28, 28, 0.1); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(185, 28, 28, 0.2); border-color: #B91C1C; color: #FCA5A5; 
+    }
+    .option-btn.wrong { 
+      background: rgba(239, 68, 68, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Crimson Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #B91C1C; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; box-shadow: 0 0 10px #B91C1C; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1rem;
+      background: rgba(18, 18, 18, 0.96); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(185, 28, 28, 0.3);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Cards */
+    .seo-card {
+      background: #1E1E1E; border: 1px solid rgba(185, 28, 28, 0.15); border-radius: 1.5rem;
+      padding: 2.5rem; transition: all 0.4s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(185, 28, 28, 0.5); box-shadow: 0 15px 30px rgba(18, 18, 18, 0.8); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentCrimson selection:text-bgBasalt">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="daraa-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#121212]/80 backdrop-blur-lg border-b border-accentCrimson/10 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentCrimson flex items-center justify-center text-white transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentCrimson hover:text-white hover:border-accentCrimson transition-all flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentCrimson/10 text-accentCrimson flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(185,28,28,0.15)] border border-accentCrimson/20">
+        <i class="fas fa-theater-masks text-4xl"></i>
+      </div>
+      
+      <span class="text-accentCrimson text-xs font-bold uppercase tracking-widest mb-2 block">Daraa Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">The Basalt Plain & Bosra</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Explore the ancient black basalt theater of Bosra and the fertile Houran basin. Pass this trial to permanently unlock Daraa on your map.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface/60 p-4 rounded-xl border border-accentCrimson/10 mb-8 backdrop-blur-sm">
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-theater-masks text-accentCrimson mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentCrimson mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentCrimson mr-1"></i> Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentCrimson text-white rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-red-700 transition-all shadow-[0_5px_20px_rgba(185,28,28,0.3)]">
+        Enter the Theater
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Query <span id="ui-current-q" class="text-accentCrimson text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-bgSurface/90 backdrop-blur-md border border-accentCrimson/20 rounded-2xl p-5 md:p-8 shadow-2xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading southern records...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-white mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm md:text-base text-textMuted leading-relaxed mb-8 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-white bg-accentCrimson font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(185,28,28,0.3)]">
+            Continue Performance
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Trial Concluded</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-white/10 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentCrimson">0</span><span class="text-2xl text-textMuted">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-white bg-accentCrimson font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(185,28,28,0.3)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#0A0A0A] border-t border-white/5 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentCrimson font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of Daraa & Roman Bosra</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          The southern gateway of Syria is characterized by volcanic black basalt plains, the fertile agricultural basin of the Houran, and the breathtaking ancient theater of Bosra. Explore the historical records below.
+        </p>
+      </div>
+
+      <!-- Daraa Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Roman Bosra (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentCrimson/10 flex items-center justify-center text-accentCrimson border border-accentCrimson/20 group-hover:bg-accentCrimson group-hover:text-white transition-colors">
+              <i class="fas fa-theater-masks text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Black Basalt Theater of Bosra</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The crown jewel of the Daraa governorate is the ancient city of Bosra, universally renowned for possessing one of the largest, best-preserved, and most astonishing Roman theaters on Earth. Built entirely from heavy, dark volcanic black basalt blocks during the 2nd century AD under Roman rule, the theater seats up to 15,000 spectators. Unlike most Roman theaters that were carved into hillsides, Bosra's theater stands completely freestanding on flat terrain, supported by monumental vaulted stone corridors and massive arcades.</p>
+            <p>What makes Bosra's theater legendary among acoustic engineers and architects is its pristine preservation. During the Islamic medieval period, the Ayyubids cleverly encased the entire exterior theater structure inside a massive defensive fortress and citadel to protect it from Crusader and Mongol attacks. This military encasement accidentally shielded the ancient Roman limestone and basalt tiers from weathering and stone pillaging, leaving behind an acoustic masterpiece where a whisper dropped on the central stage can be heard clearly in the very back row. Unlocking Daraa on your map connects you directly to this monumental southern theater.</p>
+          </div>
+        </article>
+
+        <!-- The Houran Plain -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgBasalt transition-colors">
+              <i class="fas fa-wheat-awn text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Fertile Houran Basin</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Geographically, the Daraa governorate sits squarely within the fertile Houran plain. Composed of decomposed volcanic basalt ash, the soil across the Houran is exceptionally rich in minerals, making it one of the premier agricultural granaries of the Levant since antiquity.</p>
+            <p>For millennia, this southern plain supplied Rome, Damascus, and regional empires with vast quantities of durum wheat and barley, earning the region a reputation as a legendary breadbasket that sustained large urban populations despite the semi-arid climate.</p>
+          </div>
+        </article>
+
+        <!-- Nabataean Kingdom -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentCrimson/10 flex items-center justify-center text-accentCrimson border border-accentCrimson/20 group-hover:bg-accentCrimson group-hover:text-white transition-colors">
+              <i class="fas fa-landmark text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Nabataean Northern Capital</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Before it became a major Roman provincial capital (Nova Traiana Bostrense), Bosra served as the flourishing northern capital of the Nabataean Kingdom during the 1st century BC. Famous for carving Petra out of pink sandstone, the Nabataeans brought their advanced water-storage engineering and stonemasonry to southern Syria.</p>
+            <p>They integrated Bosra into their sprawling incense and spice trade networks connecting the Arabian Peninsula to the Mediterranean, leaving behind distinct architectural styles characterized by fine ashlar masonry and intricate decorative friezes.</p>
+          </div>
+        </article>
+
+        <!-- The Pilgrimage Highway -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgBasalt transition-colors">
+              <i class="fas fa-road text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">The Hajj Pilgrimage Highway</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Throughout the Islamic medieval and Ottoman eras, Daraa and Bosra held immense strategic importance as the primary staging posts along the *Darb al-Hajj*—the official overland pilgrimage highway connecting Damascus to the holy cities of Mecca and Medina.</p>
+            <p>Caravans consisting of thousands of pilgrims, merchants, and guards gathered in the southern basin before embarking on the dangerous desert trek southward, cementing Daraa's role as the historical southern gateway of Syria.</p>
+          </div>
+        </article>
+
+        <!-- Basalt Architecture (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgBasalt transition-colors">
+              <i class="fas fa-cube text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Unique Black Basalt Architecture</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The most striking visual characteristic of the entire Daraa governorate is its ubiquitous black building material. Because southern Syria was shaped by ancient volcanic activity from nearby Jabal al-Arab, the ground is blanketed in heavy, dark basalt stone. Rather than importing lighter limestone or marble from distant mountains, local builders across the centuries utilized this volcanic rock for everything: massive city walls, triumphal arches, residential houses, and elaborate street paving.</p>
+            <p>This imparts upon Bosra and its surrounding towns a majestic, dark, almost obsidian aesthetic that contrasts sharply with the golden deserts and green plains. Unlocking Daraa on your interactive map connects you directly to this volcanic southern heritage—completing your exploration of Syria's architectural diversity. From the black theater tiers of Bosra to the fertile wheat fields of the Houran, the southern gateway stands fully illuminated.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-white/5 py-12 relative z-10 mt-12">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentCrimson flex items-center justify-center text-white">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentCrimson transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentCrimson transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentCrimson transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentCrimson transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentCrimson transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentCrimson transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentCrimson transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentCrimson transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (Daraa - Bosra & Houran) ---
+    const triviaData = [
+      {
+        question: "What is the name of the ancient city in Daraa famous for possessing one of the largest and best-preserved Roman theaters on Earth?",
+        options: ["Palmyra", "Bosra", "Apamea", "Ugarit"],
+        correct: 1,
+        explanation: "Correct! Bosra is universally renowned for its 2nd-century Roman theater built entirely from heavy volcanic black basalt blocks."
+      },
+      {
+        question: "What unique material distinguishes the ancient theater and architecture of Bosra from most other Roman structures?",
+        options: ["White marble", "Pink sandstone", "Volcanic black basalt stone", "Red clay brick"],
+        correct: 2,
+        explanation: "Spot on! The theater and city structures were built from heavy volcanic black basalt stone sourced locally from ancient volcanic flows."
+      },
+      {
+        question: "What is the name of the fertile agricultural basin where the Daraa governorate is located, famous for producing abundant durum wheat?",
+        options: ["The Ghouta Oasis", "The Houran Plain", "The Ghab Plain", "The Jazira Basin"],
+        correct: 1,
+        explanation: "Yes! The Houran plain features soil rich in volcanic ash, making it one of the premier agricultural granaries of the Levant since antiquity."
+      },
+      {
+        question: "Before becoming a major Roman provincial capital, Bosra served as the flourishing northern capital of which ancient kingdom?",
+        options: ["The Nabataean Kingdom", "The Hittite Empire", "The Kingdom of Armenia", "Phrygia"],
+        correct: 0,
+        explanation: "Correct! Bosra served as the northern capital of the Nabataean Kingdom during the 1st century BC before Roman annexation."
+      },
+      {
+        question: "How did Ayyubid rulers accidentally protect the ancient Roman theater of Bosra from weathering and pillaging during the medieval period?",
+        options: ["By burying it entirely under desert sand", "By encasing the entire exterior theater inside a massive defensive citadel and fortress", "By surrounding it with a deep water moat", "By building a roof over it"],
+        correct: 1,
+        explanation: "Spot on! The Ayyubids encased the theater inside a massive defensive fortress to protect it from attacks, accidentally shielding the ancient tiers from damage."
+      },
+      {
+        question: "Throughout the Islamic medieval and Ottoman eras, what major highway made Daraa and Bosra crucial staging posts?",
+        options: ["The Silk Road", "The Darb al-Hajj (Overland Pilgrimage Highway)", "The Amber Road", "The Royal Road"],
+        correct: 1,
+        explanation: "Yes! Daraa and Bosra were vital staging posts along the Darb al-Hajj, the official pilgrimage highway connecting Damascus to Mecca."
+      },
+      {
+        question: "What seating capacity does the magnificent ancient Roman theater of Bosra boast?",
+        options: ["Up to 5,000 spectators", "Up to 10,000 spectators", "Up to 15,000 spectators", "Up to 50,000 spectators"],
+        correct: 2,
+        explanation: "Perfect! The freestanding basalt theater of Bosra is massive, seating up to 15,000 spectators in its remarkably preserved stone tiers."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-accentCrimson/20 rounded-full text-center leading-8 mr-3 text-xs text-accentCrimson font-black shrink-0 border border-accentCrimson/50">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentCrimson text-white shadow-[0_0_20px_rgba(185,28,28,0.4)] border-2 border-red-300";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Standing Ovation";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentCrimson";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-gray-600 text-white shadow-[0_0_20px_rgba(107,114,128,0.4)] border-2 border-gray-400";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Missed Cue";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "Theater Conquered";
+        rSub.innerText = "Trial Passed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentCrimson";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(185,28,28,0.3)] bg-accentCrimson/10 border-2 border-accentCrimson";
+        rIcon.className = "fas fa-theater-masks text-4xl text-accentCrimson";
+        rDesc.innerHTML = "You have successfully performed across the basalt stage. <strong>Daraa has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-daraa.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-accentCrimson font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(185,28,28,0.3)] hover:-translate-y-1 hover:bg-red-700";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('daraa')) { mapProgress.push('daraa'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Curtains Closed";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-lock text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. The southern gateway remains locked. Read the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Trial <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the Daraa Bosra Theater Trial in the Syrian Archives! Can you conquer the southern stage?`;
+      if (navigator.share) { navigator.share({ title: 'Daraa Trial', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " " + window.location.href); }
+    }
+  </script>
+</body>
+</html>

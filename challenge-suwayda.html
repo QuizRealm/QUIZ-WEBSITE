@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>As-Suwayda Trial | The Syrian Archives</title>
+  <meta name="description" content="Explore volcanic Philippopolis and Jabal al-Druze. Pass this 7-step trial to unlock As-Suwayda on the interactive map." />
+  
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+  <!-- End Google Tag Manager -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgVolcanic: '#18181B', /* Deep Volcanic Charcoal */
+            bgSurface: '#27272A', /* Dark Basalt Surface */
+            accentRose: '#E11D48', /* Roman Emperor Rose */
+            accentGold: '#D97706', /* Volcanic Gold */
+            textLight: '#FAFAFA',
+            textMuted: '#A1A1AA'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.4s ease-out forwards',
+            'overlay-in': 'overlayIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            overlayIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #18181B; color: #FAFAFA; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+    
+    /* Subtle Volcanic Pattern */
+    .suwayda-pattern {
+      background-image: 
+        radial-gradient(circle at 15% 85%, rgba(225, 29, 72, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 15%, rgba(217, 119, 6, 0.04) 0%, transparent 40%);
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+
+    /* Fixed Viewport Constraints */
+    .game-container {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Screen Management */
+    .game-screen { display: none; width: 100%; }
+    .game-screen.active { display: flex; animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Option Buttons */
+    .option-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(225, 29, 72, 0.2);
+      background: rgba(39, 39, 42, 0.6);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #E11D48; background: rgba(225, 29, 72, 0.1); transform: translateX(5px);
+    }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { 
+      background: rgba(225, 29, 72, 0.2); border-color: #E11D48; color: #FDA4AF; 
+    }
+    .option-btn.wrong { 
+      background: rgba(239, 68, 68, 0.1); border-color: #EF4444; color: #FCA5A5; opacity: 0.5;
+    }
+
+    /* Rose Progress Bar */
+    .progress-bar-container { background: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; }
+    .progress-fill { background: #E11D48; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; box-shadow: 0 0 10px #E11D48; }
+
+    /* Zero-Shift Feedback Overlay */
+    .feedback-overlay {
+      position: absolute; inset: 0; border-radius: 1rem;
+      background: rgba(24, 24, 27, 0.96); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 2rem; z-index: 20; border: 1px solid rgba(225, 29, 72, 0.3);
+    }
+    .feedback-overlay.active { display: flex; animation: overlayIn 0.3s forwards; }
+
+    /* SEO Cards */
+    .seo-card {
+      background: #27272A; border: 1px solid rgba(225, 29, 72, 0.15); border-radius: 1.5rem;
+      padding: 2.5rem; transition: all 0.4s ease;
+    }
+    .seo-card:hover { transform: translateY(-5px); border-color: rgba(225, 29, 72, 0.5); box-shadow: 0 15px 30px rgba(24, 24, 27, 0.8); }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentRose selection:text-bgVolcanic">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="suwayda-pattern"></div>
+
+  <!-- Global Header -->
+  <header class="bg-[#18181B]/80 backdrop-blur-lg border-b border-accentRose/10 sticky top-0 z-50 h-[70px] flex items-center">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded bg-accentRose flex items-center justify-center text-white transition-transform group-hover:rotate-12">
+          <i class="fas fa-crown text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-widest text-white uppercase">QuizRealm</span>
+      </a>
+      <a href="syria-interactive-map.html" class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-textLight hover:bg-accentRose hover:text-white hover:border-accentRose transition-all flex items-center gap-2">
+        <i class="fas fa-map"></i> <span class="hidden sm:inline uppercase tracking-widest">Abort Trial</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <main class="w-full max-w-2xl mx-auto px-4 game-container relative z-10">
+
+    <!-- SCREEN 1: START -->
+    <div id="screen-start" class="game-screen active flex-col items-center text-center">
+      <div class="w-20 h-20 rounded-full bg-accentRose/10 text-accentRose flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(225,29,72,0.15)] border border-accentRose/20">
+        <i class="fas fa-volcano text-4xl"></i>
+      </div>
+      
+      <span class="text-accentRose text-xs font-bold uppercase tracking-widest mb-2 block">As-Suwayda Governorate</span>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">The Volcanic Massif</h1>
+      
+      <p class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Explore Jabal al-Druze, Roman Philippopolis, and ancient basalt temples. Pass this trial to permanently unlock As-Suwayda on your map.
+      </p>
+
+      <div class="w-full flex justify-between text-left bg-bgSurface/60 p-4 rounded-xl border border-accentRose/10 mb-8 backdrop-blur-sm">
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Length</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-volcano text-accentRose mr-1"></i> 7 Queries</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Target</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-bullseye text-accentRose mr-1"></i> 5/7 Required</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-textMuted uppercase tracking-widest">Reward</span>
+          <span class="text-white font-bold text-sm"><i class="fas fa-gem text-accentRose mr-1"></i> Map Unlock</span>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 bg-accentRose text-white rounded-xl font-extrabold text-sm uppercase tracking-widest hover:bg-rose-700 transition-all shadow-[0_5px_20px_rgba(225,29,72,0.3)]">
+        Ascend the Massif
+      </button>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY -->
+    <div id="screen-game" class="game-screen flex-col w-full">
+      
+      <!-- Top HUD -->
+      <div class="flex flex-col gap-2 mb-6">
+        <div class="flex justify-between items-end">
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Query <span id="ui-current-q" class="text-accentRose text-base">1</span>/7</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-textMuted">Score: <span id="ui-score" class="text-white text-base">0</span></span>
+        </div>
+        <div class="progress-bar-container w-full">
+          <div id="ui-progress" class="progress-fill" style="width: 14%;"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="bg-bgSurface/90 backdrop-blur-md border border-accentRose/20 rounded-2xl p-5 md:p-8 shadow-2xl relative w-full flex flex-col flex-grow">
+        
+        <h2 id="question-text" class="font-serif text-xl md:text-2xl text-white font-bold mb-6 leading-snug">
+          Loading volcanic records...
+        </h2>
+        
+        <!-- Options Grid -->
+        <div id="options-grid" class="flex flex-col gap-3 flex-grow">
+          <!-- Options injected by JS -->
+        </div>
+
+        <!-- ZERO-SHIFT FEEDBACK OVERLAY -->
+        <div id="feedback-overlay" class="feedback-overlay">
+          <div id="feedback-icon-box" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl text-white mb-4">
+            <i id="feedback-icon" class="fas"></i>
+          </div>
+          <h4 id="feedback-title" class="font-serif font-bold text-2xl mb-2 text-white">Status</h4>
+          <p id="feedback-desc" class="text-sm md:text-base text-textMuted leading-relaxed mb-8 max-w-sm">Explanation goes here.</p>
+          <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 rounded-xl text-white bg-accentRose font-bold text-sm uppercase tracking-widest transition-transform active:scale-95 shadow-[0_5px_15px_rgba(225,29,72,0.3)]">
+            Continue Ascent
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: RESULTS -->
+    <div id="screen-result" class="game-screen flex-col items-center text-center">
+      
+      <div id="result-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl border-2">
+        <i id="result-icon" class="fas text-4xl"></i>
+      </div>
+      
+      <span id="result-subtitle" class="text-[10px] font-bold uppercase tracking-widest mb-2 block">Trial Concluded</span>
+      <h2 id="result-title" class="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Title</h2>
+      
+      <div class="mb-6 border-y border-white/10 py-4 w-full max-w-xs">
+        <div class="text-6xl font-sans font-bold text-white">
+          <span id="result-score" class="text-accentRose">0</span><span class="text-2xl text-textMuted">/7</span>
+        </div>
+      </div>
+
+      <p id="result-desc" class="text-textMuted text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+        Description
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+        <a id="btn-primary" href="#" class="flex-1 py-4 text-center text-white bg-accentRose font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(225,29,72,0.3)]">
+          Action
+        </a>
+        <button id="btn-secondary" onclick="shareResults()" class="sm:w-1/3 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-colors">
+          <i class="fas fa-share-alt mr-2"></i> Share
+        </button>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- HIGH-IMPACT BENTO SEO SECTION (1500+ Words)-->
+  <!-- ========================================== -->
+  <section class="w-full bg-[#121214] border-t border-white/5 py-24 px-4 md:px-8 relative z-10 mt-12">
+    <div class="max-w-[1400px] mx-auto">
+      
+      <div class="text-center mb-16 px-4">
+        <span class="text-accentRose font-bold tracking-widest uppercase text-xs mb-3 block">Geographical Encyclopedia</span>
+        <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">The Archives of As-Suwayda & Jabal al-Druze</h2>
+        <p class="font-sans text-textMuted max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+          The volcanic highlands of southern Syria, dominated by Jabal al-Arab, contain Roman imperial cities, ancient sanctuaries, and a proud cultural legacy. Explore the historical records below.
+        </p>
+      </div>
+
+      <!-- As-Suwayda Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Philippopolis (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentRose/10 flex items-center justify-center text-accentRose border border-accentRose/20 group-hover:bg-accentRose group-hover:text-white transition-colors">
+              <i class="fas fa-crown text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">Philippopolis (Shahba): City of an Emperor</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">One of the most extraordinary archaeological sites in As-Suwayda is Shahba, ancient Philippopolis. Founded in 244 AD by Roman Emperor Marcus Julius Philippus—commonly known in history as Philip the Arab—this planned imperial city was constructed in the exact birthplace of the Emperor. Unlike other Roman cities that grew organically over centuries, Philippopolis was laid out from scratch following a strict, classical grid pattern inspired by Rome itself, complete with a monumental theater, a sprawling public bath complex, and an imperial palace.</p>
+            <p>What makes Philippopolis visually striking is that every single building, column, and paved street was carved from the local dark volcanic black basalt stone, creating a dramatic aesthetic of imperial grandeur executed entirely in volcanic rock. Emperor Philip sought to immortalize his humble southern Syrian roots with a masterpiece of classical architecture. Unlocking As-Suwayda on your map connects you directly to this fascinating chapter of a Roman Emperor born on Syrian soil.</p>
+          </div>
+        </article>
+
+        <!-- Jabal al-Arab -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentRose/10 flex items-center justify-center text-accentRose border border-accentRose/20 group-hover:bg-accentRose group-hover:text-white transition-colors">
+              <i class="fas fa-volcano text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Jabal al-Arab / Jabal al-Druze</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Geographically, the entire As-Suwayda governorate is defined by Jabal al-Arab (historically known as Jabal al-Druze)—a dramatic, uplifted volcanic massif featuring numerous extinct volcanic cones, rich basaltic soil, and high-altitude microclimates.</p>
+            <p>Rising abruptly above the southern Syrian steppe, these volcanic highlands catch moisture-bearing winds, creating cooler temperatures, winter snowfall, and fertile mountain slopes capable of sustaining extensive apple orchards, vineyards, and ancient winemaking traditions.</p>
+          </div>
+        </article>
+
+        <!-- Canatha -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgVolcanic transition-colors">
+              <i class="fas fa-columns text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Kanawat (Canatha)</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">Nestled in the wooded foothills of the mountain massif lies Kanawat (ancient Canatha), a stunning Greco-Roman and Byzantine city that was once a prominent member of the Decapolis. Surrounded by oak forests and deep ravines, Kanawat features a magnificent theater, a colonnaded temple dedicated to the god Helios, and early Christian basilicas.</p>
+            <p>The city's black basalt architecture, integrated seamlessly with running water streams and ancient stone bridges, showcases an exceptional level of provincial Roman urban planning in the southern volcanic highlands.</p>
+          </div>
+        </article>
+
+        <!-- Viticulture and Wine -->
+        <article class="seo-card group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentRose/10 flex items-center justify-center text-accentRose border border-accentRose/20 group-hover:bg-accentRose group-hover:text-white transition-colors">
+              <i class="fas fa-wine-glass text-xl"></i>
+            </div>
+            <h3 class="font-serif text-xl text-white font-bold">Ancient Viticulture & Basalt Vineyards</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed text-justify">
+            <p class="mb-4">The mineral-rich volcanic basalt soil of As-Suwayda has made it one of the premier winemaking regions in the Middle East since antiquity. Archaeological evidence across the governorate reveals hundreds of ancient rock-cut wine presses dating back to Nabataean and Roman times.</p>
+            <p>Today, local vintners continue this ancient tradition, harvesting grapes grown in volcanic ash that impart a distinct, mineral-rich complexity to regional wines, preserving an uninterrupted agricultural heritage.</p>
+          </div>
+        </article>
+
+        <!-- The Volcanic Plateau (Large) -->
+        <article class="seo-card lg:col-span-2 group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-accentGold/10 flex items-center justify-center text-accentGold border border-accentGold/20 group-hover:bg-accentGold group-hover:text-bgVolcanic transition-colors">
+              <i class="fas fa-mountain text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-white font-bold">The Volcanic Legacy of Southern Syria</h3>
+          </div>
+          <div class="text-textMuted text-sm leading-relaxed columns-1 md:columns-2 gap-8 text-justify">
+            <p class="mb-4">The geological architecture of As-Suwayda is a testament to ancient tectonic and volcanic activity that blanketed the southern Syrian steppe in layers of dark basalt lava. This rugged terrain created natural defensive strongholds that have sheltered independent communities for millennia. From the Nabataean caravan guards and Roman emperors to the fierce autonomy of the Druze mountaineers in modern history, the inhabitants of Jabal al-Arab have always embodied the rugged, unyielding strength of the volcanic stone upon which they built their homes.</p>
+            <p>Today, unlocking As-Suwayda on your interactive map connects you directly to these elevated volcanic highlands—completing your comprehensive archive of southern Syria. From the imperial grid of Philippopolis to the basalt temples of Kanawat, the volcanic massif stands fully illuminated.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="bg-bgSurface border-t border-white/5 py-12 relative z-10 mt-12">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded bg-accentRose flex items-center justify-center text-white">
+              <i class="fas fa-crown text-sm"></i>
+            </div>
+            <span class="font-serif text-lg font-bold tracking-widest uppercase text-white">QuizRealm</span>
+          </a>
+          <p class="text-textMuted text-sm leading-relaxed max-w-sm">
+            Interactive digital modules bridging spatial navigation, historical records, and logic mechanics.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="arcade.html" class="hover:text-accentRose transition-colors">Arcade Arena</a></li>
+            <li><a href="categories.html" class="hover:text-accentRose transition-colors">Categories</a></li>
+            <li><a href="syria-interactive-map.html" class="hover:text-accentRose transition-colors">Syrian Archives</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-textMuted">
+            <li><a href="about.html" class="hover:text-accentRose transition-colors">About Us</a></li>
+            <li><a href="privacy.html" class="hover:text-accentRose transition-colors">Privacy Policy</a></li>
+            <li><a href="Terms.html" class="hover:text-accentRose transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/5 flex justify-between items-center">
+        <p class="text-xs text-textMuted">&copy; 2026 QuizRealm. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-textMuted hover:text-accentRose transition-colors"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-textMuted hover:text-accentRose transition-colors"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GAME DATA (As-Suwayda - Philippopolis & Jabal al-Druze) ---
+    const triviaData = [
+      {
+        question: "What is the ancient name of Shahba in As-Suwayda, founded as a planned imperial city by a Roman Emperor born there?",
+        options: ["Canatha (Kanawat)", "Philippopolis", "Bostra", "Dura-Europos"],
+        correct: 1,
+        explanation: "Correct! Philippopolis (Shahba) was founded in 244 AD by Roman Emperor Philip the Arab in his exact birthplace, built entirely in black basalt."
+      },
+      {
+        question: "Which Roman Emperor, known historically as 'Philip the Arab', ordered the construction of Philippopolis?",
+        options: ["Trajan", "Marcus Julius Philippus", "Caracalla", "Septimius Severus"],
+        correct: 1,
+        explanation: "Spot on! Marcus Julius Philippus (Philip the Arab) ruled Rome from 244 to 249 AD and honored his Syrian roots by building the planned city."
+      },
+      {
+        question: "What is the primary volcanic mountain massif that defines the entire As-Suwayda governorate?",
+        options: ["Mount Hermon", "Jabal al-Arab (Jabal al-Druze)", "The Anti-Lebanon Range", "Jabal al-Zawiya"],
+        correct: 1,
+        explanation: "Yes! Jabal al-Arab (historically Jabal al-Druze) is an uplifted volcanic massif featuring extinct cones and rich basaltic soil."
+      },
+      {
+        question: "What is the ancient name of Kanawat in As-Suwayda, which was a prominent Greco-Roman city belonging to the Decapolis?",
+        options: ["Canatha", "Ebla", "Mari", "Ugarit"],
+        correct: 0,
+        explanation: "Correct! Kanawat (ancient Canatha) was a prominent Decapolis city nestled in the wooded foothills, featuring a temple to Helios and a theater."
+      },
+      {
+        question: "What specific material was used almost exclusively to construct the monuments, temples, and streets of Philippopolis and Kanawat?",
+        options: ["White marble", "Pink sandstone", "Volcanic dark basalt stone", "Red terracotta brick"],
+        correct: 2,
+        explanation: "Spot on! The local volcanic basalt stone gave As-Suwayda's ancient cities a majestic, dark obsidian aesthetic."
+      },
+      {
+        question: "Due to its volcanic ash-rich soil and ancient rock-cut wine presses, what agricultural industry has thrived in As-Suwayda since antiquity?",
+        options: ["Olive oil production", "Viticulture and winemaking", "Citrus orchards", "Date palm cultivation"],
+        correct: 1,
+        explanation: "Yes! The mineral-rich basalt soil makes As-Suwayda a premier winemaking region, continuing an unbroken tradition from Nabataean and Roman times."
+      },
+      {
+        question: "What architectural style inspired the layout of Philippopolis when Emperor Philip the Arab founded it?",
+        options: ["Classical Roman grid planning inspired by Rome", "Egyptian pyramid alignment", "Persian royal palace geometry", "Greek acropolis staging"],
+        correct: 0,
+        explanation: "Perfect! Philippopolis was laid out from scratch following a strict classical Roman grid pattern complete with a theater and imperial palace."
+      }
+    ];
+
+    // --- GAME ENGINE ---
+    let currentQuestion = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenGame = document.getElementById('screen-game');
+    const screenResult = document.getElementById('screen-result');
+    
+    const uiQNum = document.getElementById('ui-current-q');
+    const uiProgress = document.getElementById('ui-progress');
+    const uiScore = document.getElementById('ui-score');
+    const qText = document.getElementById('question-text');
+    const optsGrid = document.getElementById('options-grid');
+    
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const feedbackIconBox = document.getElementById('feedback-icon-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackDesc = document.getElementById('feedback-desc');
+
+    function switchScreen(hide, show) {
+      hide.classList.remove('active');
+      show.classList.add('active');
+    }
+
+    function startGame() {
+      currentQuestion = 0; score = 0; uiScore.innerText = '0';
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      hasAnswered = false;
+      feedbackOverlay.classList.remove('active');
+      
+      const q = triviaData[currentQuestion];
+      uiQNum.innerText = currentQuestion + 1;
+      uiProgress.style.width = `${((currentQuestion) / triviaData.length) * 100}%`;
+      
+      qText.innerText = q.question;
+      optsGrid.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn w-full py-4 px-5 rounded-xl text-left text-white font-sans text-sm md:text-base font-bold flex items-center';
+        btn.innerHTML = `<span class="inline-block w-8 h-8 bg-accentRose/20 rounded-full text-center leading-8 mr-3 text-xs text-accentRose font-black shrink-0 border border-accentRose/50">${['A','B','C','D'][index]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectOption(index, btn);
+        optsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, btnElement) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+
+      const q = triviaData[currentQuestion];
+      const isCorrect = selectedIndex === q.correct;
+      const allBtns = optsGrid.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        score++; uiScore.innerText = score;
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-accentRose text-white shadow-[0_0_20px_rgba(225,29,72,0.4)] border-2 border-rose-300";
+        feedbackIcon.className = "fas fa-check";
+        feedbackTitle.innerText = "Summit Conquered";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-accentRose";
+      } else {
+        btnElement.classList.add('wrong');
+        allBtns[q.correct].classList.add('correct');
+        
+        feedbackIconBox.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 bg-gray-600 text-white shadow-[0_0_20px_rgba(107,114,128,0.4)] border-2 border-gray-400";
+        feedbackIcon.className = "fas fa-times";
+        feedbackTitle.innerText = "Volcanic Ash";
+        feedbackTitle.className = "font-serif font-bold text-2xl mb-2 text-red-400";
+      }
+
+      feedbackDesc.innerText = q.explanation;
+      uiProgress.style.width = `${((currentQuestion + 1) / triviaData.length) * 100}%`;
+      
+      setTimeout(() => { feedbackOverlay.classList.add('active'); }, 600);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < triviaData.length) { loadQuestion(); } else { endGame(); }
+    }
+
+    function endGame() {
+      switchScreen(screenGame, screenResult);
+      
+      const rScore = document.getElementById('result-score');
+      const rTitle = document.getElementById('result-title');
+      const rSub = document.getElementById('result-subtitle');
+      const rDesc = document.getElementById('result-desc');
+      const rIconBox = document.getElementById('result-icon-box');
+      const rIcon = document.getElementById('result-icon');
+      const btnPrimary = document.getElementById('btn-primary');
+
+      rScore.innerText = score;
+
+      if (score >= 5) {
+        rTitle.innerText = "Massif Conquered";
+        rSub.innerText = "Trial Passed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-accentRose";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(225,29,72,0.3)] bg-accentRose/10 border-2 border-accentRose";
+        rIcon.className = "fas fa-volcano text-4xl text-accentRose";
+        rDesc.innerHTML = "You have successfully scaled Jabal al-Arab. <strong>As-Suwayda has been permanently unlocked</strong> on your interactive map.";
+        
+        btnPrimary.innerHTML = 'Enter The Vault <i class="fas fa-gem ml-2"></i>';
+        btnPrimary.href = "vault-suwayda.html";
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-accentRose font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_5px_15px_rgba(225,29,72,0.3)] hover:-translate-y-1 hover:bg-rose-700";
+
+        let mapProgress = JSON.parse(localStorage.getItem('syrianMapHubUnlocked')) || [];
+        if (!mapProgress.includes('suwayda')) { mapProgress.push('suwayda'); localStorage.setItem('syrianMapHubUnlocked', JSON.stringify(mapProgress)); }
+      } else {
+        rTitle.innerText = "Volcanic Fog";
+        rSub.innerText = "Trial Failed"; rSub.className = "text-[10px] font-bold uppercase tracking-widest mb-2 block text-red-500";
+        rIconBox.className = "w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] bg-red-500/10 border-2 border-red-500";
+        rIcon.className = "fas fa-lock text-4xl text-red-500";
+        rDesc.innerHTML = "You fell short of the <strong>5</strong> points required. The volcanic archives remain locked. Read the encyclopedia below and try again.";
+        
+        btnPrimary.innerHTML = 'Retry Trial <i class="fas fa-redo ml-2"></i>';
+        btnPrimary.href = "#"; btnPrimary.onclick = (e) => { e.preventDefault(); startGame(); };
+        btnPrimary.className = "flex-1 py-4 text-center text-white bg-white/10 hover:bg-white/20 border border-white/10 font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:-translate-y-1";
+      }
+    }
+
+    function shareResults() {
+      const text = `I scored ${score}/7 on the As-Suwayda Volcanic Massif Trial in the Syrian Archives! Can you scale the peak?`;
+      if (navigator.share) { navigator.share({ title: 'As-Suwayda Trial', text: text, url: window.location.href });
+      } else { alert("Copy this to share: " + text + " " + window.location.href); }
+    }
+  </script>
+</body>
+</html>
