@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Levantine Persona | Psychological Identity Funnel</title>
+  <meta name="description" content="Discover which ancient Syrian historical archetype—Merchant, Artisan, Scholar, or Commander—aligns with your modern soul through this behavioral psychological funnel." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentGold: '#EAB308',
+            accentTeal: '#0D9488',
+            accentPurple: '#8B5CF6',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentGold selection:text-bgDark min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-fingerprint text-accentGold mr-2"></i> Levantine Persona
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Funnel Container -->
+  <main class="flex-grow flex items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl active">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentGold/10 border border-accentGold/30">
+        <i class="fas fa-user-tag text-5xl text-accentGold"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">The Levantine Persona</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        The history of the Levant was shaped by distinct human archetypes: the shrewd Silk Road Merchant, the meticulous Coastal Artisan, the philosophical Damascene Scholar, and the resolute Citadel Commander. Answer 4 behavioral dilemmas to discover your ancient soul.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Funnel Parameters</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-route text-accentGold mr-2"></i> 4 progressive psychological dilemmas.</li>
+          <li><i class="fas fa-brain text-accentTeal mr-2"></i> Algorithmic mapping to your historical archetype.</li>
+          <li><i class="fas fa-shield-alt text-white mr-2"></i> Custom historical analysis and profile breakdown.</li>
+        </ul>
+      </div>
+
+      <button onclick="startFunnel()" class="w-full md:w-auto px-10 py-4 bg-accentGold text-bgDark font-bold rounded-xl uppercase tracking-widest hover:bg-white transition-colors transform hover:scale-105 duration-200">
+        Commence Analysis
+      </button>
+    </div>
+
+    <!-- 2. QUESTION SCREEN -->
+    <div id="game-screen" class="screen flex-col max-w-xl w-full">
+      <div class="flex justify-between items-center mb-6 text-sm font-sans font-bold text-textMuted uppercase tracking-widest px-2">
+        <span>Dilemma <span id="current-q-num" class="text-accentGold">1</span>/4</span>
+        <span>Psychology Funnel</span>
+      </div>
+
+      <div class="bg-cardDark border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl relative mb-6">
+        <h2 id="question-title" class="font-serif text-2xl text-white font-bold leading-relaxed mb-6">
+          Loading dilemma...
+        </h2>
+        
+        <div id="options-container" class="space-y-3">
+          <!-- Buttons injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div id="archetype-icon-box" class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentGold/10 border border-accentGold/30">
+        <i id="archetype-icon" class="fas fa-crown text-5xl text-accentGold"></i>
+      </div>
+      <span class="text-xs uppercase font-bold tracking-widest text-accentGold mb-2 block">Your Historical Archetype</span>
+      <h2 id="archetype-title" class="font-serif text-3xl md:text-4xl font-extrabold text-white mb-4">The Silk Road Merchant</h2>
+      <p id="archetype-desc" class="font-sans text-textMuted text-base mb-8 leading-relaxed text-justify">
+        Description loading...
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Retake Funnel
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentGold text-bgDark rounded-xl hover:bg-white font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Levantine Social Archetypes</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the distinct human roles—merchants, artisans, scholars, and commanders—that formed the complex social hierarchy of the ancient Levant.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-users text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Human Tapestry of the Ancient Levant</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>History is frequently taught through the rigid lens of conquering dynasties, royal coronations, and devastating military sieges. However, the true heartbeat of any great civilization is found within its daily social fabric—the specialized human roles that allowed communities to function, prosper, and remember their own stories. In the ancient Levant, situated at the crossroads of three continents, society was not a monolithic block. Instead, it was an intricate, highly sophisticated ecosystem driven by distinct human archetypes: the shrewd Silk Road Merchant, the meticulous Coastal Artisan, the philosophical Damascene Scholar, and the resolute Citadel Commander.</p>
+          <p>These four archetypes represent fundamental psychological and behavioral orientations toward the world. The Merchant viewed the horizon as a canvas of opportunity, managing risk, negotiation, and international exchange across the perilous trade routes of the Silk Road. The Artisan found meaning in physical transformation, manipulating raw earth, sand, and metal through precise pyrotechnology to create enduring beauty and utility like glass and textiles. The Scholar sought abstract truth within the silent, clay-tablet archives of Ebla and the monastic libraries of Damascus, questioning dogmas and recording human knowledge. Finally, the Commander stood as the bulwark of physical security, engineering impenetrable fortresses like Krak des Chevaliers to protect the populace from external existential threats.</p>
+          <p>Understanding these archetypes allows us to bridge the vast chronological gulf between the ancient world and modern psychology. When individuals navigate behavioral funnels like the Levantine Persona, they are engaging in a timeless process of self-reflection, discovering which historical cognitive style resonates most deeply with their personal decision-making framework, risk tolerance, and creative impulses.</p>
+          <p>The synergy between these four roles created the historical momentum of the region. Without the wealth generated by the Merchant, the monumental architecture of the Commander could not be funded; without the technical precision of the Artisan, the intellectual treatises of the Scholar could not be recorded on clay or parchment. Together, they formed the indestructible social engine of the Cradle of Civilization.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-handshake text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Archetype of the Silk Road Merchant</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>The Merchant archetype embodies calculated risk, adaptability, and cross-cultural communication. In the bustling khans of Aleppo and the desert oasis of Palmyra, merchants were the primary agents of globalization. They orchestrated massive camel caravans that traversed thousands of miles of hostile terrain, balancing the supply and demand of luxury commodities such as Chinese silk, Indian spices, and Damask textiles.</p>
+          <p>Psychologically, the Merchant thrives in environments of uncertainty and negotiation. They understand that trust is the ultimate currency; in an era before international courts, commercial agreements relied entirely on reputation, oaths sworn in the caravanserai, and mutual economic self-interest. The Merchant is pragmatic, worldly, and always looking toward the next horizon.</p>
+          <p>This archetype laid the groundwork for modern international commerce and diplomacy. By connecting disparate civilizations, merchants ensured that ideas, religions, and technologies traveled alongside physical goods, turning the Levant into the ultimate melting pot of human culture.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-hammer text-accentTeal text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Archetype of the Coastal Artisan</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>The Artisan archetype represents patience, material mastery, and aesthetic precision. Operating along the Mediterranean coast in cities like Sidon, Tyre, and Ugarit, artisans transformed raw elements—sand, clay, wool, and metal—into revolutionary technologies. They were the glassblowers who democratized transparent glass, the weavers who invented intricate Damask patterns, and the potters who perfected kiln pyrotechnology.</p>
+          <p>Psychologically, the Artisan finds profound fulfillment in the tangible, tactile mastery of the physical world. They understand the microscopic properties of materials—how silica melts under precise fluxes, how wood responds to water, and how threads align under tension. They are perfectionists who take immense pride in their craftsmanship.</p>
+          <p>The legacy of the Artisan is written in the surviving artifacts of antiquity. Their refusal to compromise on quality ensured that Levantine goods were coveted by emperors and commoners alike, establishing a timeless standard of manufacturing excellence.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-scroll text-accentPurple text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Archetype of the Damascene Scholar</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>The Scholar archetype embodies intellectual curiosity, skepticism, and the relentless pursuit of abstract truth. Within the silent, clay-tablet archives of Ebla, the monastic libraries of Damascus, and the literary salons of Aleppo, scholars cataloged human knowledge. They were the linguists who created the world's first bilingual dictionaries, the astronomers who mapped the night sky, and the poets who questioned religious dogma.</p>
+          <p>Psychologically, the Scholar values contemplation, logic, and long-term memory above material wealth or immediate physical power. They recognize that empires rise and fall, but written words possess the power to outlive stone monuments. They are driven by an unquenchable thirst to understand the underlying rules governing nature and human behavior.</p>
+          <p>The contributions of the Scholar formed the cognitive bedrock of civilization. By preserving law, science, literature, and history, they ensured that human wisdom was not lost to the ravages of war, but passed down continuously across generations.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-chess-rook text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Archetype of the Citadel Commander</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The Commander archetype represents resolute leadership, strategic foresight, and physical protection. Tasked with defending the massive stone fortifications of Krak des Chevaliers and the Citadel of Aleppo, commanders stood as the ultimate guardians of the state. In an era defined by brutal, unsparing siege warfare, the Commander had to maintain absolute discipline, anticipate enemy movements, and inspire unwavering loyalty among their garrison.</p>
+          <p>Psychologically, the Commander thrives under intense pressure and high-stakes responsibility. They possess a holistic, architectural view of safety—understanding that defending a community requires not only physical weapons, but robust supply chains, reliable water reserves, and sound structural engineering. They are decisive, protective, and unyielding in the face of crisis.</p>
+          <p>The legacy of the Commander is etched into the monumental military architecture that still dominates the Levantine landscape today. Their ability to organize collective defense ensured that cities could survive harrowing conflicts and preserve their cultural heritage through centuries of political turbulence.</p>
+          <p>As modern users complete the Levantine Persona funnel, they are connecting directly with this rich psychological lineage. Whether matching with the adventurous Merchant, the meticulous Artisan, the contemplative Scholar, or the resolute Commander, the experience highlights the enduring validity of these ancient human archetypes. They remind us that while technology and fashion evolve across millennia, the fundamental drives of the human psyche remain remarkably constant.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Funnel Questions & Scoring Logic
+    const funnelQuestions = [
+      {
+        question: "When faced with an uncharted obstacle or a sudden crisis, what is your immediate instinct?",
+        options: [
+          { text: "Analyze the market, negotiate terms, and find a profitable angle.", archetype: "Merchant" },
+          { text: "Examine the physical materials at hand and craft a practical tool.", archetype: "Artisan" },
+          { text: "Consult historical archives or philosophical texts for precedent.", archetype: "Scholar" },
+          { text: "Fortify your position, organize your allies, and prepare a defense.", archetype: "Commander" }
+        ]
+      },
+      {
+        question: "Which environment brings you the deepest sense of personal fulfillment?",
+        options: [
+          { text: "A bustling, international trading hub filled with diverse voices and commerce.", archetype: "Merchant" },
+          { text: "A quiet workshop smelling of warm wood, molten glass, and freshly turned clay.", archetype: "Artisan" },
+          { text: "A silent, candle-lit library stacked with ancient manuscripts and scrolls.", archetype: "Scholar" },
+          { text: "A grand hilltop fortress overlooking the horizon, secure and commanding.", archetype: "Commander" }
+        ]
+      },
+      {
+        question: "What is your primary definition of ultimate success?",
+        options: [
+          { text: "Building an influential enterprise that connects distant cultures and generates wealth.", archetype: "Merchant" },
+          { text: "Creating a flawless physical work of art or utility that stands the test of time.", archetype: "Artisan" },
+          { text: "Uncovering a profound truth or recording knowledge that educates future generations.", archetype: "Scholar" },
+          { text: "Successfully protecting your community and establishing enduring security and order.", archetype: "Commander" }
+        ]
+      },
+      {
+        question: "What is your greatest personal strength when working within a group?",
+        options: [
+          { text: "Persuasion, charm, and the ability to bridge opposing viewpoints for mutual gain.", archetype: "Merchant" },
+          { text: "Unmatched attention to detail and a refusal to compromise on quality.", archetype: "Artisan" },
+          { text: "Deep critical thinking, objectivity, and strategic problem-solving.", archetype: "Scholar" },
+          { text: "Decisive leadership, calm under pressure, and steadfast reliability.", archetype: "Commander" }
+        ]
+      }
+    ];
+
+    const archetypeProfiles = {
+      Merchant: {
+        title: "The Silk Road Merchant",
+        icon: "fa-store",
+        desc: "You embody the shrewd, adventurous spirit of the ancient Levantine caravan leaders who bridged East and West. You thrive on negotiation, calculated risk, and spotting opportunity where others see only barriers. Your ability to connect people and manage dynamic environments makes you a natural catalyst for growth and global exchange."
+      },
+      Artisan: {
+        title: "The Coastal Artisan",
+        icon: "fa-hammer",
+        desc: "You possess the meticulous, patient soul of the ancient glassblowers and textile masters of Tyre and Sidon. You find deep satisfaction in the physical transformation of raw materials into enduring beauty and utility. Your uncompromising standards of craftsmanship and tactile intuition set you apart as a true creator."
+      },
+      Scholar: {
+        title: "The Damascene Scholar",
+        icon: "fa-scroll",
+        desc: "You share the intellectual curiosity and critical skepticism of the great thinkers who walked the archives of Ebla and the libraries of Damascus. You value truth, deep contemplation, and the preservation of human knowledge above all else. Your mind seeks to understand the underlying principles governing the universe."
+      },
+      Commander: {
+        title: "The Citadel Commander",
+        icon: "fa-chess-rook",
+        desc: "You carry the resolute leadership and protective instincts of the master builders who fortified the great castles of the Levant. You excel under pressure, providing stability, structural foresight, and unyielding defense when your community faces crisis. Your presence inspires trust and enduring security."
+      }
+    };
+
+    let currentQIndex = 0;
+    let scores = { Merchant: 0, Artisan: 0, Scholar: 0, Commander: 0 };
+
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    
+    const qNumDisplay = document.getElementById('current-q-num');
+    const questionTitle = document.getElementById('question-title');
+    const optionsContainer = document.getElementById('options-container');
+
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => { showElement.classList.add('active'); }, 50);
+    }
+
+    function startFunnel() {
+      currentQIndex = 0;
+      scores = { Merchant: 0, Artisan: 0, Scholar: 0, Commander: 0 };
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      const q = funnelQuestions[currentQIndex];
+      qNumDisplay.innerText = currentQIndex + 1;
+      questionTitle.innerText = q.question;
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full py-4 px-6 bg-bgDark border border-white/10 rounded-2xl text-left text-white font-sans font-semibold hover:border-accentGold hover:bg-accentGold/5 transition-all flex justify-between items-center group';
+        btn.innerHTML = `<span>${opt.text}</span><i class="fas fa-chevron-right text-xs text-textMuted group-hover:text-accentGold transition-colors"></i>`;
+        btn.onclick = () => selectOption(opt.archetype);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectOption(archetype) {
+      scores[archetype]++;
+      currentQIndex++;
+
+      if (currentQIndex < funnelQuestions.length) {
+        loadQuestion();
+      } else {
+        calculateResult();
+      }
+    }
+
+    function calculateResult() {
+      // Find highest scoring archetype
+      let bestArchetype = 'Merchant';
+      let maxScore = -1;
+      for (const [arch, score] of Object.entries(scores)) {
+        if (score > maxScore) {
+          maxScore = score;
+          bestArchetype = arch;
+        }
+      }
+
+      const profile = archetypeProfiles[bestArchetype];
+      document.getElementById('archetype-icon').className = `fas ${profile.icon} text-5xl text-accentGold`;
+      document.getElementById('archetype-title').innerText = profile.title;
+      document.getElementById('archetype-desc').innerText = profile.desc;
+
+      switchScreen(screenGame, screenResult);
+    }
+  </script>
+</body>
+</html>

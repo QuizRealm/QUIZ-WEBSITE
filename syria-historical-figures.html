@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voices of Antiquity | Historical Match Game</title>
+  <meta name="description" content="Match profound philosophical quotes and monumental architectural achievements to the correct ancient Syrian historical figures." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentCrimson: '#9F1239',
+            accentTeal: '#0D9488',
+            accentRed: '#EF4444',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentCrimson selection:text-white min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-user-graduate text-accentCrimson mr-2"></i> Voices of Antiquity
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen active flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentCrimson/10 border border-accentCrimson/30">
+        <i class="fas fa-feather-alt text-5xl text-accentCrimson"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">Voices of Antiquity</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        Syria has been the birthplace of legendary architects, skeptical philosophers, and military sultans. Match the monumental achievements and profound quotes to the correct historical figure.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Match Rules</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-link text-accentCrimson mr-2"></i> 5 matching challenges connecting figures to their legacies.</li>
+          <li><i class="fas fa-bolt text-accentTeal mr-2"></i> Instant validation on every choice.</li>
+          <li><i class="fas fa-award text-white mr-2"></i> Prove your command over the minds of the Levant.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentCrimson text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors transform hover:scale-105 duration-200">
+        Listen to the Voices
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col max-w-xl w-full">
+      <div class="flex justify-between items-center mb-6 text-sm font-sans font-bold text-textMuted uppercase tracking-widest px-2">
+        <span>Figure <span id="current-q-num" class="text-accentCrimson">1</span>/5</span>
+        <span>Score: <span id="game-score" class="text-white">0</span></span>
+      </div>
+
+      <div class="bg-cardDark border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl relative mb-6">
+        <h3 class="text-xs uppercase tracking-widest text-accentCrimson font-bold mb-2">Historical Achievement / Quote</h3>
+        <h2 id="question-title" class="font-serif text-2xl text-white font-bold leading-relaxed mb-6">
+          Loading clue...
+        </h2>
+        
+        <div id="options-container" class="space-y-3">
+          <!-- Buttons injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentCrimson/10 border border-accentCrimson/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-user-shield text-4xl text-accentCrimson"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Voices Heard</h2>
+      <p class="font-sans text-textMuted text-lg mb-4">Your final matching score:</p>
+      
+      <div class="text-6xl font-serif text-accentCrimson font-black mb-6">
+        <span id="final-score">0</span><span class="text-3xl text-textMuted">/5</span>
+      </div>
+
+      <p id="result-comment" class="font-sans text-white text-base mb-8 leading-relaxed"></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Play Again
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentCrimson text-white rounded-xl hover:bg-white hover:text-bgDark font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Intellectual History</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the lives, works, and profound legacies of the master architects, skeptical poets, and military leaders born in ancient Syria.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-feather text-accentCrimson text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Apollodorus of Damascus: Master Architect of the Roman Empire</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>Among the greatest engineers and architects of classical antiquity, few exercised as profound an impact on the physical layout of Rome itself as Apollodorus of Damascus. Born in the Syrian capital in the 1st century AD, Apollodorus was a brilliant Nabataean-Syrian engineer whose mastery of stone, concrete, and mathematics caught the attention of the Roman Emperor Trajan. Accompanying Trajan on his military campaigns, Apollodorus designed the monumental stone bridge across the Danube River—a staggering engineering feat that allowed Roman legions to rapidly cross into Dacia, documented forever in stone relief on Trajan's Column.</p>
+          <p>When Trajan returned to Rome flush with victory, he commissioned Apollodorus to design and construct the grand Forum of Trajan, the largest and most ornate imperial forum in the city. Within this complex, Apollodorus engineered the famous Markets of Trajan—often described as the world's first multi-level shopping mall, featuring over 150 administrative offices, vaulted shops, and indoor market halls constructed from durable Roman concrete and brick. He also designed the magnificent Pantheon and Trajan's Column, a towering 35-meter marble monument containing a spiral frieze that chronicled the Dacian wars with astonishing artistic and narrative precision.</p>
+          <p>However, Apollodorus's brilliance was matched by an uncompromising, fiercely independent professional ego that eventually brought about his political downfall. Following Trajan's death, the succeeding emperor, Hadrian—who fancied himself an amateur architect and poet—sent architectural designs to Apollodorus for critique. Apollodorus famously dismissed Hadrian's plans, mocking the emperor's vaulted temples as "pumpkin domes." Furthermore, when Hadrian asked his opinion on a temple design, Apollodorus bluntly remarked that if the goddess statues seated inside stood up, they would bump their heads on the ceiling.</p>
+          <p>This public humiliation infuriated Hadrian. Upon becoming emperor, Hadrian banished Apollodorus and eventually ordered his execution. Yet, despite his tragic end, Apollodorus's structural legacy endured for millennia. His innovations in concrete dome architecture and urban planning directly shaped the architectural evolution of the Roman Empire, cementing his status as one of the supreme engineering intellects produced by the ancient Levant.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-book-open text-accentCrimson text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Al-Ma'arri: The Blind Skeptic of Ma'arra</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Born in the northern Syrian town of Ma'arra in 973 AD, Abu al-Ala al-Ma'arri stands as one of the most intellectually daring, brilliant, and fiercely controversial poets and philosophers in Arabic literary history. Having lost his eyesight to smallpox at the age of four, Al-Ma'arri developed a staggering memory and a profound intellect. He studied grammar, poetry, and theology in Aleppo, Antioch, and Tripoli before embarking on a brief, unsuccessful trip to Baghdad, after which he returned to his hometown to live as a voluntary ascetic for the remaining decades of his life.</p>
+          <p>Al-Ma'arri was a radical freethinker who subjected all religious dogmas, institutional authorities, and societal traditions to ruthless rational scrutiny. In his masterpiece, *The Epistle of Forgiveness* (*Risalat al-Ghufran*), he imagined a journey through the afterlife, engaging in theological debates with poets and heretics, heavily prefiguring Dante's *Divine Comedy* by three centuries. His poetry collections, notably *Muharalat al-Ahl* (*The Luzumiyat*), expressed a deep, uncompromising philosophical pessimism and skepticism regarding organized religion, famously writing that religions were "merely fables invented by the ancients" designed to manipulate the masses.</p>
+          <p>Beyond his theological skepticism, Al-Ma'arri was a passionate vegan and animal rights pioneer centuries ahead of his time. He chose to abstain from consuming meat, fish, eggs, honey, and milk, writing that he refused to inflict unnecessary pain on sentient creatures or make his body a "tomb for animals." His uncompromising intellectual independence, his defense of reason over blind faith, and his poetic brilliance continue to inspire modern philosophers, ensuring his immortal place in the intellectual history of Syria.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-shield-alt text-accentTeal text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Saladin: The Chivalrous Sultan of the Levant</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Salah ad-Din Yusuf ibn Ayyub, universally known in the West as Saladin, was a Kurdish-Sunni Muslim military commander and statesman who founded the Ayyubid dynasty. Born in Tikrit, Saladin's rise to power was deeply anchored in the geopolitical and military landscape of Syria. Operating primarily out of Damascus and Aleppo, he successfully united the fractured Muslim principalities of Egypt, Syria, Mesopotamia, and Arabia into a cohesive coalition capable of countering the Crusader states in the Levant.</p>
+          <p>Saladin's military career reached its zenith on July 4, 1187, at the Battle of Hattin, where his disciplined forces decisively crushed the army of the Kingdom of Jerusalem. This victory shattered Crusader military power in the region, paving the way for Saladin's triumphant, bloodless reconquest of Jerusalem later that same year after eighty-eight years of Christian occupation. Unlike previous military conquerors who subjected captured cities to massacres and pillaging, Saladin granted safe passage, protected Christian holy sites, and ransomed enemy soldiers with remarkable leniency.</p>
+          <p>Saladin's legendary chivalry, tactical brilliance, and personal asceticism earned him deep respect even among his fiercest European adversaries, including King Richard the Lionheart. Following the conclusion of the Third Crusade, Saladin passed away in Damascus in 1193, leaving behind virtually no personal wealth—his entire treasury had been given away to charity and his soldiers. He is entombed in a magnificent mausoleum adjacent to the Umayyad Mosque in Damascus, forever remembered as the supreme military hero of medieval Syria.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-crown text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Queen Zenobia: The Sovereign of Palmyra</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Septimia Zenobia, who ruled the oasis empire of Palmyra during the turbulent third century AD, remains one of the most magnetic and formidable political figures in classical antiquity. Following the assassination of her husband Odaenathus, Zenobia seized absolute power as queen regent, transforming a neutral desert trading hub into an aggressive, expansionist empire that challenged the supremacy of Rome across the entire eastern Mediterranean.</p>
+          <p>Zenobia was a patron of higher learning, surrounding her royal court in Palmyra with brilliant philosophers, rhetoricians, and scientists. She commanded her own armies on horseback, marching alongside her elite cataphract cavalry during campaigns that successfully annexed Egypt, Anatolia, and the Levant. Though ultimately defeated and captured by the Roman Emperor Aurelian in 272 AD, her audacious bid for imperial sovereignty etched her name into history as an enduring symbol of Levantine strength and royal defiance.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-landmark text-accentCrimson text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Legacy of Levantine Scholarship Across Generations</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The individuals highlighted in the Voices of Antiquity trials—ranging from master architects and skeptical poets to warrior sultans and desert queens—demonstrate the astonishing intellectual and cultural breadth of historical Syria. This was not a region defined by a single voice or a uniform ideology; rather, it was a dynamic, multicultural crucible where engineering precision, philosophical skepticism, military statecraft, and royal ambition continually intersected across millennia.</p>
+          <p>Whether calculating the structural load of a concrete dome in Rome, composing poetry questioning religious orthodoxy from a blind ascetic's study in Ma'arra, or negotiating chivalrous truces outside the walls of Jerusalem, these figures shaped the intellectual architecture of the medieval and classical worlds. Their stories prove that the true wealth of the ancient Levant lay not merely in the gold and silk passing through its souks, but in the brilliant, independent minds that forged its eternal legacy.</p>
+          <p>Today, preserving and understanding the contributions of these historical figures is essential for maintaining the cultural continuity of the region. As modern players step into these trials, they engage in a direct, continuous dialogue with the great thinkers of antiquity. The voices of Damascus, Palmyra, Ma'arra, and Aleppo continue to echo through digital archives, ensuring that the brilliant minds of the Cradle of Civilization are never forgotten by future generations.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Historical Figures Match Data
+    const figuresData = [
+      {
+        achievement: "Designed Trajan's Column, the Markets of Trajan, and the Pantheon in Rome.",
+        name: "Apollodorus of Damascus"
+      },
+      {
+        achievement: "A blind philosophical poet who advocated for strict veganism and criticized religious dogma.",
+        name: "Al-Ma'arri"
+      },
+      {
+        achievement: "Unified Syria and Egypt, defeated the Crusaders at Hattin, and reconquered Jerusalem in 1187.",
+        name: "Saladin"
+      },
+      {
+        achievement: "A brilliant warrior queen who led Palmyra in a massive 3rd-century rebellion against Rome.",
+        name: "Queen Zenobia"
+      },
+      {
+        achievement: "A brilliant Ayyubid military engineer who heavily fortified the Citadel of Damascus.",
+        name: "Al-Adil"
+      }
+    ];
+
+    const allNames = [
+      "Apollodorus of Damascus",
+      "Al-Ma'arri",
+      "Saladin",
+      "Queen Zenobia",
+      "Al-Adil",
+      "King Nebuchadnezzar",
+      "Emperor Aurelian",
+      "Trajan"
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    
+    const qNumDisplay = document.getElementById('current-q-num');
+    const scoreDisplay = document.getElementById('game-score');
+    const questionTitle = document.getElementById('question-title');
+    const optionsContainer = document.getElementById('options-container');
+
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => { showElement.classList.add('active'); }, 50);
+    }
+
+    function startGame() {
+      currentQ = 0;
+      score = 0;
+      scoreDisplay.innerText = score;
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      const currentFig = figuresData[currentQ];
+      qNumDisplay.innerText = currentQ + 1;
+      questionTitle.innerText = currentFig.achievement;
+      optionsContainer.innerHTML = '';
+
+      // Generate 4 options: correct answer + 3 random distractors
+      let choices = [currentFig.name];
+      while (choices.length < 4) {
+        let randName = allNames[Math.floor(Math.random() * allNames.length)];
+        if (!choices.includes(randName)) {
+          choices.push(randName);
+        }
+      }
+      // Shuffle choices
+      choices.sort(() => Math.random() - 0.5);
+
+      choices.forEach(name => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full py-4 px-6 bg-bgDark border border-white/10 rounded-2xl text-left text-white font-sans font-semibold hover:border-accentCrimson hover:bg-accentCrimson/5 transition-all flex justify-between items-center group';
+        btn.innerHTML = `<span>${name}</span><i class="fas fa-chevron-right text-xs text-textMuted group-hover:text-accentCrimson transition-colors"></i>`;
+        btn.onclick = () => selectAnswer(name, currentFig.name);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(selectedName, correctName) {
+      const buttons = optionsContainer.children;
+
+      Array.from(buttons).forEach(b => {
+        b.style.pointerEvents = 'none';
+        if (b.innerText.trim() === correctName) {
+          b.classList.add('border-accentTeal', 'bg-accentTeal/20');
+        }
+      });
+
+      if (selectedName === correctName) {
+        score++;
+        scoreDisplay.innerText = score;
+      } else {
+        // Find selected button and turn red
+        Array.from(buttons).forEach(b => {
+          if (b.innerText.trim() === selectedName) {
+            b.classList.add('border-accentRed', 'bg-accentRed/20');
+          }
+        });
+      }
+
+      setTimeout(() => {
+        currentQ++;
+        if (currentQ < figuresData.length) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 1200);
+    }
+
+    function endGame() {
+      document.getElementById('final-score').innerText = score;
+      
+      let comment = "";
+      if (score === 5) comment = "Magnificent! You know the great minds and leaders of Syria intimately.";
+      else if (score >= 3) comment = "Well done! You have a solid grasp of historical figures.";
+      else comment = "The past holds many profound voices. Review the archives and try again!";
+      
+      document.getElementById('result-comment').innerText = comment;
+      switchScreen(screenGame, screenResult);
+    }
+  </script>
+</body>
+</html>

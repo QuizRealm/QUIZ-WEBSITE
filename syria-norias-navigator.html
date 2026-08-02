@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Norias Navigator | Ancient Hydrology Puzzle</title>
+  <meta name="description" content="Rotate massive ancient waterwheels and aqueducts to route the Orontes River across the arid Levant in this interactive engineering puzzle." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentGold: '#EAB308',
+            waterBlue: '#0EA5E9',
+            woodDark: '#451A03',
+            woodLight: '#78350F',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    /* The Pipe Grid System */
+    .pipe-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      background-color: #0B0F19;
+      padding: 10px;
+      border-radius: 16px;
+      border: 2px solid #334155;
+    }
+
+    .pipe-cell {
+      aspect-ratio: 1;
+      background-color: #151C2C;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background-color 0.3s;
+    }
+
+    .pipe-cell:hover { background-color: #1E293B; }
+    
+    /* The Wooden Pipe Graphics */
+    .pipe {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .pipe::before, .pipe::after {
+      content: '';
+      position: absolute;
+      background-color: #78350F;
+      border: 2px solid #451A03;
+    }
+
+    /* Straight Pipe (Vertical default) */
+    .pipe.straight::before {
+      top: 0; bottom: 0; left: 35%; right: 35%;
+    }
+    
+    /* Corner Pipe (Top to Right default) */
+    .pipe.corner::before {
+      top: 0; bottom: 50%; left: 35%; right: 35%; border-bottom: none;
+    }
+    .pipe.corner::after {
+      top: 35%; bottom: 35%; left: 50%; right: 0; border-left: none;
+    }
+    .pipe.corner-joint {
+      position: absolute;
+      top: 35%; left: 35%; width: 30%; height: 30%;
+      background-color: #78350F;
+      border: 2px solid #451A03;
+      border-top: none; border-right: none;
+      z-index: 10;
+    }
+
+    /* Source & Target Graphics */
+    .source-cell { background-color: #0284C7 !important; border: 2px solid #0EA5E9; cursor: not-allowed; }
+    .target-cell { background-color: #22C55E !important; border: 2px solid #16A34A; cursor: not-allowed; }
+    
+    .water-flow .pipe::before, .water-flow .pipe::after, .water-flow .pipe.corner-joint {
+      background-color: #0EA5E9 !important;
+      border-color: #0284C7 !important;
+      transition: background-color 0.5s ease;
+    }
+
+    /* Noria Wheel Animation */
+    .noria-wheel { animation: spin 10s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-waterBlue selection:text-white min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-water text-waterBlue mr-2"></i> Norias Navigator
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen active flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+        <i class="fas fa-dharmachakra text-6xl text-woodLight noria-wheel absolute"></i>
+        <i class="fas fa-water text-2xl text-waterBlue absolute bottom-0"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">Norias Navigator</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        To build an empire in the desert, you must master the hydrology. Act as a medieval hydro-engineer. Rotate the massive wooden aqueduct channels to route the Orontes River directly to the parched agricultural farms.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Engineering Instructions</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-tint text-waterBlue mr-2"></i> The blue square is the <strong>River Source</strong>.</li>
+          <li><i class="fas fa-seedling text-green-500 mr-2"></i> The green square is the <strong>Target Farm</strong>.</li>
+          <li><i class="fas fa-sync-alt text-accentGold mr-2"></i> Tap the wooden pipes to rotate them 90 degrees.</li>
+          <li><i class="fas fa-check text-white mr-2"></i> Create an unbroken path to let the water flow.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-waterBlue text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors transform hover:scale-105 duration-200">
+        Open the Sluice Gates
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col max-w-lg w-full">
+      
+      <!-- Top Status Bar -->
+      <div class="flex justify-between items-center mb-6 text-sm font-sans font-bold text-white uppercase tracking-widest px-2">
+        <span>Level: <span id="level-indicator" class="text-waterBlue">1</span>/3</span>
+        <span class="text-accentGold" id="timer">00:00</span>
+      </div>
+
+      <div class="bg-cardDark border border-white/10 rounded-2xl p-4 shadow-2xl relative">
+        <div id="puzzle-grid" class="pipe-grid w-full aspect-square">
+          <!-- Grid generated by JS -->
+        </div>
+        
+        <!-- Victory Overlay per level -->
+        <div id="level-complete-overlay" class="absolute inset-0 bg-bgDark/80 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 z-50">
+          <i class="fas fa-water text-5xl text-waterBlue mb-4"></i>
+          <h2 class="font-serif text-3xl text-white font-bold mb-2">Irrigation Restored!</h2>
+          <p class="text-textMuted font-sans mb-6">The farms have been saved.</p>
+          <button onclick="nextLevel()" class="px-8 py-3 bg-waterBlue text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors pointer-events-auto">
+            Next Region
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-waterBlue/10 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-medal text-5xl text-waterBlue"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Master Engineer</h2>
+      <p class="font-sans text-textMuted text-lg mb-8">You have successfully routed the Orontes River and sustained the ancient cities.</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Replay Routes
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentGold text-bgDark rounded-xl hover:bg-white font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-waterBlue text-white rounded-xl hover:bg-waterBlue/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Ancient Hydrology</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Discover the incredible mechanical engineering, complex mathematics, and civic law that governed water management in the arid Levant.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-dharmachakra text-waterBlue text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Engineering Marvel of the Norias of Hama</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The ability to manipulate environmental physics to sustain massive agricultural operations in semi-arid zones is the absolute hallmark of an advanced civilization. In the central western region of Syria, the Orontes River cuts a deep, fast-flowing gorge through the landscape. While the river provided a reliable, year-round water source, its physical elevation posed a massive logistical nightmare: the water was significantly lower than the fertile agricultural plains situated above the riverbanks. To solve this critical geographical disparity, medieval engineers—primarily during the Ayyubid and Mamluk periods—perfected the construction of the Norias of Hama.</p>
+          <p>A noria is a massive, incredibly complex hydropowered machine designed specifically to lift water into an elevated aqueduct. Unlike modern pumps that rely on external, consumable energy sources like coal or electricity, the ancient norias were entirely self-sustaining. They were driven solely by the kinetic energy of the river's natural current. Ranging from ten meters to over twenty meters in diameter, these gigantic wooden wheels were constructed primarily from highly durable, water-resistant woods native to the region, such as apricot, mulberry, and walnut. The outer rim of the colossal wheel was fitted with wooden boxes or clay pots. As the river flowed, the current pushed relentlessly against wooden paddles attached to the wheel, causing the massive structure to rotate continuously without human intervention.</p>
+          <p>As the wheel dipped into the Orontes, the attached boxes submerged and filled with water. The continuous rotation of the wheel lifted these heavy, water-filled boxes to the very top of the cycle. At the apex, precisely aligned with the stone aqueduct, the boxes inverted, emptying their contents into the masterfully engineered channels. From there, gravity took over, routing the water across miles of elevated channels to irrigate vast fields of cotton, wheat, and fruit orchards, while also supplying the public baths, mosques, and private courtyards of the bustling city of Hama.</p>
+          <p>The acoustic signature of the norias—a deep, rhythmic, haunting groaning of wet wood turning on heavy wooden axles—became the iconic soundscape of the region. At their peak operational capacity, over thirty of these colossal waterwheels operated along the Orontes River. They stand today not only as a testament to early mastery of hydrodynamics and renewable mechanical engineering but also as a beautiful synergy between human necessity and the natural environment. They represent an era where infrastructure was built to last for centuries, fundamentally transforming the agricultural yield and economic stability of the entire Levantine corridor.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-water text-waterBlue text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Qanat System: Subterranean Arteries</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>While the Norias manipulated surface water, ancient Levantine engineers also had to conquer the challenge of accessing hidden groundwater without losing it to the blistering desert sun. The solution was the *qanat*, an ancient underground aqueduct technology that heavily influenced water management across the Middle East. Surface canals in arid regions lose a massive percentage of their volume to rapid evaporation. The qanat bypassed this entirely by keeping the water flowing deep underground.</p>
+          <p>The construction of a qanat was a highly dangerous, specialized profession. Engineers would identify a reliable, elevated aquifer near the foothills of a mountain range. They would then dig a gently sloping, subterranean tunnel stretching for several miles toward the arid agricultural plains or a distant city. The slope had to be calculated with incredible mathematical precision; if the decline was too steep, the fast-flowing water would erode the tunnel walls and cause a collapse. If it was too shallow, the water would pool and stagnate.</p>
+          <p>Vertical access shafts were dug every few dozen meters along the tunnel to provide vital ventilation and allow maintenance workers to clear out debris. Viewed from above, a qanat looks like a perfectly straight line of anthills stretching across the desert. This gravity-fed, subterranean system provided a continuous, reliable flow of cold, clean, unevaporated water directly to urban centers. It allowed settlements to thrive in harsh environments that would otherwise be entirely uninhabitable, showcasing an unparalleled mastery over subterranean hydrology.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-balance-scale text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Civic Law and Water Distribution</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>In the ancient Near East, water was not merely a resource; it was the ultimate currency, and its management dictated the very foundation of civic law and government administration. The intricate canal networks and aqueducts required to sustain agriculture were too massive for any single farmer to construct or maintain. Therefore, the existential necessity of managing water gave rise to centralized state bureaucracy.</p>
+          <p>Historical legal texts from the region are heavily focused on water rights. Elaborate schedules were drawn up by civic administrators dictating exactly when a specific farmer was permitted to open their sluice gate to flood their fields. Stealing water by opening a gate out of turn was considered a severe criminal offense, often punishable by exorbitant fines or physical retribution, because it directly threatened the food supply of the entire community.</p>
+          <p>Furthermore, the maintenance of the canals required organized, state-sponsored labor. Silt buildup in the Euphrates and Orontes rivers was a constant threat that could clog the irrigation networks. Citizens were drafted by the state to perform grueling manual labor to dredge the canals annually. This intricate web of shared reliance on hydraulic infrastructure fostered highly organized, hierarchical societies, proving that in the ancient Levant, the administration of law was intrinsically tied to the administration of water.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-leaf text-green-500 text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Oasis of Damascus: The Ghouta</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>The survival of Damascus as the oldest continuously inhabited capital in the world is directly attributable to a geographical anomaly known as the Ghouta. Damascus sits on a high plateau bordering the unforgiving Syrian desert. Without a major water source, it would be nothing more than a dusty waystation. However, the Barada River flows directly out of the Anti-Lebanon mountains and spills into the Damascus basin.</p>
+          <p>Instead of flowing into the sea, the Barada splinters into a massive, fan-like network of streams and channels, creating the Ghouta—a vast, intensely fertile, green oasis ring surrounding the city. Ancient engineers capitalized on this natural phenomenon by building an intricate network of six main diversion canals that channeled the Barada's waters directly through the heart of the city and outwards to irrigate thousands of hectares of orchards.</p>
+          <p>The Ghouta provided Damascus with a massive agricultural surplus. It produced famous yields of apricots, pomegranates, walnuts, and Damask roses, shielding the city from the famines that routinely decimated purely desert settlements. This lush green belt acted as an impregnable natural moat against desertification, solidifying Damascus's position as a crucial, highly lucrative, and virtually indestructible hub on the ancient Silk Road trade routes.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-cogs text-textMuted text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Legacy of Ancient Hydraulics in Modern Agriculture</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>While the monumental architecture of ancient temples and citadels often garners the most historical attention, it is the silent, utilitarian infrastructure of water management that truly allowed Levantine civilizations to endure. The mathematical principles utilized to calculate the exact slope of a subterranean qanat, or the fluid dynamics understood by the carpenters who built the massive paddles of the Norias of Hama, represent an incredible lineage of scientific inquiry and practical engineering.</p>
+          <p>These ancient systems were profoundly sustainable. Unlike modern agricultural irrigation, which often rapidly drains fossil aquifers using diesel-powered pumps—leading to severe ecological consequences and land subsidence—ancient Levantine hydrology worked in harmony with the natural hydrologic cycle. The Norias only lifted what the river's current naturally allowed, and the qanats only delivered water based on the natural recharge rate of the mountain aquifers. This inherent limitation prevented the over-extraction of resources, allowing the land to remain fertile and productive for literally thousands of years.</p>
+          <p>Today, as modern societies face unprecedented challenges regarding water scarcity, desertification, and climate change, archaeologists and modern hydro-engineers are looking back at these ancient Levantine techniques for inspiration. While we cannot revert to entirely wooden waterwheels, the core philosophy behind these systems—gravity-fed distribution, minimal evaporation techniques, and sustainable, zero-emission extraction—offers profound lessons. The legacy of the ancient Syrian hydro-engineer is not just a relic of the past; it is a blueprint for surviving the arid realities of the future.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // --- Puzzle Logic & State ---
+    const levels = [
+      {
+        size: 3,
+        source: 0, // top left
+        target: 8, // bottom right
+        grid: [
+          { type: 'source', rot: 0 },
+          { type: 'straight', rot: 90 }, // Horizontal
+          { type: 'corner', rot: 90 },   // Top to Left
+          { type: 'corner', rot: 0 },    // Top to Right
+          { type: 'corner', rot: 270 },  // Bottom to Left
+          { type: 'straight', rot: 0 },  // Vertical
+          { type: 'straight', rot: 90 }, // Horizontal
+          { type: 'corner', rot: 180 },  // Bottom to Right
+          { type: 'target', rot: 0 }
+        ]
+      },
+      {
+        size: 4,
+        source: 4, // middle left
+        target: 11, // middle right
+        grid: [
+          { type: 'corner', rot: 90 }, { type: 'straight', rot: 0 }, { type: 'corner', rot: 180 }, { type: 'straight', rot: 90 },
+          { type: 'source', rot: 0 }, { type: 'corner', rot: 270 }, { type: 'straight', rot: 90 }, { type: 'corner', rot: 0 },
+          { type: 'straight', rot: 90 }, { type: 'corner', rot: 90 }, { type: 'corner', rot: 180 }, { type: 'target', rot: 0 },
+          { type: 'corner', rot: 0 }, { type: 'straight', rot: 0 }, { type: 'straight', rot: 90 }, { type: 'corner', rot: 270 }
+        ]
+      },
+      {
+        size: 4,
+        source: 0,
+        target: 15,
+        grid: [
+          { type: 'source', rot: 0 }, { type: 'straight', rot: 0 }, { type: 'corner', rot: 90 }, { type: 'corner', rot: 180 },
+          { type: 'corner', rot: 90 }, { type: 'corner', rot: 270 }, { type: 'straight', rot: 90 }, { type: 'corner', rot: 0 },
+          { type: 'straight', rot: 0 }, { type: 'corner', rot: 180 }, { type: 'corner', rot: 90 }, { type: 'straight', rot: 0 },
+          { type: 'corner', rot: 270 }, { type: 'straight', rot: 90 }, { type: 'corner', rot: 0 }, { type: 'target', rot: 0 }
+        ]
+      }
+    ];
+
+    let currentLevelIndex = 0;
+    let gridState = [];
+    let gridSize = 3;
+    let isLocked = false;
+
+    // DOM Elements
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    const gridContainer = document.getElementById('puzzle-grid');
+    const overlay = document.getElementById('level-complete-overlay');
+    
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => { showElement.classList.add('active'); }, 50);
+    }
+
+    function startGame() {
+      currentLevelIndex = 0;
+      loadLevel(currentLevelIndex);
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadLevel(index) {
+      isLocked = false;
+      const level = levels[index];
+      gridSize = level.size;
+      
+      // Deep copy to prevent mutating the original level data on reset
+      gridState = JSON.parse(JSON.stringify(level.grid));
+      
+      // Scramble rotations (except source/target)
+      gridState.forEach(cell => {
+        if(cell.type !== 'source' && cell.type !== 'target') {
+           cell.rot = Math.floor(Math.random() * 4) * 90;
+        }
+      });
+
+      document.getElementById('level-indicator').innerText = index + 1;
+      overlay.classList.remove('opacity-100', 'pointer-events-auto');
+      overlay.classList.add('opacity-0', 'pointer-events-none');
+      
+      renderGrid();
+      checkWinCondition();
+    }
+
+    function renderGrid() {
+      gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+      gridContainer.innerHTML = '';
+
+      gridState.forEach((cell, index) => {
+        const div = document.createElement('div');
+        div.className = `pipe-cell ${cell.type === 'source' ? 'source-cell' : cell.type === 'target' ? 'target-cell' : ''}`;
+        
+        if (cell.type !== 'source' && cell.type !== 'target') {
+          div.onclick = () => rotatePipe(index);
+          
+          const pipe = document.createElement('div');
+          pipe.className = `pipe ${cell.type}`;
+          pipe.style.transform = `rotate(${cell.rot}deg)`;
+          
+          if(cell.type === 'corner') {
+             const joint = document.createElement('div');
+             joint.className = 'pipe corner-joint';
+             pipe.appendChild(joint);
+          }
+          div.appendChild(pipe);
+        } else if (cell.type === 'source') {
+           div.innerHTML = '<i class="fas fa-water text-white text-2xl drop-shadow-md"></i>';
+        } else if (cell.type === 'target') {
+           div.innerHTML = '<i class="fas fa-seedling text-white text-2xl drop-shadow-md"></i>';
+        }
+
+        gridContainer.appendChild(div);
+      });
+    }
+
+    function rotatePipe(index) {
+      if (isLocked) return;
+      
+      const cell = gridState[index];
+      cell.rot = (cell.rot + 90) % 360;
+      
+      // Update DOM visually immediately
+      const pipeElement = gridContainer.children[index].querySelector('.pipe');
+      pipeElement.style.transform = `rotate(${cell.rot}deg)`;
+      
+      checkWinCondition();
+    }
+
+    // --- Graph Traversal Logic ---
+    function getConnections(type, rot) {
+      // Returns array of connected directions: 0:Top, 1:Right, 2:Bottom, 3:Left
+      let base = [];
+      if (type === 'straight') base = [0, 2]; // Top, Bottom
+      if (type === 'corner') base = [0, 1]; // Top, Right
+      
+      const shift = rot / 90;
+      return base.map(dir => (dir + shift) % 4);
+    }
+
+    function getNeighbor(index, dir) {
+      const row = Math.floor(index / gridSize);
+      const col = index % gridSize;
+      
+      if (dir === 0 && row > 0) return index - gridSize; // Top
+      if (dir === 1 && col < gridSize - 1) return index + 1; // Right
+      if (dir === 2 && row < gridSize - 1) return index + gridSize; // Bottom
+      if (dir === 3 && col > 0) return index - 1; // Left
+      return -1;
+    }
+
+    function checkWinCondition() {
+      // Reset flow visuals
+      Array.from(gridContainer.children).forEach(el => el.classList.remove('water-flow'));
+      
+      const sourceIndex = levels[currentLevelIndex].source;
+      const targetIndex = levels[currentLevelIndex].target;
+      
+      let visited = new Set();
+      let queue = [sourceIndex];
+      let flowPath = [sourceIndex];
+      
+      // Source acts as connecting to all directions for simplicity in this puzzle
+      
+      while (queue.length > 0) {
+        let curr = queue.shift();
+        visited.add(curr);
+        
+        let currConns = [0,1,2,3]; // Default for source
+        if (curr !== sourceIndex && curr !== targetIndex) {
+          currConns = getConnections(gridState[curr].type, gridState[curr].rot);
+        }
+
+        currConns.forEach(dir => {
+          let neighbor = getNeighbor(curr, dir);
+          
+          if (neighbor !== -1 && !visited.has(neighbor)) {
+            // Check if neighbor connects back
+            let neighborConns = [0,1,2,3]; // Default for target
+            if (neighbor !== sourceIndex && neighbor !== targetIndex) {
+              neighborConns = getConnections(gridState[neighbor].type, gridState[neighbor].rot);
+            }
+            
+            const oppositeDir = (dir + 2) % 4;
+            
+            if (neighborConns.includes(oppositeDir)) {
+              queue.push(neighbor);
+              flowPath.push(neighbor);
+            }
+          }
+        });
+      }
+
+      // Visually update the flow
+      flowPath.forEach(idx => {
+         if(idx !== sourceIndex && idx !== targetIndex) {
+             gridContainer.children[idx].classList.add('water-flow');
+         }
+      });
+
+      if (visited.has(targetIndex)) {
+        isLocked = true;
+        setTimeout(() => {
+          overlay.classList.remove('opacity-0', 'pointer-events-none');
+          overlay.classList.add('opacity-100', 'pointer-events-auto');
+        }, 500);
+      }
+    }
+
+    function nextLevel() {
+      currentLevelIndex++;
+      if (currentLevelIndex < levels.length) {
+        loadLevel(currentLevelIndex);
+      } else {
+        switchScreen(screenGame, screenResult);
+      }
+    }
+  </script>
+</body>
+</html>

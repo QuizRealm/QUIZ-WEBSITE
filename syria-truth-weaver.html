@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Truth Weaver | Syrian History Interactive Puzzle</title>
+  <meta name="description" content="Test your knowledge of ancient Levantine history. Separate historical facts from myths in this interactive Truth Weaver logic game." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentGold: '#EAB308',
+            accentRed: '#BE123C',
+            accentTeal: '#0F766E',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    /* Screen transitions */
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    /* Card animations */
+    .swipe-left { animation: swipeLeft 0.5s forwards; }
+    .swipe-right { animation: swipeRight 0.5s forwards; }
+    
+    @keyframes swipeLeft {
+      0% { transform: translateX(0) rotate(0); opacity: 1; }
+      100% { transform: translateX(-150%) rotate(-15deg); opacity: 0; }
+    }
+    
+    @keyframes swipeRight {
+      0% { transform: translateX(0) rotate(0); opacity: 1; }
+      100% { transform: translateX(150%) rotate(15deg); opacity: 0; }
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentGold selection:text-bgDark min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-scroll text-accentGold mr-2"></i> Truth Weaver
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex items-center justify-center p-6 min-h-[60vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen active flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentGold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-balance-scale text-4xl text-accentGold"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">The Truth Weaver</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        History is often woven with fabrication. Step up to the digital loom and review the historical claims below. You must separate the enduring facts from the ancient myths.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Quick Tips</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-check-circle text-accentTeal mr-2"></i> Read the historical claim carefully.</li>
+          <li><i class="fas fa-hand-pointer text-accentGold mr-2"></i> Tap <strong>FACT</strong> to weave the truth into the tapestry.</li>
+          <li><i class="fas fa-cut text-accentRed mr-2"></i> Tap <strong>MYTH</strong> to cut the fabrication away.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentGold text-bgDark font-bold rounded-xl uppercase tracking-widest hover:bg-white transition-colors transform hover:scale-105 duration-200">
+        Start Weaving
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col max-w-xl w-full">
+      <div class="flex justify-between items-center mb-6 text-sm font-sans font-bold text-textMuted uppercase tracking-widest px-2">
+        <span>Claim <span id="current-question-num" class="text-accentGold">1</span>/7</span>
+        <span>Score: <span id="current-score" class="text-white">0</span></span>
+      </div>
+
+      <div id="question-card" class="bg-cardDark border border-accentGold/30 rounded-3xl p-8 md:p-12 text-center shadow-[0_0_40px_rgba(234,179,8,0.1)] relative">
+        <i class="fas fa-quote-left text-4xl text-white/10 absolute top-6 left-6"></i>
+        <h2 id="question-text" class="font-serif text-2xl md:text-3xl text-white font-bold leading-tight mt-4 mb-8">
+          Loading historical claim...
+        </h2>
+        <i class="fas fa-quote-right text-4xl text-white/10 absolute bottom-6 right-6"></i>
+      </div>
+
+      <div id="feedback-toast" class="h-8 mt-4 text-center font-bold text-lg font-sans tracking-widest uppercase transition-opacity opacity-0">
+        Correct!
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mt-4">
+        <button onclick="answer(true)" class="py-5 bg-cardDark border-2 border-accentTeal/50 text-accentTeal rounded-2xl hover:bg-accentTeal hover:text-bgDark font-bold text-lg tracking-widest uppercase transition-all flex flex-col items-center gap-2">
+          <i class="fas fa-check"></i> Fact
+        </button>
+        <button onclick="answer(false)" class="py-5 bg-cardDark border-2 border-accentRed/50 text-accentRed rounded-2xl hover:bg-accentRed hover:text-white font-bold text-lg tracking-widest uppercase transition-all flex flex-col items-center gap-2">
+          <i class="fas fa-cut"></i> Myth
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Tapestry Complete</h2>
+      <p class="font-sans text-textMuted text-lg mb-8">You have separated the history from the fabrication.</p>
+      
+      <div class="text-7xl font-serif text-accentGold font-black mb-8">
+        <span id="final-score">0</span><span class="text-4xl text-textMuted">/7</span>
+      </div>
+
+      <p id="result-message" class="font-sans text-white text-lg mb-10 leading-relaxed"></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="resetGame()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Restart
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentGold text-bgDark rounded-xl hover:bg-white font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">Historical Archives</h2>
+      <p class="font-sans text-textMuted">Deep dives into the facts, myths, and legends woven into the Truth Weaver trials.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-city text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Antiquity of Damascus: The Oldest Capital on Earth</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The assertion that Damascus is the oldest continuously inhabited capital city in the world is not merely a piece of regional pride; it is a meticulously verified historical fact backed by exhaustive archaeological evidence. Carbon dating from excavations in the courtyard of the Umayyad Mosque and the surrounding Tell Ramad region proves that human settlement in the Damascus basin dates back to the seventh millennium BC. To understand the gravity of this timeline, one must realize that Damascus was a thriving settlement long before the Great Pyramids of Giza were conceived, before Stonehenge was erected, and millennia prior to the legendary founding of Rome.</p>
+          <p>The city's survival through ten thousand years of human history is primarily due to its unparalleled geographic positioning. Situated on a plateau at the eastern foothills of the Anti-Lebanon mountain range, Damascus is blessed by the Barada River. In an otherwise arid and unforgiving desert environment, the Barada River splinters into multiple branches, creating the Ghouta—a massive, lush, green oasis that provided a permanent, reliable water source for agriculture and human sustenance. This oasis made Damascus an inevitable and highly lucrative resting point for ancient caravans traversing the brutal trade routes between the Mediterranean Sea, Mesopotamia, and the Arabian Peninsula.</p>
+          <p>Because of its immense strategic and economic value, Damascus has been targeted, besieged, and conquered by nearly every major empire in human history. It was a vital Aramean stronghold in the Iron Age, fell to the devastating war machine of the Neo-Assyrian Empire, was absorbed by the Babylonian king Nebuchadnezzar, and was later conquered by Alexander the Great. Following the Hellenistic period, the Roman general Pompey annexed the city, integrating it into the Decapolis league. It subsequently transitioned into a crucial Byzantine Christian center before being peacefully surrendered to the Rashidun Caliphate in 634 AD.</p>
+          <p>Despite this endless cycle of conquest and regime change, the city was never abandoned. The physical architecture of Damascus today serves as a literal, physical timeline of human civilization. The ancient Roman street plan, notably the Street Called Straight referenced in the New Testament, still dictates the layout of the old city today. Aramean temple foundations support Roman walls, which in turn support Islamic minarets. This incredible layering of continuous habitation, unbroken by plague, war, or famine, solidifies Damascus as the ultimate testament to human resilience and urban endurance.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-hammer text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Metallurgy and Mythos of Damascus Steel</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>One of the most persistent historical myths addressed in the Truth Weaver is the origin of Damascus steel. During the Crusades, European knights returned to the West with terrifying accounts of Islamic warriors wielding blades of unimaginable quality. These swords were distinguished by a mesmerizing, rippling water pattern on the steel. Legend held that these blades were sharp enough to cut a falling piece of silk in mid-air, yet flexible enough to bend at a ninety-degree angle without snapping, easily shattering the heavy, brittle broadswords used by European forces.</p>
+          <p>The myth asserts that this magical steel was forged from a secret, localized iron ore found exclusively in the mountains of Syria. This is a fabrication. The historical truth is a testament to the immense power of ancient global trade networks. The foundational material for Damascus steel was actually Wootz steel, which was smelted in crucibles thousands of miles away in southern India and Sri Lanka. Wootz steel naturally contained uniquely high levels of carbon and specific trace elements like vanadium. These raw steel ingots were transported via the Silk Road and maritime routes to the Middle East.</p>
+          <p>When this imported Wootz steel reached the master blacksmiths of Damascus, it was subjected to a highly guarded, proprietary forging technique. The blacksmiths would repeatedly heat, fold, and hammer the steel at precisely controlled temperatures. This extreme mechanical manipulation forced the high carbon content to precipitate into bands of cementite particles, creating the signature "watered" pattern. Astonishingly, modern metallurgical analysis using electron microscopes has revealed that this ancient Syrian forging process inadvertently created carbon nanotubes and cementite nanowires within the blade's molecular structure.</p>
+          <p>These molecular structures provided the steel with its unprecedented combination of super-plasticity and hardness. The exact knowledge of how to manipulate the temperature to achieve this result was kept strictly within blacksmithing guilds. By the mid-18th century, as the specific trade routes for the required Wootz steel collapsed and the master smiths passed away without leaving written records, the original technique for creating authentic Damascus steel was entirely lost to history. Modern attempts to recreate it remain mere aesthetic approximations.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-language text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Ugarit and the Democratization of Literacy</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Before 1400 BC, the ability to read and write was highly restricted. Systems like Egyptian hieroglyphics and early Mesopotamian cuneiform were logographic and syllabic, requiring scribes to memorize thousands of complex symbols. This rendered literacy an exclusive tool of the ruling elite and priesthood, designed to control administration and religious texts rather than facilitate mass communication. The Truth Weaver addresses this by highlighting a monumental shift that occurred in the ancient Syrian coastal city of Ugarit, where the concept of the modern alphabet was born.</p>
+          <p>Discovered accidentally by a Syrian farmer in 1928, the ruins of Ugarit yielded one of the most important archaeological treasures of the 20th century: the Ugaritic texts. Among diplomatic correspondence and mythological epics, archaeologists found clay tablets inscribed with a revolutionary new writing system. The scribes of Ugarit had brilliantly realized that all spoken language could be broken down into a finite set of distinct phonetic sounds. By assigning a single, simple cuneiform character to each consonant sound, they reduced the required writing inventory from thousands of symbols down to a mere thirty distinct characters.</p>
+          <p>This invention of a purely linear, phonetic alphabet was a technological paradigm shift. It completely democratized literacy. A merchant could learn thirty symbols in a matter of weeks, allowing for rapid, accurate record-keeping, trade agreements, and localized administration without needing an elite scribe. The ease of the Ugaritic system rapidly influenced neighboring maritime cultures, most notably the Phoenicians.</p>
+          <p>The Phoenicians adapted this linear alphabetic concept, shifting away from wedge-shaped cuneiform to more fluid, linear shapes that could be easily written on papyrus with ink. As the Phoenicians traded across the Mediterranean, they exported this alphabetic system to the Greeks, who added vowels. The Greek alphabet was subsequently adopted by the Romans, directly evolving into the Latin alphabet used across the globe today. Thus, the intellectual foundation of modern western literacy was laid by the brilliant scribes of ancient Syria.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-crown text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Queen Zenobia: The Rebellion of the Desert Bride</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>In the third century AD, the Roman Empire was fractured by extreme political instability, rapid succession of emperors, and economic collapse, an era known to historians as the Crisis of the Third Century. During this chaos, the Syrian oasis city of Palmyra rose to unprecedented power. Known as the "Bride of the Desert," Palmyra had grown fabulously wealthy by acting as the primary, neutral trading conduit between the Roman Empire in the west and the hostile Sassanid Persian Empire in the east.</p>
+          <p>Following the assassination of Palmyra's ruler, Odaenathus, his wife, Queen Zenobia, took control as regent for her young son. Zenobia was not merely a caretaker; she was a brilliant, highly educated, and ruthlessly ambitious leader who claimed descent from Cleopatra of Egypt. Recognizing Rome's crippling weakness, she orchestrated one of the most audacious military rebellions in classical antiquity. She did not just declare independence; she launched a massive offensive against Roman territories.</p>
+          <p>In 270 AD, Zenobia's highly disciplined Palmyrene army, consisting of heavily armored cataphract cavalry and skilled desert archers, marched south and successfully conquered Egypt, cutting off Rome's vital grain supply. She subsequently annexed Anatolia and vast stretches of the Levant, effectively establishing the independent Palmyrene Empire. Her court in Palmyra became a beacon of intellectualism, offering refuge to famous philosophers and scholars fleeing the instability of the Roman west.</p>
+          <p>However, her empire was short-lived. In 272 AD, the battle-hardened Roman Emperor Aurelian launched a brutal counter-offensive to reclaim the eastern provinces. Despite fierce resistance, Zenobia's forces were defeated at the battles of Immae and Emesa. Aurelian besieged Palmyra, capturing Zenobia as she attempted to flee across the Euphrates to seek Persian aid. Bound in golden chains, she was paraded through the streets of Rome in Aurelian's triumph, marking the tragic end of the Bride of the Desert's rebellion.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-mosque text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Architectural Layering of the Umayyad Mosque</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The Umayyad Mosque in Damascus is widely considered the fourth holiest site in Islam and remains a crowning architectural achievement of the Umayyad Caliphate. However, the Truth Weaver reveals a deeper, layered history regarding its construction. The mosque was not built on an empty plot of land; it is erected upon a site that has been considered sacred by vastly different religions for over three thousand consecutive years, serving as a physical manifestation of Syria's complex religious evolution.</p>
+          <p>In the Iron Age, the site housed a massive Aramean temple dedicated to Hadad-Ramman, the ancient god of thunderstorms and rain. When the Roman Empire annexed Damascus in 64 BC, they did not destroy the sacred site. Instead, following the Roman practice of religious assimilation, they massively expanded it, reconstructing it into an enormous, highly ornate Temple of Jupiter. The colossal Roman outer walls and towering corner gates of this Jupiter temple still stand today, fully integrated into the exterior walls of the modern Islamic mosque.</p>
+          <p>Following the Christianization of the Roman Empire, the Temple of Jupiter was converted in the 4th century by the Byzantine Empire into the Cathedral of Saint John the Baptist. According to Christian and Islamic tradition, the head of John the Baptist was interred in a shrine inside the building. When the Muslim Rashidun forces peacefully conquered Damascus in 634 AD, a remarkable period of religious coexistence began. For nearly seventy years, Muslim and Christian congregations shared the same building, entering through the same Roman gate to worship simultaneously in different sections of the cathedral.</p>
+          <p>It was not until 706 AD, under the reign of the Umayyad Caliph Al-Walid I, that the space was entirely repurposed. Al-Walid negotiated with the Christian leaders, purchasing the cathedral and offering other properties in Damascus in exchange. He initiated a massive, ten-year construction project to build the grand mosque. He imported thousands of Byzantine artisans to create the breathtaking gold-glass mosaics that depict lush, paradisiacal landscapes across the courtyard walls. Despite the total Islamic reconstruction of the interior, the shrine of John the Baptist (Yahya in Islam) was carefully preserved and remains a central point of veneration within the mosque's main prayer hall today, symbolizing a profound, unbroken chain of historical and religious reverence.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Game Data
+    const questions = [
+      {
+        claim: "Damascus is the oldest continuously inhabited capital city in the world.",
+        isFact: true,
+        explanation: "Verified fact. Archaeological evidence shows continuous habitation dating back thousands of years before Rome or Athens."
+      },
+      {
+        claim: "The Ugaritic alphabet required scribes to memorize over 1,000 distinct logographic symbols.",
+        isFact: false,
+        explanation: "Myth. Ugarit invented the phonetic alphabet, reducing writing down to just 30 simple characters."
+      },
+      {
+        claim: "Damascus steel was forged using iron ore mined exclusively from the Anti-Lebanon mountains.",
+        isFact: false,
+        explanation: "Myth. The secret ingredient was Wootz steel, heavily imported via trade routes from India."
+      },
+      {
+        claim: "Queen Zenobia of Palmyra successfully conquered Egypt from the Roman Empire in the 3rd Century.",
+        isFact: true,
+        explanation: "Verified fact. She took advantage of Rome's instability to launch a massive, temporarily successful rebellion."
+      },
+      {
+        claim: "The Umayyad Mosque was built on a site that previously housed a Roman temple to Jupiter.",
+        isFact: true,
+        explanation: "Verified fact. The site was an Aramean temple, then a Roman temple, then a Cathedral, and finally a Mosque."
+      },
+      {
+        claim: "The world's oldest surviving written musical notation was discovered in Athens, Greece.",
+        isFact: false,
+        explanation: "Myth. The Hurrian Hymn No. 6, the oldest known musical notation, was found on a clay tablet in Ugarit, Syria."
+      },
+      {
+        claim: "Aleppo soap, crafted from olive and laurel oil, is widely considered the world's first hard soap.",
+        isFact: true,
+        explanation: "Verified fact. This ancient recipe set the standard for hard soap manufacturing across the globe."
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let isAnimating = false;
+
+    // DOM Elements
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    
+    const questionText = document.getElementById('question-text');
+    const questionNum = document.getElementById('current-question-num');
+    const scoreText = document.getElementById('current-score');
+    const questionCard = document.getElementById('question-card');
+    const feedbackToast = document.getElementById('feedback-toast');
+
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => {
+        showElement.classList.add('active');
+      }, 50);
+    }
+
+    function startGame() {
+      currentQuestionIndex = 0;
+      score = 0;
+      scoreText.innerText = score;
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      questionCard.classList.remove('swipe-left', 'swipe-right');
+      const q = questions[currentQuestionIndex];
+      questionText.innerText = q.claim;
+      questionNum.innerText = currentQuestionIndex + 1;
+      isAnimating = false;
+    }
+
+    function answer(userGuess) {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      const q = questions[currentQuestionIndex];
+      const isCorrect = (userGuess === q.isFact);
+
+      // Animation & Feedback
+      if (userGuess) {
+        questionCard.classList.add('swipe-right');
+      } else {
+        questionCard.classList.add('swipe-left');
+      }
+
+      if (isCorrect) {
+        score++;
+        scoreText.innerText = score;
+        showFeedback("Correct", "text-accentTeal");
+      } else {
+        showFeedback("Incorrect", "text-accentRed");
+      }
+
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 600); // Wait for animation
+    }
+
+    function showFeedback(text, colorClass) {
+      feedbackToast.innerText = text;
+      feedbackToast.className = `h-8 mt-4 text-center font-bold text-lg font-sans tracking-widest uppercase transition-opacity duration-300 opacity-100 ${colorClass}`;
+      setTimeout(() => {
+        feedbackToast.classList.remove('opacity-100');
+        feedbackToast.classList.add('opacity-0');
+      }, 500);
+    }
+
+    function endGame() {
+      document.getElementById('final-score').innerText = score;
+      
+      let message = "";
+      if (score === 7) message = "Perfect! You possess the wisdom of a Damascene Scholar.";
+      else if (score >= 4) message = "Well done. You separated most of the history from the fabrication.";
+      else message = "The myths overpowered the truth. The archives await your return.";
+      
+      document.getElementById('result-message').innerText = message;
+      switchScreen(screenGame, screenResult);
+    }
+
+    function resetGame() {
+      switchScreen(screenResult, screenStart);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Spice Scale | Levantine Culinary Physics Puzzle</title>
+  <meta name="description" content="Balance the digital scale with exact mathematical ratios of Za'atar, sumac, and Aleppo pepper in this physics puzzle." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentGold: '#EAB308',
+            accentGreen: '#10B981',
+            accentRed: '#EF4444',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    /* Scale Beam Physics Animation */
+    #scale-beam {
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: center center;
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentGreen selection:text-white min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-balance-scale text-accentGreen mr-2"></i> The Spice Scale
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen active flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentGreen/10 border border-accentGreen/30">
+        <i class="fas fa-mortar-pestle text-5xl text-accentGreen"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">The Spice Scale</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        Syrian cuisine relies on an exquisite balance of sweet, sour, earthy, and aromatic profiles. Craft the perfect traditional Za'atar blend by adding the exact mathematical ratio of spices to the brass scale.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Culinary Instructions</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-bullseye text-accentGold mr-2"></i> Reach the target weight of <strong>100g</strong> on the scale.</li>
+          <li><i class="fas fa-weight-hanging text-accentGreen mr-2"></i> Add precise measurements of Thyme, Sesame, Sumac, and Salt.</li>
+          <li><i class="fas fa-balance-scale-right text-white mr-2"></i> Achieve total equilibrium before time runs out.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentGreen text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors transform hover:scale-105 duration-200">
+        Enter the Kitchen
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col items-center max-w-2xl w-full gap-6">
+      
+      <!-- Status Header -->
+      <div class="w-full flex justify-between items-center px-4 text-sm font-sans font-bold text-textMuted uppercase tracking-widest">
+        <span>Target: <span class="text-accentGold">100g</span></span>
+        <span>Current: <span id="current-weight" class="text-white">0</span>g</span>
+      </div>
+
+      <!-- The Scale Graphic Display -->
+      <div class="w-full bg-cardDark border border-white/10 rounded-3xl p-8 flex flex-col items-center relative overflow-hidden shadow-2xl min-h-[260px] justify-center">
+        <!-- Fulcrum Base -->
+        <div class="w-6 h-24 bg-slate-700 rounded-t-lg absolute bottom-0"></div>
+        <div class="w-16 h-4 bg-slate-600 rounded absolute bottom-0"></div>
+
+        <!-- Scale Beam -->
+        <div id="scale-beam" class="w-80 h-3 bg-accentGold rounded relative flex justify-between items-center mb-12">
+          <!-- Left Pan -->
+          <div class="absolute -left-12 top-2 flex flex-col items-center">
+            <div class="w-24 h-1 bg-slate-400 rotate-12 origin-right"></div>
+            <div class="w-20 h-6 bg-slate-800 border border-slate-600 rounded-b-xl flex items-center justify-center text-xs font-bold text-accentGold" id="pan-weight">0g</div>
+          </div>
+          <!-- Right Pan (Target Weight Indicator) -->
+          <div class="absolute -right-12 top-2 flex flex-col items-center">
+            <div class="w-24 h-1 bg-slate-400 -rotate-12 origin-left"></div>
+            <div class="w-20 h-6 bg-slate-800 border border-slate-600 rounded-b-xl flex items-center justify-center text-xs font-bold text-accentGreen">100g</div>
+          </div>
+        </div>
+
+        <p id="scale-status" class="text-sm font-bold tracking-widest uppercase text-accentRed mt-4">Add 100g to Balance</p>
+      </div>
+
+      <!-- Spice Selector Buttons -->
+      <div class="w-full grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <button onclick="addSpice(10, 'Wild Thyme')" class="bg-cardDark border border-white/10 hover:border-accentGreen p-4 rounded-xl flex flex-col items-center transition-colors">
+          <i class="fas fa-leaf text-2xl text-green-500 mb-2"></i>
+          <span class="text-xs text-white font-bold uppercase">Thyme</span>
+          <span class="text-[10px] text-textMuted">+10g</span>
+        </button>
+        <button onclick="addSpice(25, 'Sesame Seeds')" class="bg-cardDark border border-white/10 hover:border-accentGreen p-4 rounded-xl flex flex-col items-center transition-colors">
+          <i class="fas fa-dot-circle text-2xl text-yellow-500 mb-2"></i>
+          <span class="text-xs text-white font-bold uppercase">Sesame</span>
+          <span class="text-[10px] text-textMuted">+25g</span>
+        </button>
+        <button onclick="addSpice(40, 'Ground Sumac')" class="bg-cardDark border border-white/10 hover:border-accentGreen p-4 rounded-xl flex flex-col items-center transition-colors">
+          <i class="fas fa-seedling text-2xl text-red-500 mb-2"></i>
+          <span class="text-xs text-white font-bold uppercase">Sumac</span>
+          <span class="text-[10px] text-textMuted">+40g</span>
+        </button>
+        <button onclick="addSpice(5, 'Sea Salt')" class="bg-cardDark border border-white/10 hover:border-accentGreen p-4 rounded-xl flex flex-col items-center transition-colors">
+          <i class="fas fa-cube text-2xl text-slate-300 mb-2"></i>
+          <span class="text-xs text-white font-bold uppercase">Salt</span>
+          <span class="text-[10px] text-textMuted">+5g</span>
+        </button>
+      </div>
+
+      <!-- Actions -->
+      <div class="w-full flex gap-3">
+        <button onclick="resetScale()" class="w-1/2 py-3 bg-white/5 border border-white/20 text-white font-bold rounded-xl uppercase tracking-wider text-xs hover:bg-white/10 transition-colors">
+          <i class="fas fa-undo mr-2"></i> Clear Scale
+        </button>
+        <button onclick="lockBlend()" id="lock-btn" class="w-1/2 py-3 bg-accentGreen text-white font-bold rounded-xl uppercase tracking-wider text-xs hover:bg-white hover:text-bgDark transition-colors opacity-50 cursor-not-allowed" disabled>
+          <i class="fas fa-check mr-2"></i> Blend Za'atar
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentGreen/10 border border-accentGreen/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-utensils text-4xl text-accentGreen"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Master Blend Achieved</h2>
+      <p class="font-sans text-textMuted text-lg mb-8">You have successfully balanced the scale and crafted the authentic flavor profile of the Levant.</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Blend Again
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentGreen text-white rounded-xl hover:bg-white hover:text-bgDark font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentGold text-bgDark rounded-xl hover:bg-white font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Levantine Gastronomy</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the culinary history, complex spice blends, and agricultural traditions that define Syrian cuisine.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-pepper-hot text-accentGreen text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Aleppo Pepper: Fruitiness, Mild Heat, and Global Renown</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>Few agricultural products are as closely tied to a specific city's culinary identity as the legendary Aleppo pepper (known locally as *bibiber*). Cultivated for centuries in the fertile agricultural plains surrounding the ancient northern Syrian city of Aleppo, this specific variety of the *Capsicum annuum* species occupies a unique position in global gastronomy. Unlike industrial cayenne pepper or standard chili flakes, which deliver a sharp, aggressive, and sometimes overpowering burning sensation that completely numbs the palate, the Aleppo pepper is celebrated for its remarkably complex, nuanced flavor profile. It delivers a moderate, slow-building heat that gently warms the mouth, accompanied by rich, savory undertones reminiscent of sundried tomatoes, sweet raisins, and earthy cumin.</p>
+          <p>The secret to this exceptional flavor lies entirely in the traditional, highly meticulous harvesting and curing process. Once the pepper pods mature to a deep, lustrous burgundy color on the vine, they are hand-harvested by local farmers. Instead of being artificially dehydrated in industrial ovens or exposed to harsh chemical treatments, the peppers are split open, deseeded, and laid out under the blistering Levantine sun to dry naturally for a designated period. As they dry under the Mediterranean sun, the natural sugars within the pepper concentrate, and the oils rise to the surface.</p>
+          <p>Once dried to the precise moisture level, the peppers are coarsely crushed into glistening, oily flakes rather than being ground into a fine, uniform powder. A small amount of salt and vegetable oil is traditionally tossed with the flakes to preserve their volatile oils and rich color. This artisan production method ensures that every pinch of Aleppo pepper retains its signature fruitiness and moisture. For generations, chefs in the grand khans and family kitchens of Aleppo incorporated these flakes into virtually every savory dish, from rich lentil soups and grilled lamb kebabs to morning labneh bowls drizzled with olive oil.</p>
+          <p>Today, the Aleppo pepper has transcended its regional origins to become a celebrated staple in professional restaurant kitchens across Europe and North America. Culinary masters praise it because it does not merely add heat; it acts as a flavor enhancer, amplifying the natural umami and savory notes of surrounding ingredients. The endurance of the Aleppo pepper stands as a brilliant testament to the sophisticated palate of Syrian gastronomy, where balance, aroma, and natural processing consistently triumph over sheer aggression of spice.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-leaf text-green-500 text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Za'atar: The Sacred Herb and Culinary Anchor</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Za'atar is much more than a simple breakfast condiment; it is a profound cultural institution deeply woven into the daily rhythm of life across the Levant. Botanically, the term refers to wild thyme or hyssop (*Origanum syriacum*) that blankets the rocky limestone hillsides of the Syrian countryside. However, in culinary terms, Za'atar describes the famous, highly revered spice blend created by combining dried wild thyme with toasted sesame seeds, ground sumac, and sea salt.</p>
+          <p>Historically, Za'atar was consumed by ancient laborers and scholars alike, believed by traditional folk medicine to clear the mind, strengthen the body, and protect against illness. In the early morning hours across Damascus and Aleppo, bakeries would pull flatbreads topped generously with Za'atar and olive oil (*man'ousheh*) straight from blazing stone ovens. The aromatic steam filled the narrow alleyways, signaling the start of the daily economic life of the souk.</p>
+          <p>The exact mathematical ratio of a master Za'atar blend is fiercely guarded by family matriarchs and master spice merchants in the ancient markets. Too much sumac overpowers the palate with aggressive, sharp acidity; too little sesame robs the blend of its crucial, nutty crunch. Achieving absolute equilibrium between the herbal warmth of wild thyme, the nutty oiliness of sesame, and the citrusy tartness of sumac requires the exact kind of precise proportioning simulated in the Spice Scale trials.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-seedling text-red-500 text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Sumac: The Citrus of the Ancient Near East</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Long before lemons were widely cultivated or imported across the Mediterranean basin, chefs in the ancient Levant relied on sumac to provide the essential acidic, citrusy brightness required to balance heavy meats, rich grains, and oily fish. Harvested from the deep red, velvety drupes of the wild *Rhus coriaria* shrub that thrives across the rocky hillsides of Syria and Lebanon, sumac is a masterclass in natural food processing.</p>
+          <p>The harvesting process requires immense care. The dark red clusters are hand-picked before the seeds drop, then dried under the sun and gently crushed or pounded to separate the fleshy outer pericarp from the hard inner seed. The resulting coarse, deep-purple powder is rich in malic acid, giving it an intensely tart, fruity flavor profile that immediately causes the mouth to water.</p>
+          <p>In traditional Syrian cooking, sumac is sprinkled generously over sliced raw onions to take away their harsh bite, folded into fresh yogurt salads, or rubbed over skewered lamb before grilling. It acts as a natural flavor enhancer, cutting through heavy fats and elevating the surrounding ingredients. Its deep, ruby-red color also serves as a striking visual garnish, proving that in Levantine gastronomy, aesthetics, acidity, and aroma are inextricably linked.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-store text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Spice Merchants of the Souk al-Madina</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Walking through the dedicated spice quarters of Aleppo's historic Souk al-Madina is an overwhelming sensory immersion. Piled high outside open-air shopfronts are towering, perfectly conical mounds of vibrant yellow turmeric, fiery red paprika, green dried mint, and purple sumac, diffusing a heavy, intoxicating aroma that drifts through the vaulted stone arches of the market.</p>
+          <p>For centuries, the spice merchants (*attar*) operated not merely as retail shopkeepers, but as traditional apothecaries and herbalists. Families passed down secret medicinal recipes, herbal teas, and proprietary spice blends across generations. These merchants maintained direct relationships with the overland caravans arriving from Persia, India, and the Arabian Peninsula, ensuring that only the highest quality raw ingredients entered the city's culinary ecosystem.</p>
+          <p>The scales used in these ancient shops were masterpieces of brass and iron craftsmanship, calibrated with absolute precision to weigh out precious saffron threads, cardamom pods, and mastic gum. This cultural heritage of meticulous measurement and deep respect for ingredient synergy forms the ideological backbone of the Spice Scale trials, celebrating the precision required to sustain one of the world's greatest culinary traditions.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-utensils text-accentGreen text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Philosophy of Balance in Levantine Gastronomy</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The ultimate defining characteristic of Syrian cuisine is not any single ingredient, but rather an overarching philosophical commitment to balance. Whether constructing a complex architectural mosaic, routing water through an aqueduct, or blending spices for a family meal, ancient Levantine culture consistently sought the harmonious equilibrium between opposing forces: sweet and sour, heavy and light, heat and cooling freshness.</p>
+          <p>This balance is brilliantly demonstrated in iconic regional dishes like *kibbeh*, where the dense, earthy richness of minced lamb and cracked bulgur wheat is lifted by the bright, aromatic notes of fresh mint, onions, and warming spices like allspice and cinnamon. Similarly, heavy legume dishes like *foul mudammas* are aggressively balanced with raw garlic, tart lemon juice, and extra virgin olive oil. Every element has a culinary counterweight, ensuring that no single flavor overwhelms the palate.</p>
+          <p>This commitment to equilibrium reflects a deep understanding of human sensory appreciation. Food in the ancient Levant was designed to be deeply nourishing while remaining exceptionally refreshing during blistering summer months. By mastering the delicate ratios of herbs, seeds, acids, and salts, Syrian home cooks and master chefs turned everyday eating into an art form. The Spice Scale puzzle pays direct homage to this culinary philosophy, reminding modern players that true mastery lies not in excess, but in absolute precision and balance.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Spice Scale Game Logic
+    let currentWeight = 0;
+    const targetWeight = 100;
+    let addedSpices = [];
+
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    
+    const currentWeightDisplay = document.getElementById('current-weight');
+    const panWeightDisplay = document.getElementById('pan-weight');
+    const scaleBeam = document.getElementById('scale-beam');
+    const scaleStatus = document.getElementById('scale-status');
+    const lockBtn = document.getElementById('lock-btn');
+
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => { showElement.classList.add('active'); }, 50);
+    }
+
+    function startGame() {
+      switchScreen(screenStart, screenGame);
+      resetScale();
+    }
+
+    function addSpice(amount, name) {
+      currentWeight += amount;
+      addedSpices.push({ name, amount });
+      updateScaleUI();
+    }
+
+    function resetScale() {
+      currentWeight = 0;
+      addedSpices = [];
+      updateScaleUI();
+    }
+
+    function updateScaleUI() {
+      currentWeightDisplay.innerText = currentWeight;
+      panWeightDisplay.innerText = `${currentWeight}g`;
+
+      // Calculate beam tilt based on weight difference
+      const diff = currentWeight - targetWeight;
+      // Max tilt angle around 15 degrees
+      let angle = Math.max(-15, Math.min(15, diff * 0.75));
+      scaleBeam.style.transform = `rotate(${angle}deg)`;
+
+      if (currentWeight === targetWeight) {
+        scaleStatus.innerText = "Equilibrium Achieved!";
+        scaleStatus.className = "text-sm font-bold tracking-widest uppercase text-accentGreen mt-4";
+        lockBtn.disabled = false;
+        lockBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else if (currentWeight > targetWeight) {
+        scaleStatus.innerText = "Overweight! Too much spice.";
+        scaleStatus.className = "text-sm font-bold tracking-widest uppercase text-accentRed mt-4";
+        lockBtn.disabled = true;
+        lockBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        scaleStatus.innerText = `Add ${targetWeight - currentWeight}g to Balance`;
+        scaleStatus.className = "text-sm font-bold tracking-widest uppercase text-accentGold mt-4";
+        lockBtn.disabled = true;
+        lockBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function lockBlend() {
+      if (currentWeight !== targetWeight) return;
+      switchScreen(screenGame, screenResult);
+    }
+  </script>
+</body>
+</html>

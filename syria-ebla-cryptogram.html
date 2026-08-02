@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ebla Cryptogram | Ancient Linguistic Puzzle</title>
+  <meta name="description" content="Decipher ancient cuneiform symbols on digital clay tablets to unlock Levantine proverbs in this linguistic codebreaking puzzle." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentGold: '#EAB308',
+            accentBronze: '#B45309',
+            accentTeal: '#14B8A6',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    /* Clay Tablet Visual Styling */
+    .clay-tablet {
+      background: linear-gradient(135deg, #78350F 0%, #451A03 100%);
+      border: 3px solid #92400E;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 10px 30px rgba(0,0,0,0.5);
+      font-family: monospace;
+    }
+
+    .cuneiform-symbol {
+      display: inline-block;
+      padding: 0.5rem 0.75rem;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      font-size: 1.25rem;
+      color: #FCD34D;
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentBronze selection:text-white min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-language text-accentBronze mr-2"></i> Ebla Cryptogram
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen active flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentBronze/20 border border-accentBronze/50">
+        <i class="fas fa-tablet-alt text-5xl text-accentBronze"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">The Ebla Cryptogram</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        Act as a linguistic archaeologist. The ancient archives of Ebla contain thousands of cuneiform clay tablets acting as the world's first bilingual dictionaries. Decode the symbols to translate the ancient Levantine proverb.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Decryption Instructions</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-book text-accentGold mr-2"></i> Use the provided <strong>Cuneiform Legend</strong> to map symbols to letters.</li>
+          <li><i class="fas fa-keyboard text-accentTeal mr-2"></i> Type your translation into the interactive input fields.</li>
+          <li><i class="fas fa-check-circle text-white mr-2"></i> Unearth the ancient wisdom preserved in the clay.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentBronze text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors transform hover:scale-105 duration-200">
+        Examine the Tablet
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col items-center max-w-3xl w-full gap-6">
+      
+      <!-- The Clay Tablet Display -->
+      <div class="clay-tablet w-full rounded-2xl p-6 md:p-8 text-center">
+        <span class="text-xs uppercase tracking-widest text-amber-400 font-bold block mb-4">Tablet Archive Ref: EBL-304</span>
+        <div id="symbol-display" class="flex flex-wrap justify-center gap-3 my-6">
+          <!-- Symbols injected by JS -->
+        </div>
+        <p class="text-xs text-amber-200/60 italic">"Translate the wedge-shaped impressions using the cryptographic legend below."</p>
+      </div>
+
+      <!-- The Legend Panel -->
+      <div class="w-full bg-cardDark border border-white/10 rounded-2xl p-6">
+        <h3 class="font-serif text-xl text-white mb-4 text-center">Cuneiform Legend</h3>
+        <div id="legend-display" class="grid grid-cols-4 sm:grid-cols-8 gap-3 text-center">
+          <!-- Legend items injected by JS -->
+        </div>
+      </div>
+
+      <!-- The Input Translation Area -->
+      <div class="w-full bg-cardDark border border-accentBronze/40 rounded-2xl p-6 text-center">
+        <h3 class="font-serif text-lg text-white mb-4">Your Translation</h3>
+        <div id="input-slots" class="flex flex-wrap justify-center gap-2 mb-6">
+          <!-- Input fields injected by JS -->
+        </div>
+        <button onclick="verifyTranslation()" class="px-8 py-3 bg-accentBronze text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors">
+          Verify Translation
+        </button>
+        <p id="error-feedback" class="text-red-400 text-sm font-bold mt-3 h-6 opacity-0 transition-opacity">Incorrect translation. Review the legend.</p>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentTeal/10 border border-accentTeal/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-award text-4xl text-accentTeal"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Tablet Decoded</h2>
+      <p class="font-sans text-textMuted text-lg mb-4">Proverb successfully translated:</p>
+      <div class="bg-bgDark border border-accentBronze/40 rounded-xl p-4 mb-8 text-xl font-serif text-amber-300 italic">
+        "WISDOM IS BETTER THAN GOLD"
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Decode Again
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentBronze text-white rounded-xl hover:bg-white hover:text-bgDark font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Ebla and Cuneiform Decipherment</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the monumental archaeological discovery of the Ebla archives and the complex science of reading dead languages.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-archway text-accentBronze text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Discovery of the Royal Archives of Ebla</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The archaeological unearthing of Ebla (modern Tell Mardikh, located in northwestern Syria) stands as one of the most stunning and consequential discoveries in the history of Near Eastern archaeology. For centuries, Ebla was known only through brief, tantalizing mentions in Egyptian and Mesopotamian inscriptions, leading many historians to suspect it was merely a mythological city or a minor trading outpost. However, in the late 1960s, an Italian archaeological expedition led by Professor Paolo Matthiae began excavating the massive mound of Tell Mardikh. In 1974, their persistence was rewarded with a discovery that completely upended our understanding of third-millennium BC geopolitics.</p>
+          <p>Inside the ruins of the royal palace, the archaeologists unearthed a small, unassuming room that had functioned as the administrative archive. When they cleared the debris, they discovered thousands of pristine, unbaked clay tablets stacked neatly on wooden shelves that had long since carbonized. When the palace was destroyed by an invading army around 2300 BC, the intense fire inadvertently acted as a massive kiln, baking the soft clay tablets and perfectly preserving them for over four thousand years. This single room yielded over 17,000 cuneiform tablets and fragments, forming one of the largest and oldest royal archives ever found in the ancient world.</p>
+          <p>The sheer administrative scope contained within the Ebla tablets was staggering. Unlike Egyptian texts that focused primarily on religion and the afterlife, or Mesopotamian epics centered on gods and kings, the Ebla archive provided an intimate, granular look at the day-to-day economic, political, and diplomatic machinery of a thriving Bronze Age superpower. The tablets detailed complex international treaties, records of massive textile and metal trade, agricultural crop yields, legal codes, and correspondence with foreign city-states as far away as Sumer and Egypt.</p>
+          <p>Furthermore, the discovery of Ebla proved that sophisticated urban civilization extended deep into the Syrian interior long before the rise of the Amorite and Assyrian empires. Ebla was a wealthy, highly literate cosmopolitan center that controlled extensive trade networks across the Fertile Crescent. The revelation of its archives forced historians to completely redraw the map of early human civilization, proving that the Levant was not a passive cultural buffer zone between Egypt and Mesopotamia, but an independent, fiercely innovative cradle of empire.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-book text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The World's First Bilingual Dictionaries</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>One of the most monumental epiphanies following the translation of the Ebla archives was the discovery of the vocabulary lists—documents that historians immediately recognized as the world's very first bilingual dictionaries. Before Ebla, scholars had assumed that multi-language lexical lists were a much later invention. However, the scribes of Ebla had meticulously compiled massive lexical tablets designed to teach scribes how to translate between two entirely different linguistic families.</p>
+          <p>The primary language of Ebla was Eblaite, an extinct East Semitic language closely related to Akkadian. However, because Ebla maintained deep administrative and religious ties with southern Mesopotamia, scribes also had to be fully fluent in Sumerian—a linguistic isolate that had long ceased to be spoken as a native tongue but remained the prestigious language of scholarship, law, and religion across the ancient Near East, much like Latin in medieval Europe.</p>
+          <p>To train young scribes, Ebla's master scholars created columns of parallel text: writing a Sumerian logogram on the left side of the clay tablet and providing the corresponding Eblaite phonetic translation on the right. This unprecedented linguistic key was the exact instrument that allowed modern epigraphers to decode the Eblaite language with astonishing speed. Without these ancient bilingual dictionaries, translating the thousands of administrative tablets would have been an impenetrable cryptographic nightmare. Ebla gave modern science the very key needed to unlock its own lost voice.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-pen-nib text-accentBronze text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Mechanics of Cuneiform Decipherment</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Deciphering a dead language written in an extinct script is one of the most intellectually grueling tasks in human scholarship. Cuneiform—meaning "wedge-shaped"—is not a language itself, but a writing system. Developed originally by the Sumerians around 3200 BC, it was subsequently adopted, modified, and used by dozens of different linguistic groups across the ancient Near East, including Akkadian, Assyrian, Babylonian, Hittite, and Eblaite, spanning over three millennia of continuous usage.</p>
+          <p>The process of decipherment relies heavily on comparative linguistics, historical context, and the discovery of bilingual or trilingual inscriptions (such as the famous Behistun Inscription, which played the same role for cuneiform that the Rosetta Stone played for Egyptian hieroglyphics). Epigraphers must first categorize the signs, distinguishing between logograms (symbols representing entire words) and phonograms (symbols representing specific syllable sounds like *ba*, *be*, or *ub*).</p>
+          <p>Because cuneiform evolved over thousands of years, the shape of the wedges changed drastically, making early archaic signs look vastly different from later Neo-Assyrian scripts. Translators must analyze the frequency of recurring sign clusters, cross-reference them with known proper nouns (such as king names or geographical locations found in surrounding texts), and test grammatical hypotheses. The decryption of Ebla added an entirely new branch to the Semitic linguistic tree, providing modern linguists with invaluable data regarding the evolution of ancient grammar, vocabulary, and phonetics.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-shield-alt text-accentTeal text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Destruction and Preservation of Ancient Libraries</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>There is a tragic yet deeply ironic paradox at the heart of Near Eastern archaeology: the very military violence that destroyed ancient cities is precisely what ensured the survival of their intellectual archives. In the modern era, libraries are constructed with fire-retardant materials, digital backups, and security systems. In the ancient world, libraries were built of organic materials—papyrus scrolls, wooden writing boards, and unbaked clay tablets stored in wooden shelving units.</p>
+          <p>Unbaked clay is remarkably durable for daily administration, but it is highly vulnerable to moisture. If left in damp soil, clay tablets eventually dissolve back into mud. Therefore, an intact, unburned archive rarely survives across millennia unless preserved in exceptionally dry desert climates like Egypt. However, when an invading army breached the massive stone walls of a city like Ebla or Ugarit, they invariably looted the palace and set it ablaze. The intense, raging fire swept through the administrative rooms, incinerating the wooden shelves and causing the heavy, water-soaked clay tablets to drop into the inferno.</p>
+          <p>This extreme heat baked the clay into ceramic stone. The tablets were effectively kiln-fired to maximum hardness, locking the wedge-shaped impressions into permanent geological stability. Buried beneath the collapsed brick and ash of the ruined palace, these ceramic tablets slept undisturbed for thousands of years. When modern archaeologists shovel away the carbonized layers of ancient warfare, they are unearthing libraries that were deliberately vitrified by the fires of their own destruction, turning the ashes of war into the immortal monuments of human history.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-globe text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Broader Legacy of Levantine Scribes and Literacy</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The scribal traditions of the ancient Levant established a profound intellectual legacy that fundamentally shaped the transmission of human knowledge across the Mediterranean and Western Asia. While early Mesopotamian scribal schools required years of grueling memorization of thousands of complex cuneiform signs—making literacy the exclusive domain of an isolated, hyper-privileged religious elite—Levantine innovators consistently pushed toward simplification, democratization, and phonetic clarity.</p>
+          <p>This culminated not only in the bilingual dictionaries of Ebla but eventually in the invention of the linear alphabet in coastal cities like Ugarit and Byblos. By stripping away the heavy cuneiform wedge and reducing writing to a concise set of linear consonant signs, Levantine merchants and scribes created a flexible medium that could be easily learned by ordinary traders, mariners, and administrators. This democratization of literacy shattered the monopoly that temples and royal courts held over information, allowing for widespread record-keeping, legal contracts, and personal correspondence.</p>
+          <p>As Levantine traders sailed across the Mediterranean, they exported this revolutionary alphabetic concept to the Greeks, who added vowels to create the first fully phonetic alphabet. This direct lineage—from the clay tablets of Ebla to Ugaritic phonetics, Phoenician trade scripts, Greek adaptation, and Roman distribution—proves that the Levant was the primary intellectual engine of the ancient world. The scribes who pressed their reed styluses into wet clay did more than record wheat shipments and royal decrees; they built the enduring cognitive architecture that allows modern human civilization to read, write, and remember its own past.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Cryptogram Game Data
+    const targetWord = "WISDOM";
+    // Simple substitution cipher mapping
+    const cipherMap = {
+      'W': '⊿',
+      'I': '🏛',
+      'S': '⋔',
+      'D': '⚲',
+      'O': '❖',
+      'M': '⎈'
+    };
+
+    let userInputs = ['', '', '', '', '', ''];
+
+    function startGame() {
+      document.getElementById('start-screen').classList.remove('active');
+      setTimeout(() => {
+        document.getElementById('game-screen').classList.add('active');
+      }, 50);
+      initPuzzle();
+    }
+
+    function initPuzzle() {
+      const symbolDisplay = document.getElementById('symbol-display');
+      const inputSlots = document.getElementById('input-slots');
+      const legendDisplay = document.getElementById('legend-display');
+      
+      symbolDisplay.innerHTML = '';
+      inputSlots.innerHTML = '';
+      legendDisplay.innerHTML = '';
+
+      // Render cuneiform symbols on tablet
+      for (let i = 0; i < targetWord.length; i++) {
+        const char = targetWord[i];
+        const symbol = cipherMap[char];
+        
+        const span = document.createElement('div');
+        span.className = 'cuneiform-symbol';
+        span.innerText = symbol;
+        symbolDisplay.appendChild(span);
+      }
+
+      // Render input slots
+      for (let i = 0; i < targetWord.length; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 1;
+        input.className = 'w-12 h-14 bg-bgDark border-2 border-white/20 rounded-xl text-center text-2xl font-bold text-white uppercase outline-none focus:border-accentBronze transition-colors';
+        input.dataset.index = i;
+        input.oninput = (e) => handleInput(e, i);
+        inputSlots.appendChild(input);
+      }
+
+      // Render Legend
+      for (const [letter, sym] of Object.entries(cipherMap)) {
+        const box = document.createElement('div');
+        box.className = 'bg-bgDark p-3 rounded-xl border border-white/5 flex flex-col items-center justify-center';
+        box.innerHTML = `<span class="text-xl text-amber-400 mb-1">${sym}</span><span class="text-xs text-textMuted font-bold">${letter}</span>`;
+        legendDisplay.appendChild(box);
+      }
+    }
+
+    function handleInput(e, index) {
+      const val = e.target.value.toUpperCase();
+      e.target.value = val;
+      userInputs[index] = val;
+
+      // Auto advance focus
+      if (val && index < targetWord.length - 1) {
+        const nextInput = document.querySelector(`input[data-index="${index + 1}"]`);
+        if (nextInput) nextInput.focus();
+      }
+    }
+
+    function verifyTranslation() {
+      const attempt = userInputs.join('');
+      const errorFeedback = document.getElementById('error-feedback');
+
+      if (attempt === targetWord) {
+        document.getElementById('game-screen').classList.remove('active');
+        setTimeout(() => {
+          document.getElementById('result-screen').classList.add('active');
+        }, 50);
+      } else {
+        errorFeedback.style.opacity = '1';
+        setTimeout(() => {
+          errorFeedback.style.opacity = '0';
+        }, 2000);
+      }
+    }
+  </script>
+</body>
+</html>

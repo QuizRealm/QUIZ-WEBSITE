@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canaanite Myths | Ancient Lore Quiz</title>
+  <meta name="description" content="Dive deep into ancient Ugaritic mythology and explore the Baal Cycle and Canaanite deities in this mythology quiz." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentPurple: '#8B5CF6',
+            accentTeal: '#0D9488',
+            accentRed: '#EF4444',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentPurple selection:text-white min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-moon text-accentPurple mr-2"></i> Canaanite Myths
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl active">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentPurple/10 border border-accentPurple/30">
+        <i class="fas fa-bolt text-5xl text-accentPurple"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">Canaanite Myths</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        Unearth the ancient epics of Ugarit. Explore the divine pantheon, the storm battles of Baal, and the eternal struggles of early Levantine spirituality.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Lore Rules</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-question-circle text-accentPurple mr-2"></i> 5 challenging mythological questions.</li>
+          <li><i class="fas fa-bolt text-accentTeal mr-2"></i> Instant validation on every choice.</li>
+          <li><i class="fas fa-award text-white mr-2"></i> Claim your rank as a scholar of ancient lore.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentPurple text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors transform hover:scale-105 duration-200">
+        Enter the Pantheon
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col max-w-xl w-full">
+      <div class="flex justify-between items-center mb-6 text-sm font-sans font-bold text-textMuted uppercase tracking-widest px-2">
+        <span>Question <span id="current-q-num" class="text-accentPurple">1</span>/5</span>
+        <span>Score: <span id="game-score" class="text-white">0</span></span>
+      </div>
+
+      <div class="bg-cardDark border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl relative mb-6">
+        <h2 id="question-title" class="font-serif text-2xl text-white font-bold leading-relaxed mb-6">
+          Loading lore...
+        </h2>
+        
+        <div id="options-container" class="space-y-3">
+          <!-- Buttons injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentPurple/10 border border-accentPurple/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-star text-4xl text-accentPurple"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Lore Mastered</h2>
+      <p class="font-sans text-textMuted text-lg mb-4">Your final mythology score:</p>
+      
+      <div class="text-6xl font-serif text-accentPurple font-black mb-6">
+        <span id="final-score">0</span><span class="text-3xl text-textMuted">/5</span>
+      </div>
+
+      <p id="result-comment" class="font-sans text-white text-base mb-8 leading-relaxed"></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Play Again
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentPurple text-white rounded-xl hover:bg-white hover:text-bgDark font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Canaanite Mythology</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the divine epics, pantheons, and seasonal mythologies unearthed from the ancient library of Ugarit.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-bolt text-accentPurple text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Baal Cycle: Storms, Seas, and Seasonal Renewal</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>Long before the widespread adoption of monotheism across the Levant, the spiritual and agricultural life of ancient coastal societies was governed by a rich, complex pantheon of Canaanite deities. The most monumental literary work recovered from the royal archives of ancient Ugarit (modern Ras Shamra in western Syria) is the Baal Cycle—a massive collection of epic poetic tablets detailing the heroic adventures, epic battles, and ultimate triumph of Baal, the storm and fertility god. Written in cuneiform script on clay tablets around 1400 BC, the cycle provides profound insight into how early agricultural societies explained the cyclical, often brutal transitions of the Mediterranean seasons.</p>
+          <p>The narrative of the Baal Cycle is structured around two primary cosmic conflicts that mirror the annual cycle of agricultural life and drought. In the first major epic, Baal must fight a brutal war for supremacy against Yam, the chaotic god of the primordial sea and rivers. Yam demands that the assembly of the gods surrender Baal as a captive. Backed by divine craftsmanship and magical weapons fashioned by Kothar-wa-Khasis (the divine blacksmith), Baal engages in a titanic duel with Yam, ultimately shattering the sea god and establishing his sovereign dominion over the cosmos and the rain clouds.</p>
+          <p>Following his victory over the sea, Baal demands a proper palace worthy of a king of the gods. With the permission of El, the patriarch of the pantheon, and Asherah, the mother goddess, a magnificent palace of gold and lapis lazuli is constructed on Mount Zaphon. However, Baal's triumph is soon challenged by Mot, the god of death, sterility, and the barren underworld. Mot lures Baal into the underworld, resulting in Baal's death. With the storm god trapped below, rain ceases, crops wither, and the earth enters a state of severe drought and famine.</p>
+          <p>In grief and defiance, Anat, Baal's fierce warrior sister and consort, confronts Mot, viciously defeating and winnowing the death god in a vivid metaphor for agricultural harvesting. El experiences a prophetic dream indicating that Baal lives once more. Baal returns to the surface, banishing the drought and restoring seasonal rains. This mythic cycle was not merely a story; it was actively performed during annual religious festivals to magically compel the return of the life-giving storms and ensure the survival of agricultural harvests across the Levant.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-crown text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">El: The Patriarch Father of the Gods</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>At the absolute head of the Canaanite pantheon stood El, the supreme creator god and patriarch of the divine assembly. Often depicted iconographically as a wise, bearded elder king sitting upon a majestic throne, El was revered as the "Father of Years" and the "Creator of Created Beings." Unlike his energetic, combative son Baal, who actively intervened in earthly weather and political battles, El occupied a transcendent, patriarchal role as a wise arbiter of cosmic law.</p>
+          <p>In Ugaritic texts, El resides at the mystical source of the two rivers, at the confluence of the cosmic waters, presiding over the council of the lesser deities (*Elohim*). While Baal possessed physical strength and military might, El held ultimate authority, granting kingship, divine decree, and approval for monumental undertakings such as the construction of temples.</p>
+          <p>The linguistic legacy of El is immense. His title was universally used across ancient Semitic languages to denote divinity itself, directly evolving into linguistic roots found in ancient Hebrew names and religious terminology (such as *El*, *Elohim*, and compounded names like Gabriel, Michael, and Israel). The study of El provides crucial historical context for understanding the evolution of monotheistic theology in the ancient Near East.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-fire-alt text-accentRed text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Anat: The Fierce Goddess of War and Renewal</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Among the most vivid, powerful, and terrifying deities in the Ugaritic pantheon is Anat, the sister and consort of Baal. Anat embodies a complex duality: she is simultaneously the goddess of passionate love, sexuality, and fertility, and the ultimate deity of merciless warfare, bloodlust, and martial destruction. In the Baal Cycle, when Mot swallows Baal and plunges the earth into drought, it is Anat who takes matters into her own hands.</p>
+          <p>Displaying unmatched fury, Anat tracks down Mot, seizes him, splits him with a sword, winnows him in a sieve, burns him in a fire, grinds him in a mill, and scatters his remains across the fields for the birds to consume. This brutal mythic act represents the ancient agricultural reality of harvesting, threshing, and planting grain. Anat's fierce protection of her brother-consort made her an iconic symbol of untamed power and sisterly loyalty.</p>
+          <p>Egyptian armies later adopted the worship of Anat during the New Kingdom period, incorporating her into their military pantheon as a fierce protector of pharaohs in battle. Her character challenges simplistic modern stereotypes of ancient goddesses, presenting a divine figure who combined supreme nurturing fertility with terrifying, uncompromised martial dominance.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-water text-accentTeal text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Yam and Mot: Chaos, Sea, and Death</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Every heroic pantheon requires formidable antagonists to test the resilience of its champions. In Canaanite mythology, the forces of cosmic disorder, destruction, and death were embodied by Yam and Mot. Yam (whose name literally translates to "Sea") represented the untamed, violent, and terrifying power of primordial oceans, rivers, and unpredictable storm surges that threatened coastal cities and maritime trade.</p>
+          <p>Mot (meaning "Death") personified sterility, summer drought, and the inescapable abyss of the underworld. Unlike Yam, who was defeated by Baal's lightning and clubs, Mot could not be permanently slain because death is an immutable reality of the natural cycle. Instead, Mot's temporary defeat through agricultural harvesting ensured that life could renew itself each spring when the rains returned.</p>
+          <p>These personifications of Chaos and Death reflect the precarious environmental reality faced by ancient Levantine societies, where unpredictable sea storms could wipe out fishing fleets and scorching summer droughts could destroy entire harvests. The mythological struggle against Yam and Mot provided psychological reassurance that divine order and life would ultimately triumph over chaos.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-book-reader text-accentPurple text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Legacy of Ugaritic Epics on World Literature</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The unearthing of the Ugaritic mythological texts in the 20th century sent shockwaves through the academic world, fundamentally transforming our understanding of ancient Near Eastern comparative literature, philology, and biblical studies. Prior to the excavation of Ras Shamra, scholars relied almost exclusively on later biblical texts and Greek accounts to reconstruct the religious landscape of the ancient Levant. The discovery of clay tablets written directly by Canaanite scribes in the 14th century BC provided an unvarnished, authentic primary source into indigenous religious thought.</p>
+          <p>The linguistic and stylistic parallels between Ugaritic poetry and early Hebrew literature are astonishing. Scholars have noted identical poetic parallelism, shared epithets (such as "Cloud Rider" applied to Baal, later echoed in biblical descriptions of God), and similar narrative structures regarding divine conflict and covenant. The Ugaritic epics proved that early Israelite literature emerged directly out of a shared Canaanite linguistic and cultural matrix, rather than developing in total isolation.</p>
+          <p>Furthermore, the preservation of these epics highlighted the incredible sophistication of ancient Syrian scribal culture. The scribes did not merely record bureaucratic trade tariffs; they preserved the profound existential anxieties, hopes, and artistic imaginations of their society. They sought to explain why the rains failed, why crops withered, and how divine order could prevail over cosmic chaos.</p>
+          <p>Today, studying the Canaanite myths allows modern readers to step back in time over three thousand years, listening to the poetic chants that once echoed through the vaulted temples of Ugarit. It reminds us that mythology was humanity's earliest attempt to process the overwhelming forces of nature, transforming terrifying storms and annual droughts into epic dramas of life, death, and triumphant seasonal renewal. The legacy of these ancient epics remains a crowning jewel of the cultural heritage preserved within the Levant.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Mythology Quiz Data
+    const mythQuestions = [
+      {
+        question: "What is the name of the massive epic cycle detailing the storm god Baal's battles against Chaos and Death?",
+        options: ["The Gilgamesh Epic", "The Baal Cycle", "The Ugaritic Annals", "The Pantheon Chronicles"],
+        answer: 1
+      },
+      {
+        question: "Who was revered as the supreme creator god and patriarch of the Canaanite pantheon?",
+        options: ["Baal", "Yam", "El", "Mot"],
+        answer: 2
+      },
+      {
+        question: "Which fierce Canaanite goddess of war and fertility viciously defeated Mot to resurrect Baal?",
+        options: ["Anat", "Ashtart", "Asherah", "Zenobia"],
+        answer: 0
+      },
+      {
+        question: "What natural phenomenon did Mot, the god of the underworld, represent in agricultural myths?",
+        options: ["Ocean storms", "Summer drought and crop failure", "Volcanic eruptions", "Earthquakes"],
+        answer: 1
+      },
+      {
+        question: "Where were the clay tablets containing these ancient Canaanite myths discovered?",
+        options: ["The royal palace of Ebla", "The ancient library of Ugarit", "The Umayyad Mosque in Damascus", "The ruins of Palmyra"],
+        answer: 1
+      }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    
+    const qNumDisplay = document.getElementById('current-q-num');
+    const scoreDisplay = document.getElementById('game-score');
+    const questionTitle = document.getElementById('question-title');
+    const optionsContainer = document.getElementById('options-container');
+
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => { showElement.classList.add('active'); }, 50);
+    }
+
+    function startGame() {
+      currentQ = 0;
+      score = 0;
+      scoreDisplay.innerText = score;
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      const q = mythQuestions[currentQ];
+      qNumDisplay.innerText = currentQ + 1;
+      questionTitle.innerText = q.question;
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full py-4 px-6 bg-bgDark border border-white/10 rounded-2xl text-left text-white font-sans font-semibold hover:border-accentPurple hover:bg-accentPurple/5 transition-all flex justify-between items-center group';
+        btn.innerHTML = `<span>${opt}</span><i class="fas fa-chevron-right text-xs text-textMuted group-hover:text-accentPurple transition-colors"></i>`;
+        btn.onclick = () => selectAnswer(idx);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(selectedIndex) {
+      const q = mythQuestions[currentQ];
+      const buttons = optionsContainer.children;
+
+      Array.from(buttons).forEach(b => b.style.pointerEvents = 'none');
+
+      if (selectedIndex === q.answer) {
+        buttons[selectedIndex].classList.add('border-accentTeal', 'bg-accentTeal/20');
+        score++;
+        scoreDisplay.innerText = score;
+      } else {
+        buttons[selectedIndex].classList.add('border-accentRed', 'bg-accentRed/20');
+        buttons[q.answer].classList.add('border-accentTeal', 'bg-accentTeal/20');
+      }
+
+      setTimeout(() => {
+        currentQ++;
+        if (currentQ < mythQuestions.length) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 1200);
+    }
+
+    function endGame() {
+      document.getElementById('final-score').innerText = score;
+      
+      let comment = "";
+      if (score === 5) comment = "Divine insight! You have mastered the lore of Ugarit.";
+      else if (score >= 3) comment = "Well done! You know the Canaanite pantheon well.";
+      else comment = "The ancient epics hold deep mysteries. Study the archives and try again!";
+      
+      document.getElementById('result-comment').innerText = comment;
+      switchScreen(screenGame, screenResult);
+    }
+  </script>
+</body>
+</html>

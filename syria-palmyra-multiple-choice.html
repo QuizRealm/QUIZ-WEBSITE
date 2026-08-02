@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Echoes of Palmyra | Historical Multiple Choice Quiz</title>
+  <meta name="description" content="Test your knowledge of Queen Zenobia and the ancient desert empire of Palmyra in this multiple-choice history challenge." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentGold: '#EAB308',
+            accentTeal: '#0D9488',
+            accentRed: '#EF4444',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentGold selection:text-bgDark min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-columns text-accentGold mr-2"></i> Echoes of Palmyra
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen active flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentGold/10 border border-accentGold/30">
+        <i class="fas fa-landmark text-5xl text-accentGold"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">Echoes of Palmyra</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        Rise from the Syrian desert and explore the legacy of the Bride of the Desert. Test your knowledge regarding Queen Zenobia's legendary rebellion against Rome, trade routes, and monumental ruins.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Quiz Rules</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-question-circle text-accentGold mr-2"></i> 5 historical multiple-choice questions.</li>
+          <li><i class="fas fa-bolt text-accentTeal mr-2"></i> Instant answer validation.</li>
+          <li><i class="fas fa-award text-white mr-2"></i> Claim your rank as a scholar of Palmyra.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentGold text-bgDark font-bold rounded-xl uppercase tracking-widest hover:bg-white transition-colors transform hover:scale-105 duration-200">
+        Enter the Oasis
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col max-w-xl w-full">
+      <div class="flex justify-between items-center mb-6 text-sm font-sans font-bold text-textMuted uppercase tracking-widest px-2">
+        <span>Question <span id="current-q-num" class="text-accentGold">1</span>/5</span>
+        <span>Score: <span id="game-score" class="text-white">0</span></span>
+      </div>
+
+      <div class="bg-cardDark border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl relative mb-6">
+        <h2 id="question-title" class="font-serif text-2xl text-white font-bold leading-relaxed mb-6">
+          Loading question...
+        </h2>
+        
+        <div id="options-container" class="space-y-3">
+          <!-- Buttons injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentGold/10 border border-accentGold/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-crown text-4xl text-accentGold"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Oasis Conquered</h2>
+      <p class="font-sans text-textMuted text-lg mb-4">Your final score:</p>
+      
+      <div class="text-6xl font-serif text-accentGold font-black mb-6">
+        <span id="final-score">0</span><span class="text-3xl text-textMuted">/5</span>
+      </div>
+
+      <p id="result-comment" class="font-sans text-white text-base mb-8 leading-relaxed"></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Play Again
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentGold text-bgDark rounded-xl hover:bg-white font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Palmyra</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the dramatic history, grand colonnades, and imperial rebellion of the Bride of the Desert.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-columns text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Palmyra: The Bride of the Desert Oasis</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>Rising dramatically from the arid expanse of the Syrian Desert, approximately 210 kilometers northeast of Damascus, lies Palmyra—historically celebrated as the "Bride of the Desert." Positioned strategically in an isolated desert oasis blessed by the sulfurous yet life-giving Effqa spring, Palmyra evolved from a minor nomadic watering hole into one of the wealthiest, most dazzling commercial metropolises of the ancient world. During the first three centuries AD, Palmyra operated as a critical independent nexus bridging the vast Roman Empire in the West with the Parthian and Sassanid Persian Empires in the East, as well as lucrative trade routes extending down to India and China.</p>
+          <p>The city's immense prosperity was built on the back of the desert trade. Palmyrene merchants organized massive camel caravans that navigated the brutal, waterless expanses of the Arabian Desert, protected by their own fiercely loyal desert archers and cavalry units. They traded silk, precious stones, spices, and exotic animals, levying heavy tariffs on goods passing through their territory. This unbridled commercial success allowed Palmyrene elites to transform their remote desert settlement into a breathtaking showcase of monumental architecture, merging Greco-Roman structural techniques with local Semitic deities and Persian artistic flourishes.</p>
+          <p>The crowning visual achievement of the city was the Great Colonnade—a magnificent, kilometer-long monumental avenue flanked by hundreds of towering Corinthian columns, many featuring unique console brackets designed to support statues of the city's wealthy benefactors and caravan leaders. Flanking this grand boulevard stood the majestic Temple of Bel, massive monumental arches, exquisite funerary towers, and an elaborate open-air theater. The architecture reflected a city at the absolute center of global cultural synthesis.</p>
+          <p>However, Palmyra's rapid ascent and ultimate bid for sovereign imperial power placed it on a direct collision course with Rome. When the Roman Empire was fractured by political instability during the third century, Palmyra seized the historic opportunity to break away, launching a stunning military campaign that briefly established an independent eastern empire under the leadership of Queen Zenobia. The ruins of Palmyra stand today as an eternal monument to the ambition, wealth, and engineering brilliance of a desert civilization that dared to challenge Rome.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-crown text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Queen Zenobia: The Warrior Queen of the East</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>In the third century AD, while the Roman Empire was crippled by the Crisis of the Third Century—marked by economic collapse, plague, and assassinations of emperors—Palmyra found its ultimate champion in Septimia Zenobia. Following the assassination of her husband, King Odaenathus, Zenobia assumed control as queen regent for her infant son, Vaballathus. Far from being a passive figurehead, Zenobia was a brilliant, highly educated, multilingual stateswoman who claimed direct descent from Cleopatra of Egypt.</p>
+          <p>Recognizing Rome's terminal weakness in the eastern provinces, Zenobia orchestrated one of the most audacious rebellions in classical history. In 270 AD, she led a disciplined Palmyrene army that successfully conquered Egypt, cutting off Rome's vital grain supply. She subsequently annexed Anatolia and vast stretches of the Levant, establishing the independent Palmyrene Empire. Her royal court in Palmyra became a glittering intellectual hub, sheltering famous philosophers, rhetoricians, and scientists.</p>
+          <p>Zenobia's reign was short-lived but spectacular. In 272 AD, the battle-hardened Roman Emperor Aurelian launched a massive counter-offensive, defeating her armies at Immae and Emesa. Zenobia attempted to flee across the Euphrates to seek Persian assistance but was captured. Brought to Rome in golden chains, her ultimate fate remains a fascinating subject of historical debate, sealing her legacy as one of antiquity's greatest warrior queens.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-monument text-accentTeal text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Temple of Bel and Religious Syncretism</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>At the center of Palmyrene religious life stood the majestic Temple of Bel, dedicated to the supreme Mesopotamian-Semitic god Bel, alongside the lunar god Aglibol and the solar god Yarhibol. Constructed in 32 AD, the temple was an architectural masterpiece that perfectly encapsulated Palmyra's religious syncretism—the blending of diverse cultural traditions into a singular, harmonious sacred space.</p>
+          <p>The temple's layout was monumental. Surrounded by a massive, high stone wall lined with Corinthian colonnades, the interior courtyard housed a large processional altar and a unique central sanctuary (*cella*) featuring two distinct holy chambers, one oriented toward the rising sun and the other toward the setting sun, reflecting dual cosmological worship.</p>
+          <p>Architecturally, the Temple of Bel fused massive Greco-Roman stone-cutting techniques with traditional Near Eastern flat roofs and Mesopotamian crenellations. It served not only as a spiritual sanctuary for the Palmyrene pantheon, but also as a civic and economic gathering place, underscoring the deep connection between religious devotion and commercial success in the desert oasis.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-chess-rook text-accentRed text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Fall of Palmyra: Emperor Aurelian's Retribution</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>The secession of the eastern provinces under Queen Zenobia posed an existential threat to the survival of the Roman Empire. Deprived of Egyptian grain and Levantine tax revenues, Rome faced total collapse unless imperial authority was reasserted. In 272 AD, Emperor Aurelian—subsequently earning the title *Restorer of the World* (*Restitutor Orbis*)—marched his legions eastward on a ruthless retaking campaign.</p>
+          <p>Aurelian's cavalry clashed with Zenobia's formidable armored cataphracts in brutal engagements outside Antioch and Emesa. Outmaneuvering the desert forces, Aurelian drove straight across the Syrian Desert and laid siege to Palmyra. When Zenobia was captured fleeing toward Persia, the city initially surrendered and was granted lenient terms.</p>
+          <p>However, shortly after Aurelian's departure, Palmyra erupted into a violent anti-Roman revolt, slaughtering the Roman garrison left behind. Enraged by this betrayal, Aurelian turned his legions around, recaptured the city, and subjected it to total sack and destruction in 273 AD. The wealth of Palmyra was looted to finance the construction of the Temple of the Sun in Rome, abruptly ending the independent political life of the Bride of the Desert.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-hourglass-half text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Valley of the Tombs: Funerary Architecture and Towers</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>One of the most unique and visually striking archaeological features of ancient Palmyra is its elaborate funerary architecture, best observed in the sprawling necropolises surrounding the city, most notably the famous "Valley of the Tombs." Unlike classical Greek or Roman burial traditions, which favored underground catacombs or flat sarcophagi, wealthy Palmyrene families constructed massive, multi-story tower tombs that dominated the desert landscape along the caravan approaches to the city.</p>
+          <p>These monumental tower tombs reached up to four stories in height, built from massive ashlar stone blocks. Inside, the walls were honeycombed with horizontal burial recesses known as *loculi*. Each recess contained the remains of a family member, sealed off with a magnificent stone slab carved with a high-relief portrait bust of the deceased. These portrait busts—depicting men in traditional Parthian tunics and women draped in ornate jewelry and veils—represent an extraordinary school of Palmyrene funerary sculpture that bridged classical realism with distinct eastern stylization.</p>
+          <p>As the tower tomb design reached capacity, Palmyrene architects innovated further, constructing subterranean temple tombs (*hypogea*) carved deep into the bedrock of the desert hills, featuring elaborate frescoed ceilings and stone sarcophagi adorned with family banquet reliefs. These tombs were architectural statements of legacy and wealth, ensuring that the merchant families who built Palmyra's commercial empire remained visually present and honored along the desert highways for eternity.</p>
+          <p>The cultural synthesis visible in these tombs—where Roman engineering, Greek inscriptions, Persian clothing styles, and Semitic burial rites converged—summarizes the historical essence of Palmyra. It was a civilization that sat at the crossroads of empires, absorbing the best of all worlds to create a uniquely dazzling identity. The study of its ruins continues to provide modern historians with vital insights into the vibrant multiculturalism that characterized the ancient Levantine frontier.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Palmyra Trivia Data
+    const palmyraQuestions = [
+      {
+        question: "What poetic title was historically given to the ancient oasis city of Palmyra?",
+        options: ["The Bride of the Desert", "The Pearl of the Euphrates", "The Gateway to India", "The City of Gold"],
+        answer: 0
+      },
+      {
+        question: "Who was the brilliant queen who led Palmyra's 3rd-century rebellion against Rome?",
+        options: ["Queen Cleopatra", "Queen Zenobia", "Queen Semiramis", "Queen Nefertiti"],
+        answer: 1
+      },
+      {
+        question: "Which Roman emperor ultimately marched east to defeat Palmyra's rebellion?",
+        options: ["Julius Caesar", "Emperor Augustus", "Emperor Aurelian", "Emperor Nero"],
+        answer: 2
+      },
+      {
+        question: "What is the name of Palmyra's magnificent kilometer-long central avenue flanked by Corinthian columns?",
+        options: ["The Great Colonnade", "The Street Called Straight", "The Via Appia", "The Processional Way"],
+        answer: 0
+      },
+      {
+        question: "What distinctive architectural structure did wealthy Palmyrene families build in the surrounding desert valleys to bury their dead?",
+        options: ["Pyramidal tombs", "Multi-story tower tombs", "Rock-cut cave shrines", "Subterranean ziggurats"],
+        answer: 1
+      }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    
+    const qNumDisplay = document.getElementById('current-q-num');
+    const scoreDisplay = document.getElementById('game-score');
+    const questionTitle = document.getElementById('question-title');
+    const optionsContainer = document.getElementById('options-container');
+
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => { showElement.classList.add('active'); }, 50);
+    }
+
+    function startGame() {
+      currentQ = 0;
+      score = 0;
+      scoreDisplay.innerText = score;
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      const q = palmyraQuestions[currentQ];
+      qNumDisplay.innerText = currentQ + 1;
+      questionTitle.innerText = q.question;
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full py-4 px-6 bg-bgDark border border-white/10 rounded-2xl text-left text-white font-sans font-semibold hover:border-accentGold hover:bg-accentGold/5 transition-all flex justify-between items-center group';
+        btn.innerHTML = `<span>${opt}</span><i class="fas fa-chevron-right text-xs text-textMuted group-hover:text-accentGold transition-colors"></i>`;
+        btn.onclick = () => selectAnswer(idx);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(selectedIndex) {
+      const q = palmyraQuestions[currentQ];
+      const buttons = optionsContainer.children;
+
+      Array.from(buttons).forEach(b => b.style.pointerEvents = 'none');
+
+      if (selectedIndex === q.answer) {
+        buttons[selectedIndex].classList.add('border-accentTeal', 'bg-accentTeal/20');
+        score++;
+        scoreDisplay.innerText = score;
+      } else {
+        buttons[selectedIndex].classList.add('border-accentRed', 'bg-accentRed/20');
+        buttons[q.answer].classList.add('border-accentTeal', 'bg-accentTeal/20');
+      }
+
+      setTimeout(() => {
+        currentQ++;
+        if (currentQ < palmyraQuestions.length) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 1200);
+    }
+
+    function endGame() {
+      document.getElementById('final-score').innerText = score;
+      
+      let comment = "";
+      if (score === 5) comment = "Magnificent! You possess an imperial grasp of Palmyrene history.";
+      else if (score >= 3) comment = "Well done! You know the legacy of Queen Zenobia well.";
+      else comment = "The desert winds shroud many secrets. Review the archives and try again!";
+      
+      document.getElementById('result-comment').innerText = comment;
+      switchScreen(screenGame, screenResult);
+    }
+  </script>
+</body>
+</html>

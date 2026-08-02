@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Geography | Syrian Landscapes Quiz</title>
+  <meta name="description" content="Test your knowledge of Syrian geography, from the Mediterranean coast to the Euphrates Valley, in this visual identification quiz." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentBlue: '#0284C7',
+            accentTeal: '#0D9488',
+            accentRed: '#EF4444',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentBlue selection:text-white min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-map-marked-alt text-accentBlue mr-2"></i> Visual Geography
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen active flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentBlue/10 border border-accentBlue/30">
+        <i class="fas fa-mountain text-5xl text-accentBlue"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">Visual Geography</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        Discover the diverse topography of Syria, spanning from the Mediterranean coastal plains of Latakia to the agricultural steppes of the Euphrates. Test your geographic acumen across 5 environmental challenges.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Challenge Rules</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-map-pin text-accentBlue mr-2"></i> 5 landscape & provincial identification questions.</li>
+          <li><i class="fas fa-bolt text-accentTeal mr-2"></i> Immediate feedback on each correct match.</li>
+          <li><i class="fas fa-award text-white mr-2"></i> Earn the title of Master Cartographer of the Levant.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentBlue text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors transform hover:scale-105 duration-200">
+        Start Expedition
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col max-w-xl w-full">
+      <div class="flex justify-between items-center mb-6 text-sm font-sans font-bold text-textMuted uppercase tracking-widest px-2">
+        <span>Site <span id="current-q-num" class="text-accentBlue">1</span>/5</span>
+        <span>Score: <span id="game-score" class="text-white">0</span></span>
+      </div>
+
+      <div class="bg-cardDark border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl relative mb-6">
+        <h2 id="question-title" class="font-serif text-2xl text-white font-bold leading-relaxed mb-6">
+          Loading landscape clue...
+        </h2>
+        
+        <div id="options-container" class="space-y-3">
+          <!-- Buttons injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentBlue/10 border border-accentBlue/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-globe-asia text-4xl text-accentBlue"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Expedition Complete</h2>
+      <p class="font-sans text-textMuted text-lg mb-4">Your geographical accuracy score:</p>
+      
+      <div class="text-6xl font-serif text-accentBlue font-black mb-6">
+        <span id="final-score">0</span><span class="text-3xl text-textMuted">/5</span>
+      </div>
+
+      <p id="result-comment" class="font-sans text-white text-base mb-8 leading-relaxed"></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Play Again
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentBlue text-white rounded-xl hover:bg-white hover:text-bgDark font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Levantine Topography</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the diverse biomes, river basins, and mountain ranges that define the geographic expanse of Syria.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-map text-accentBlue text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Four Geographic Biomes of Syria</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>Popular media often reduces the Middle East to a monolithic, sun-scorched desert waste. However, the geographic topography of Syria is astonishingly diverse, featuring four distinct ecological biomes that run in parallel north-south bands from the Mediterranean coastline inland toward the Arabian desert. Understanding these four biomes—the Coastal Strip, the Western Mountain Ranges, the Inland Steppes and Valleys, and the Arid Eastern Desert—is essential for comprehending how ancient civilizations thrived, farmed, and built major trade routes across the region.</p>
+          <p>The first biome is the narrow Mediterranean coastal plain, framed by the sparkling blue waters of the sea and centered around the vital port provinces of Latakia and Tartus. This region enjoys a classic Mediterranean climate characterized by hot, dry summers and mild, wet winters, receiving the highest precipitation levels in the country. This moisture-rich environment has historically supported lush citrus groves, olive orchards, banana plantations, and dense pine forests, functioning as Syria's primary maritime window to Europe and the broader Mediterranean basin.</p>
+          <p>Moving immediately inland, the terrain elevates sharply into the second biome: the rugged Al-Ansariyah Mountains and the Anti-Lebanon mountain range. These towering limestone ridges create a natural climatic barrier. As moist air blows inland from the Mediterranean, it hits these elevated peaks, forces condensation, and drops the majority of its rain on the western slopes, leaving the eastern interior in a partial rain shadow. These mountains have historically provided natural defensive barriers, timber resources, and isolated monastic sanctuaries.</p>
+          <p>The third biome consists of the fertile inland plateaus, agricultural steppes, and major river valleys, most notably the Orontes River basin and the massive crescent of the Euphrates River. This is the agricultural heartland of Syria, where ancient cities like Aleppo, Hama, and Homs flourished. Fed by river irrigation and seasonal rains, these plains yield massive harvests of wheat, barley, cotton, and pistachios. Finally, the fourth biome transitions eastward into the vast, arid expanse of the Syrian Desert (*Badia*), a gravelly plateau dotted with volcanic basalt fields that stretches toward the Euphrates and the Iraqi border, historically inhabited by nomadic pastoralists and anchored by the oasis of Palmyra.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-water text-accentBlue text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Euphrates River Basin: Cradle of Civilizations</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>The Euphrates is the longest and one of the most historically significant rivers in Western Asia. Flowing down from the mountains of eastern Turkey, it enters northern Syria near Jarabulus, slicing diagonally across the eastern landscape toward Iraq. Throughout human history, the Euphrates Valley served as the eastern anchor of the Fertile Crescent, providing the essential water resources that allowed complex urban civilization to emerge in what would otherwise be an inhospitable desert.</p>
+          <p>Along the banks of the Syrian Euphrates, ancient cities like Mari, Dura-Europos, and Emar flourished as massive commercial and political centers. Mari, excavated extensively by French archaeologists, revealed a sprawling palace containing over 250 rooms filled with royal archives that illuminated the intense political rivalries and diplomatic marriages of the Bronze Age. The river acted as a massive liquid highway, facilitating the transport of grain, timber, and pottery across great distances.</p>
+          <p>In the modern era, the Euphrates remains the absolute economic lifeblood of eastern Syria. The construction of major hydroelectric dams, such as the Tabqa Dam which created the sprawling artificial reservoir known as Lake Assad, transformed regional agriculture through extensive canal irrigation systems. The Euphrates Valley continues to represent the meeting point where ancient pastoral nomadism and advanced riverine agriculture intersect.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-volcano text-red-500 text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Volcanic Plateau of Hauran and Jabal al-Druze</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>In the southwestern corner of Syria lies one of the most geologically fascinating and unique landscapes in the country: the Hauran region, anchored by the elevated volcanic massif of Jabal al-Druze. Millions of years of prehistoric volcanic activity flooded this plateau with thick layers of dark basalt lava, creating a rugged, stony landscape entirely distinct from the limestone mountains of the west or the sandy dunes of the eastern desert.</p>
+          <p>Despite its stark, dark appearance due to the volcanic black rock, the soil weathered from this basalt lava is exceptionally rich in minerals and nutrients. Combined with winter rains channeled down from the mountains, the Hauran plateau became known in antiquity as the legendary granary of the Roman Empire, producing staggering yields of high-quality wheat that fed the imperial legions across the Mediterranean.</p>
+          <p>This geological reality dictated the local architecture. Because timber was scarce and volcanic basalt was infinitely abundant, ancient builders in towns like Bosra constructed entire cities out of solid black stone. Massive houses, heavy doors, towering arches, and Roman theaters were carved entirely from basalt, creating an imposing, timeless aesthetic that has survived virtually intact for nearly two millennia.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-water-lower text-accentTeal text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Orontes River: The Reversing Current</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Unlike most rivers in the region that flow south or east, the Orontes River (*Nahr al-Asi*, meaning the "Rebel River") flows defiantly from south to north. Originating in the Beqaa Valley of Lebanon, it enters Syria near Homs, carving its way northward through Hama and the fertile Ghab valley before emptying into the Mediterranean Sea near Antioch.</p>
+          <p>The Orontes has historically been the primary geographical axis of the western Levant. Its stubborn northern flow created natural barriers and deep gorges that heavily influenced military campaigns and trade routes. Along its banks, cities like Hama harnessed its current to build the monumental Norias waterwheels, while surrounding agricultural communities utilized its waters to cultivate vast orchards of pomegranates, citrus, and vegetables.</p>
+          <p>The valley of the Orontes also served as a crucial political frontier during the Bronze Age, witnessing epic clashes between the Egyptian Empire under Ramesses II and the Hittite Empire, culminating in the famous Battle of Kadesh. The river valley remains a lush, life-giving ribbon of green cutting through an otherwise rugged limestone landscape.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-sun text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Syrian Desert (Badia): Nomads and Oasis Crossroads</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>Covering roughly half of the total landmass of Syria, the Syrian Desert—locally known as the *Badia*—is a sweeping expanse of arid gravel plains, low limestone hills, and scattered volcanic outcroppings. While popular imagination pictures endless seas of rolling sand dunes, the Badia is predominantly a stony desert (*reg*), perfectly adapted by nature to support sparse seasonal vegetation following winter rains. For millennia, this harsh environment was far from empty; it was home to resilient Bedouin tribes who mastered the art of camel pastoralism, navigating the trackless expanse using the stars and an encyclopedic knowledge of hidden underground water wells.</p>
+          <p>The Badia was never an impenetrable barrier isolating east from west; rather, it was a dynamic zone crossed by ancient caravan tracks that linked the Mediterranean ports directly to Mesopotamia. To survive these crossings, travelers relied entirely on a chain of vital desert oases that punctured the arid plateau like green islands in a sea of stone. Among these, Palmyra was the undisputed queen, but other oases like Al-Sukhnah and Qaryatayn also provided essential water and security for merchants.</p>
+          <p>Furthermore, the Badia contains extraordinary archaeological treasures built by Roman and Byzantine emperors to project military power across the frontier. Fortified desert outposts, known as *limes Arabicus*, and elaborate hunting lodges like Qasr al-Hayr al-Sharqi stand as haunting monuments to imperial ambition in the wilderness. These remote structures featured sophisticated water-harvesting systems, massive storage dams, and intricate ceramic pipe networks designed to capture every drop of rare flash-flood water.</p>
+          <p>Today, the geography of the Syrian Badia continues to evoke a profound sense of timelessness and mystery. It is a landscape where human history is written in stone, reflecting the eternal struggle and triumph of adaptation in an extreme environment. The deep interplay between the arid desert, the flowing rivers, the rugged mountains, and the maritime coast encapsulates the rich, multifaceted geography that made Syria the cradle of civilization.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Geography Quiz Data
+    const geoQuestions = [
+      {
+        question: "Which major Syrian river flows uniquely from south to north through Hama and Homs?",
+        options: ["The Euphrates River", "The Tigris River", "The Orontes River", "The Barada River"],
+        answer: 2
+      },
+      {
+        question: "What is the name of the lush green oasis created by the Barada River that sustains Damascus?",
+        options: ["The Ghouta", "The Ghab Valley", "The Hauran Plateau", "The Badia"],
+        answer: 0
+      },
+      {
+        question: "Which southern Syrian region is famous for its dark, nutrient-rich volcanic basalt rock and ancient stone architecture?",
+        options: ["Latakia", "The Hauran Plateau", "Deir ez-Zor", "Tarsus"],
+        answer: 1
+      },
+      {
+        question: "Which massive river slices diagonally across eastern Syria, serving as the eastern anchor of the Fertile Crescent?",
+        options: ["The Nile River", "The Jordan River", "The Euphrates River", "The Litani River"],
+        answer: 2
+      },
+      {
+        question: "Which coastal Syrian province features Mediterranean climate, citrus groves, and maritime shipping ports?",
+        options: ["Latakia", "Palmyra", "Aleppo", "Raqqa"],
+        answer: 0
+      }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    
+    const qNumDisplay = document.getElementById('current-q-num');
+    const scoreDisplay = document.getElementById('game-score');
+    const questionTitle = document.getElementById('question-title');
+    const optionsContainer = document.getElementById('options-container');
+
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => { showElement.classList.add('active'); }, 50);
+    }
+
+    function startGame() {
+      currentQ = 0;
+      score = 0;
+      scoreDisplay.innerText = score;
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      const q = geoQuestions[currentQ];
+      qNumDisplay.innerText = currentQ + 1;
+      questionTitle.innerText = q.question;
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full py-4 px-6 bg-bgDark border border-white/10 rounded-2xl text-left text-white font-sans font-semibold hover:border-accentBlue hover:bg-accentBlue/5 transition-all flex justify-between items-center group';
+        btn.innerHTML = `<span>${opt}</span><i class="fas fa-chevron-right text-xs text-textMuted group-hover:text-accentBlue transition-colors"></i>`;
+        btn.onclick = () => selectAnswer(idx);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(selectedIndex) {
+      const q = geoQuestions[currentQ];
+      const buttons = optionsContainer.children;
+
+      Array.from(buttons).forEach(b => b.style.pointerEvents = 'none');
+
+      if (selectedIndex === q.answer) {
+        buttons[selectedIndex].classList.add('border-accentTeal', 'bg-accentTeal/20');
+        score++;
+        scoreDisplay.innerText = score;
+      } else {
+        buttons[selectedIndex].classList.add('border-accentRed', 'bg-accentRed/20');
+        buttons[q.answer].classList.add('border-accentTeal', 'bg-accentTeal/20');
+      }
+
+      setTimeout(() => {
+        currentQ++;
+        if (currentQ < geoQuestions.length) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 1200);
+    }
+
+    function endGame() {
+      document.getElementById('final-score').innerText = score;
+      
+      let comment = "";
+      if (score === 5) comment = "Exceptional navigation! You are a master cartographer of the Levant.";
+      else if (score >= 3) comment = "Well done! You have a solid grasp of Syrian topography.";
+      else comment = "The rivers and deserts hold many mysteries. Study the archives and try again!";
+      
+      document.getElementById('result-comment').innerText = comment;
+      switchScreen(screenGame, screenResult);
+    }
+  </script>
+</body>
+</html>

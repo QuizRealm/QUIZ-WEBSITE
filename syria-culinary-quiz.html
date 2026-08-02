@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Aleppo Kitchen | Culinary Trivia Quiz</title>
+  <meta name="description" content="Test your knowledge of traditional Levantine dishes, historic ingredients, and Aleppo gastronomy in this culinary trivia quiz." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentOrange: '#F97316',
+            accentTeal: '#0D9488',
+            accentRed: '#EF4444',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentOrange selection:text-white min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-utensils text-accentOrange mr-2"></i> The Aleppo Kitchen
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl active">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentOrange/10 border border-accentOrange/30">
+        <i class="fas fa-seedling text-5xl text-accentOrange"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">The Aleppo Kitchen</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        Explore the gastronomic capital of the Middle East. Test your knowledge of traditional Aleppine dishes, ancient ingredients, and the complex flavor profiles of the Levant.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Kitchen Rules</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-question-circle text-accentOrange mr-2"></i> 5 challenging culinary trivia questions.</li>
+          <li><i class="fas fa-bolt text-accentTeal mr-2"></i> Instant validation on every choice.</li>
+          <li><i class="fas fa-award text-white mr-2"></i> Claim your rank as a master food historian.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentOrange text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors transform hover:scale-105 duration-200">
+        Enter the Kitchen
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col max-w-xl w-full">
+      <div class="flex justify-between items-center mb-6 text-sm font-sans font-bold text-textMuted uppercase tracking-widest px-2">
+        <span>Question <span id="current-q-num" class="text-accentOrange">1</span>/5</span>
+        <span>Score: <span id="game-score" class="text-white">0</span></span>
+      </div>
+
+      <div class="bg-cardDark border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl relative mb-6">
+        <h2 id="question-title" class="font-serif text-2xl text-white font-bold leading-relaxed mb-6">
+          Loading dish...
+        </h2>
+        
+        <div id="options-container" class="space-y-3">
+          <!-- Buttons injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentOrange/10 border border-accentOrange/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-concierge-bell text-4xl text-accentOrange"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Banquet Prepared</h2>
+      <p class="font-sans text-textMuted text-lg mb-4">Your final culinary score:</p>
+      
+      <div class="text-6xl font-serif text-accentOrange font-black mb-6">
+        <span id="final-score">0</span><span class="text-3xl text-textMuted">/5</span>
+      </div>
+
+      <p id="result-comment" class="font-sans text-white text-base mb-8 leading-relaxed"></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Play Again
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentOrange text-white rounded-xl hover:bg-white hover:text-bgDark font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Aleppine Gastronomy</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the culinary history, historic spice blends, and legendary dishes that make Aleppo the gastronomic capital of the Middle East.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-utensils text-accentOrange text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Aleppo: The Undisputed Gastronomic Capital of the Middle East</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>For centuries, the ancient northern Syrian city of Aleppo has held an almost mythical status among food historians, travelers, and epicureans as the premier culinary capital of the Middle East. While major political capitals like Damascus or Cairo boasted immense administrative power, Aleppo's unique position as the great western terminus of the Silk Road exposed its kitchens to an extraordinary convergence of culinary traditions. Over millennia, Arab, Ottoman Turkish, Persian, Armenian, Kurdish, and Byzantine influences continuously collided and fused within the vaulted stone chambers of Aleppo's massive covered souks, giving birth to a gastronomic culture of staggering complexity, refinement, and depth.</p>
+          <p>The philosophical foundation of Aleppine cooking rests upon a delicate, harmonious balance between contrasting flavor profiles. Unlike regional cuisines that rely on aggressive heat or excessive oil, Aleppine chefs mastered the art of balancing sweet and sour, earthy and aromatic, tart fruit acids with warming spices. This is powerfully demonstrated in iconic local creations such as *kibbeh bi-karaz*—minced lamb meatballs simmered in a rich, velvety sauce made from tart sour cherries (*karaz*) sourced from local orchards, balanced with a subtle touch of pomegranate molasses and toasted pine nuts. This seamless union of savory meat and tart fruit exemplifies the sophisticated palate that defines the region.</p>
+          <p>Furthermore, Aleppo's cuisine was profoundly shaped by its immediate agricultural environment. Flanked by massive olive groves, pistachio orchards, and rich wheat fields, the city had immediate access to pristine ingredients. Local cooks utilized virgin olive oil as the primary culinary fat, elevated dishes with the unmatched fruitiness of sun-dried Aleppo pepper flakes, and enriched stews with crushed walnuts and sesame paste. The mastery of these ingredients was institutionalized within family households and specialized market guilds, where recipes were meticulously perfected and passed down across generations.</p>
+          <p>Today, the culinary heritage of Aleppo survives as an enduring monument to cultural synthesis. It proves that food is not merely sustenance, but a sophisticated language of hospitality, history, and identity. As modern food lovers explore the dishes of the Aleppo kitchen, they connect with a thousands-of-years-old tradition that transformed the bounty of the Silk Road into one of the greatest culinary repertoires in human civilization.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-drumstick-bite text-accentOrange text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Kibbeh: The National Dish of the Levant</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>If any single dish can claim to be the crown jewel of Levantine cuisine, it is *kibbeh*. Widely regarded as the national dish of Syria and Lebanon, kibbeh is a masterclass in culinary texture and technique. At its core, traditional kibbeh is made from a fine paste of cracked bulgur wheat, minced onions, and lean, hand-pounded lamb or beef, seasoned with warming spices like allspice, cinnamon, and cumin.</p>
+          <p>What makes Aleppo the undisputed capital of kibbeh is the staggering variety of ways local master chefs prepare it. While standard kibbeh consists of football-shaped croquettes stuffed with spiced minced meat, onions, and pine nuts before being deep-fried to a golden crunch, Aleppine cuisine features dozens of regional variations. There is *kibbeh nayyeh* (served raw with olive oil and fresh mint), *kibbeh bi-saniyeh* (baked in flat sheets in a baking pan), and an astonishing array of liquid-cooked kibbeh varieties.</p>
+          <p>Preparing authentic kibbeh was historically a rigorous test of a cook's knife skills and physical endurance. Meat and bulgur had to be continuously pounded together in a heavy stone mortar (*jurn*) with a massive wooden mallet (*qidrah*) until the mixture achieved a completely smooth, elastic consistency. This dedication to texture and flavor made kibbeh an enduring symbol of domestic hospitality and culinary artistry across the Levant.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-wine-bottle text-red-500 text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Pomegranate Molasses: The Liquid Gold of Syrian Cooking</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Long before bottled balsamic vinegar or imported citrus juices became common kitchen staples across the West, Levantine cooks relied on pomegranate molasses (*dibs rumman*) to provide deep, complex acidity and natural sweetness to savory dishes. Produced by simmering freshly squeezed juice from tart wild pomegranates down in massive open copper cauldrons for hours until it reduces into a thick, syrupy, glossy dark-red reduction, pomegranate molasses is a cornerstone of Syrian gastronomy.</p>
+          <p>The flavor profile of authentic pomegranate molasses is wonderfully intense: an initial burst of sharp, bright tartness that melts into a rich, caramel-like sweetness with earthy, wine-like undertones. In the kitchens of Aleppo and Damascus, it is used to glaze roasted meats, enrich salad dressings like *fattoush*, and form the foundational acid base for stews.</p>
+          <p>The production of pomegranate molasses reflects the ingenuity of ancient agricultural preservation. By reducing seasonal autumn fruit into a shelf-stable syrup, rural communities ensured a continuous supply of essential culinary acidity throughout the harsh winter months, enriching their daily meals with vibrant color and complex flavor.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-bread-slice text-yellow-500 text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Flatbreads and the Communal Stone Oven</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Bread (*khubz*) holds a deeply sacred, foundational status in Syrian culture, frequently referred to colloquially as *eish*, which literally translates to "life." Across the historic alleyways of Aleppo and Damascus, the neighborhood communal stone oven (*furn*) has served as the social heartbeat of daily life for centuries.</p>
+          <p>Families would prepare their dough at home—combining wheat flour, water, yeast, and a pinch of salt—and send their children to carry wooden boards laden with unbaked dough rounds down to the local baker. The master baker, operating a roaring wood-fired stone oven, would expertly slide the flatbreads onto the hot stone floor using long wooden peels, baking them to airy, puffed perfection in mere seconds.</p>
+          <p>These freshly baked flatbreads accompanied every single meal, acting simultaneously as a plate, a utensil to scoop up stews, and a comforting staple food. Topped with Za'atar, cheese, or minced meat (*lahm bi-ajin*), these breads formed the accessible foundation of nourishment that sustained urban populations across generations.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-heart text-accentOrange text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Philosophy of Aleppine Hospitality and Sharing</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>Beyond the complex spices, the rigorous knife skills, and the historic ingredients, the true essence of the Aleppo kitchen is rooted in a profound cultural philosophy of radical hospitality and communal sharing. In traditional Syrian society, feeding a guest is considered an absolute moral imperative and an ultimate expression of honor. When visitors entered a Damascene courtyard or an Aleppine home, they were never greeted with mere water; they were immediately enveloped in an elaborate ritual of generosity.</p>
+          <p>This hospitality ritual typically began with the immediate offering of freshly brewed cardamom-infused Arabic coffee (*qahwa*) or cooling herbal infusions, accompanied by seasonal fruit or delicate pastries. Mealtimes were never solitary affairs; tables were invariably laden with an extravagant array of shared meze dishes—small, vibrant plates designed to encourage conversation, communal grazing, and social bonding. From stuffed grape leaves (*yalabi*) and smoky eggplant dips (*baba ganoush*) to crisp salads and warm pastries, the spread emphasized abundance and togetherness.</p>
+          <p>This deep-seated cultural emphasis on food as a bridge for human connection survived the devastation of war and displacement. Across the global diaspora, Syrian refugees carried their precious recipes, spice blends, and hospitality traditions with them, opening bakeries and restaurants from Berlin to Toronto. In doing so, they introduced the world to the comforting warmth of Aleppine cooking.</p>
+          <p>The enduring legacy of the Aleppo kitchen proves that culinary culture is one of the most resilient expressions of human civilization. By transforming simple local grains, oils, and spices into masterpieces of balance and flavor, Syrian master cooks created a gastronomic heritage that continues to nourish, comfort, and inspire people across the globe. The Culinary Trivia trials pay tribute to this magnificent legacy, ensuring that the flavors of the Cradle of Civilization remain vibrant and celebrated.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Culinary Trivia Data
+    const culinaryQuestions = [
+      {
+        question: "What historic northern Syrian city is universally celebrated as the gastronomic capital of the Middle East?",
+        options: ["Damascus", "Aleppo", "Homs", "Latakia"],
+        answer: 1
+      },
+      {
+        question: "What is the name of the famous Levantine dish consisting of bulgur wheat and minced meat, prepared in dozens of regional variations?",
+        options: ["Hummus", "Falafel", "Kibbeh", "Tabbouleh"],
+        answer: 2
+      },
+      {
+        question: "What sweet-and-sour syrup, made by reducing tart pomegranate juice, is a cornerstone of Syrian cooking?",
+        options: ["Pomegranate molasses", "Date nectar", "Carob syrup", "Tamarind extract"],
+        answer: 0
+      },
+      {
+        question: "What is the unique pepper variety native to Aleppo known for its rich, oily fruitiness and mild, slow-building heat?",
+        options: ["Cayenne pepper", "Jalapeno flake", "Aleppo pepper", "Habanero dust"],
+        answer: 2
+      },
+      {
+        question: "What traditional wild herb blend, mixed with toasted sesame and sumac, is traditionally eaten with olive oil on morning flatbread?",
+        options: ["Za'atar", "Dukkah", "Harissa", "Ras el Hanout"],
+        answer: 0
+      }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    
+    const qNumDisplay = document.getElementById('current-q-num');
+    const scoreDisplay = document.getElementById('game-score');
+    const questionTitle = document.getElementById('question-title');
+    const optionsContainer = document.getElementById('options-container');
+
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => { showElement.classList.add('active'); }, 50);
+    }
+
+    function startGame() {
+      currentQ = 0;
+      score = 0;
+      scoreDisplay.innerText = score;
+      loadQuestion();
+      switchScreen(screenStart, screenGame);
+    }
+
+    function loadQuestion() {
+      const q = culinaryQuestions[currentQ];
+      qNumDisplay.innerText = currentQ + 1;
+      questionTitle.innerText = q.question;
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full py-4 px-6 bg-bgDark border border-white/10 rounded-2xl text-left text-white font-sans font-semibold hover:border-accentOrange hover:bg-accentOrange/5 transition-all flex justify-between items-center group';
+        btn.innerHTML = `<span>${opt}</span><i class="fas fa-chevron-right text-xs text-textMuted group-hover:text-accentOrange transition-colors"></i>`;
+        btn.onclick = () => selectAnswer(idx);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(selectedIndex) {
+      const q = culinaryQuestions[currentQ];
+      const buttons = optionsContainer.children;
+
+      Array.from(buttons).forEach(b => b.style.pointerEvents = 'none');
+
+      if (selectedIndex === q.answer) {
+        buttons[selectedIndex].classList.add('border-accentTeal', 'bg-accentTeal/20');
+        score++;
+        scoreDisplay.innerText = score;
+      } else {
+        buttons[selectedIndex].classList.add('border-accentRed', 'bg-accentRed/20');
+        buttons[q.answer].classList.add('border-accentTeal', 'bg-accentTeal/20');
+      }
+
+      setTimeout(() => {
+        currentQ++;
+        if (currentQ < culinaryQuestions.length) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 1200);
+    }
+
+    function endGame() {
+      document.getElementById('final-score').innerText = score;
+      
+      let comment = "";
+      if (score === 5) comment = "Exquisite palate! You are a master historian of the Aleppo kitchen.";
+      else if (score >= 3) comment = "Well done! You have a wonderful appreciation for Levantine gastronomy.";
+      else comment = "The spice souk holds many flavors. Review the archives and try again!";
+      
+      document.getElementById('result-comment').innerText = comment;
+      switchScreen(screenGame, screenResult);
+    }
+  </script>
+</body>
+</html>

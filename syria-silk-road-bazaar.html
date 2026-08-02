@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Silk Road Bazaar | Logic & Deduction Game</title>
+  <meta name="description" content="Use strict behavioral constraints to deduce the trading routes and goods of ancient Silk Road merchants in this logic puzzle." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentGold: '#EAB308',
+            accentTeal: '#14B8A6',
+            textMuted: '#94A3B8',
+            errorRed: '#EF4444'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23EAB308' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1em;
+    }
+
+    .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentGold selection:text-bgDark min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-store text-accentGold mr-2"></i> Silk Road Bazaar
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen active flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentGold/10">
+        <i class="fas fa-map-marked-alt text-5xl text-accentGold"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">Silk Road Bazaar</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        The Caravanserai is bustling. Four master merchants are preparing their caravans, but the shipping manifest has been destroyed. Use the behavioral clues to deduce which merchant is carrying which good, and to which ancient city they are traveling.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Logic Instructions</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-search text-accentTeal mr-2"></i> Read the 5 strict constraints carefully.</li>
+          <li><i class="fas fa-list text-accentGold mr-2"></i> Use the dropdowns in the Master Ledger to assign 1 Good and 1 Destination to each merchant.</li>
+          <li><i class="fas fa-times-circle text-errorRed mr-2"></i> Each Good and Destination can only be used <strong>once</strong>.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentGold text-bgDark font-bold rounded-xl uppercase tracking-widest hover:bg-white transition-colors transform hover:scale-105 duration-200">
+        Open the Ledger
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col max-w-5xl w-full gap-8 lg:flex-row">
+      
+      <!-- Clues Panel -->
+      <div class="lg:w-1/3 bg-cardDark border border-white/10 rounded-3xl p-6 flex flex-col">
+        <h3 class="font-serif text-2xl text-accentGold mb-6 border-b border-white/10 pb-4">The Clues</h3>
+        <ul class="space-y-6 text-sm md:text-base font-sans text-textMuted flex-grow">
+          <li class="flex gap-3"><span class="text-accentGold font-bold">1.</span> Layla is selling Glass but is not traveling to Cairo.</li>
+          <li class="flex gap-3"><span class="text-accentGold font-bold">2.</span> The merchant selling Damask Silk is heading directly to Rome.</li>
+          <li class="flex gap-3"><span class="text-accentGold font-bold">3.</span> Omar is traveling to the ancient city of Petra.</li>
+          <li class="flex gap-3"><span class="text-accentGold font-bold">4.</span> Huda is not selling Aleppo Soap or Damask Silk.</li>
+          <li class="flex gap-3"><span class="text-accentGold font-bold">5.</span> The merchant trading Aleppo Soap is not going to Athens.</li>
+        </ul>
+      </div>
+
+      <!-- Ledger Panel -->
+      <div class="lg:w-2/3 bg-cardDark border border-accentGold/30 rounded-3xl p-6 md:p-8 shadow-[0_0_30px_rgba(234,179,8,0.05)]">
+        <h3 class="font-serif text-2xl text-white mb-6">Master Ledger</h3>
+        
+        <div id="ledger-rows" class="space-y-4 mb-8">
+          <!-- Zayd -->
+          <div class="bg-bgDark p-4 rounded-xl border border-white/5 flex flex-col md:flex-row items-center gap-4">
+            <div class="w-full md:w-1/4 font-bold text-lg text-white text-center md:text-left"><i class="fas fa-user text-accentGold/50 mr-2"></i> Zayd</div>
+            <div class="w-full md:w-3/8">
+              <select id="good-zayd" class="w-full bg-cardDark border border-white/20 text-textMuted rounded-lg px-4 py-3 outline-none focus:border-accentGold transition-colors">
+                <option value="">Select Good...</option>
+                <option value="Silk">Damask Silk</option>
+                <option value="Soap">Aleppo Soap</option>
+                <option value="Glass">Glass</option>
+                <option value="Spices">Spices</option>
+              </select>
+            </div>
+            <div class="w-full md:w-3/8">
+              <select id="city-zayd" class="w-full bg-cardDark border border-white/20 text-textMuted rounded-lg px-4 py-3 outline-none focus:border-accentGold transition-colors">
+                <option value="">Select Destination...</option>
+                <option value="Rome">Rome</option>
+                <option value="Cairo">Cairo</option>
+                <option value="Athens">Athens</option>
+                <option value="Petra">Petra</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Layla -->
+          <div class="bg-bgDark p-4 rounded-xl border border-white/5 flex flex-col md:flex-row items-center gap-4">
+            <div class="w-full md:w-1/4 font-bold text-lg text-white text-center md:text-left"><i class="fas fa-user text-accentGold/50 mr-2"></i> Layla</div>
+            <div class="w-full md:w-3/8">
+              <select id="good-layla" class="w-full bg-cardDark border border-white/20 text-textMuted rounded-lg px-4 py-3 outline-none focus:border-accentGold transition-colors">
+                <option value="">Select Good...</option>
+                <option value="Silk">Damask Silk</option>
+                <option value="Soap">Aleppo Soap</option>
+                <option value="Glass">Glass</option>
+                <option value="Spices">Spices</option>
+              </select>
+            </div>
+            <div class="w-full md:w-3/8">
+              <select id="city-layla" class="w-full bg-cardDark border border-white/20 text-textMuted rounded-lg px-4 py-3 outline-none focus:border-accentGold transition-colors">
+                <option value="">Select Destination...</option>
+                <option value="Rome">Rome</option>
+                <option value="Cairo">Cairo</option>
+                <option value="Athens">Athens</option>
+                <option value="Petra">Petra</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Omar -->
+          <div class="bg-bgDark p-4 rounded-xl border border-white/5 flex flex-col md:flex-row items-center gap-4">
+            <div class="w-full md:w-1/4 font-bold text-lg text-white text-center md:text-left"><i class="fas fa-user text-accentGold/50 mr-2"></i> Omar</div>
+            <div class="w-full md:w-3/8">
+              <select id="good-omar" class="w-full bg-cardDark border border-white/20 text-textMuted rounded-lg px-4 py-3 outline-none focus:border-accentGold transition-colors">
+                <option value="">Select Good...</option>
+                <option value="Silk">Damask Silk</option>
+                <option value="Soap">Aleppo Soap</option>
+                <option value="Glass">Glass</option>
+                <option value="Spices">Spices</option>
+              </select>
+            </div>
+            <div class="w-full md:w-3/8">
+              <select id="city-omar" class="w-full bg-cardDark border border-white/20 text-textMuted rounded-lg px-4 py-3 outline-none focus:border-accentGold transition-colors">
+                <option value="">Select Destination...</option>
+                <option value="Rome">Rome</option>
+                <option value="Cairo">Cairo</option>
+                <option value="Athens">Athens</option>
+                <option value="Petra">Petra</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Huda -->
+          <div class="bg-bgDark p-4 rounded-xl border border-white/5 flex flex-col md:flex-row items-center gap-4">
+            <div class="w-full md:w-1/4 font-bold text-lg text-white text-center md:text-left"><i class="fas fa-user text-accentGold/50 mr-2"></i> Huda</div>
+            <div class="w-full md:w-3/8">
+              <select id="good-huda" class="w-full bg-cardDark border border-white/20 text-textMuted rounded-lg px-4 py-3 outline-none focus:border-accentGold transition-colors">
+                <option value="">Select Good...</option>
+                <option value="Silk">Damask Silk</option>
+                <option value="Soap">Aleppo Soap</option>
+                <option value="Glass">Glass</option>
+                <option value="Spices">Spices</option>
+              </select>
+            </div>
+            <div class="w-full md:w-3/8">
+              <select id="city-huda" class="w-full bg-cardDark border border-white/20 text-textMuted rounded-lg px-4 py-3 outline-none focus:border-accentGold transition-colors">
+                <option value="">Select Destination...</option>
+                <option value="Rome">Rome</option>
+                <option value="Cairo">Cairo</option>
+                <option value="Athens">Athens</option>
+                <option value="Petra">Petra</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <p id="error-message" class="text-errorRed text-sm font-bold text-center h-6 mb-2 opacity-0 transition-opacity">Error Message</p>
+        
+        <button onclick="verifyLedger()" class="w-full py-4 bg-accentGold text-bgDark font-bold rounded-xl uppercase tracking-widest hover:bg-white transition-colors">
+          Verify Ledger
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentTeal/10 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-check text-5xl text-accentTeal"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Ledger Verified</h2>
+      <p class="font-sans text-textMuted text-lg mb-8">You possess the flawless deduction skills of a master Silk Road merchant. The caravans have been dispatched successfully.</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Play Again
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentGold text-bgDark rounded-xl hover:bg-white font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of the Silk Road</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the historical context behind the goods, merchants, and vast trading networks that shaped the ancient Levant.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-route text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Grand Terminus: Aleppo's Dominance on the Silk Road</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The Silk Road was not a single, paved highway, but rather an incredibly complex, shifting network of overland and maritime trade routes that connected the Far East with Europe and Africa. While goods like porcelain, jade, and silk originated thousands of miles away in Han Dynasty China, they had to traverse treacherous deserts, the formidable Himalayan mountain ranges, and the hostile expanses of the Persian Empire before they could reach eager buyers in the Mediterranean. At the absolute crux of this massive intercontinental funnel sat the Syrian city of Aleppo. Because of its unique geographic positioning, Aleppo functioned as the great western terminus of the Silk Road, effectively acting as the central clearinghouse for the ancient world's economy.</p>
+          <p>By the time a caravan originating in Chang'an (modern-day Xi'an) reached Aleppo, the merchants and their pack animals had endured months of grueling travel, bandit attacks, and severe environmental hardships. Aleppo offered a safe haven. The city's legendary Souk al-Madina—a sprawling, labyrinthine covered market that eventually stretched over thirteen kilometers—provided the infrastructure needed for massive international commerce. It was heavily fortified, deeply shaded from the blistering Levantine sun, and strictly regulated by civic authorities who ensured standardized weights and measures. It was in these narrow, vaulted stone corridors that Eastern merchants finally bartered their exotic wares with Venetian, Genoese, and Byzantine traders waiting at the nearby Mediterranean ports.</p>
+          <p>Aleppo's dominance was not merely based on location; it was based on an unprecedented logistical framework. The city featured specialized khans (inns or warehouses) dedicated to specific nationalities or specific goods. For example, the Khan al-Harir was exclusively reserved for the intense, high-stakes trading of silk, while the Khan al-Saboun focused entirely on the massive export of locally manufactured Aleppo soap. This hyper-organization allowed for immense economic efficiency. Taxes and tariffs collected in Aleppo funded the construction of some of the most formidable military architecture in the region, most notably the colossal Citadel of Aleppo, ensuring that the wealth generated by the Silk Road was violently protected from crusading armies and rival empires.</p>
+          <p>The economic prosperity generated by this terminus effect caused Aleppo to flourish culturally and intellectually. It became a melting pot where Chinese paper-making techniques, Indian mathematics, Persian poetry, and Greek philosophy were exchanged alongside physical goods. The Silk Road was fundamentally an information highway, and the merchants resting in the khans of Aleppo were the primary vectors for this global exchange. Understanding Aleppo's role is crucial to understanding how the Middle East historically acted as the great mediator between Eastern innovation and Western demand.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-soap text-accentTeal text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Aleppo Soap: The Chemistry of Laurel and Olive</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>Before the invention of modern synthetic detergents, personal hygiene across the ancient world relied heavily on harsh mixtures of animal fats and wood ash, or the Roman method of scrubbing the skin with pumice and olive oil before scraping it off with a metal strigil. This drastically changed in the Levant with the invention of Aleppo soap, widely recognized by historians and chemists as the world's first true hard soap. Its creation represents a brilliant early mastery of saponification chemistry, utilizing the natural flora of the Syrian coastal and mountainous regions.</p>
+          <p>The formulation of Aleppo soap is remarkably pure, relying on three primary ingredients: virgin olive oil, lye (originally derived from the ashes of halophytic desert plants), and precious laurel berry oil. The process begins in the late autumn after the olive harvest. Master soap makers, known as mudarris, boil the olive oil and lye mixture in massive subterranean vats for days. Once the base saponifies, the critical ingredient—laurel oil, extracted from the berries of the Laurus nobilis tree—is poured into the cauldron. The laurel oil acts as a powerful natural antibacterial and antifungal agent, giving the soap its signature earthy, medicinal fragrance.</p>
+          <p>The hot, emerald-green paste is then poured onto the stone floor of the factory, leveled by workers wearing wooden planks strapped to their boots, and allowed to cool. Once hardened, it is hand-cut into blocks and stamped with the artisan's unique family seal. The soap is then stacked in towering, cylindrical, honeycomb-like structures to cure in the dry subterranean air for up to nine months. During this curing process, the exterior of the soap oxidizes into a rich, golden brown, while the interior remains a vibrant, deep green. This legendary soap became one of the most highly prized exports on the Silk Road, heavily demanded by European royalty and effectively laying the foundation for all modern hard soap manufacturing across the globe.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-scroll text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Textile Revolution: Damask Silk</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>While the raw material of silk was a fiercely guarded state secret originating in ancient China, the mastery of weaving that silk into highly complex, luxurious patterns was perfected in the ancient Levant, specifically within the city of Damascus. This specialized weaving technique became so internationally renowned that it permanently entered the global lexicon as "Damask." Damask silk was not merely a fabric; it was an extreme display of wealth, technological superiority, and artistic mastery heavily sought after by European aristocrats and the Byzantine clergy.</p>
+          <p>The defining characteristic of true Damask is that its intricate patterns are not embroidered or printed onto the surface of the fabric after it is woven. Instead, the pattern is structurally woven directly into the fabric using a single warp and weft yarn, typically of the same color. The contrast is achieved entirely through the interplay of light reflecting off the different weaving structures—the background is usually a matte plain or twill weave, while the pattern itself is a highly lustrous satin weave. As the fabric moves, the pattern shifts and gleams dynamically, reversing entirely on the back side of the cloth.</p>
+          <p>Creating this fabric required massive, incredibly complex mechanical drawlooms operated by highly skilled master weavers and their apprentices (drawboys). The mathematical precision required to lift the correct warp threads to create the elaborate geometric and floral motifs was staggering. Damascus became the undisputed epicenter for this textile production. The massive influx of raw Chinese silk via the Silk Road, combined with the unparalleled skill of Syrian weavers, meant that Damask fabric became one of the primary drivers of the Levantine economy, fundamentally influencing global fashion and interior design for centuries.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-building text-gray-400 text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Caravanserai: Hotels of the Ancient World</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>The immense volume of international trade flowing through the Levant could not have been sustained without a highly organized, state-sponsored logistical network. The ancient equivalent of the modern highway rest stop and logistics hub was the *caravanserai* (or *khan*). Positioned precisely one day's journey apart—approximately thirty to forty kilometers along the main trade arteries—these massive, fortified structures provided the essential security, shelter, and commerce facilities required to keep the Silk Road functioning.</p>
+          <p>A typical Levantine caravanserai was a monumental architectural achievement. Built with high, impenetrable stone walls to deter heavily armed desert bandits, they featured a single, easily defendable entrance gate that was securely locked from dusk until dawn. Upon entering, merchants found themselves in a massive, open central courtyard designed to accommodate hundreds of heavily laden camels, horses, and donkeys. The ground floor consisted of extensive stables, fodder storage, and heavy vaulted warehouses where precious cargo could be securely locked away.</p>
+          <p>The upper floors featured individual, secure sleeping quarters for the merchants. However, a caravanserai was far more than a simple hotel. It was a thriving micro-economy. They housed resident blacksmiths to repair wagon wheels and shoe horses, veterinarians to tend to exhausted pack animals, and money changers to facilitate international currency exchange. In the major cities like Aleppo and Damascus, the urban khans became the primary centers of wholesale trading, where entire caravans of raw silk, spices, or frankincense were bought and sold in massive bulk transactions before being distributed to local retail souks.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-pepper-hot text-red-500 text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Spice Trade and the Fusion of Levantine Cuisine</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The Silk Road did not only transport physical commodities like textiles and ceramics; it functioned as the greatest vector for culinary exchange in human history. The geographic positioning of the Levant meant that it was the primary funnel through which the heavily prized spices of India, Indonesia, and the Malabar Coast reached the dining tables of the Mediterranean and Western Europe. This continuous influx of exotic ingredients fundamentally transformed local Syrian cuisine, particularly in Aleppo, into one of the most complex, highly regarded gastronomic traditions in the Middle East.</p>
+          <p>Before the establishment of deep-water maritime routes by the Portuguese in the 16th century, overland caravans were the only method to transport black pepper, cinnamon, cardamom, nutmeg, and cloves. Because these spices had to change hands through dozens of intermediaries—from Indian sailors to Persian caravaneers, and finally to Levantine merchants—their prices skyrocketed. By the time a sack of black pepper reached the khans of Aleppo, it was literally worth its weight in gold, fiercely demanded by European aristocrats as a status symbol and a crucial preservative for meat during the winter months.</p>
+          <p>However, because these spices were readily available in the wholesale markets of Syrian cities, local chefs began aggressively integrating them into traditional Levantine recipes. This resulted in a brilliant fusion of local, Mediterranean ingredients (like olive oil, pomegranate molasses, sumac, and bulgur wheat) with the deep, warm, aromatic spices of the Far East. For instance, the famous *baharat* spice blend—a cornerstone of Syrian cooking—masterfully balances local coriander and cumin with imported cinnamon, cloves, and nutmeg. This specific fusion prevents the food from becoming overwhelmingly spicy-hot, instead prioritizing a deeply complex, aromatic warmth.</p>
+          <p>Furthermore, the Silk Road facilitated the introduction of new agricultural crops to the region. Rice, originally cultivated in Asia, was introduced to the Levant via these trade networks and rapidly became a staple carbohydrate, eventually leading to iconic dishes like *mansaf* and various stuffed vegetable dishes (*mahshi*). The culinary legacy of the Silk Road is still vibrantly alive in modern Syrian kitchens, representing a thousands-of-years-old testament to the region's historical role as the ultimate melting pot of global trade, culture, and gastronomy.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    /*
+      SOLUTION:
+      - Zayd: Silk, Rome (Clue 2)
+      - Layla: Glass, Athens (Clue 1: Glass, not Cairo. Petra is Omar, Rome is Zayd, so Athens)
+      - Omar: Soap, Petra (Clue 3: Petra. Since Zayd=Silk, Layla=Glass, Huda=Spices, Omar=Soap)
+      - Huda: Spices, Cairo (Clue 4: not Soap, not Silk. Only Spices left. Only Cairo left)
+    */
+
+    const errorMsg = document.getElementById('error-message');
+
+    function startGame() {
+      document.getElementById('start-screen').classList.remove('active');
+      setTimeout(() => {
+        document.getElementById('game-screen').classList.add('active');
+      }, 50);
+    }
+
+    function showError(msg) {
+      errorMsg.innerText = msg;
+      errorMsg.classList.remove('opacity-0');
+      errorMsg.classList.add('opacity-100');
+      document.getElementById('ledger-rows').classList.add('shake');
+      setTimeout(() => {
+        document.getElementById('ledger-rows').classList.remove('shake');
+        errorMsg.classList.remove('opacity-100');
+        errorMsg.classList.add('opacity-0');
+      }, 2000);
+    }
+
+    function verifyLedger() {
+      const zaydG = document.getElementById('good-zayd').value;
+      const zaydC = document.getElementById('city-zayd').value;
+      
+      const laylaG = document.getElementById('good-layla').value;
+      const laylaC = document.getElementById('city-layla').value;
+      
+      const omarG = document.getElementById('good-omar').value;
+      const omarC = document.getElementById('city-omar').value;
+      
+      const hudaG = document.getElementById('good-huda').value;
+      const hudaC = document.getElementById('city-huda').value;
+
+      // Check for empty fields
+      if(!zaydG || !zaydC || !laylaG || !laylaC || !omarG || !omarC || !hudaG || !hudaC) {
+        showError("The ledger is incomplete. Fill all fields.");
+        return;
+      }
+
+      // Check for duplicates
+      const allGoods = [zaydG, laylaG, omarG, hudaG];
+      const allCities = [zaydC, laylaC, omarC, hudaC];
+      
+      if(new Set(allGoods).size !== 4) {
+        showError("Conflict! You assigned the same Good to multiple merchants.");
+        return;
+      }
+      if(new Set(allCities).size !== 4) {
+        showError("Conflict! You assigned the same Destination to multiple merchants.");
+        return;
+      }
+
+      // Check win condition
+      if (
+        zaydG === 'Silk' && zaydC === 'Rome' &&
+        laylaG === 'Glass' && laylaC === 'Athens' &&
+        omarG === 'Soap' && omarC === 'Petra' &&
+        hudaG === 'Spices' && hudaC === 'Cairo'
+      ) {
+        // WIN
+        document.getElementById('game-screen').classList.remove('active');
+        setTimeout(() => {
+          document.getElementById('result-screen').classList.add('active');
+        }, 50);
+      } else {
+        showError("The ledger is incorrect. Review the clues.");
+      }
+    }
+  </script>
+</body>
+</html>

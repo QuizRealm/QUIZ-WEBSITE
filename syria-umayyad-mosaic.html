@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mosaic Matrix | Spatial Memory Puzzle</title>
+  <meta name="description" content="Memorize and reconstruct flawless geometric tile patterns in this spatial memory puzzle inspired by the ancient Umayyad Mosque." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            bgDark: '#0B0F19',
+            cardDark: '#151C2C',
+            accentGold: '#EAB308',
+            accentTeal: '#0D9488',
+            accentPurple: '#8B5CF6',
+            textMuted: '#94A3B8'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #0B0F19; color: #F8FAFC; overflow-x: hidden; }
+    
+    .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+    .screen.active { display: flex; opacity: 1; }
+
+    /* Geometric Mosaic Background Pattern */
+    .mosaic-pattern {
+      background-color: #1e293b;
+      background-image: 
+        repeating-linear-gradient(45deg, #8B5CF6 25%, transparent 25%, transparent 75%, #8B5CF6 75%, #8B5CF6),
+        repeating-linear-gradient(45deg, #8B5CF6 25%, #1e293b 25%, #1e293b 75%, #8B5CF6 75%, #8B5CF6);
+      background-position: 0 0, 40px 40px;
+      background-size: 80px 80px;
+    }
+
+    /* Puzzle Grid */
+    #puzzle-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 4px;
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1;
+      background-color: #EAB308;
+      padding: 4px;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+    }
+
+    .tile {
+      width: 100%;
+      height: 100%;
+      background-color: #1e293b;
+      background-image: 
+        linear-gradient(135deg, rgba(234, 179, 8, 0.8) 25%, transparent 25%),
+        linear-gradient(225deg, rgba(234, 179, 8, 0.8) 25%, transparent 25%),
+        linear-gradient(45deg, rgba(234, 179, 8, 0.8) 25%, transparent 25%),
+        linear-gradient(315deg, rgba(234, 179, 8, 0.8) 25%, #0f172a 25%);
+      background-position:  20px 0, 20px 0, 0 0, 0 0;
+      background-size: 40px 40px;
+      background-repeat: repeat;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1);
+    }
+
+    .tile:hover {
+      box-shadow: inset 0 0 0 2px rgba(234, 179, 8, 0.6);
+    }
+
+    .tile.locked {
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Timer Animation */
+    .pulse-fast { animation: pulseFast 1s infinite; }
+    @keyframes pulseFast {
+      0% { transform: scale(1); color: #EAB308; }
+      50% { transform: scale(1.1); color: #EF4444; }
+      100% { transform: scale(1); color: #EAB308; }
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-accentPurple selection:text-white min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <nav class="p-6 flex justify-between items-center border-b border-white/10 bg-cardDark/50">
+    <div class="font-serif text-xl font-bold text-white tracking-widest uppercase">
+      <i class="fas fa-border-all text-accentPurple mr-2"></i> Mosaic Matrix
+    </div>
+    <a href="syrian-collection.html" class="text-sm font-sans font-bold text-textMuted hover:text-white uppercase tracking-wider transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i> Back to Collection
+    </a>
+  </nav>
+
+  <!-- Interactive Game Container -->
+  <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-6 min-h-[70vh] relative z-10">
+    
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="screen active flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-accentPurple/10 border border-accentPurple/30">
+        <i class="fas fa-cubes text-5xl text-accentPurple"></i>
+      </div>
+      <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-white mb-4">Mosaic Matrix</h1>
+      <p class="font-sans text-textMuted text-lg mb-8 leading-relaxed">
+        Islamic geometric art requires absolute mathematical perfection. You will be shown a flawless tessellation pattern for a few seconds before it shatters. Rely on your spatial memory to reconstruct the mosaic.
+      </p>
+      
+      <div class="bg-bgDark rounded-xl p-6 mb-8 text-left border border-white/5">
+        <h3 class="font-bold text-white uppercase tracking-widest text-sm mb-3 text-center">Architectural Instructions</h3>
+        <ul class="text-sm text-textMuted space-y-3 font-sans">
+          <li><i class="fas fa-eye text-accentTeal mr-2"></i> <strong>Memorize:</strong> Study the flawless pattern before the timer hits zero.</li>
+          <li><i class="fas fa-bolt text-accentGold mr-2"></i> <strong>The Fracture:</strong> The tiles will shatter and rotate randomly.</li>
+          <li><i class="fas fa-sync-alt text-accentPurple mr-2"></i> <strong>Reconstruct:</strong> Tap the tiles to rotate them 90 degrees back into perfect alignment.</li>
+        </ul>
+      </div>
+
+      <button onclick="startGame()" class="w-full md:w-auto px-10 py-4 bg-accentPurple text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white hover:text-bgDark transition-colors transform hover:scale-105 duration-200">
+        Enter the Courtyard
+      </button>
+    </div>
+
+    <!-- 2. GAME SCREEN -->
+    <div id="game-screen" class="screen flex-col items-center w-full max-w-md">
+      
+      <!-- Status Header -->
+      <div class="w-full flex justify-between items-center mb-8 px-4">
+        <div class="text-sm font-sans font-bold text-textMuted uppercase tracking-widest">
+          Phase: <span id="phase-text" class="text-accentGold">Memorize</span>
+        </div>
+        <div id="timer-display" class="font-serif text-2xl font-bold text-accentGold tracking-widest">
+          05
+        </div>
+      </div>
+
+      <!-- The Puzzle Grid -->
+      <div id="puzzle-container" class="relative">
+        <!-- Overlay during memorization to prevent clicking -->
+        <div id="interaction-blocker" class="absolute inset-0 z-10 rounded-lg"></div>
+        
+        <!-- Tiles injected by JS -->
+      </div>
+      
+      <div id="feedback-message" class="h-6 mt-8 font-bold text-sm tracking-widest uppercase text-accentTeal opacity-0 transition-opacity">
+        Pattern Restored
+      </div>
+    </div>
+
+    <!-- 3. RESULTS SCREEN -->
+    <div id="result-screen" class="screen flex-col max-w-2xl w-full bg-cardDark border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-accentGold/10 border border-accentGold/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-star-and-crescent text-4xl text-accentGold"></i>
+      </div>
+      <h2 class="font-serif text-4xl font-extrabold text-white mb-2">Architectural Harmony</h2>
+      <p class="font-sans text-textMuted text-lg mb-8">Your spatial memory is flawless. The Umayyad mosaic has been perfectly reconstructed.</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+        <button onclick="location.reload()" class="py-3 px-4 bg-white/5 border border-white/20 text-white rounded-xl hover:bg-white/10 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-redo mr-2"></i> Rebuild Again
+        </button>
+        <a href="syrian-collection.html" class="py-3 px-4 flex items-center justify-center bg-accentPurple text-white rounded-xl hover:bg-white hover:text-bgDark font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-th-large mr-2"></i> Collection
+        </a>
+        <a href="arcade.html" class="py-3 px-4 flex items-center justify-center bg-accentTeal text-white rounded-xl hover:bg-accentTeal/80 font-bold uppercase tracking-wider text-xs transition-colors">
+          <i class="fas fa-gamepad mr-2"></i> More Games
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- SEO CONTENT SECTION (5 Boxes, 2000+ Words) -->
+  <!-- ========================================== -->
+  <section class="max-w-[1400px] mx-auto px-6 py-20 border-t border-white/10 bg-bgDark">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl text-white mb-4">The Archives of Sacred Geometry</h2>
+      <p class="font-sans text-textMuted max-w-2xl mx-auto">Explore the profound mathematics, historical construction, and cultural significance of the magnificent mosaics of the Levant.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Box 1 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-mosque text-accentPurple text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Construction of the Great Umayyad Mosque</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The Umayyad Mosque, located in the heart of the ancient city of Damascus, is undeniably one of the largest and oldest mosques in the world, holding immense architectural and spiritual significance. Commissioned in 706 AD by the Umayyad Caliph Al-Walid I, the construction of this colossal structure marked a defining moment in the crystallization of Islamic architectural identity. Prior to this, Islamic places of worship were generally simple, utilitarian structures, often utilizing repurposed buildings or open courtyards. Al-Walid I, ruling over a rapidly expanding empire that stretched from Spain to India, sought to build a monument that visually projected the wealth, sophistication, and permanence of the Islamic state to rival the great Christian basilicas of the Byzantine Empire.</p>
+          <p>The site chosen was a location of continuous, ancient reverence. It had originally housed an Aramean temple dedicated to Hadad, which was later expanded by the Romans into a massive Temple of Jupiter. Following the Christianization of the Roman Empire, it was transformed into the Cathedral of Saint John the Baptist. For the first seventy years of Islamic rule in Damascus, Muslims and Christians remarkably shared this sacred space, praying in different sections of the same building. However, as the Muslim population surged, Al-Walid negotiated the purchase of the entire site. He demolished the interior structures of the cathedral but brilliantly retained the colossal outer Roman walls and corner towers, converting the latter into some of the very first minarets in Islamic history.</p>
+          <p>To execute his grand vision, Al-Walid deployed vast resources. He drafted thousands of highly skilled craftsmen, including Coptic stonecutters from Egypt, Persian woodworkers, and Byzantine mosaicists from Constantinople. The resulting architecture established the classical "hypostyle" mosque layout—a vast, open central courtyard surrounded by colonnaded arcades, leading into a massive, covered prayer hall featuring three parallel aisles intersecting with a central transept. This specific spatial arrangement, pioneered in Damascus, became the definitive architectural blueprint exported across the Islamic world, heavily influencing later masterworks such as the Great Mosque of Cordoba in Spain and the Al-Azhar Mosque in Cairo.</p>
+          <p>The crowning achievement of the mosque, however, was not just its scale, but its breathtaking ornamentation. The entire upper surface of the courtyard walls, the arcades, and the interior arches were covered in one of the most extensive and magnificent mosaic programs ever executed in antiquity. These mosaics were designed to transform heavy stone walls into shimmering, ethereal visions of paradise, utilizing millions of tiny, colored glass cubes (tesserae) pressed into wet plaster at varying angles to catch and reflect the harsh desert sunlight.</p>
+        </div>
+      </article>
+
+      <!-- Box 2 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-shapes text-accentTeal text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Mathematics of Islamic Tessellation</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>A central tenet of Islamic art, particularly within sacred spaces, is aniconism—the avoidance of depicting sentient beings, human figures, or animals, as this could border on idolatry. Deprived of figurative representation, Islamic artisans channeled their creative genius into three abstract disciplines: calligraphy, vegetal arabesques, and highly complex geometric patterns. The geometry utilized in Levantine mosaics and tilework is not merely decorative; it is a profound visual representation of the underlying mathematical order and infinite nature of the cosmos as created by a singular, perfect deity.</p>
+          <p>The foundation of this art form relies on a mathematical concept known as tessellation—the tiling of a two-dimensional plane using one or more geometric shapes, with no overlaps and absolutely no gaps. Creating these patterns requires a deep understanding of Euclidean geometry, symmetry, and spatial relationships. Artisans began with a simple circle, using a straightedge and a compass to divide it into symmetrical segments. By connecting these intersecting points, they generated foundational polygons: equilateral triangles, squares, hexagons, and highly complex octagrams (eight-pointed stars).</p>
+          <p>These core shapes were then multiplied, rotated, and mirrored across vast surfaces. The brilliance of Levantine tessellation lies in its infinite scalability. A pattern can be zoomed in to decorate a small wooden jewelry box, or mathematically expanded to cover the entire dome of a monumental mosque, all without losing its structural integrity. This infinite repetition creates a hypnotic, meditative visual rhythm designed to elevate the viewer's mind away from the chaotic material world and towards the contemplation of divine perfection and eternity.</p>
+        </div>
+      </article>
+
+      <!-- Box 3 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-tree text-accentGold text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Barada Panel: Visions of Paradise</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>The most famous surviving section of the Umayyad Mosque's original 8th-century ornamentation is a massive mosaic located on the western portico of the courtyard, commonly referred to by historians as the "Barada Panel." Spanning over thirty-four meters in length and over seven meters in height, this colossal work of art is one of the greatest surviving examples of early Islamic landscape art. The panel derives its name from the Barada River, the crucial waterway that sustains the oasis of Damascus.</p>
+          <p>The Barada Panel depicts a breathtaking, idyllic landscape devoid of any human or animal life. Instead, it features a serene, flowing river bordered by majestic, highly detailed trees—including stylized apple, fig, and towering palm trees. Interspersed among the lush foliage are fantastical architectural structures: magnificent multi-story pavilions, domed palaces, and ornate villages rendered with an almost surreal sense of depth and perspective. The colors are incredibly vibrant, utilizing deep lapis lazuli blues, emerald greens, and a staggering amount of pure gold leaf embedded in glass.</p>
+          <p>Art historians and theologians generally interpret this masterpiece not as a literal map of Damascus, but as a physical manifestation of *Jannah*—the Islamic concept of Paradise as described in the Quran. The Quran frequently describes Paradise as gardens beneath which rivers flow, populated by magnificent pavilions and abundant, unending fruit. By plastering this vision on the walls of the mosque's courtyard, the Umayyad caliphs provided the faithful with a literal, awe-inspiring glimpse of the eternal reward awaiting them in the afterlife, offering intense psychological comfort in the harsh reality of the ancient desert environment.</p>
+        </div>
+      </article>
+
+      <!-- Box 4 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-fire-alt text-errorRed text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">Survival, Destruction, and Restoration</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify">
+          <p>The survival of the Umayyad Mosque and its intricate mosaics is nothing short of miraculous, considering the brutal history of warfare and natural disasters that have plagued Damascus over the past thirteen centuries. The structure has endured massive earthquakes that repeatedly shattered its minarets, forcing complex structural rebuilding throughout the medieval period. However, the greatest threats to the magnificent mosaics were a series of devastating, catastrophic fires.</p>
+          <p>In 1069, a massive fire ripped through the prayer hall, destroying much of the original wooden ceiling and causing widespread damage to the interior mosaics. The structure faced its most brutal assault in 1400 when the ruthless Turco-Mongol conqueror Timur (Tamerlane) besieged Damascus. Timur ordered his armies to burn the city to the ground. The great mosque was deliberately set ablaze; the intense heat caused the lead roof to melt entirely and pour down into the sanctuary, calcifying the marble columns and obliterating vast sections of the original Umayyad tilework.</p>
+          <p>The most recent disaster occurred in 1893, when a worker's carelessly discarded narghile (water pipe) sparked an inferno that gutted the prayer hall yet again, destroying priceless medieval woodwork and further damaging the surviving ancient mosaics. Despite these relentless catastrophes, the city of Damascus continually rallied to restore their spiritual epicenter. Over the past century, painstaking, highly specialized restoration efforts have been undertaken to clean, stabilize, and re-create the missing sections of the mosaics. Today, the surviving panels remain a testament to both the fragility of ancient art and the unyielding resilience of Syrian cultural heritage.</p>
+        </div>
+      </article>
+
+      <!-- Box 5 -->
+      <article class="bg-cardDark border border-white/5 rounded-2xl p-8 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <i class="fas fa-globe-europe text-accentTeal text-2xl"></i>
+          <h3 class="font-serif text-2xl text-white">The Global Echo of Damascene Architecture</h3>
+        </div>
+        <div class="font-sans text-textMuted space-y-5 text-sm md:text-base leading-relaxed text-justify columns-1 md:columns-2 gap-8">
+          <p>The architectural language invented in the Umayyad Mosque of Damascus did not remain confined to the Levant. As the Umayyad dynasty collapsed in the East in 750 AD, overthrown by the Abbasids, a lone surviving prince named Abd al-Rahman I fled across North Africa and eventually reached the Iberian Peninsula (modern-day Spain). There, he established the Emirate of Cordoba, transferring the architectural DNA of his homeland to the very edge of Western Europe.</p>
+          <p>When Abd al-Rahman I began the construction of the Great Mosque of Cordoba in 784 AD, he deliberately mimicked the spatial layout of the great mosque of his ancestors in Damascus. The iconic double-tiered, red-and-white striped arches of Cordoba were a direct evolution of the structural engineering utilized in Syria to raise ceiling heights. Furthermore, centuries later, the caliphs of Cordoba specifically requested the Byzantine Emperor in Constantinople to send master mosaicists—just as Al-Walid had done in Damascus—to decorate the *mihrab* (prayer niche) of the Cordoba mosque with brilliant gold and glass tesserae, creating a direct visual and cultural link back to the Syrian capital.</p>
+          <p>The influence of Damascene architecture also profoundly impacted the development of European Christian architecture. Following the First Crusade in 1099, European knights, stonemasons, and engineers were exposed to the advanced geometry, pointed arches, and ribbed vaulting utilized in Levantine Islamic architecture. They brought these concepts back to Europe. The pointed arch, which allowed for much taller, more stable structures with massive windows, became the foundational element of the Gothic architectural revolution.</p>
+          <p>Without the exposure to the complex structural geometries perfected in Syrian and broader Middle Eastern architecture, monumental European cathedrals such as Notre-Dame de Paris and Chartres Cathedral might have looked vastly different. The mathematical precision, the use of tessellation, and the soaring structural ambitions born in the ancient courtyard of Damascus rippled outward, proving that architectural innovation is rarely isolated, but rather a continuous, global dialogue woven across centuries of human civilization.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    /*
+      MOSAIC MATRIX LOGIC
+      We have 9 tiles. Each tile is uniquely identified by its correct rotation (0).
+      We will use a unique background-position for each tile to make them part of a 3x3 whole.
+    */
+    const gridSize = 3;
+    const tiles = [];
+    let isPlaying = false;
+
+    // DOM Elements
+    const screenStart = document.getElementById('start-screen');
+    const screenGame = document.getElementById('game-screen');
+    const screenResult = document.getElementById('result-screen');
+    const puzzleContainer = document.getElementById('puzzle-container');
+    const blocker = document.getElementById('interaction-blocker');
+    const timerDisplay = document.getElementById('timer-display');
+    const phaseText = document.getElementById('phase-text');
+    const feedbackMsg = document.getElementById('feedback-message');
+
+    function switchScreen(hideElement, showElement) {
+      hideElement.classList.remove('active');
+      setTimeout(() => { showElement.classList.add('active'); }, 50);
+    }
+
+    function startGame() {
+      switchScreen(screenStart, screenGame);
+      initPuzzle();
+      startMemorizationPhase();
+    }
+
+    function initPuzzle() {
+      puzzleContainer.innerHTML = '';
+      puzzleContainer.appendChild(blocker);
+      tiles.length = 0;
+
+      // Create 9 tiles
+      for (let i = 0; i < 9; i++) {
+        const row = Math.floor(i / 3);
+        const col = i % 3;
+        
+        const tile = document.createElement('div');
+        tile.className = 'tile locked';
+        
+        // Calculate background position to make a continuous pattern
+        // The container is divided into 3x3. Background needs to shift accordingly.
+        const bgPosX = -(col * 100); 
+        const bgPosY = -(row * 100);
+        
+        // We apply a base class and override the background position
+        // so it looks like one giant texture split into 9
+        tile.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
+        
+        // Data state
+        const tileData = {
+          element: tile,
+          currentRotation: 0 // Starts at 0 (correct)
+        };
+        
+        // Add click listener
+        tile.addEventListener('click', () => rotateTile(i));
+
+        tiles.push(tileData);
+        puzzleContainer.appendChild(tile);
+      }
+    }
+
+    function startMemorizationPhase() {
+      isPlaying = false;
+      blocker.style.display = 'block';
+      phaseText.innerText = 'Memorize';
+      phaseText.className = 'text-accentGold';
+      timerDisplay.classList.remove('text-accentPurple');
+      timerDisplay.classList.add('text-accentGold');
+      
+      let timeLeft = 5;
+      timerDisplay.innerText = `0${timeLeft}`;
+      
+      const timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.innerText = `0${timeLeft}`;
+        
+        if (timeLeft <= 3) {
+           timerDisplay.classList.add('pulse-fast');
+        }
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerDisplay.classList.remove('pulse-fast');
+          timerDisplay.innerText = '--';
+          shatterPuzzle();
+        }
+      }, 1000);
+    }
+
+    function shatterPuzzle() {
+      phaseText.innerText = 'Reconstruct';
+      phaseText.className = 'text-accentPurple';
+      timerDisplay.classList.remove('text-accentGold');
+      timerDisplay.classList.add('text-accentPurple');
+      
+      // Randomly rotate each tile (90, 180, or 270 degrees)
+      // We ensure it doesn't stay at 0
+      tiles.forEach(t => {
+        const rotations = [90, 180, 270];
+        const randomRot = rotations[Math.floor(Math.random() * rotations.length)];
+        t.currentRotation = randomRot;
+        
+        // Add a small scale/opacity flutter to simulate shattering
+        t.element.style.opacity = '0.5';
+        t.element.style.transform = `scale(0.9) rotate(${randomRot}deg)`;
+        
+        setTimeout(() => {
+          t.element.style.opacity = '1';
+          t.element.style.transform = `scale(1) rotate(${randomRot}deg)`;
+          t.element.classList.remove('locked');
+        }, 300);
+      });
+
+      setTimeout(() => {
+        blocker.style.display = 'none';
+        isPlaying = true;
+      }, 400);
+    }
+
+    function rotateTile(index) {
+      if (!isPlaying) return;
+      
+      const t = tiles[index];
+      // Rotate by 90 degrees
+      t.currentRotation = (t.currentRotation + 90) % 360;
+      t.element.style.transform = `scale(1) rotate(${t.currentRotation}deg)`;
+      
+      checkWinCondition();
+    }
+
+    function checkWinCondition() {
+      // Check if all tiles are back to 0 rotation
+      const isWin = tiles.every(t => t.currentRotation === 0);
+      
+      if (isWin) {
+        isPlaying = false;
+        blocker.style.display = 'block';
+        
+        feedbackMsg.classList.remove('opacity-0');
+        feedbackMsg.classList.add('opacity-100');
+        
+        // Make the puzzle glow gold
+        puzzleContainer.style.boxShadow = '0 0 50px rgba(234, 179, 8, 0.6)';
+        puzzleContainer.style.backgroundColor = '#EAB308';
+        
+        setTimeout(() => {
+          switchScreen(screenGame, screenResult);
+        }, 1500);
+      }
+    }
+  </script>
+</body>
+</html>
