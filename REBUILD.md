@@ -1,4 +1,4 @@
-# QuizRealm rebuild — 2 November 2026
+# TheQuizRealm rebuild — 2 November 2026
 
 ## Recovery
 
@@ -177,3 +177,42 @@ and real production Firebase room availability remain unverified.
   suite, static checks of 366 HTML pages, and the internal-link gate for all 253
   canonical pages. Initial-load checks of 276 retained root pages per viewport
   found no page errors or horizontal overflow.
+
+## Final stage: reliable rounds and publishing
+
+- Repaired Refract and Lumina Valley so all eight mirror layouts require a move
+  and have a verified solution. Visible keyboard-accessible mirror buttons work
+  alongside the boards. Delayed results, resets, and repeated next presses cannot
+  award a round twice or skip a layout.
+- Repaired Which Came First, Two Truths Trap, Truth or Treason, and The Forger's
+  Dilemma: answers and next presses lock correctly, result accuracy counts real
+  answers, and each attempt records its stated XP once. Same-year comparisons
+  are excluded from the year-only ordering game. Fixed a clipped history-game
+  screen and a moving start control.
+- Fifteen game pages now have substantial page-specific instructions, scoring
+  explanations, strategy, controls, and related reading. Useful existing topic
+  explanations remain. Added accurate metadata for those retained game pages,
+  improved empty explanatory sections, and refreshed remaining interface copy.
+  A computer-history explanation was corrected against the
+  [Smithsonian's 1947 moth record](https://www.americanhistory.si.edu/collections/object/nmah_334663).
+- Local scripts, stylesheets, and module dependencies use content-based URL
+  revisions, preventing a returning player from mixing an old progress engine
+  with new game code. The publishing gate rejects stale revisions, missing asset
+  references, filename-case mistakes, and duplicate stylesheet loads. Repeated
+  full builds produce the same public files.
+- Final automated validation: 15 unit tests and all 64 desktop/mobile browser
+  interaction tests passed. Static checks cover 366 HTML files, 633 inline
+  scripts, and 253 sitemap URLs. All 253 canonical indexable pages have at least
+  two incoming internal links and are reachable from home (5,152 distinct links).
+  Initial-load browser checks cover 276 retained root pages in each viewport,
+  including page errors, horizontal overflow, duplicate IDs, and hidden overlays.
+  Both viewport runs passed with zero issues in all four categories.
+
+The rebuild is ready for ordinary maintenance. It does not establish that every
+historical question has been independently fact-checked. Production Firebase room
+permissions and end-to-end multiplayer remain unverified: the automated room
+tests use mocks. No Firebase deployment, billing change, or paid service was used.
+Google indexing decisions, Search Console-specific exclusions, and AdSense
+approval require follow-up in those services; no approval or traffic increase is
+claimed. Advertising remains disabled pending approval and a suitable consent
+setup.

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- realm:legacy-css --><link rel="stylesheet" href="/assets/styles/0287eba455e6.css"><script>var tailwind = window.tailwind || {config:{}};</script>
+<head><!-- realm:legacy-css --><link rel="stylesheet" href="/assets/styles/0287eba455e6.css?v=976864a1a21b"><script>var tailwind = window.tailwind || {config:{}};</script>
 
 
   <meta charset="UTF-8" />
@@ -66,7 +66,7 @@
       image-rendering: crisp-edges;
     }
   </style>
-<title>Refract | Premium Minimalist Optical Puzzle Game</title><meta name="description" content="Play Refract, an ultra-premium minimalist laser routing puzzle game. Rotate precision glass prisms to redirect light beams and activate core reactors."><meta name="robots" content="index,follow"><link rel="canonical" href="https://thequizrealm.com/vektor-cyberpath-logic.html"><meta name="google-adsense-account" content="ca-pub-6205081520399538"><meta name="theme-color" content="#101819"><meta property="og:title" content="Refract | Premium Minimalist Optical Puzzle Game"><meta property="og:description" content="Play Refract, an ultra-premium minimalist laser routing puzzle game. Rotate precision glass prisms to redirect light beams and activate core reactors."><meta property="og:url" content="https://thequizrealm.com/vektor-cyberpath-logic.html"><meta property="og:type" content="website"><link rel="stylesheet" href="/assets/realm.css"><script src="/assets/privacy.js" defer></script><script src="/assets/progress.js" defer></script><script src="/components.js" defer></script></head>
+<title>Refract — Light and Mirror Puzzle | TheQuizRealm</title><meta name="description" content="Rotate mirrors to guide a beam of light to the target. Play three Refract layouts with board or keyboard controls and practical strategy tips."><meta name="robots" content="index,follow"><link rel="canonical" href="https://thequizrealm.com/vektor-cyberpath-logic.html"><meta name="google-adsense-account" content="ca-pub-6205081520399538"><meta name="theme-color" content="#101819"><meta property="og:title" content="Refract — Light and Mirror Puzzle | TheQuizRealm"><meta property="og:description" content="Rotate mirrors to guide a beam of light to the target. Play three Refract layouts with board or keyboard controls and practical strategy tips."><meta property="og:url" content="https://thequizrealm.com/vektor-cyberpath-logic.html"><meta property="og:type" content="website"><link rel="stylesheet" href="/assets/realm.css?v=cab0779ac959"><script src="/assets/privacy.js?v=51c7499fb950" defer></script><script src="/assets/progress.js?v=1a7f2f84cdbf" defer></script><script src="/components.js?v=4abcea221b5e" defer></script></head>
 <body class="font-sans text-slate-100 min-h-screen flex flex-col justify-between relative antialiased"><quiz-header><a class="qr-skip" href="#main-content">Skip to content</a><header class="qr-site-header"><div class="qr-header-inner"><a class="qr-brand" href="/" aria-label="TheQuizRealm home"><img class="qr-brand-logo" src="/android-chrome-192x192.png" alt="" width="42" height="42"><span>TheQuiz<span class="qr-brand-realm">Realm</span></span></a><nav class="qr-header-nav" id="realm-nav" aria-label="Main navigation"><a href="/daily.html">Daily Ten</a><a href="/categories.html">All games</a><a href="/group-hub.html">With friends</a><a href="/game-guides.html">Field notes</a></nav><a class="qr-player" href="/profile.html" aria-label="Your player progress"><span class="qr-player-dot" aria-hidden="true">✦</span><span>Level <b id="headerLevel">1</b></span><span class="qr-xp">· <span id="headerXP">0</span> XP</span></a><button class="qr-menu-toggle" type="button" aria-controls="realm-nav" aria-expanded="false">Menu</button></div></header></quiz-header>
 
   <!-- Ambient Luxury Background Illumination -->
@@ -111,7 +111,7 @@
       <!-- Micro-Instructions Dashboard -->
       <div class="premium-glass p-6 rounded-2xl shadow-xl space-y-4">
         <div class="flex items-center gap-2 text-xs font-bold text-cyan-400 uppercase tracking-widest">
-          <i class="fas fa-terminal"></i> System Directive
+          <i class="fas fa-terminal"></i> How to play
         </div>
         <p class="text-sm leading-relaxed text-slate-300">
           Tap grid cells containing prisms (<span class="font-mono text-cyan-400 font-bold">/</span> or <span class="font-mono text-fuchsia-400 font-bold">\</span>) to rotate them. Redirect the light beam from the source emitter to the core reactor.
@@ -156,7 +156,7 @@
         <i class="fas fa-bolt text-2xl text-white"></i>
       </div>
       <div>
-        <h2 class="text-2xl font-black text-white tracking-tight">Reactor Online</h2>
+        <h2 class="text-2xl font-black text-white tracking-tight">Light connected</h2>
         <p class="text-sm text-slate-400 mt-1">Light path synchronized beautifully.</p>
       </div>
       <button id="nextLevelBtn" class="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all text-sm tracking-wide uppercase font-mono shadow-lg shadow-cyan-500/20">
@@ -192,6 +192,7 @@
     let mirrors = {};
     let laserPath = [];
     let isLevelComplete = false;
+    let levelAttemptId='';
 
     // Calibrated Level Configurations
     const LEVELS = [
@@ -221,7 +222,7 @@
           '4,1': '\\',
           '2,1': '/',
           '2,5': '\\',
-          '3,5': '/'
+          '3,5': '\\'
         }
       }
     ];
@@ -238,12 +239,13 @@
 
     function loadLevel(index) {
       if (index >= LEVELS.length) {
-        alert("All arrays cleared. Welcome to the zenith of spatial design.");
+        alert("All three puzzles complete. Starting again at the first layout.");
         currentLevel = 0;
         index = 0;
       }
 
       currentLevel = index;
+      levelAttemptId='refract-'+Date.now()+'-'+Math.random().toString(36).slice(2);
       document.getElementById('level-num').textContent = currentLevel + 1;
       isLevelComplete = false;
       rotationCount = 0;
@@ -251,6 +253,7 @@
 
       // Initialize dynamic mirrors object clone
       mirrors = { ...LEVELS[currentLevel].fixedMirrors };
+      renderMirrorControls();
 
       calculateLaser();
       draw();
@@ -422,26 +425,41 @@
       const cellY = Math.floor(clickY / (rect.height / GRID_SIZE));
       const key = `${cellX},${cellY}`;
 
-      if (mirrors[key]) {
-        rotationCount++;
-        document.getElementById('rotation-counter').textContent = rotationCount;
-
-        // Dynamic Toggle Rotation matrix
-        mirrors[key] = mirrors[key] === '/' ? '\\' : '/';
-
-        calculateLaser();
-        draw();
-      }
+      rotateMirror(key);
     });
 
+    function rotateMirror(key){
+      if(isLevelComplete || !mirrors[key])return;
+      rotationCount++;
+      document.getElementById('rotation-counter').textContent=rotationCount;
+      mirrors[key]=mirrors[key]==='/'?'\\':'/';
+      const keepFocus=document.activeElement?.dataset?.mirror===key;
+      renderMirrorControls();calculateLaser();draw();
+      if(keepFocus)document.querySelector('[data-mirror="'+key+'"]')?.focus();
+    }
+    function renderMirrorControls(){
+      let box=document.getElementById('mirror-controls');
+      if(!box){box=document.createElement('div');box.id='mirror-controls';box.className='w-full max-w-[540px] mt-4 flex flex-wrap gap-2';box.setAttribute('aria-label','Mirror controls');canvas.parentElement.insertAdjacentElement('afterend',box);}
+      box.innerHTML='';
+      const description=document.createElement('p');description.className='w-full text-xs text-slate-300';
+      const level=LEVELS[currentLevel];
+      description.textContent='Light starts at column '+(level.emitter.x+1)+', row '+(level.emitter.y+1)+'. Target: column '+(level.target.x+1)+', row '+(level.target.y+1)+'. Rotate a mirror below or tap it on the board.';
+      box.appendChild(description);
+      Object.keys(mirrors).forEach(key=>{const button=document.createElement('button');button.type='button';button.className='r-button secondary';button.dataset.mirror=key;button.textContent='Rotate ('+key.split(',').map(Number).map(n=>n+1).join(', ')+') '+mirrors[key];button.setAttribute('aria-label','Rotate mirror at column '+(Number(key.split(',')[0])+1)+', row '+(Number(key.split(',')[1])+1));button.onclick=()=>rotateMirror(key);box.appendChild(button);});
+    }
+
     function triggerVictoryScreen() {
+      if(!isLevelComplete || rotationCount===0)return;
+      window.GameEngine?.completeGame('Refract',1,1,{xp:50,scored:false,attemptId:levelAttemptId});
       const overlay = document.getElementById('victoryOverlay');
+      const completedAttempt=levelAttemptId;
       setTimeout(() => {
-        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        if(isLevelComplete && levelAttemptId===completedAttempt)overlay.classList.remove('opacity-0', 'pointer-events-none');
       }, 400);
     }
 
     document.getElementById('nextLevelBtn').addEventListener('click', () => {
+      if(!isLevelComplete)return;
       document.getElementById('victoryOverlay').classList.add('opacity-0', 'pointer-events-none');
       loadLevel(currentLevel + 1);
     });
@@ -457,5 +475,5 @@
     initCanvas();
     loadLevel(0);
   </script>
-<nav class="r-related" aria-label="Explore more games"><h2>Something else to try</h2><a href="/color-hub.html">Color, Light &amp; a Little Play</a><a href="/color-mixer.html">Color Mixer</a><a href="/chroma-shift.html">Chroma Shift</a><a href="/categories.html">All games</a></nav><quiz-footer><footer class="qr-site-footer"><div class="qr-footer-inner"><div class="qr-footer-top"><div><a class="qr-brand" href="/" aria-label="TheQuizRealm home"><img class="qr-brand-logo" src="/android-chrome-192x192.png" alt="" width="42" height="42"><span>TheQuiz<span class="qr-brand-realm">Realm</span></span></a><p>A little curiosity. A good challenge. Free browser games for your everyday break.</p></div><div><strong>Find your next game</strong><ul><li><a href="/daily.html">The Daily Ten</a></li><li><a href="/categories.html">All games</a></li><li><a href="/arcade.html">Word &amp; logic games</a></li><li><a href="/identity-lab.html">Reflection quizzes</a></li><li><a href="/directory.html">Complete directory</a></li></ul></div><div><strong>Behind the games</strong><ul><li><a href="/about.html">About TheQuizRealm</a></li><li><a href="/editorial-policy.html">How we make things</a></li><li><a href="/game-guides.html">Field notes &amp; guides</a></li><li><a href="/contact.html">Contact &amp; corrections</a></li><li><a href="/FAQ.html">Common questions</a></li></ul></div><div><strong>Your space</strong><ul><li><a href="/profile.html">My progress</a></li><li><a href="/achievements.html">Achievements</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/Terms.html">Terms</a></li><li><button class="qr-text-button" type="button" data-privacy>Privacy choices</button></li></ul></div></div><div class="qr-footer-bottom"><span>© 2026 TheQuizRealm. Made for curious people.</span><span>Free to play · No subscriptions</span></div></div></footer></quiz-footer></body>
+<section class="r-prose r-game-notes"><h2>Find the light path in Refract</h2><p>Refract is a mirror-routing puzzle on a six-by-six board. A beam leaves the light source in a fixed direction. Your task is to turn the available mirrors until that beam reaches the target. Each mirror has two diagonal orientations, shown as / and \. Tapping the same mirror again returns it to its previous orientation.</p><h3>Trace one reflection at a time</h3><p>Begin at the source and follow the visible beam to the first mirror or edge. Ask which direction that mirror needs to send the light. Work through the next reflection before changing several other mirrors: a rotation near the source can change every later part of the path. A beam leaving the board is a clue about where the route diverged.</p><h3>Board controls and keyboard controls</h3><p>Tap a mirror on the board, or use the rotation buttons below it. Each button identifies a mirror by column and row, counted from one. Those buttons work with touch, mouse, Enter, and Space. The source and target coordinates are also written below the board. Reset returns the current layout to its starting orientations and clears the rotation count.</p><h3>Three layouts, one clear goal</h3><p>The game contains three layouts. A level finishes when the light reaches its target; the next-level button opens the following layout. Every starting layout now needs a player move. Completing a level records 50 XP once for that attempt, and repeatedly opening the completed overlay does not add extra rewards.</p><p>For another light-routing puzzle in a different setting, try <a href="/lumina-valley.html">Lumina Valley</a>. For a colour challenge, try <a href="/color-mixer.html">Color Mixer</a> or explore the <a href="/color-hub.html">colour and light collection</a>.</p></section><nav class="r-related" aria-label="Explore more games"><h2>Something else to try</h2><a href="/color-hub.html">Color, Light &amp; a Little Play</a><a href="/color-mixer.html">Color Mixer</a><a href="/chroma-shift.html">Chroma Shift</a><a href="/categories.html">All games</a></nav><quiz-footer><footer class="qr-site-footer"><div class="qr-footer-inner"><div class="qr-footer-top"><div><a class="qr-brand" href="/" aria-label="TheQuizRealm home"><img class="qr-brand-logo" src="/android-chrome-192x192.png" alt="" width="42" height="42"><span>TheQuiz<span class="qr-brand-realm">Realm</span></span></a><p>A little curiosity. A good challenge. Free browser games for your everyday break.</p></div><div><strong>Find your next game</strong><ul><li><a href="/daily.html">The Daily Ten</a></li><li><a href="/categories.html">All games</a></li><li><a href="/arcade.html">Word &amp; logic games</a></li><li><a href="/identity-lab.html">Reflection quizzes</a></li><li><a href="/directory.html">Complete directory</a></li></ul></div><div><strong>Behind the games</strong><ul><li><a href="/about.html">About TheQuizRealm</a></li><li><a href="/editorial-policy.html">How we make things</a></li><li><a href="/game-guides.html">Field notes &amp; guides</a></li><li><a href="/contact.html">Contact &amp; corrections</a></li><li><a href="/FAQ.html">Common questions</a></li></ul></div><div><strong>Your space</strong><ul><li><a href="/profile.html">My progress</a></li><li><a href="/achievements.html">Achievements</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/Terms.html">Terms</a></li><li><button class="qr-text-button" type="button" data-privacy>Privacy choices</button></li></ul></div></div><div class="qr-footer-bottom"><span>© 2026 TheQuizRealm. Made for curious people.</span><span>Free to play · No subscriptions</span></div></div></footer></quiz-footer></body>
 </html>

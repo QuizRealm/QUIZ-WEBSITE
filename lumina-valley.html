@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- realm:legacy-css --><link rel="stylesheet" href="/assets/styles/a933064b6930.css"><script>var tailwind = window.tailwind || {config:{}};</script>
+<head><!-- realm:legacy-css --><link rel="stylesheet" href="/assets/styles/a933064b6930.css?v=894f4294d426"><script>var tailwind = window.tailwind || {config:{}};</script>
 
 
   <meta charset="UTF-8" />
@@ -87,8 +87,8 @@
       touch-action: none; /* Prevents scrolling while tapping */
     }
   </style>
-<title>Lumina Valley | Premium Sunlight Puzzle Game</title><meta name="description" content="Guide the morning sunlight through the ancient village of Lumina Valley. Rotate bronze mirrors to solve beautifully crafted, cozy logic puzzles."><meta name="robots" content="index,follow"><link rel="canonical" href="https://thequizrealm.com/lumina-valley.html"><meta name="google-adsense-account" content="ca-pub-6205081520399538"><meta name="theme-color" content="#101819"><meta property="og:title" content="Lumina Valley | Premium Sunlight Puzzle Game"><meta property="og:description" content="Guide the morning sunlight through the ancient village of Lumina Valley. Rotate bronze mirrors to solve beautifully crafted, cozy logic puzzles."><meta property="og:url" content="https://thequizrealm.com/lumina-valley.html"><meta property="og:type" content="website"><link rel="stylesheet" href="/assets/realm.css"><script src="/assets/privacy.js" defer></script><script src="/assets/progress.js" defer></script><script src="/components.js" defer></script></head>
-<body class="min-h-screen flex flex-col relative antialiased selection:bg-sunlight selection:text-white"><quiz-header><a class="qr-skip" href="#main-content">Skip to content</a><header class="qr-site-header"><div class="qr-header-inner"><a class="qr-brand" href="/" aria-label="TheQuizRealm home"><img class="qr-brand-logo" src="/android-chrome-192x192.png" alt="" width="42" height="42"><span>TheQuiz<span class="qr-brand-realm">Realm</span></span></a><nav class="qr-header-nav" id="realm-nav" aria-label="Main navigation"><a href="/daily.html">Daily Ten</a><a href="/categories.html">All games</a><a href="/group-hub.html">With friends</a><a href="/game-guides.html">Field notes</a></nav><a class="qr-player" href="/profile.html" aria-label="Your player progress"><span class="qr-player-dot" aria-hidden="true">✦</span><span>Level <b id="headerLevel">1</b></span><span class="qr-xp">· <span id="headerXP">0</span> XP</span></a><button class="qr-menu-toggle" type="button" aria-controls="realm-nav" aria-expanded="false">Menu</button></div></header></quiz-header>
+<title>Lumina Valley — Garden Light Puzzle | TheQuizRealm</title><meta name="description" content="Guide light to the lotus by rotating mirrors. Explore five Lumina Valley puzzle layouts with clear controls, move counts, and local progress."><meta name="robots" content="index,follow"><link rel="canonical" href="https://thequizrealm.com/lumina-valley.html"><meta name="google-adsense-account" content="ca-pub-6205081520399538"><meta name="theme-color" content="#101819"><meta property="og:title" content="Lumina Valley — Garden Light Puzzle | TheQuizRealm"><meta property="og:description" content="Guide light to the lotus by rotating mirrors. Explore five Lumina Valley puzzle layouts with clear controls, move counts, and local progress."><meta property="og:url" content="https://thequizrealm.com/lumina-valley.html"><meta property="og:type" content="website"><link rel="stylesheet" href="/assets/realm.css?v=cab0779ac959"><script src="/assets/privacy.js?v=51c7499fb950" defer></script><script src="/assets/progress.js?v=1a7f2f84cdbf" defer></script><script src="/components.js?v=4abcea221b5e" defer></script></head>
+<body class="qr-light-game min-h-screen flex flex-col relative antialiased selection:bg-sunlight selection:text-white"><quiz-header><a class="qr-skip" href="#main-content">Skip to content</a><header class="qr-site-header"><div class="qr-header-inner"><a class="qr-brand" href="/" aria-label="TheQuizRealm home"><img class="qr-brand-logo" src="/android-chrome-192x192.png" alt="" width="42" height="42"><span>TheQuiz<span class="qr-brand-realm">Realm</span></span></a><nav class="qr-header-nav" id="realm-nav" aria-label="Main navigation"><a href="/daily.html">Daily Ten</a><a href="/categories.html">All games</a><a href="/group-hub.html">With friends</a><a href="/game-guides.html">Field notes</a></nav><a class="qr-player" href="/profile.html" aria-label="Your player progress"><span class="qr-player-dot" aria-hidden="true">✦</span><span>Level <b id="headerLevel">1</b></span><span class="qr-xp">· <span id="headerXP">0</span> XP</span></a><button class="qr-menu-toggle" type="button" aria-controls="realm-nav" aria-expanded="false">Menu</button></div></header></quiz-header>
 
   <!-- Ambient Light Effects -->
   <div class="sun-glow-1"></div>
@@ -202,6 +202,7 @@
     let currentLevel = 0;
     let moves = 0;
     let isComplete = false;
+    let levelAttemptId='';
     let mirrors = {};
     let laserPath = [];
     let animatedPathLength = 0; // For smooth beam drawing
@@ -215,7 +216,7 @@
       {
         emitter: { x: 0, y: 2, dir: { x: 1, y: 0 } },
         target: { x: 4, y: 4 },
-        mirrors: { '4,2': { type: '\\' } }
+        mirrors: { '4,2': { type: '/' } }
       },
       {
         emitter: { x: 1, y: 0, dir: { x: 0, y: 1 } },
@@ -273,6 +274,7 @@
       }
 
       currentLevel = index;
+      levelAttemptId='lumina-'+Date.now()+'-'+Math.random().toString(36).slice(2);
       isComplete = false;
       moves = 0;
       animatedPathLength = 0;
@@ -300,6 +302,7 @@
         };
       }
 
+      renderMirrorControls();
       calculateLogic();
     }
 
@@ -354,7 +357,9 @@
         const statusBadge = document.getElementById('status-text');
         statusBadge.textContent = "Blooming";
         statusBadge.className = "text-sm font-semibold text-flora bg-emerald-100 px-3 py-1 rounded-full smooth-transition";
-        setTimeout(showVictory, 800);
+        if(moves>0)window.GameEngine?.completeGame('Lumina Valley',1,1,{xp:50,scored:false,attemptId:levelAttemptId});
+        const completedAttempt=levelAttemptId;
+        setTimeout(()=>{if(isComplete && levelAttemptId===completedAttempt)showVictory();}, 800);
       }
     }
 
@@ -540,24 +545,28 @@
       const cellY = Math.floor(clickY / cellSize);
       const key = `${cellX},${cellY}`;
 
-      if (mirrors[key]) {
-        moves++;
-        document.getElementById('moves-counter').textContent = moves;
-
-        // Change Type and update Target Angle for animation
-        if (mirrors[key].type === '/') {
-          mirrors[key].type = '\\';
-          mirrors[key].targetAngle += Math.PI / 2; // Rotate 90 degrees smoothly
-        } else {
-          mirrors[key].type = '/';
-          mirrors[key].targetAngle += Math.PI / 2;
-        }
-
-        // Reset beam animation to flow out again
-        animatedPathLength = 0;
-        calculateLogic();
-      }
+      rotateMirror(key);
     });
+
+    function rotateMirror(key){
+      if(isComplete || !mirrors[key])return;
+      moves++;document.getElementById('moves-counter').textContent=moves;
+      mirrors[key].type=mirrors[key].type==='/'?'\\':'/';
+      mirrors[key].targetAngle+=Math.PI/2;
+      const keepFocus=document.activeElement?.dataset?.mirror===key;
+      animatedPathLength=0;renderMirrorControls();calculateLogic();
+      if(keepFocus)document.querySelector('[data-mirror="'+key+'"]')?.focus();
+    }
+    function renderMirrorControls(){
+      let box=document.getElementById('mirror-controls');
+      if(!box){box=document.createElement('div');box.id='mirror-controls';box.className='w-full mt-4 flex flex-wrap gap-2';box.setAttribute('aria-label','Mirror controls');canvas.parentElement.insertAdjacentElement('afterend',box);}
+      box.innerHTML='';
+      const description=document.createElement('p');description.className='w-full text-xs text-village-700';
+      const level=LEVELS[currentLevel];
+      description.textContent='Light starts at column '+(level.emitter.x+1)+', row '+(level.emitter.y+1)+'. Lotus: column '+(level.target.x+1)+', row '+(level.target.y+1)+'. Rotate a mirror below or tap it on the board.';
+      box.appendChild(description);
+      Object.keys(mirrors).forEach(key=>{const button=document.createElement('button');button.type='button';button.className='px-3 py-2 text-xs font-bold rounded-lg border border-village-200 bg-white text-village-700';button.dataset.mirror=key;button.textContent='Rotate ('+key.split(',').map(Number).map(n=>n+1).join(', ')+') '+mirrors[key].type;button.setAttribute('aria-label','Rotate mirror at column '+(Number(key.split(',')[0])+1)+', row '+(Number(key.split(',')[1])+1));button.onclick=()=>rotateMirror(key);box.appendChild(button);});
+    }
 
     // UI Modals
     function showVictory() {
@@ -575,8 +584,11 @@
     }
 
     document.getElementById('nextLevelBtn').addEventListener('click', () => {
+      if(!isComplete)return;
+      isComplete=false;
+      const next=currentLevel+1;
       hideVictory();
-      setTimeout(() => loadLevel(currentLevel + 1), 300); // Wait for modal animation
+      setTimeout(() => loadLevel(next), 300);
     });
 
     function resetLevel() {
@@ -586,5 +598,5 @@
     // Boot
     window.onload = init;
   </script>
-<nav class="r-related" aria-label="Explore more games"><h2>Something else to try</h2><a href="/color-hub.html">Color, Light &amp; a Little Play</a><a href="/color-mixer.html">Color Mixer</a><a href="/chroma-shift.html">Chroma Shift</a><a href="/categories.html">All games</a></nav><quiz-footer><footer class="qr-site-footer"><div class="qr-footer-inner"><div class="qr-footer-top"><div><a class="qr-brand" href="/" aria-label="TheQuizRealm home"><img class="qr-brand-logo" src="/android-chrome-192x192.png" alt="" width="42" height="42"><span>TheQuiz<span class="qr-brand-realm">Realm</span></span></a><p>A little curiosity. A good challenge. Free browser games for your everyday break.</p></div><div><strong>Find your next game</strong><ul><li><a href="/daily.html">The Daily Ten</a></li><li><a href="/categories.html">All games</a></li><li><a href="/arcade.html">Word &amp; logic games</a></li><li><a href="/identity-lab.html">Reflection quizzes</a></li><li><a href="/directory.html">Complete directory</a></li></ul></div><div><strong>Behind the games</strong><ul><li><a href="/about.html">About TheQuizRealm</a></li><li><a href="/editorial-policy.html">How we make things</a></li><li><a href="/game-guides.html">Field notes &amp; guides</a></li><li><a href="/contact.html">Contact &amp; corrections</a></li><li><a href="/FAQ.html">Common questions</a></li></ul></div><div><strong>Your space</strong><ul><li><a href="/profile.html">My progress</a></li><li><a href="/achievements.html">Achievements</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/Terms.html">Terms</a></li><li><button class="qr-text-button" type="button" data-privacy>Privacy choices</button></li></ul></div></div><div class="qr-footer-bottom"><span>© 2026 TheQuizRealm. Made for curious people.</span><span>Free to play · No subscriptions</span></div></div></footer></quiz-footer></body>
+<section class="r-prose r-game-notes"><h2>Guide the light through Lumina Valley</h2><p>Lumina Valley is a garden-themed mirror puzzle. Turn the mirrors so the light from the source reaches the lotus. You do not need to draw a path or drag a mirror to another square: the mirrors stay in their positions, and each turn changes a mirror between two diagonal orientations.</p><h3>Start with the first mirror the beam reaches</h3><p>Follow the beam from its source. If it leaves the board, reconsider the last mirror it touched. If it turns toward another mirror, trace that next reflection before changing the rest of the layout. Working forward from the source makes it easier to see why a particular rotation helps.</p><h3>Choose a comfortable way to rotate</h3><p>You can tap the board's mirrors or use the buttons underneath. The buttons identify columns and rows from one and support a physical keyboard as well as touch. Their orientation marks change with the mirrors. The move counter records your rotations; it is a record of the attempt, not a time limit.</p><h3>Reset, solve, and continue</h3><p>Reset starts the current layout again. When the light reaches the lotus, the garden's result panel lets you continue. There are five layouts, and the first now begins unsolved so you can make the opening reflection yourself. A completed level records 50 XP for that attempt in the shared player profile. A reset during a delayed animation will not bring an old result panel into the new attempt.</p><p>Try <a href="/vektor-cyberpath-logic.html">Refract</a> for another set of mirror layouts, or switch to <a href="/knot-garden.html">The Knot Garden</a> for a different visual puzzle. The <a href="/color-hub.html">colour and light collection</a> brings related games together.</p></section><nav class="r-related" aria-label="Explore more games"><h2>Something else to try</h2><a href="/color-hub.html">Color, Light &amp; a Little Play</a><a href="/color-mixer.html">Color Mixer</a><a href="/chroma-shift.html">Chroma Shift</a><a href="/categories.html">All games</a></nav><quiz-footer><footer class="qr-site-footer"><div class="qr-footer-inner"><div class="qr-footer-top"><div><a class="qr-brand" href="/" aria-label="TheQuizRealm home"><img class="qr-brand-logo" src="/android-chrome-192x192.png" alt="" width="42" height="42"><span>TheQuiz<span class="qr-brand-realm">Realm</span></span></a><p>A little curiosity. A good challenge. Free browser games for your everyday break.</p></div><div><strong>Find your next game</strong><ul><li><a href="/daily.html">The Daily Ten</a></li><li><a href="/categories.html">All games</a></li><li><a href="/arcade.html">Word &amp; logic games</a></li><li><a href="/identity-lab.html">Reflection quizzes</a></li><li><a href="/directory.html">Complete directory</a></li></ul></div><div><strong>Behind the games</strong><ul><li><a href="/about.html">About TheQuizRealm</a></li><li><a href="/editorial-policy.html">How we make things</a></li><li><a href="/game-guides.html">Field notes &amp; guides</a></li><li><a href="/contact.html">Contact &amp; corrections</a></li><li><a href="/FAQ.html">Common questions</a></li></ul></div><div><strong>Your space</strong><ul><li><a href="/profile.html">My progress</a></li><li><a href="/achievements.html">Achievements</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/Terms.html">Terms</a></li><li><button class="qr-text-button" type="button" data-privacy>Privacy choices</button></li></ul></div></div><div class="qr-footer-bottom"><span>© 2026 TheQuizRealm. Made for curious people.</span><span>Free to play · No subscriptions</span></div></div></footer></quiz-footer></body>
 </html>

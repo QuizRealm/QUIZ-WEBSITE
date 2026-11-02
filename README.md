@@ -49,6 +49,9 @@ do not read a personal browser profile or write to production Firebase.
 Generated root HTML is committed so the existing GitHub Pages setup can publish
 it directly. Run the build after changing source content. Retained game HTML
 stays editable; the build preserves game IDs, controls, and custom themes.
+The build adds content-based revisions to local scripts, styles, and module
+imports so returning players load matching files. Run the full build after JS or
+CSS edits; the publishing check rejects missing or stale revisions.
 
 ## Publishing and maintenance
 

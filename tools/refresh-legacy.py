@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 THEMED = set('nexus word-ladder fusion-core cryptex mini-crossword crossword minigames rapid mathsprint hangman spelling tango-logic odd-one-out rank-it'.split())
 # Complete labels only: identifiers and trivia questions stay unchanged.
 LABELS = {
+    'the TheQuizRealm': 'TheQuizRealm',
+    'The TheQuizRealm': 'TheQuizRealm',
     'Neural Draw': 'Sketch and Guess',
     'Rapid Fire Protocol': 'Rapid Fire Trivia',
     'Neon Ladder': 'Word Ladder',
@@ -77,6 +79,13 @@ LABELS = {
     'Cyber Mode': 'Logic puzzles', 'Calibration Mode': 'Quick challenges',
     'Cognitive training protocols and pattern recognition.': 'Word games, visual puzzles, and quick trivia.',
     'Test Your Neural Link': 'Try the character quiz',
+    'System Directive': 'How to play',
+    'Refract | Premium Minimalist Optical Puzzle Game': 'Refract — Light and Mirror Puzzle | TheQuizRealm',
+    'Play Refract, an ultra-premium minimalist laser routing puzzle game. Rotate precision glass prisms to redirect light beams and activate core reactors.': 'Rotate mirrors to guide a beam of light to the target. Play three Refract puzzle layouts with board or keyboard-friendly controls.',
+    'Reactor Online': 'Light connected',
+    'All arrays cleared. Welcome to the zenith of spatial design.': 'All three puzzles complete. Starting again at the first layout.',
+    'A high-speed test of intellect and deduction. Two statements are true. One is a lie. Identify the trap.': 'Read three statements and choose the false one. Each set includes an explanation. You can make three mistakes before the round ends.',
+    'Two are absolute truth.': 'Two are intended as true.',
     'Cryptex Decryption': 'CryptEx Word Puzzle',
     'Cyber Terminal': 'Word and logic games',
     'Neural Training': 'Quick trivia rounds',
@@ -160,7 +169,7 @@ for path in ROOT.glob('*.html'):
         if '/assets/legacy.css' not in text:text=text.replace('</head>','<link rel="stylesheet" href="/assets/legacy.css"></head>',1)
     if text!=original:build.write(path.name,text);changed.append(path.name)
 
-for name in ['catalog.json','collections.json']:
+for name in ['catalog.json','collections.json','articles.json','home.json']:
     path=ROOT/'site'/name;text=path.read_text(encoding='utf-8');updated=labels(text)
     if updated!=text:path.write_text(updated,encoding='utf-8');changed.append('site/'+name)
 print(json.dumps({'refreshed_pages':len(changed),'removed_repeated_sections':removed}))

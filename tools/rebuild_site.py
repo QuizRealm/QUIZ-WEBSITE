@@ -8,7 +8,7 @@ from html import escape, unescape
 from html.parser import HTMLParser
 from urllib.parse import urlsplit, unquote
 from datetime import date
-import json, re, shutil
+import json, re, shutil, time
 from homepage import build_home
 from rapid_page import build_rapid
 
@@ -48,7 +48,13 @@ def write(name, text):
     if path.exists() and path.read_text(encoding='utf-8')==normalized:return
     temporary=path.with_name(path.name+'.build-tmp')
     with temporary.open('w',encoding='utf-8',newline='\n') as output:output.write(normalized)
-    temporary.replace(path)
+    for attempt in range(8):
+        try:
+            temporary.replace(path)
+            break
+        except OSError as error:
+            if attempt==7 or error.errno not in [13,16,22]:raise
+            time.sleep(.05*(attempt+1))
 
 def brand():
     return '<a class="qr-brand" href="/" aria-label="TheQuizRealm home"><img class="qr-brand-logo" src="/android-chrome-192x192.png" alt="" width="42" height="42"><span>TheQuiz<span class="qr-brand-realm">Realm</span></span></a>'
@@ -189,6 +195,7 @@ def edits_apply(text,edits):
 
 def related_for(name):
     collections=json.loads((ROOT/'site/collections.json').read_text(encoding='utf-8'))
+    notes_by_url=json.loads((ROOT/'site/game-notes.json').read_text(encoding='utf-8'))
     links=[]
     for route in json.loads((ROOT/'site/reading-paths.json').read_text(encoding='utf-8')):
         members=route['pages']
@@ -198,7 +205,8 @@ def related_for(name):
             url=members[(index+step)%len(members)]
             document=(ROOT/url).read_text(encoding='utf-8')
             title=re.search(r'<title[^>]*>(.*?)</title>',document,re.I|re.S)
-            label=unescape(re.sub(r'\s*[|•—]\s*(?:The)?QuizRealm.*$','',title[1])).strip() if title else Path(url).stem.replace('-',' ').title()
+            title_text=notes_by_url.get(url,{}).get('pageTitle',title[1] if title else Path(url).stem.replace('-',' ').title())
+            label=unescape(re.sub(r'\s*[|•—]\s*(?:The)?QuizRealm.*$','',title_text)).strip()
             links.append((url,label))
         break
     for url,collection in collections.items():
@@ -263,6 +271,9 @@ def normalize_archive():
         title=re.sub(r'\s*[•|]\s*TheQuizRealm.*$',' | TheQuizRealm',title,flags=re.I)
         desc_match=re.search(r'<meta\b(?=[^>]*\bname=[\"\']description[\"\'])(?=[^>]*\bcontent=[\"\']([^\"\']*)[\"\'])[^>]*>',text,re.I)
         desc=unescape(desc_match[1]) if desc_match else f'Explore {p.stem.replace("-"," ")} on TheQuizRealm. Play in your browser and discover related games and collections.'
+        if name in game_notes:
+            title=game_notes[name].get('pageTitle',title)
+            desc=game_notes[name].get('description',desc)
         # One clear set of search/social metadata; remove stale or invented structured data.
         head_match=re.search(r'<head[^>]*>(.*?)</head>',text,re.S|re.I)
         if head_match:
@@ -274,7 +285,7 @@ def normalize_archive():
             h=re.sub(r'<meta\b(?=[^>]*http-equiv=[\"\']Content-Security-Policy[\"\'])[^>]*>','',h,flags=re.I)
             canonical=DOMAIN+'/'+name
             meta=f'<title>{escape(title)}</title><meta name="description" content="{escape(desc,quote=True)}"><meta name="robots" content="{"noindex,follow" if name in NOINDEX else "index,follow"}"><link rel="canonical" href="{canonical}"><meta name="google-adsense-account" content="ca-pub-6205081520399538"><meta name="theme-color" content="#101819"><meta property="og:title" content="{escape(title,quote=True)}"><meta property="og:description" content="{escape(desc,quote=True)}"><meta property="og:url" content="{canonical}"><meta property="og:type" content="website"><link rel="stylesheet" href="/assets/realm.css"><script src="/assets/privacy.js" defer></script><script src="/assets/progress.js" defer></script><script src="/components.js" defer></script>'
-            h=h.replace('<link rel="stylesheet" href="/assets/realm.css">','')
+            h=re.sub(r'<link\b(?=[^>]*rel=[\"\']stylesheet[\"\'])(?=[^>]*href=[\"\']/assets/realm\.css(?:\?[^\"\']*)?[\"\'])[^>]*>','',h,flags=re.I)
             text=text[:head_match.start(1)]+h+meta+text[head_match.end(1):]
         if '<quiz-header' not in text and '<quiz-home-header' not in text:text=re.sub(r'(<body\b[^>]*>)',lambda m:m[1]+'<quiz-header>'+header(name)+'</quiz-header>',text,count=1,flags=re.I)
         if '<quiz-footer' not in text:text=text.replace('</body>','<quiz-footer>'+footer()+'</quiz-footer></body>')
@@ -335,7 +346,7 @@ def build_directory():
         groups[group].append((name,title))
     body=head('The complete map','Follow a thread.','A directory of TheQuizRealm’s games, regional collections, and reading. Start with the curated library if you would like a shorter list.')+'<div class="r-actions"><a class="r-button" href="/categories.html">Visit the game library ↗</a><a class="r-button secondary" href="/daily.html">Try the Daily Ten</a></div>'
     for group,items in groups.items():
-        body+=f'<section class="r-section" id="{"collections" if group=="Collections" else "articles" if group=="Articles & guides" else "activities"}"><div class="r-section-heading"><h2>{group}</h2></div><div class="r-list-grid">'+''.join(f'<a href="/{name}">{escape(title)}</a>' for name,title in sorted(items,key=lambda x:x[1].casefold()))+'</div></section>'
+        body+=f'<section class="r-section" id="{"collections" if group=="Collections" else "articles" if group=="Articles & guides" else "support" if group=="About & support" else "activities"}"><div class="r-section-heading"><h2>{group}</h2></div><div class="r-list-grid">'+''.join(f'<a href="/{name}">{escape(title)}</a>' for name,title in sorted(items,key=lambda x:x[1].casefold()))+'</div></section>'
     page('directory.html','Complete Game & Topic Directory | TheQuizRealm','Browse TheQuizRealm’s game pages, regional collections, and practical guides from one crawlable directory.',body)
 
 def sitemap():

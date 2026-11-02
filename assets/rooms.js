@@ -18,7 +18,7 @@
   }
   function message(title,text){root.innerHTML=`<section class="r-game-card"><h2>${esc(title)}</h2><p style="margin-top:18px">${esc(text)}</p><div class="r-actions"><a class="r-button" href="/group-hub.html">Back to group games ↗</a></div></section>`;}
   async function service(){
-    const load=async()=>{await import('/firebase-config.js');const user=await window.firebaseReady;if(!user)throw new Error('Guest sign-in is unavailable.');uid=user.uid;fs=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');};
+    const load=async()=>{await import("/firebase-config.js?v=a86e2f61bb22");const user=await window.firebaseReady;if(!user)throw new Error('Guest sign-in is unavailable.');uid=user.uid;fs=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');};
     let timeout;try{await Promise.race([load(),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error('The multiplayer service did not respond.')),12000);})]);}finally{clearTimeout(timeout);}
   }
   function subscribe(){unsubscribe=fs.onSnapshot(ref,snapshot=>{if(!snapshot.exists()){clearInterval(tick);room=null;message('This room is no longer available.','Ask the host for a new room code.');return;}room=normalizeRoom(snapshot.data());if(!room){clearInterval(tick);lastView='';message('The room sent an invalid update.','Return to the group hub and create or join another room.');return;}render();},()=>{clearInterval(tick);message('The connection was interrupted.','Try joining again, or choose a same-device game.');});}

@@ -10,6 +10,7 @@ run(python,['tools/refresh-legacy.py']);
 run(python,['tools/clean-content.py']);
 run(python,['tools/rebuild_site.py']);
 run(process.execPath,['tools/compile-css.cjs']);
+run(process.execPath,['tools/version-assets.cjs']);
 run(process.execPath,['tools/check-site.cjs']);
 run(process.execPath,['tools/check-globals.cjs']);
 run(process.execPath,['tools/check-links.cjs']);

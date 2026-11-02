@@ -2,7 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto');
 const postcss=require('postcss'),tailwind=require('tailwindcss');
 const root=path.resolve(__dirname,'..'),output=path.join(root,'assets','styles');fs.mkdirSync(output,{recursive:true});
-function write(file,text){if(fs.existsSync(file)&&fs.readFileSync(file,'utf8')===text)return;const temporary=file+'.build-tmp';fs.writeFileSync(temporary,text);fs.renameSync(temporary,file);}
+const write=require('./write-file.cjs');
 function files(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory() ? (['.git','node_modules','.cache','site','tests','test-results','playwright-report'].includes(e.name)?[]:files(path.join(dir,e.name))) : e.name.endsWith('.html')?[path.join(dir,e.name)]:[]);}
 const groups=new Map();
 for(const file of files(root)){
