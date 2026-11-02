@@ -1,0 +1,11 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+test('all registered archive questions have valid, distinct choices and correct mappings',()=>{
+ const context={window:{},localStorage:{getItem:()=>null,setItem(){}}};vm.createContext(context);vm.runInContext(fs.readFileSync(path.join(root,'data.js'),'utf8')+';globalThis.bankResult={banks:QUESTION_BANKS,config:CATEGORY_CONFIG};',context);
+ const seen=new Set(),positions=[0,0,0,0];for(const bank of Object.values(context.bankResult.banks))for(const q of Array.isArray(bank)?bank:Object.values(bank).flat()){if(seen.has(q))continue;seen.add(q);assert.equal(typeof q.question,'string');assert.ok(q.question.length>0);assert.ok(Array.isArray(q.options)&&q.options.length>=2);assert.ok(Number.isInteger(q.correctIndex)&&q.correctIndex>=0&&q.correctIndex<q.options.length,q.question);assert.equal(new Set(q.options.map(a=>String(a).trim().toLowerCase())).size,q.options.length,q.question);positions[q.correctIndex]++;}
+ assert.ok(seen.size>=5000);assert.ok(positions.every(n=>n>900),'Correct answers should not all occupy the same position');for(const key of Object.keys(context.bankResult.config))assert.ok(context.bankResult.banks[key],'Missing question bank: '+key);
+});
+test('Daily Ten has distinct questions with answer explanations',()=>{
+ const questions=JSON.parse(fs.readFileSync(path.join(root,'site/daily-bank.json'),'utf8'));assert.ok(questions.length>=60);const seen=new Set();for(const [question,answers,explanation] of questions){assert.ok(!seen.has(question));seen.add(question);assert.equal(answers.length,4);assert.equal(new Set(answers).size,4);assert.ok(explanation.length>20);}
+});
+test('new Nexus puzzles each contain four distinct groups and sixteen unique tiles',()=>{const puzzles=JSON.parse(fs.readFileSync(path.join(root,'site/nexus-puzzles.json'),'utf8'));assert.equal(puzzles.length,10);assert.equal(new Set(puzzles.map(p=>p.id)).size,10);for(const p of puzzles){assert.equal(p.groups.length,4);for(const group of p.groups){assert.equal(group.items.length,4);assert.ok(group.category.length>0);}assert.equal(new Set(p.groups.flatMap(g=>g.items)).size,16);}});

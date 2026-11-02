@@ -1915,9 +1915,9 @@ const geographyBank = {
     { question: "What is the largest continent by area?", options: ["Asia", "Africa", "North America", "South America"], correctIndex: 0 },
     { question: "Which ocean is the largest?", options: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean"], correctIndex: 0 },
     { question: "What is the longest river in the world?", options: ["Nile River", "Amazon River", "Yangtze River", "Mississippi River"], correctIndex: 0 },
-    { question: "Which country has the largest population?", options: ["China", "India", "United States", "Indonesia"], correctIndex: 0 },
+    { question: "Which country overtook China as the world’s most populous country in 2023?", options: ["India", "China", "United States", "Indonesia"], correctIndex: 0 },
     { question: "What is the capital of France?", options: ["Paris", "London", "Berlin", "Rome"], correctIndex: 0 },
-    { question: "Which desert is the largest in the world?", options: ["Sahara Desert", "Arabian Desert", "Gobi Desert", "Kalahari Desert"], correctIndex: 0 },
+    { question: "Which hot desert is the largest in the world?", options: ["Sahara Desert", "Arabian Desert", "Gobi Desert", "Kalahari Desert"], correctIndex: 0 },
     { question: "What is the tallest mountain in the world?", options: ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"], correctIndex: 0 },
     { question: "Which country is both a continent and a country?", options: ["Australia", "Russia", "Canada", "United States"], correctIndex: 0 },
     { question: "What is the capital of Japan?", options: ["Tokyo", "Osaka", "Kyoto", "Seoul"], correctIndex: 0 },
@@ -1946,7 +1946,7 @@ const geographyBank = {
     { question: "Which country is known as the Land of the Midnight Sun?", options: ["Norway", "Sweden", "Finland", "Iceland"], correctIndex: 0 },
     { question: "What is the capital of India?", options: ["New Delhi", "Mumbai", "Kolkata", "Chennai"], correctIndex: 0 },
     { question: "Which river flows through Rome?", options: ["Tiber River", "Po River", "Arno River", "Rhine River"], correctIndex: 0 },
-    { question: "What is the largest desert in Asia?", options: ["Gobi Desert", "Sahara Desert", "Arabian Desert", "Karakum Desert"], correctIndex: 0 },
+    { question: "Which desert spans parts of northern China and southern Mongolia?", options: ["Gobi Desert", "Sahara Desert", "Arabian Desert", "Karakum Desert"], correctIndex: 0 },
     { question: "Which country is the largest in South America?", options: ["Brazil", "Argentina", "Peru", "Colombia"], correctIndex: 0 },
     { question: "What is the capital of Germany?", options: ["Berlin", "Munich", "Hamburg", "Frankfurt"], correctIndex: 0 },
     { question: "Which river is the longest in Europe?", options: ["Volga River", "Danube River", "Rhine River", "Thames River"], correctIndex: 0 },
@@ -1964,18 +1964,18 @@ const geographyBank = {
     { question: "Which river forms the border between the US and Mexico?", options: ["Rio Grande", "Colorado River", "Mississippi River", "Columbia River"], correctIndex: 0 }
   ],
   medium: [
-    { question: "What is the capital of Mongolia?", options: ["Ulaanbaatar", "Ulan Bator", "Ulaanbaatar", "Ulan Bator"], correctIndex: 0 },
+    { question: "What is the capital of Mongolia?", options: ["Ulaanbaatar", "Astana", "Bishkek", "Tashkent"], correctIndex: 0 },
     { question: "Which country has the most time zones?", options: ["France", "Russia", "United States", "United Kingdom"], correctIndex: 0 },
     { question: "What is the longest river in Asia?", options: ["Yangtze River", "Yellow River", "Mekong River", "Lena River"], correctIndex: 0 },
-    { question: "Which African country was never colonized?", options: ["Ethiopia", "Liberia", "Egypt", "South Africa"], correctIndex: 0 },
-    { question: "What is the capital of Kazakhstan?", options: ["Nur-Sultan", "Almaty", "Astana", "Bishkek"], correctIndex: 0 },
+    { question: "Which country defeated an Italian invasion at the Battle of Adwa in 1896?", options: ["Ethiopia", "Liberia", "Egypt", "South Africa"], correctIndex: 0 },
+    { question: "What is the capital of Kazakhstan?", options: ["Astana", "Almaty", "Bishkek", "Tashkent"], correctIndex: 0 },
     { question: "Which sea is the largest inland sea?", options: ["Caspian Sea", "Mediterranean Sea", "Black Sea", "Red Sea"], correctIndex: 0 },
     { question: "What is the highest capital city in the world?", options: ["La Paz", "Quito", "Bogotá", "Thimphu"], correctIndex: 0 },
     { question: "Which country has the most official languages?", options: ["Zimbabwe", "South Africa", "India", "Bolivia"], correctIndex: 0 },
     { question: "What is the capital of Uzbekistan?", options: ["Tashkent", "Samarkand", "Bukhara", "Dushanbe"], correctIndex: 0 },
     { question: "Which river is known as the 'Yellow River'?", options: ["Huang He", "Yangtze", "Mekong", "Ganges"], correctIndex: 0 },
     { question: "What is the smallest US state by area?", options: ["Rhode Island", "Delaware", "Connecticut", "Hawaii"], correctIndex: 0 },
-    { question: "Which country has the most neighbors?", options: ["China", "Russia", "Brazil", "Germany"], correctIndex: 0 },
+    { question: "Which of these countries borders Nepal?", options: ["China", "Russia", "Brazil", "Germany"], correctIndex: 0 },
     { question: "What is the capital of Bhutan?", options: ["Thimphu", "Paro", "Kathmandu", "Dhaka"], correctIndex: 0 },
     { question: "Which African river is the longest?", options: ["Nile", "Congo", "Niger", "Zambezi"], correctIndex: 0 },
     { question: "What is the largest city in Africa by population?", options: ["Lagos", "Cairo", "Kinshasa", "Johannesburg"], correctIndex: 0 },
@@ -2011,7 +2011,7 @@ const geographyBank = {
     { question: "What is the largest island in the Caribbean?", options: ["Cuba", "Hispaniola", "Jamaica", "Puerto Rico"], correctIndex: 0 },
     { question: "Which country has the most islands in the world?", options: ["Sweden", "Norway", "Finland", "Canada"], correctIndex: 0 },
     { question: "What is the capital of Myanmar?", options: ["Naypyidaw", "Yangon", "Mandalay", "Bagan"], correctIndex: 0 },
-    { question: "Which desert is located in southern Africa?", options: ["Kalahari Desert", "Namib Desert", "Sahara Desert", "Atacama Desert"], correctIndex: 0 },
+    { question: "Which desert covers much of Botswana?", options: ["Kalahari Desert", "Namib Desert", "Sahara Desert", "Atacama Desert"], correctIndex: 0 },
     { question: "What is the largest city in Southeast Asia?", options: ["Jakarta", "Bangkok", "Manila", "Ho Chi Minh City"], correctIndex: 0 },
     { question: "Which country has the most rivers?", options: ["Russia", "Canada", "China", "Brazil"], correctIndex: 0 }
   ],
@@ -2029,11 +2029,11 @@ const geographyBank = {
     { question: "What is the smallest country in Africa by area?", options: ["Seychelles", "The Gambia", "Djibouti", "Comoros"], correctIndex: 0 },
     { question: "Which country has the most land borders with other countries?", options: ["China", "Russia", "Brazil", "Germany"], correctIndex: 0 },
     { question: "What is the capital of Liechtenstein?", options: ["Vaduz", "Schaan", "Triesen", "Balzers"], correctIndex: 0 },
-    { question: "Which African river has the second largest flow volume?", options: ["Congo River", "Nile River", "Niger River", "Zambezi River"], correctIndex: 0 },
+    { question: "Which African river has the greatest average discharge?", options: ["Congo River", "Nile River", "Niger River", "Zambezi River"], correctIndex: 0 },
     { question: "What is the largest city in the world by urban area?", options: ["Tokyo", "Delhi", "Shanghai", "São Paulo"], correctIndex: 0 },
     { question: "Which European country has the longest coastline?", options: ["Norway", "Greece", "United Kingdom", "Croatia"], correctIndex: 0 },
     { question: "What is the capital of Andorra?", options: ["Andorra la Vella", "Escaldes-Engordany", "Encamp", "Sant Julià de Lòria"], correctIndex: 0 },
-    { question: "Which desert is the largest in China?", options: ["Taklamakan Desert", "Gobi Desert", "Ordos Desert", "Karakum Desert"], correctIndex: 0 },
+    { question: "Which desert covers much of the Tarim Basin?", options: ["Taklamakan Desert", "Gobi Desert", "Ordos Desert", "Karakum Desert"], correctIndex: 0 },
     { question: "What is the largest island in Indonesia?", options: ["New Guinea", "Borneo", "Sumatra", "Java"], correctIndex: 0 },
     { question: "Which country has the longest total coastline including islands?", options: ["Canada", "Indonesia", "Russia", "Philippines"], correctIndex: 0 },
     { question: "What is the capital of San Marino?", options: ["San Marino", "Borgo Maggiore", "Serravalle", "Domagnano"], correctIndex: 0 },
@@ -2065,13 +2065,13 @@ const geographyBank = {
     { question: "What is the largest island in the Atlantic Ocean?", options: ["Greenland", "Great Britain", "Iceland", "Newfoundland"], correctIndex: 0 },
     { question: "Which country has the most UNESCO biosphere reserves?", options: ["United States", "Spain", "Russia", "Mexico"], correctIndex: 0 },
     { question: "What is the capital of Suriname?", options: ["Paramaribo", "Lelydorp", "Nieuw Nickerie", "Moengo"], correctIndex: 0 },
-    { question: "Which desert is the largest in North America?", options: ["Chihuahuan Desert", "Sonoran Desert", "Mojave Desert", "Great Basin Desert"], correctIndex: 0 }
+    { question: "Which desert shares its name with the Mexican state of Chihuahua?", options: ["Chihuahuan Desert", "Sonoran Desert", "Mojave Desert", "Great Basin Desert"], correctIndex: 0 }
   ]
 };
 
 const historyBank = {
   easy: [
-    { question: "Which empire was ruled by Julius Caesar?", options: ["Roman Empire", "British Empire", "Ottoman Empire", "French Empire"], correctIndex: 0 },
+    { question: "Which ancient civilization did Julius Caesar belong to?", options: ["Roman civilization", "Inca civilization", "Maya civilization", "Ancient Egypt"], correctIndex: 0 },
     { question: "What was the period of cultural rebirth in Europe called?", options: ["The Renaissance", "The Enlightenment", "The Reformation", "The Industrial Revolution"], correctIndex: 0 },
     { question: "Who was the French military leader who became Emperor?", options: ["Napoleon Bonaparte", "Louis XVI", "Charlemagne", "William the Conqueror"], correctIndex: 0 },
     { question: "Which war lasted from 1914 to 1918?", options: ["World War I", "World War II", "The Hundred Years' War", "The Crimean War"], correctIndex: 0 },
@@ -2140,7 +2140,7 @@ const historyBank = {
     { question: "Which European country was neutral during both World Wars?", options: ["Switzerland", "Sweden", "Spain", "Ireland"], correctIndex: 0 },
     { question: "What was the name of the Russian revolutionary group that assassinated Alexander II?", options: ["People's Will", "Bolsheviks", "Mensheviks", "Socialist Revolutionaries"], correctIndex: 0 },
     { question: "Who was the French emperor during the Franco-Prussian War?", options: ["Napoleon III", "Louis Philippe", "Charles X", "Louis XVIII"], correctIndex: 0 },
-    { question: "Which European country had the first female prime minister?", options: ["Sri Lanka", "United Kingdom", "India", "Israel"], correctIndex: 0 },
+    { question: "Which country was led by Prime Minister Sirimavo Bandaranaike?", options: ["Sri Lanka", "United Kingdom", "India", "Israel"], correctIndex: 0 },
     { question: "What was the name of the German customs union that preceded unification?", options: ["Zollverein", "Hanseatic League", "Holy Roman Empire", "German Confederation"], correctIndex: 0 },
     { question: "Who was the English king during the American Revolution?", options: ["George III", "George II", "George IV", "William IV"], correctIndex: 0 },
     { question: "Which European country colonized Indonesia?", options: ["Netherlands", "Portugal", "Spain", "United Kingdom"], correctIndex: 0 },
@@ -2426,7 +2426,7 @@ const scienceBank = {
     { question: "What is the basic unit of heredity?", options: ["Gene", "Chromosome", "DNA", "Cell"], correctIndex: 0 },
     { question: "What is the study of rocks called?", options: ["Geology", "Biology", "Chemistry", "Physics"], correctIndex: 0 },
     { question: "What is the fastest land animal?", options: ["Cheetah", "Lion", "Horse", "Greyhound"], correctIndex: 0 },
-    { question: "What is the chemical symbol for water?", options: ["H₂O", "O₂", "CO₂", "NaCl"], correctIndex: 0 },
+    { question: "What is the chemical formula for water?", options: ["H₂O", "O₂", "CO₂", "NaCl"], correctIndex: 0 },
     { question: "What type of rock is slate?", options: ["Metamorphic", "Igneous", "Sedimentary", "Basalt"], correctIndex: 0 },
     { question: "What is the largest organ inside the human body?", options: ["Liver", "Heart", "Brain", "Lungs"], correctIndex: 0 },
     { question: "What is the hottest planet in our solar system?", options: ["Venus", "Mercury", "Mars", "Jupiter"], correctIndex: 0 },
@@ -2984,7 +2984,7 @@ easy: [
 { question: "What is the main objective of the upcoming Dragonfly mission to Saturn's moon Titan?", options: ["To fly a rotorcraft to multiple locations to study prebiotic chemistry", "To drill into the ice shell", "To swim in the methane lakes", "To establish a permanent base"], correctIndex: 0 },
 { question: "What is the name of the first crewed mission of Boeing's Starliner spacecraft?", options: ["Boeing Crew Flight Test (CFT)", "Demo-2", "Inspiration4", "Polaris Dawn"], correctIndex: 0 },
 { question: "The Event Horizon Telescope famously captured the first-ever image of what?", options: ["A black hole", "An exoplanet", "A neutron star", "A white dwarf"], correctIndex: 0 },
-{ question: "What is the name of the star that the James Webb telescope found to have water vapor in the atmosphere of one of its exoplanets?", options: ["WASP-96b", "TRAPPIST-1e", "Proxima Centauri b", "Kepler-186f"], correctIndex: 0 },
+{ question: "Which exoplanet’s atmosphere was observed to contain water vapor in an early James Webb Space Telescope spectrum?", options: ["WASP-96b", "TRAPPIST-1e", "Proxima Centauri b", "Kepler-186f"], correctIndex: 0 },
 { question: "What is the name of the Indian Space Research Organisation's (ISRO) successful 2023 Moon landing mission?", options: ["Chandrayaan-3", "Mangalyaan 2", "Gaganyaan", "Aditya-L1"], correctIndex: 0 },
 { question: "Which company is developing the 'New Glenn' reusable orbital rocket?", options: ["Blue Origin", "SpaceX", "Rocket Lab", "United Launch Alliance"], correctIndex: 0 },
 { question: "What is the name of the first all-civilian mission to orbit Earth?", options: ["Inspiration4", "DearMoon", "Axiom Mission 1", "Polaris Dawn"], correctIndex: 0 },
@@ -3006,7 +3006,7 @@ easy: [
 { question: "What is the name of the first mission to orbit another planet?", options: ["Mariner 9", "Venera 9", "Viking 1", "Pioneer Venus Orbiter"], correctIndex: 0 },
 { question: "What is the name of the first spacecraft to use a gravity assist maneuver?", options: ["Mariner 10", "Pioneer 10", "Voyager 1", "Luna 3"], correctIndex: 0 },
 { question: "What is the name of the first mission to return a sample from a comet?", options: ["Stardust", "Rosetta", "Deep Impact", "Giotto"], correctIndex: 0 },
-{ question: "What is the name of the first mission to return a sample from the Moon?", options: ["Luna 16", "Apollo 11", "Surveyor 1", "Chang'e 5"], correctIndex: 0 },
+{ question: "What was the first robotic mission to return a sample from the Moon?", options: ["Luna 16", "Apollo 11", "Surveyor 1", "Chang'e 5"], correctIndex: 0 },
 { question: "What is the name of the first mission to use aerobraking to enter orbit?", options: ["Magellan", "Mars Global Surveyor", "Mars Odyssey", "Venera 9"], correctIndex: 0 },
 { question: "What is the name of the first mission to use a rover on another world?", options: ["Lunokhod 1", "Apollo 15", "Sojourner", "Viking 1"], correctIndex: 0 },
 { question: "What is the name of the first mission to use a parachute on another planet?", options: ["Venera 7", "Viking 1", "Mars 3", "Pioneer Venus"], correctIndex: 0 },
@@ -3016,7 +3016,7 @@ easy: [
 { question: "What is the name of the first mission to use a mass spectrometer on another planet?", options: ["Viking 1", "Venera 9", "Mariner 9", "Pioneer Venus"], correctIndex: 0 },
 { question: "What is the name of the first mission to use a seismometer on another world?", options: ["Apollo 11", "Viking 1", "InSight", "Luna 13"], correctIndex: 0 },
 { question: "What is the name of the first mission to use a wind sensor on another planet?", options: ["Viking 1", "Venera 9", "Pathfinder", "Phoenix"], correctIndex: 0 },
-{ question: "What is the name of the first mission to use a camera on another planet?", options: ["Mariner 4", "Venera 9", "Viking 1", "Mars 3"], correctIndex: 0 },
+{ question: "Which mission returned the first close-up flyby images of Mars in 1965?", options: ["Mariner 4", "Venera 9", "Viking 1", "Mars 3"], correctIndex: 0 },
 { question: "What do we call a rock from space that reaches Earth's surface?", options: ["Meteorite", "Meteor", "Comet", "Asteroid"], correctIndex: 0 },
 { question: "What do we call a bright streak of light from a small rock burning in the atmosphere?", options: ["Meteor", "Comet", "Asteroid", "Galaxy"], correctIndex: 0 },
 { question: "What is the name of our star?", options: ["The Sun", "Sirius", "Polaris", "Betelgeuse"], correctIndex: 0 },
@@ -3872,7 +3872,7 @@ const biologyBank = {
 
 const chemistryBank = {
   easy: [
-    { question: "What is the chemical symbol for water?", options: ["H₂O", "O₂", "CO₂", "HO"], correctIndex: 0 },
+    { question: "What is the chemical formula for water?", options: ["H₂O", "O₂", "CO₂", "HO"], correctIndex: 0 },
     { question: "What gas do humans exhale?", options: ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"], correctIndex: 0 },
     { question: "Which particle has a negative charge?", options: ["Electron", "Proton", "Neutron", "Ion"], correctIndex: 0 },
     { question: "What is the chemical symbol for gold?", options: ["Au", "Ag", "Gd", "Go"], correctIndex: 0 },
@@ -6678,54 +6678,10 @@ function unlockAchievement(id) {
 }
 
 // Called from quiz.html after each quiz
-function recordQuizAnalytics(session) {
-  // session: { category, difficulty, playMode, score, totalQuestions, bestStreak, skipUsed, powerupUsed, powerupsUsedCount? }
-  const a = loadAnalytics();
 
-  a.quizzesPlayed    = (a.quizzesPlayed    || 0) + 1;
-  a.questionsAnswered = (a.questionsAnswered || 0) + (session.totalQuestions || 0);
-  a.correctAnswers   = (a.correctAnswers   || 0) + (session.score || 0);
-
-  if (session.playMode === "daily") {
-    a.dailyPlayed = (a.dailyPlayed || 0) + 1;
-  }
-
-  const usedCount = (session.powerupsUsedCount != null)
-    ? session.powerupsUsedCount
-    : (session.powerupUsed ? 1 : 0);
-
-  a.powerupsUsed = (a.powerupsUsed || 0) + (usedCount || 0);
-
-  a.lastQuiz = {
-    category:   session.category || null,
-    difficulty: session.difficulty || null,
-    playMode:   session.playMode || null,
-    score:      session.score || 0,
-    total:      session.totalQuestions || 0,
-    bestStreak: session.bestStreak || 0,
-    at:        Date.now()
-  };
-
-  saveAnalytics(a);
-}
 
 // Optional: called from Pictionary minigame
-function recordPictioAnalytics(summary) {
-  // summary: { categoryKey, timerSeconds, totalRounds, teamA, teamB }
-  const a = loadAnalytics();
 
-  a.pictioGames   = (a.pictioGames   || 0) + 1;
-  a.pictioRounds  = (a.pictioRounds  || 0) + (summary.totalRounds || 0);
-  a.pictioLast    = {
-    categoryKey:  summary.categoryKey || null,
-    timerSeconds: summary.timerSeconds || 0,
-    teamA:        summary.teamA || null,
-    teamB:        summary.teamB || null,
-    at:           Date.now()
-  };
-
-  saveAnalytics(a);
-}
 
 
 
@@ -6835,3 +6791,25 @@ const PICT_CATEGORIES = {
   school:     { label: "School & Office",      icon: "📚" },
   random:     { label: "Random Easy Words",    icon: "🎲" }
 };
+
+/* REALM BANK ADAPTER */
+/* Registry repairs and stable answer shuffling. Questions retain their answers. */
+(function(){
+  QUESTION_BANKS.science=scienceBank;
+  QUESTION_BANKS.belgianfacts=belgianFactsBank;
+  QUESTION_BANKS.worldCcapitals=worldCapitalsBank;
+  QUESTION_BANKS.belgianhistoy=belgianHistoryBank;
+  QUESTION_BANKS.randomsciencescience=scienceBank;
+  for(const key of ['basketball','flags','music'])if(!QUESTION_BANKS[key])delete CATEGORY_CONFIG[key];
+  if(CATEGORY_CONFIG.avatar2025)CATEGORY_CONFIG.avatar2025.longDesc='Explore the characters, places, and stories of the Avatar films. Choose a difficulty and play a ten-question round.';
+  const visited=new Set();
+  for(const bank of Object.values(QUESTION_BANKS)){
+    for(const q of (Array.isArray(bank)?bank:Object.values(bank).flat())){
+      if(!q||!Array.isArray(q.options)||visited.has(q))continue;visited.add(q);
+      const answers=q.options.map((text,i)=>({text,correct:i===q.correctIndex}));
+      let seed=Array.from(q.question||'').reduce((a,c)=>Math.imul(a^c.charCodeAt(0),16777619)>>>0,2166136261);
+      for(let i=answers.length-1;i>0;i--){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const j=Math.floor(seed/4294967296*(i+1));[answers[i],answers[j]]=[answers[j],answers[i]];}
+      q.options=answers.map(a=>a.text);q.correctIndex=answers.findIndex(a=>a.correct);
+    }
+  }
+})();

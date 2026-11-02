@@ -1,23 +1,18 @@
 name: IndexNow Ping
-
-# This tells GitHub to run this code every time you push to the main branch
 on:
-  push:
-    branches:
-      - main  # CHANGE THIS if your default branch is named 'master'
-
+  workflow_run:
+    workflows: [Site quality]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
 jobs:
   indexnow-submit:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Submit to IndexNow (Bing & Yandex)
-        uses: bojieyang/indexnow-action@v2
+      - uses: actions/checkout@v6
         with:
-         
-          sitemap-location: 'https://thequizrealm.com/sitemap.xml'
-          
-         
-          key: ${{ secrets.INDEXNOW_KEY }}
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Submit canonical URLs
+        run: python tools/indexnow.py

@@ -1,0 +1,2 @@
+const {defineConfig,devices}=require('@playwright/test');
+module.exports=defineConfig({testDir:'./tests/browser',timeout:45000,fullyParallel:false,workers:1,reporter:'list',use:{baseURL:'http://127.0.0.1:4173',channel:'chrome',trace:'retain-on-failure',screenshot:'only-on-failure'},webServer:{command:'node tools/serve.cjs',url:'http://127.0.0.1:4173',reuseExistingServer:true,timeout:15000},projects:[{name:'desktop',use:{viewport:{width:1440,height:1000}}},{name:'mobile',use:{...devices['iPhone 13'],defaultBrowserType:'chromium',channel:'chrome'}}]});
