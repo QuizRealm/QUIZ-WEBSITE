@@ -62,6 +62,12 @@ after that check succeeds; it does not submit to Google Search Console.
 The internal-link gate requires every canonical indexable page to be reachable
 from the homepage and linked from at least two other indexable pages. Its detailed
 report is written to `.cache/internal-links.json`.
+The sitemap is generated from public HTML metadata, including new games, guides,
+collections, and eligible pages in subfolders. Redirects and pages marked noindex
+stay excluded. `npm run check` validates XML and exact canonical-page coverage,
+so adding a page requires regenerating the sitemap with `npm run build`.
+The generator omits modification dates when a reliable content-update date is
+unavailable, rather than setting every page's date on each build.
 
 For new artwork, `node tools/optimize-assets.cjs` can resize large images and make
 library thumbnails. Review its output visually before committing. This is an

@@ -216,3 +216,23 @@ Google indexing decisions, Search Console-specific exclusions, and AdSense
 approval require follow-up in those services; no approval or traffic increase is
 claimed. Advertising remains disabled pending approval and a suitable consent
 setup.
+
+## Sitemap follow-up
+
+- Audited all 366 public HTML pages, including every newly created game, guide,
+  and collection. The sitemap contains all 253 canonical indexable pages;
+  90 redirect aliases and 23 noindex pages are intentionally excluded.
+- All 13 pages added since the original backup are present, including Memory
+  Trail, Reaction Five, the new guides, and the editorial policy. The complete
+  build, publishing checks, and 16 unit tests (including eight sitemap scenarios)
+  passed after this follow-up.
+- Replaced the root-folder-only sitemap scan with recursive discovery using
+  actual canonical and robots metadata. New eligible pages in subfolders now
+  enter the sitemap automatically. The homepage uses its canonical root URL.
+- The publishing gate now parses XML and rejects missing canonical pages,
+  duplicate entries, unexpected URLs, and nonindexable or redirected pages.
+  Added regressions for new game/guide discovery, nested pages, robots attribute
+  order/casing, invalid XML, and canonical mismatches.
+- `robots.txt` advertises the canonical sitemap URL. Modification dates are
+  omitted until reliable per-page content-update dates are available, following
+  [Google's sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap).

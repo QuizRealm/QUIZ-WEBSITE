@@ -52,7 +52,8 @@ for(const file of htmlFiles){
   if(/cdn\.tailwindcss\.com/.test(text))error(file,'Runtime Tailwind CDN remains');
   if(/<script[^>]*src=["'][^"']*(?:pagead2|googletagmanager)/.test(text))error(file,'Unconditional tracking/advertising loader remains');
 }
-const sitemap=fs.readFileSync(path.join(root,'sitemap.xml'),'utf8');const urls=[...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>m[1]);if(new Set(urls).size!==urls.length)error('sitemap.xml','Duplicate URLs');
-for(const url of urls){const pathname=new URL(url).pathname;const file=path.join(root,pathname==='/'?'index.html':decodeURIComponent(pathname));if(!fs.existsSync(file))error('sitemap.xml','Missing page '+url);else{const text=fs.readFileSync(file,'utf8');if(/<meta\b[^>]*content=["']noindex/i.test(text)||/http-equiv=["']refresh/i.test(text))error('sitemap.xml','Non-indexable page '+url);}}
+const sitemap=fs.readFileSync(path.join(root,'sitemap.xml'),'utf8');const urls=[...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>m[1]);
+const sitemapCheck=require('node:child_process').spawnSync(require('./python.cjs')(),['tools/sitemap.py','--check'],{cwd:root,encoding:'utf8',windowsHide:true});
+if(sitemapCheck.error||sitemapCheck.status!==0)error(path.join(root,'sitemap.xml'),sitemapCheck.error?.message||sitemapCheck.stderr.trim()||'Sitemap audit failed');
 const catalog=JSON.parse(fs.readFileSync(path.join(root,'site','catalog.json'),'utf8'));for(const game of catalog){for(const name of [game.url.split('?')[0],game.image])if(!fs.existsSync(path.join(root,name)))error('site/catalog.json','Missing '+name);}
 const summary={htmlPages:htmlFiles.length,inlineScripts:scripts,sitemapURLs:urls.length,errors:errors.length};console.log(JSON.stringify(summary,null,2));if(errors.length){console.error(errors.slice(0,100).join('\n'));process.exitCode=1;}

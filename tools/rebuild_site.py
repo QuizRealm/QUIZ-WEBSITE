@@ -11,6 +11,7 @@ from datetime import date
 import json, re, shutil, time
 from homepage import build_home
 from rapid_page import build_rapid
+from sitemap import render_sitemap
 
 ROOT = Path(__file__).resolve().parents[1]
 DOMAIN = 'https://thequizrealm.com'
@@ -350,16 +351,11 @@ def build_directory():
     page('directory.html','Complete Game & Topic Directory | TheQuizRealm','Browse TheQuizRealm’s game pages, regional collections, and practical guides from one crawlable directory.',body)
 
 def sitemap():
-    urls=[]
-    for p in sorted(ROOT.glob('*.html')):
-        if p.name in ALIASES or p.name in NOINDEX:continue
-        text=p.read_text(encoding='utf-8')
-        if re.search(r'<meta[^>]*name="robots"[^>]*content="noindex',text):continue
-        urls.append(DOMAIN+('/' if p.name=='index.html' else '/'+p.name))
-    write('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+''.join(f'  <url><loc>{escape(u)}</loc></url>\n' for u in urls)+'</urlset>')
+    document=render_sitemap(ROOT)
+    write('sitemap.xml',document)
     write('robots.txt',f'User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}/sitemap.xml')
     write('manifest.json',json.dumps({'name':'TheQuizRealm — Games for Curious People','short_name':'TheQuizRealm','start_url':'/','display':'standalone','background_color':'#101819','theme_color':'#101819','icons':[{'src':'/android-chrome-192x192.png','sizes':'192x192','type':'image/png'},{'src':'/android-chrome-512x512.png','sizes':'512x512','type':'image/png'}]},indent=2))
-    return len(urls)
+    return document.count('<loc>')
 
 def main():
     write('components.js',(ROOT/'site/components.js').read_text(encoding='utf-8'))

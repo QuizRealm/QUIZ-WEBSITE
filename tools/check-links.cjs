@@ -6,7 +6,7 @@ const normalize=url=>{const parsed=new URL(url,origin);if(parsed.origin!==origin
 const urls=[...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>normalize(m[1]));
 const outgoing=new Map(urls.map(url=>[url,new Set()])),incoming=new Map(urls.map(url=>[url,new Set()]));
 for(const source of urls){
- const file=path.join(root,source==='/'?'index.html':source);
+ const file=path.join(root,source.endsWith('/')?source+'index.html':source);
  const html=fs.readFileSync(file,'utf8').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,'');
  for(const match of html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["']/gi)){
   try{const target=normalize(new URL(match[1].replace(/&amp;/g,'&'),origin+source));if(target&&target!==source&&incoming.has(target)){outgoing.get(source).add(target);incoming.get(target).add(source);}}catch{}
