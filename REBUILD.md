@@ -148,3 +148,32 @@ SEO writing and improve contextual internal links.
 Further stages should keep auditing retained games and improving useful original
 content rather than cutting text for brevity. Search Console-specific exclusions
 and real production Firebase room availability remain unverified.
+
+## Stage three: timed trivia, history, and Hangman
+
+- Rebuilt Rapid Fire with native keyboard/touch answer controls, a real deadline,
+  one accepted answer per question, a five-second mistake penalty, and a complete
+  answer review. Ending or timing out records a result once; an unanswered round
+  adds no game completion or XP. Rewards and answer accuracy are explicit.
+- Normalized the Science, World Capitals, and Belgian History menu keys. Existing
+  misspelled query aliases still work, and the menus show one canonical entry.
+- History Timeline now accepts keyboard placement, allows either ordering for
+  events in the same year, and prevents repeated awards after completion. XP is
+  saved as XP, rather than passed as a count of correct answers.
+- Fixed 19 Hangman entries containing punctuation or digits: those characters
+  are revealed, while the player guesses A–Z. Kept all 828 word-bank entries.
+  The game tolerates a broken old save, shows shared profile XP/levels, and
+  records zero XP for losses consistently with its result screen.
+- Added detailed rules, strategy, scoring explanations, and contextual links to
+  all three game pages. Existing useful page content remains in place.
+- The shared result API now supports an explicit bounded XP reward, including
+  zero, inside the same deduplicated completion operation. Legacy reward hooks
+  remain compatible. Delayed result panels cannot overwrite a newly reset round.
+- Added desktop/mobile regression coverage for timed penalties, duplicate input,
+  background-style timer jumps, idle rounds, keyboard placement, same-year ties,
+  punctuation, old saved data, and matching XP displays. Production room testing
+  is still outside these browser-local checks.
+- Validation passed: 14 unit tests, the full 50-test desktop/mobile browser
+  suite, static checks of 366 HTML pages, and the internal-link gate for all 253
+  canonical pages. Initial-load checks of 276 retained root pages per viewport
+  found no page errors or horizontal overflow.

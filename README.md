@@ -42,6 +42,7 @@ do not read a personal browser profile or write to production Firebase.
 - `assets/realm.css`: shared design system and responsive discovery pages.
 - `assets/progress.js`: local XP, game history, streaks, achievements, backups.
 - `assets/quiz.js`, `assets/duel.js`, `assets/arcade-new.js`: rebuilt game flows.
+- `assets/rapid.js`, `tools/rapid_page.py`: timed trivia, answer review, and guidance.
 - `assets/rooms.js`: existing Firebase multiplayer protocol.
 - Root HTML: retained standalone games and their unique instructions.
 

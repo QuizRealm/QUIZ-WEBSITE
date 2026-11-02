@@ -60,7 +60,7 @@
     seen.add(id);
     const valid=extra.scored!==false && Number(total)>0 && Number(score)>=0 && Number(score)<=Number(total);
     const accuracy=valid ? Math.round(Number(score)/Number(total)*100) : null;
-    const xp=pendingXP || Math.min(200,20+(valid ? Math.round(80*Number(score)/Number(total)) : 30));
+    const xp=pendingXP || (Number.isFinite(extra.xp) ? finite(extra.xp,10000) : Math.min(200,20+(valid ? Math.round(80*Number(score)/Number(total)) : 30)));
     if(!pendingXP)state.xp+=xp;
     pendingXP=0;
     state.history.push({id,game:String(game || 'Game').slice(0,100),score:finite(score),total:finite(total),accuracy,xp,timestamp:Date.now(),daily:Boolean(extra.daily)});

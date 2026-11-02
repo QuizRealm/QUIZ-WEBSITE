@@ -10,6 +10,7 @@ from urllib.parse import urlsplit, unquote
 from datetime import date
 import json, re, shutil
 from homepage import build_home
+from rapid_page import build_rapid
 
 ROOT = Path(__file__).resolve().parents[1]
 DOMAIN = 'https://thequizrealm.com'
@@ -358,6 +359,7 @@ def main():
     write('assets/daily-bank.js','/* Curated Daily Ten questions and answer explanations. */\nconst DAILY_BANK = '+json.dumps([{'question':q,'options':a,'correctIndex':0,'explanation':e} for q,a,e in daily],ensure_ascii=False,separators=(',',':'))+';')
     write('assets/nexus/puzzles.json',(ROOT/'site/nexus-puzzles.json').read_text(encoding='utf-8'))
     build_hubs();build_profiles();build_reflections();build_social();build_editorial();build_collections()
+    build_rapid(page,head,related_for)
     removed=normalize_archive();build_aliases();build_directory();count=sitemap()
     print(json.dumps({'generated_pages':len(GENERATED),'redirect_aliases':len(ALIASES),'removed_repeated_blocks':removed,'sitemap_urls':count}))
 

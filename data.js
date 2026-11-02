@@ -6800,6 +6800,12 @@ const PICT_CATEGORIES = {
   QUESTION_BANKS.worldCcapitals=worldCapitalsBank;
   QUESTION_BANKS.belgianhistoy=belgianHistoryBank;
   QUESTION_BANKS.randomsciencescience=scienceBank;
+  // Keep old query keys working while menus use one correctly named entry.
+  for(const [legacy,canonical] of [['randomsciencescience','science'],['worldCcapitals','worldCapitals'],['belgianhistoy','belgianhistory']]){
+    if(!CATEGORY_CONFIG[legacy])continue;
+    if(!CATEGORY_CONFIG[canonical])CATEGORY_CONFIG[canonical]=CATEGORY_CONFIG[legacy];
+    Object.defineProperty(CATEGORY_CONFIG,legacy,{value:CATEGORY_CONFIG[canonical],enumerable:false,configurable:true});
+  }
   for(const key of ['basketball','flags','music'])if(!QUESTION_BANKS[key])delete CATEGORY_CONFIG[key];
   if(CATEGORY_CONFIG.avatar2025)CATEGORY_CONFIG.avatar2025.longDesc='Explore the characters, places, and stories of the Avatar films. Choose a difficulty and play a ten-question round.';
   const visited=new Set();

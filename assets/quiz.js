@@ -12,7 +12,7 @@
   const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const banks=typeof QUESTION_BANKS==='undefined'?{}:QUESTION_BANKS;
   const config=typeof CATEGORY_CONFIG==='undefined'?{}:CATEGORY_CONFIG;
-  subject=Object.keys(banks).find(key=>key.toLowerCase()===subject.toLowerCase())||subject;
+  subject=Object.hasOwn(banks,subject)?subject:(Object.keys(banks).find(key=>key.toLowerCase()===subject.toLowerCase())||subject);
   const seen=new Set();
   function poolFor(key){const b=banks[key];return Array.isArray(b)?b:(b?.[difficulty]||b?.easy||[]);}
   let pool=daily&&typeof DAILY_BANK!=='undefined'?DAILY_BANK:subject==='mixed'?['science','geography','history','food','space','worldCapitals','programming','biology'].flatMap(poolFor):poolFor(subject);
@@ -44,7 +44,7 @@
     el.querySelector('#share-score').onclick=async()=>{const text=`I scored ${score}/${questions.length} on ${daily?'TheQuizRealm’s Daily Ten':label+' on TheQuizRealm'}. Try it: https://thequizrealm.com/${daily?'daily.html':'quiz.html?category='+encodeURIComponent(subject)}`;try{await navigator.clipboard.writeText(text);el.querySelector('#share-status').textContent='Result copied. Share it with a friend.';}catch{el.querySelector('#share-status').textContent=text;}};
     el.querySelector('h2').tabIndex=-1;el.querySelector('h2').focus();
   }
-  document.addEventListener('keydown',event=>{if(locked||event.repeat||/input|textarea|select/i.test(document.activeElement?.tagName))return;const i=['1','2','3','4'].indexOf(event.key);if(i>=0&&questions[index]?.answers[i])answer(i);});
+  document.addEventListener('keydown',event=>{if(locked||event.repeat||event.ctrlKey||event.altKey||event.metaKey||/input|textarea|select/i.test(document.activeElement?.tagName))return;const i=['1','2','3','4'].indexOf(event.key);if(i>=0&&questions[index]?.answers[i])answer(i);});
   window.GameEngine?.trackEvent('game_start',{game_name:daily?'Daily Challenge':label+' Quiz',game_type:'trivia'});
   render();
 })();

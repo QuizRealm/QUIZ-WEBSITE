@@ -99,6 +99,8 @@ LABELS = {
     'A simple decryption strategy that wins more often': 'A practical way to use the letter clues',
     'word decryption puzzle': 'five-letter word puzzle',
     'Vortex Cross • Premium Speed Puzzle': 'Mini Crossword — A 5×5 Word Puzzle',
+    'Chronos Lexicon • Hangman v2': 'Hangman — Themed Word Puzzles | TheQuizRealm',
+    'A futuristic evolution of Hangman. Race against the Chronos timer to decrypt words before your lifeline runs out. High-speed vocabulary training.': 'Guess letters in themed words and phrases. Play with six allowed mistakes, optional hints, and a shared local player profile. No countdown timer.',
     'The premium 5x5 mini crossword. Solve daily logic puzzles against a global timer.': 'Solve a compact five-by-five crossword using clue lists and an on-screen keyboard. Your round timer and results stay local.',
 }
 
@@ -148,6 +150,8 @@ for path in ROOT.glob('*.html'):
                 '<div><span class="text-xs font-bold text-slate-400" id="roundDisplay">ROUND 1 / 10</span><span id="turnDisplay" class="block text-xs font-bold text-accentBlue">Team One Drawing</span></div>')
         text=re.sub(r'> SYSTEM_CHECK: ONLINE<br>\s*> NEURAL_LINK: STABLE<br>\s*> UPLINK_SPEED: 100%<br><br>\s*This module tests rapid visual communication protocols\. Ensure all operatives are ready before initiating timer sequence\.',
                     'One person draws while their team guesses. Keep the secret word out of sight, agree on any drawing rules, and pass the device when the turn ends.',text)
+    if path.name=='hangman.html':
+        text=text.replace('Chronos <span','Hangman <span').replace('>Lexicon</span>','>Word Puzzle</span>')
     text=labels(text)
     parser=FriendlyText(text);parser.feed(text);text=build.edits_apply(text,parser.edits)
     if path.stem in THEMED:
