@@ -236,3 +236,8 @@ setup.
 - `robots.txt` advertises the canonical sitemap URL. Modification dates are
   omitted until reliable per-page content-update dates are available, following
   [Google's sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap).
+- Live verification found `/sitemap.xml` returning 404 despite successful builds.
+  The deployment log confirmed Jekyll 3 excluded it because `exclude: site`
+  also matches the `sitemap.xml` prefix. Added explicit publishing includes for
+  the sitemap and the similarly affected public `tools-import.html` retirement
+  notice, while keeping maintenance directories excluded.
