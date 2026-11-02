@@ -1,4 +1,4 @@
-# QuizRealm
+# TheQuizRealm
 
 A static browser-game website at **https://thequizrealm.com**. No JavaScript
 application framework, paid dependency, account signup, or application server is required.
@@ -29,6 +29,9 @@ do not read a personal browser profile or write to production Firebase.
 
 ## Where to edit
 
+- `site/home.json`, `tools/homepage.py`, `assets/home.css`: homepage sections and layout.
+- `site/game-notes.json`: detailed game-specific explanations and related links.
+- `site/reading-paths.json`: topical paths between retained games and articles.
 - `site/catalog.json`: curated game-library cards and descriptions.
 - `site/daily-bank.json`: Daily Ten questions, answers, and explanations.
 - `site/nexus-puzzles.json`: ten original word-grouping puzzles.
@@ -52,6 +55,9 @@ Push tested changes to `main`. GitHub Pages uses the existing `CNAME` and
 `_config.yml`; maintenance sources, dependencies, and test artifacts are excluded.
 The quality workflow checks every push. IndexNow submits the canonical sitemap
 after that check succeeds; it does not submit to Google Search Console.
+The internal-link gate requires every canonical indexable page to be reachable
+from the homepage and linked from at least two other indexable pages. Its detailed
+report is written to `.cache/internal-links.json`.
 
 For new artwork, `node tools/optimize-assets.cjs` can resize large images and make
 library thumbnails. Review its output visually before committing. This is an

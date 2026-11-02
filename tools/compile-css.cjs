@@ -2,6 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto');
 const postcss=require('postcss'),tailwind=require('tailwindcss');
 const root=path.resolve(__dirname,'..'),output=path.join(root,'assets','styles');fs.mkdirSync(output,{recursive:true});
+function write(file,text){if(fs.existsSync(file)&&fs.readFileSync(file,'utf8')===text)return;const temporary=file+'.build-tmp';fs.writeFileSync(temporary,text);fs.renameSync(temporary,file);}
 function files(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory() ? (['.git','node_modules','.cache','site','tests','test-results','playwright-report'].includes(e.name)?[]:files(path.join(dir,e.name))) : e.name.endsWith('.html')?[path.join(dir,e.name)]:[]);}
 const groups=new Map();
 for(const file of files(root)){
@@ -19,13 +20,13 @@ for(const file of files(root)){
   let first=true;
   html=html.replace(/<script\b[^>]*src=["']https:\/\/cdn\.tailwindcss\.com[^"']*["'][^>]*>\s*<\/script>/gi,()=>{if(!first)return '';first=false;return loader;});
   if(first)html=html.replace(/<head\b[^>]*>/i,m=>m+loader);
-  fs.writeFileSync(file,html);
+  write(file,html);
 }
 (async()=>{
   for(const [id,group] of groups){
     const config={...group.config,content:group.content,corePlugins:{...(group.config.corePlugins||{}),preflight:true}};
     const result=await postcss([tailwind(config)]).process('@tailwind base; @tailwind components; @tailwind utilities;',{from:undefined});
-    fs.writeFileSync(path.join(output,id+'.css'),'/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com */\n'+result.css.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\s+/g,' ').trim()+'\n');
+    write(path.join(output,id+'.css'),'/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com */\n'+result.css.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\s+/g,' ').trim()+'\n');
   }
   const used=new Set([...groups.keys()].map(k=>k+'.css'));
   for(const entry of fs.readdirSync(output))if(/^[a-f0-9]{12}\.css$/.test(entry)&&!used.has(entry))fs.unlinkSync(path.join(output,entry));

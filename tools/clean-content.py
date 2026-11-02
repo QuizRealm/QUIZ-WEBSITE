@@ -4,9 +4,10 @@ import re
 import rebuild_site as build
 ROOT=Path(__file__).resolve().parents[1]
 removed=0
-claim=re.compile(r'cortisol|dopamine|acetylcholine|prefrontal cortex|neuroplasticity|delaying cognitive decline|medical tool|evaluate the mental health|scientifically proven|trauma can be inherited',re.I)
+claim=re.compile(r'cortisol|dopamine|acetylcholine|prefrontal cortex|neuroplasticity|delaying cognitive decline|medical tool|evaluate the mental health|scientifically proven|trauma can be inherited|neural (?:pathways|firing)|motor cortex|synaptic delay|enhances working memory|improves overall executive function|single biggest predictor of relationship longevity',re.I)
 for p in ROOT.glob('*.html'):
     text=p.read_text(encoding='utf-8')
+    original=text
     if '<body class="realm-page">' in text:continue
     parser=build.Spans(text);parser.feed(text);edits=[]
     for tag,attrs,start,end,_,_ in parser.spans:
@@ -31,5 +32,5 @@ for p in ROOT.glob('*.html'):
         q=build.Spans(text);q.feed(text)
         text=build.edits_apply(text,[(s,e,'') for tag,a,s,e,_,_ in q.spans if a.get('id')=='lockOverlay'])
     if p.name=='TBBTPERSON.html':text=text.replace('CALCULATING IQ…','MATCHING YOUR ANSWERS…').replace('CALCULATING IQ...','MATCHING YOUR ANSWERS...').replace('FACTORING IN MOTHER ISSUES…','CHECKING THE ROOMMATE AGREEMENT…').replace('FACTORING IN MOTHER ISSUES...','CHECKING THE ROOMMATE AGREEMENT...')
-    p.write_text(text,encoding='utf-8')
+    if text!=original:build.write(p.name,text)
 print(f'Removed {removed} unsupported promotional paragraphs; retained game controls.')

@@ -115,3 +115,36 @@ the relevant account approval and consent setup are ready.
 
 Public contact information was retained from the site's existing contact page.
 Marketing and map notes were moved to `docs/archive/`, rather than discarded.
+
+## Stage two: revised homepage, branding, and content paths
+
+The user's updated direction is authoritative: the displayed name is
+**TheQuizRealm**, retain the existing crowned-brain logo, use a dark premium
+theme, and group homepage games into clear sections. Preserve useful original
+SEO writing and improve contextual internal links.
+
+- Replaced the first homepage with charcoal and muted-gold styling, five game
+  sections, topic collections, practical guides, and a substantial introduction
+  with common questions. Restored the existing logo in the shared shell.
+- Kept page-specific topic explanations and FAQs, including the Friends and
+  Geography guides. Removed 17 repeated promotional sections and nine additional
+  unsupported claim paragraphs; the original versions remain in Git history.
+- Added detailed original rules, strategies, and contextual links to Nexus Grid,
+  CryptEx, Math Sprint, and Sketch and Guess. Rewrote two old brain-training
+  articles as practical game guides without unsupported performance claims.
+- Added 14 topical reading paths. All 253 indexable canonical pages have incoming
+  links from at least two other indexable pages and are reachable from home.
+  The link gate currently counts 5,138 distinct source-to-destination links.
+- Refreshed interface wording and the surrounding design of retained games.
+  Interaction testing found and fixed drawing overlays overriding their hidden
+  state, plus a missing drawing-turn label. A complete ten-turn game now saves
+  the correct earned XP.
+- Verification: 13 unit tests; 38 distinct desktop/mobile browser interactions
+  passed across the full suite and the focused rerun after the drawing fixes;
+  276 retained root pages loaded in both viewports without page errors or
+  horizontal overflow. A further desktop audit found no incorrectly visible
+  fixed overlays marked hidden.
+
+Further stages should keep auditing retained games and improving useful original
+content rather than cutting text for brevity. Search Console-specific exclusions
+and real production Firebase room availability remain unverified.

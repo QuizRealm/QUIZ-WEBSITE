@@ -6,8 +6,10 @@ if(!python){console.error('Python 3 is needed to rebuild the static pages. Set P
 run(process.execPath,['tools/fix-data.cjs']);
 run(python,['tools/fix-legacy.py']);
 run(process.execPath,['tools/repair-game-results.cjs']);
+run(python,['tools/refresh-legacy.py']);
 run(python,['tools/clean-content.py']);
 run(python,['tools/rebuild_site.py']);
 run(process.execPath,['tools/compile-css.cjs']);
 run(process.execPath,['tools/check-site.cjs']);
 run(process.execPath,['tools/check-globals.cjs']);
+run(process.execPath,['tools/check-links.cjs']);

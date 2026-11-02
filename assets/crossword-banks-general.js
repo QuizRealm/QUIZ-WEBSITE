@@ -1,5 +1,5 @@
 /* assets/crossword-banks-general.js
-   QuizRealm Crossword Banks: 10 General + 10 General Hard (entry-based)
+   TheQuizRealm Crossword Banks: 10 General + 10 General Hard (entry-based)
    Works with the 15×15 crossword page you already have.
 */
 (function () {

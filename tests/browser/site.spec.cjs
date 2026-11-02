@@ -11,8 +11,10 @@ async function correctAnswer(page){
 }
 test('home is readable, responsive and links to real games',async({page},info)=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');await essential(page);
-  await expect(page.getByRole('heading',{level:1})).toHaveText('Stay curious.Play a little.');await expect(page.getByRole('link',{name:'Play today’s challenge'})).toBeVisible();
-  await expect(page.locator('.r-card')).toHaveCount(8);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Trivia, puzzles,and a little rivalry.');await expect(page.getByRole('link',{name:'Play the Daily Ten',exact:false}).first()).toBeVisible();
+  for(const name of ['Trivia & knowledge','Word & logic games','Quick games','Games with friends','Personality & reflection quizzes','Explore by topic'])await expect(page.getByRole('heading',{level:2,name,exact:true})).toBeVisible();
+  await expect(page.locator('.qr-site-header .qr-brand')).toHaveText('TheQuizRealm');await expect(page.locator('.qr-site-header .qr-brand img')).toHaveAttribute('src','/android-chrome-192x192.png');
+  await expect(page.locator('.r-card')).toHaveCount(20);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
   if(info.project.name==='mobile'){await page.getByRole('button',{name:'Menu',exact:true}).click();await expect(page.getByRole('navigation',{name:'Main navigation'})).toBeVisible();}
   expect(errors).toEqual([]);await page.screenshot({path:path.join('test-results','home-'+info.project.name+'.png'),fullPage:true});
 });

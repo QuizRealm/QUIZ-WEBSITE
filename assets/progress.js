@@ -1,4 +1,4 @@
-/* QuizRealm progress. Local first; no account, network requests or tracking. */
+/* TheQuizRealm progress. Local first; no account, network requests or tracking. */
 (function (root) {
   'use strict';
   if (root.GameEngine && root.GameEngine.version === 3) return;
@@ -86,7 +86,7 @@
     achievementProgress(){const m=metrics();return badges.map(b=>({...b,current:Math.min(b.goal,m[b.metric]),unlocked:state.badges.includes(b.id)}));},
     setNickname(name){state.nickname=String(name||'Curious Player').replace(/[<>]/g,'').trim().slice(0,24)||'Curious Player';save();},
     exportData(){return JSON.stringify(state,null,2);},
-    importData(text){if(typeof text!=='string'||text.length>1000000)throw new Error('Choose a QuizRealm backup smaller than 1 MB.');const data=JSON.parse(text);if(data.version!==3||!Array.isArray(data.history)||typeof data.xp!=='number')throw new Error('This is not a QuizRealm progress backup.');state=clean(data);seen=new Set(state.history.map(h=>h.id));pendingXP=0;save();},
+    importData(text){if(typeof text!=='string'||text.length>1000000)throw new Error('Choose a TheQuizRealm backup smaller than 1 MB.');const data=JSON.parse(text);if(data.version!==3||!Array.isArray(data.history)||typeof data.xp!=='number')throw new Error('This is not a TheQuizRealm progress backup.');state=clean(data);seen=new Set(state.history.map(h=>h.id));pendingXP=0;save();},
     reset(){state=clean();pendingXP=0;seen=new Set();save();}
   };
   root.GameEngine=engine;
